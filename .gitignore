@@ -1,0 +1,22 @@
+# Local reference and training materials
+/_lesson_stills/
+/_season3_materials/
+/_season3_materials2/
+/$out/
+/_probe.wav
+
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+
+# Local credentials and environment
+.env
+.env.*
+!.env.example
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
