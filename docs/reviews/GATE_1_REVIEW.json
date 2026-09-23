@@ -134,5 +134,24 @@
       "outputTokens": 270
     },
     "policyResult": "All mandatory approval thresholds passed."
+  },
+  "tokenUsage": {
+    "scope": "Gate 1 development through final Jev approval, including both Jev attempts",
+    "codex": {
+      "status": "unavailable",
+      "inputTokens": null,
+      "outputTokens": null,
+      "totalTokens": null
+    },
+    "jev": {
+      "status": "measured",
+      "attempts": 2,
+      "inputTokens": 4034,
+      "outputTokens": 540,
+      "totalTokens": 4574
+    },
+    "otherModels": "not used",
+    "allModelsTotalTokens": null,
+    "note": "Jev counts are exact SDK usage. Codex per-Gate counts were not exposed for this completed run; null does not mean zero."
   }
 }

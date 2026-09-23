@@ -458,9 +458,11 @@ Question to solve:
 | 16   | NOT_STARTED | —          | —                | —             | MCP 僅作 Adapter                                                 |
 | 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill                                                   |
 
-## 13. 目前唯一允許的執行範圍
+Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。當時 Codex 的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1 細目見 `docs/reviews/GATE_1_REVIEW.json`。
 
-Gate 0 已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制已由使用者啟動的 Gate 1：
+## 13. Gate 0 歷史範圍與下階段規則
+
+Gate 0 與 Gate 1 均已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate；下一 Gate 仍須由使用者啟動：
 
 1. 建立 Repository 與 TypeScript workspace。
 2. 建立 lint、formatter、test、build scripts。
@@ -552,6 +554,12 @@ Verification:
 Jev:
 - NOT_SUBMITTED | APPROVED | REJECTED | BLOCKED
 
+Token usage (Gate 完成時必填):
+- Codex/主開發模型：input、output、total；來源與「實測／估算／無法取得」
+- Jev：input、output、total；包含所有正式送審與修正後複審
+- 其他協作模型：逐模型列示；沒有使用則填「未使用」
+- 全 Gate 總計：僅在各項均有可靠數據時填數字，否則填「無法精確合計」
+
 Risks / assumptions:
 - ...
 
@@ -560,3 +568,5 @@ Next allowed action:
 ```
 
 這份回報只摘要結果；完整流程與狀態仍回寫本文件，避免散落在對話中。
+
+Gate 0～17 每階段完成時，都要在最終回報與 Gate 紀錄附上該階段的 Token 用量。計算範圍從開始該 Gate 到 Jev 最終決定，包含返工與複審；不可只列最後一次呼叫。優先採用模型或工具提供的實際 input/output usage；若無逐 Gate 精確數據，明確寫「無法取得」，有可重現估算方法時才能另外標示「約」，不得把估算寫成實測。cached input 已包含在 input tokens、reasoning tokens 已包含在 output tokens，不重複加總；可見文字也不能反推完整 output 用量。見 [OpenAI 官方 Token 計數說明](https://developers.openai.com/api/docs/guides/token-counting)。
