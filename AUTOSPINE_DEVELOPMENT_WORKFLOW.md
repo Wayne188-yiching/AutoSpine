@@ -261,27 +261,28 @@ primary_blocker.choice == NONE
 
 ## 6. Gate 路線圖與驗收門檻
 
-| Gate | 交付目標                                            | 主要驗證                                                    | Jev 批准條件                                                                                                    | 建議模型               |
-| ---- | --------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| 0    | Repository、工具鏈、架構、IR 初版、ADR、Gate 1 計畫 | 安裝、build、lint、test、Schema type check                  | 基礎結構可重現；文件一致；沒有 Gate 1 功能偷跑                                                                  | GPT-5.6 Sol High       |
-| 1    | AutoSpine IR 到最小 Spine 4.0.64 JSON               | Golden test；同 IR 重跑 100 次                              | 最小 skeleton/bone/slot/skin/region/animation 可編譯；輸出一致；格式有可靠來源                                  | GPT-5.6 Sol High       |
-| 2    | PNG Parts，再擴充 PSD 到 AssetSpec                  | Parser unit/integration tests；bounds 與 hierarchy fixtures | 解析結果可序列化、可驗證、順序穩定；不包含 AI Rigging                                                           | GPT-5.6 Sol High       |
-| 3    | Tail alpha 到可變形 MeshSpec                        | Contour、simplification、triangulation 測試；Mesh Validator | 無非法 index、零面積三角形、自交或非預期斷裂；固定輸入固定輸出                                                  | Astra 設計，Sol 實作   |
-| 3.1  | Tail Mesh 參考佈線與頂點預算                        | Spine 23 頂點參考、輪廓覆蓋率、內部中線、回歸測試           | 維持合法與確定性；長形素材輪廓漏覆／多覆各 ≤2%；尾巴頂點數接近人工參考                                          | Sol 實作，Jev 驗收     |
-| 4    | Deterministic ChainRigTemplate                      | 骨長、位置、旋轉、parent 單元測試                           | start/end/boneCount 產出正確 chain；退化輸入有明確錯誤                                                          | GPT-5.6 Sol High       |
-| 5    | Weight Solver v1                                    | Sum、NaN、negative、top-K、orphan、smoothing tests          | 每 vertex 有合法 influence；和為 1；最大 4；沒有假 Solver                                                       | Astra XHigh            |
-| 6    | Tail deformation 與量化評估                         | Root/middle/wave poses；inversion、stretch、tearing metrics | 指標門檻明確且通過；保存 baseline；具可檢視輸出                                                                 | Astra High/XHigh       |
-| 7    | Arm fixture 與 elbow deformation                    | 0/30/60/90/120 度 regression                                | 無不可接受 collapse、inversion 或不連續；指標和視覺證據一致                                                     | Astra High/XHigh       |
-| 8    | Procedural Animation presets                        | 每個 preset 的輸出與 seed tests                             | wave、sway、breathing、bounce、float、rotateLoop、blink、followThrough、overshoot、squashStretch 由數值引擎生成 | GPT-5.6 Sol High       |
-| 9    | 獨立 Curve Engine                                   | Curve unit tests 與端點、單調性檢查                         | linear、stepped、bezier、ease、overshoot 不與 preset 耦合                                                       | GPT-5.6 Sol High       |
-| 10   | Loop Validator                                      | 首尾 translation/rotation/scale/deform 比較                 | Loop Error Score 可重現；錯誤能指出 target 與 stage                                                             | GPT-5.6 Sol High       |
-| 11   | 最小 Preview                                        | 固定 frame 或 MP4 render integration test                   | Preview 能重現並對應同一 build manifest；不建立大型 GUI                                                         | GPT-5.6 Sol High       |
-| 12   | Basic Humanoid Template                             | Hierarchy、對稱、fixture integration tests                  | 只含批准的基礎骨架；Tail 和 Arm regression 全過                                                                 | Sol 實作，Astra review |
-| 13   | Engine-neutral Constraints                          | IK、transform、path-like behavior tests                     | Core API 不暴露 Spine-specific constraint 結構；求解穩定                                                        | Astra High             |
-| 14   | AI Planner 到 Validated Spec                        | Structured output、schema rejection、fixture evals          | AI 只能產生通過 Schema 的 Spec；無效輸出不得觸發 Core                                                           | GPT-5.6 Sol High       |
-| 15   | Visual Critic 到 CorrectionSpec                     | 已知缺陷集、precision/recall 類 eval、no-direct-edit test   | Critic 只提 CorrectionSpec；Core 決定重建；不直接改 geometry                                                    | Astra High             |
-| 16   | MCP Adapter                                         | Tool contract、error mapping、integration tests             | 演算法留在 packages；MCP 只調用 Core API                                                                        | GPT-5.6 Sol High       |
-| 17   | AutoSpine Skill                                     | Decision cases、tool policy、boundary review                | Skill 是知識與規則；Core 不依賴 Skill；無重複 Engine 邏輯                                                       | GPT-5.6 Sol High       |
+| Gate | 交付目標                                            | 主要驗證                                                    | Jev 批准條件                                                                                                    | 建議模型                   |
+| ---- | --------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| 0    | Repository、工具鏈、架構、IR 初版、ADR、Gate 1 計畫 | 安裝、build、lint、test、Schema type check                  | 基礎結構可重現；文件一致；沒有 Gate 1 功能偷跑                                                                  | GPT-5.6 Sol High           |
+| 1    | AutoSpine IR 到最小 Spine 4.0.64 JSON               | Golden test；同 IR 重跑 100 次                              | 最小 skeleton/bone/slot/skin/region/animation 可編譯；輸出一致；格式有可靠來源                                  | GPT-5.6 Sol High           |
+| 2    | PNG Parts，再擴充 PSD 到 AssetSpec                  | Parser unit/integration tests；bounds 與 hierarchy fixtures | 解析結果可序列化、可驗證、順序穩定；不包含 AI Rigging                                                           | GPT-5.6 Sol High           |
+| 3    | Tail alpha 到可變形 MeshSpec                        | Contour、simplification、triangulation 測試；Mesh Validator | 無非法 index、零面積三角形、自交或非預期斷裂；固定輸入固定輸出                                                  | Astra 設計，Sol 實作       |
+| 3.1  | Tail Mesh 參考佈線與頂點預算                        | Spine 23 頂點參考、輪廓覆蓋率、內部中線、回歸測試           | 維持合法與確定性；長形素材輪廓漏覆／多覆各 ≤2%；尾巴頂點數接近人工參考                                          | Sol 實作，Jev 驗收         |
+| 3.2  | AWP 人物小部件與 Symbol 的靜態 Mesh 密度修正        | 同圖 `.spine` 網格對照、輪廓覆蓋、拓樸與固定輸出回歸        | 鬍鬚／房屋不再過密且不犧牲可接受輪廓；尾巴基線不退化；不宣稱頭部動態變形已通過                                  | 沿用 Gate 3 分工；Jev 驗收 |
+| 4    | Deterministic ChainRigTemplate                      | 骨長、位置、旋轉、parent 單元測試                           | start/end/boneCount 產出正確 chain；退化輸入有明確錯誤                                                          | GPT-5.6 Sol High           |
+| 5    | Weight Solver v1                                    | Sum、NaN、negative、top-K、orphan、smoothing tests          | 每 vertex 有合法 influence；和為 1；最大 4；沒有假 Solver                                                       | Astra XHigh                |
+| 6    | Tail deformation 與量化評估                         | Root/middle/wave poses；inversion、stretch、tearing metrics | 指標門檻明確且通過；保存 baseline；具可檢視輸出                                                                 | Astra High/XHigh           |
+| 7    | Arm fixture 與 elbow deformation                    | 0/30/60/90/120 度 regression                                | 無不可接受 collapse、inversion 或不連續；指標和視覺證據一致                                                     | Astra High/XHigh           |
+| 8    | Procedural Animation presets                        | 每個 preset 的輸出與 seed tests                             | wave、sway、breathing、bounce、float、rotateLoop、blink、followThrough、overshoot、squashStretch 由數值引擎生成 | GPT-5.6 Sol High           |
+| 9    | 獨立 Curve Engine                                   | Curve unit tests 與端點、單調性檢查                         | linear、stepped、bezier、ease、overshoot 不與 preset 耦合                                                       | GPT-5.6 Sol High           |
+| 10   | Loop Validator                                      | 首尾 translation/rotation/scale/deform 比較                 | Loop Error Score 可重現；錯誤能指出 target 與 stage                                                             | GPT-5.6 Sol High           |
+| 11   | 最小 Preview                                        | 固定 frame 或 MP4 render integration test                   | Preview 能重現並對應同一 build manifest；不建立大型 GUI                                                         | GPT-5.6 Sol High           |
+| 12   | Basic Humanoid Template                             | Hierarchy、對稱、fixture integration tests                  | 只含批准的基礎骨架；Tail 和 Arm regression 全過                                                                 | Sol 實作，Astra review     |
+| 13   | Engine-neutral Constraints                          | IK、transform、path-like behavior tests                     | Core API 不暴露 Spine-specific constraint 結構；求解穩定                                                        | Astra High                 |
+| 14   | AI Planner 到 Validated Spec                        | Structured output、schema rejection、fixture evals          | AI 只能產生通過 Schema 的 Spec；無效輸出不得觸發 Core                                                           | GPT-5.6 Sol High           |
+| 15   | Visual Critic 到 CorrectionSpec                     | 已知缺陷集、precision/recall 類 eval、no-direct-edit test   | Critic 只提 CorrectionSpec；Core 決定重建；不直接改 geometry                                                    | Astra High                 |
+| 16   | MCP Adapter                                         | Tool contract、error mapping、integration tests             | 演算法留在 packages；MCP 只調用 Core API                                                                        | GPT-5.6 Sol High           |
+| 17   | AutoSpine Skill                                     | Decision cases、tool policy、boundary review                | Skill 是知識與規則；Core 不依賴 Skill；無重複 Engine 邏輯                                                       | GPT-5.6 Sol High           |
 
 ## 7. 垂直切片與產品里程碑
 
@@ -445,7 +446,8 @@ Question to solve:
 | 2    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | PNG Parts 與 8-bit RGB PSD → AssetSpec；25 tests；Jev 2,739 tokens          |
 | 3    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.98 | Tail alpha → MeshSpec；34 tests；實際 Tail.png 100 次一致；Jev 3,342 tokens |
 | 3.1  | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | 參考 23 頂點；實測 24 頂點／27 三角形；35 tests；Jev 5,290 tokens           |
-| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3.1                                                               |
+| 3.2  | NOT_STARTED | —          | —                | —             | AWP 實測發現跨素材密度失衡；等待使用者啟動與 Jev 驗收                       |
+| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3.2                                                               |
 | 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                                                                 |
 | 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點                                                             |
 | 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點                                                              |
@@ -477,6 +479,16 @@ Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、outpu
 - 使用同一張私有喵助 `Tail.png` 與同一個 0.5% alpha 前處理預算，輪廓由 950 降至 19 個頂點，內部採五個等距截面中點；總頂點由 1,214 降至 24，三角形由 1,476 降至 27。新網格獨立拓樸驗證通過，100 次額外生成完全一致。
 - 閉合輪廓簡化有自交防護；修正後 81,641 個前景像素中漏覆 1,297（1.589%），多覆背景 306（0.375%），各低於長形低頂點素材的 2% 門檻。27 個三角形都沒有小於 10° 的最小角；最大面積 5,565.625 pixel²。前後對照圖已本機檢查，私有原圖、參考截圖與導出圖／網格均不提交。
 - 可攜的 240×320 曲線素材測試驗證 ≤32 頂點、至少五個內部點、輪廓覆蓋率、三角形品質與固定輸出；全套 35 tests 通過。這仍是靜態 MeshSpec，並非與人工 23 頂點專案逐頂點相同，也不宣稱骨骼彎曲品質或 Spine 編輯器驗收；Gate 6 才驗證動態變形。完整證據見 `docs/reviews/GATE_3_1_REVIEW.json`。
+- 後續 AWP 實際 `.spine` 抽樣顯示此尾巴專用密度規則尚無法泛化到人物與 Symbol：同圖附件的人工作品／AutoSpine 頂點數分別為鬍鬚 24／51、頭部 80／34、房屋 Symbol 25／275。此補充測試不改變原本的尾巴限定核准，但擴大素材範圍前必須修正密度策略並重新交 Jev 驗收；方法與限制集中記於 `docs/reviews/GATE_3_1_AWP_FIELD_TEST.md`。
+
+### Gate 3.2 計畫：以人工參考校準的靜態網格密度（尚未開始）
+
+- **目的與順序**：在 Gate 4 前修正 Gate 3.1 尾巴專用規則對其他形狀的誤用。輸入仍是 Gate 2 的 PNG／`AssetPart`，輸出仍是合法且 deterministic 的 `MeshSpec`；人工 `.spine` 網格用來建立對照與驗收，不逐頂點複製，也不把兩個專案訓練成通用 AI 模型。沿用 Gate 3 的 Astra 設計、Sol 實作分工，Jev 為獨立驗收者；不改動已定的其他 Gate 模型分配。
+- **先量測再訂規則**：以相同 PNG、alpha 清理預算與座標，量測人工外框的漏覆／多覆、頂點／三角形、內部點、骨骼影響與 deform timeline。移除重複附件對統計的偏重；保留 `.spine`／PNG 雜湊，私有原圖、導出 JSON 和網格不進 Git。人工檔是參考而非無條件正解；不能只以頂點總數判定佈線品質。
+- **實作範圍**：用輪廓曲率、同圖像素覆蓋誤差與可編輯點數預算替代單一長寬比分流；內部點依可得的用途提示區分「近乎剛性」與「待變形」，不再讓近方形 Symbol 固定鋪滿網格。簡化後仍檢查自交、三角形品質與獨立 Mesh Validator。若沒有足夠的用途資訊，明確標示需複查，不能猜測已達動畫級品質。AI 不直接決定幾何位置。
+- **私人 AWP 回歸門檻**：對同圖 `huzi2`（人工 24、目前 51）及 `SC_House_B`（人工 25、目前 275），AutoSpine 各自降至不超過人工頂點數的 1.5 倍，並且相同前處理後的前景漏覆／背景多覆各 ≤2%；若人工原網格本身超過此覆蓋預算，先揭露差異並送人工判定，不可硬削點數或暗中更改門檻。保留 `Tail.png` 的 Gate 3.1 覆蓋與拓樸基線；增加可提交的合成小型長形／寬形素材測試，讓沒有 AWP 權限的電腦仍可回歸。
+- **不得提前宣稱完成的部分**：`tou_1_3` 人工 80 點、目前 34 點，且有加權及 `Idle` deform timeline。Gate 3.2 僅記錄這個未解決案例、避免把五個中線點標為已驗收的頭部網格；Gate 4–5 才提供骨骼與權重資訊。Gate 6 依原計畫建立尾巴動態量測方法，不能以尾巴通過代替頭部驗收；頭部專項須在後續人物擴充 Gate 12 或另設子 Gate，以其動畫姿勢量測拉伸、翻面與破綻。Gate 3.2 不輸出骨骼、權重、動畫，也不承諾 Spine 成品美術核准。
+- **關閉條件**：新增可攜回歸與 AWP 私有實測證據；所有既有 Gate 0–3.1 測試通過，獨立拓樸驗證通過，固定輸入至少 100 次輸出完全相同；提供同素材人工／生成佈線可檢視對照及失敗案例。Jev 依本段範圍與數據審查，未 `APPROVED` 不進 Gate 4。完成時記錄所有開發與 Jev 複審的實際 Token 用量；不可取得者明示，不填 0。
 
 ## 13. Gate 0 歷史範圍與下階段規則
 

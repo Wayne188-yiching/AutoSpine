@@ -12,6 +12,7 @@ The authoritative Gate rules and status live in [AUTOSPINE_DEVELOPMENT_WORKFLOW.
 
 - Gate 3 — Tail mesh generation
 - Gate 3.1 — Tail mesh density and triangle quality refinement
+- Gate 3.2 — AWP character-part and Symbol static mesh density refinement
 - Gate 4 — Deterministic chain rig
 - Gate 5 — Weight Solver v1
 - Gate 6 — Tail deformation metrics and regression
