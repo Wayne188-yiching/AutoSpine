@@ -10,11 +10,10 @@ Assumptions are explicit, reviewable, and temporary. Verified facts should be mo
 4. IDs are non-empty strings. A canonical naming and path policy will be defined by the Gate that first needs it.
 5. Coordinates and angles are engine-neutral numbers in Gate 0. Coordinate origin, axis direction, units, and angle conventions must be decided before Gate 1 compiler implementation.
 6. Runtime schemas validate data shape. Semantic invariants such as triangle topology, parent cycles, weight sums, and loop continuity belong to their stage-specific validators.
-7. Spine 4.3 is the target, but its exact JSON representation remains unverified until the research and real-export work in Gate 1.
+7. Gate 0 originally assumed Spine 4.3; the user changed the first target to Spine 4.0.64 for Gate 1. Minimal JSON representation is now verified in `docs/research/SPINE_FORMAT_RESEARCH.md`.
 8. No CLI application is created in Gate 0 because there is no executable engine behavior yet. CLI-first remains the delivery strategy starting with the first real command surface.
 
-## Open questions for Gate 1
+## Remaining questions beyond the Gate 1 minimal slice
 
-- Which exact Spine 4.3 patch and runtime snapshot define compatibility?
-- What coordinate, angle, omission, and default-value conventions are present in a real Spine 4.3 export?
-- What minimum artifact set can the Spine CLI import and inspect successfully?
+- How should arbitrary asset-canvas coordinates map to Spine bone-local attachment offsets? Gate 1 requires an explicit binding offset and does not infer pivots.
+- Which additional 4.0.64 fields and attachment types are needed for Mesh, Weight, and Constraint Gates? The minimal fixture does not establish a complete 4.0.64 JSON schema.

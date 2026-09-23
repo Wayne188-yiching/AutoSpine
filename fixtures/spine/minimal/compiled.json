@@ -1,0 +1,15 @@
+{
+  "skeleton": { "spine": "4.0.64", "images": "./images/" },
+  "bones": [
+    { "name": "root" },
+    { "name": "child", "parent": "root", "length": 32, "x": 8, "y": 12 }
+  ],
+  "slots": [{ "name": "child-slot", "bone": "child", "attachment": "square" }],
+  "skins": [
+    {
+      "name": "default",
+      "attachments": { "child-slot": { "square": { "width": 16, "height": 16 } } }
+    }
+  ],
+  "animations": { "turn": { "bones": { "child": { "rotate": [{}, { "time": 1, "value": 30 }] } } } }
+}

@@ -8,8 +8,8 @@ describe("Gate 0 package boundaries", () => {
     expect(Object.keys(SPEC_SCHEMAS)).toHaveLength(8);
   });
 
-  it("declares Spine 4.3 compatibility without implementing the compiler", () => {
-    expect(spine.SPINE_COMPATIBILITY_TARGET).toBe("4.3");
-    expect("compileSpine43" in spine).toBe(false);
+  it("keeps the Spine 4.0.64 compiler in the adapter package", () => {
+    expect(spine.SPINE_COMPATIBILITY_TARGET).toBe("4.0.64");
+    expect(spine.compileSpine40).toBeTypeOf("function");
   });
 });

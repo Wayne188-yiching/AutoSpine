@@ -1,1 +1,2 @@
-export const SPINE_COMPATIBILITY_TARGET = "4.3" as const;
+export const SPINE_COMPATIBILITY_TARGET = "4.0.64" as const;
+export * from "./minimal-compiler.js";

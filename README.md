@@ -12,7 +12,7 @@ The deterministic Core must work without an AI model. AI may choose templates an
 
 ## Current status
 
-Gate 0 establishes the repository, architecture, versioned intermediate representation, validation schemas, development tooling, and Gate 1 plan. It intentionally contains no Spine compiler, mesh generation, weight solving, AI, MCP, Skill, or GUI implementation.
+Gates 0 and 1 are approved. Gate 1 implements the minimal Spine 4.0.64 compiler and thin CLI, with a real editor-exported fixture, official 4.0 runtime load test, and Spine CLI round trip. Mesh generation, weight solving, AI, MCP, Skill, and GUI remain out of scope. Gate acceptance is tracked in the development workflow.
 
 See:
 
@@ -21,6 +21,7 @@ See:
 - [Roadmap](ROADMAP.md)
 - [Spine application knowledge](docs/SPINE_APPLICATION_KNOWLEDGE.md)
 - [Gate 1 plan](docs/GATE_1_PLAN.md)
+- [Spine 4.0.64 evidence](docs/research/SPINE_FORMAT_RESEARCH.md)
 
 ## Requirements
 
@@ -35,13 +36,15 @@ npm run build
 npm run lint
 npm run test
 npm run verify
+npm run compile:minimal -- compile-minimal fixtures/spine/minimal/input.json output.json
 ```
 
 ## Repository layout
 
 ```text
 packages/core/    Engine-neutral IR facade
-packages/spine/   Spine adapter boundary; compiler starts in Gate 1
+packages/spine/   Minimal Spine 4.0.64 adapter
+packages/cli/     Thin compile-minimal command
 schemas/          Runtime schemas and inferred TypeScript types
 tests/            Cross-package validation tests
 fixtures/         Versioned test assets added gate by gate

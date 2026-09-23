@@ -24,6 +24,20 @@ export const MotionSpecSchema = Type.Object(
   { additionalProperties: false },
 );
 
+export const RotationTimelineSchema = Type.Object(
+  {
+    boneId: IdSchema,
+    keys: Type.Array(
+      Type.Object(
+        { time: Type.Number({ minimum: 0 }), degrees: Type.Number() },
+        { additionalProperties: false },
+      ),
+      { minItems: 1 },
+    ),
+  },
+  { additionalProperties: false },
+);
+
 export const AnimationSpecSchema = Type.Object(
   {
     schemaVersion: SchemaVersionSchema,
@@ -35,10 +49,12 @@ export const AnimationSpecSchema = Type.Object(
     loop: Type.Boolean(),
     seed: Type.Optional(Type.Integer()),
     motions: Type.Array(MotionSpecSchema),
+    rotationTimelines: Type.Optional(Type.Array(RotationTimelineSchema)),
   },
   { $id: "AnimationSpec-0.1", additionalProperties: false },
 );
 
 export type MotionParameter = Static<typeof MotionParameterSchema>;
 export type MotionSpec = Static<typeof MotionSpecSchema>;
+export type RotationTimeline = Static<typeof RotationTimelineSchema>;
 export type AnimationSpec = Static<typeof AnimationSpecSchema>;

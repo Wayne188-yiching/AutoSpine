@@ -1,7 +1,7 @@
 # AutoSpine — Spine 應用知識基線
 
 版本：0.1  
-狀態：可供架構與 Gate 0 使用；Spine 4.3 格式細節仍須在 Gate 1 驗證  
+狀態：Gate 0 知識基線；Gate 1 最小格式已以 Spine 4.0.64 驗證
 最後整理：2026-09-22
 
 ## 1. 文件用途
@@ -21,13 +21,13 @@
 
 每項規則使用以下標記：
 
-| 標記                | 意義                                               |
-| ------------------- | -------------------------------------------------- |
-| `OFFICIAL_VERIFIED` | 已由 Spine 官方說明或 Runtime 行為支持             |
-| `TUTORIAL_OBSERVED` | 可從現有課程畫面直接觀察                           |
-| `ENGINE_POLICY`     | AutoSpine 為了可重現、自動化與安全而採用的工程規則 |
-| `INFERRED`          | 由畫面或既有技術推定，尚未由完整操作或檔案驗證     |
-| `SPINE_4_3_TODO`    | 進入 Gate 1 前必須用 Spine 4.3 真實輸出確認        |
+| 標記                    | 意義                                                |
+| ----------------------- | --------------------------------------------------- |
+| `OFFICIAL_VERIFIED`     | 已由 Spine 官方說明或 Runtime 行為支持              |
+| `TUTORIAL_OBSERVED`     | 可從現有課程畫面直接觀察                            |
+| `ENGINE_POLICY`         | AutoSpine 為了可重現、自動化與安全而採用的工程規則  |
+| `INFERRED`              | 由畫面或既有技術推定，尚未由完整操作或檔案驗證      |
+| `SPINE_4_0_64_VERIFIED` | 已用 Spine 4.0.64 真實輸出與 Runtime 驗證的最小範圍 |
 
 若同一段同時包含多種證據，以較弱的標記為準。禁止把 `INFERRED` 改寫成已驗證事實。
 
@@ -49,7 +49,7 @@
 
 - 現有資料是多個影片時點組成的靜態畫面，不是完整影片或逐字稿。
 - 畫面足以辨認工作類型，但不足以確認每個按鈕、參數值與操作順序。
-- 課程使用的 Spine 版本尚未確認，不能直接當成 Spine 4.3 JSON 規格。
+- 課程使用的 Spine 版本尚未確認，不能直接當成 Spine 4.0.64 JSON 規格。
 - 素材中的 PSD／壓縮檔僅作本機參考，不提交到 Repository。
 - 素材附帶的聲明限制商業使用，因此 Repository 只保存原創技術摘要，不保存來源素材。
 
@@ -312,7 +312,7 @@ vertex
 
 - 可用於頭髮、布料、翅膀、尾巴的 follow-through。
 - setup pose 中 constraint 不得讓 constrained bone 跳位或旋轉。
-- `local + relative` 的 offset cancellation 必須用 Spine 4.3 Runtime 與真實輸出重新確認。
+- `local + relative` 的 offset cancellation 必須用對應版本 Runtime 與真實輸出重新確認。
 - 已由 IK 驅動的 chain 預設不再加 follow-through，避免 solver 互相競爭。
 
 官方參考：<https://esotericsoftware.com/spine-transform-constraints>
@@ -430,7 +430,7 @@ Blink 規則：
 - alpha／color
 - attachment switching
 - draw order
-- additive 或其他 blend mode（需要 Spine 4.3 與 Runtime 驗證）
+- additive 或其他 blend mode（需要 Spine 4.0.64 與 Runtime 驗證）
 
 特效應使用獨立 effect hierarchy，避免受角色局部 deform chain 意外影響。AutoSpine MVP 不以複製完整粒子系統為目標。
 
@@ -568,26 +568,23 @@ Spine project
 | IK／Transform／Path Constraint             | 13         |
 | AI／Engine 邊界                            | 14、16、17 |
 
-## 16. Gate 1 前必須完成的 Spine 4.3 驗證
+## 16. Gate 1 Spine 4.0.64 最小格式驗證
 
-`SPINE_4_3_TODO`
+`SPINE_4_0_64_VERIFIED`：詳細證據、來源、測試範圍與未驗證項見 [SPINE_FORMAT_RESEARCH.md](research/SPINE_FORMAT_RESEARCH.md)。
 
-1. 使用合法的 Spine 4.3 Editor 建立最小專案。
-2. 建立 root、child bone、slot、region、skin、簡單 animation。
-3. 匯出 JSON 與 atlas，保存為 Gate 1 golden fixture。
-4. 確認版本欄位、transform default、slot order、skin 與 attachment shape。
-5. 用官方 Spine 4.3 Runtime 載入輸出。
-6. 使用 Spine CLI 做 import／info round trip。
-7. 記錄官方格式與課程舊版畫面的差異。
-8. 由 Jev 驗收證據後，才開始正式 Compiler implementation。
+1. 使用合法的 Spine Editor 4.0.64 與原創最小圖檔建立 root、child bone、slot、region、default skin、rotation animation。
+2. 保存實際編輯器匯出的 JSON、atlas 與 PNG 作為 golden fixture；手寫 seed 另行標示。
+3. 確認版本欄位、parent-first bone、setup x/y、slot 與 skin/region shape，以及 rotation key 使用 `value`。
+4. 用官方 4.0 Runtime 載入，並使用 4.0.64 CLI 做 import／info／export round trip。
+5. Jev 於 Gate 1 最終驗收此證據與最小 Compiler；本節不代表完整 4.0.64 Schema 已驗證。
 
 ## 17. 尚未完成的知識
 
 以下不能因看過靜態畫面而宣稱完成：
 
-- Spine 4.3 精確 JSON schema
-- Spine 4.3 weighted mesh vertex encoding
-- Transform Constraint 在 4.3 的全部數學與 update order
+- Spine 4.0.64 完整 JSON schema（Gate 1 僅驗證最小切片）
+- Spine 4.0.64 weighted mesh vertex encoding
+- Transform Constraint 在 4.0.64 的全部數學與 update order
 - Path Constraint 全部 rotate／spacing mode 的 Runtime 行為
 - Clipping、Skin constraints、Physics constraints
 - 完整 facial rig 與 lip-sync
@@ -602,10 +599,12 @@ Spine project
 - 演算法研究可以放在 `docs/research/`，但必須在本文件留下摘要與連結。
 - 修改 `OFFICIAL_VERIFIED` 規則時，附官方來源。
 - 修改 Mesh、Weight、Constraint 規則時，同時更新測試與 baseline。
-- 舊版本行為不得直接套用到 Spine 4.3；版本差異需明確標示。
+- 其他版本行為不得直接套用到 Spine 4.0.64；版本差異需明確標示。
 - 每個 Jev 批准的 Gate 可以把新的 Verified 結論回寫本文件。
 
 ## 19. Jev 驗收紀錄
+
+### Gate 0
 
 驗收日期：2026-09-23  
 模型：`jev-1.13.0`  
@@ -623,3 +622,7 @@ Spine project
 | Primary blocker      |     NONE |
 
 Jev 使用量：8,807 input tokens、248 output tokens。所有集中式開發流程所定義的強制門檻均通過。
+
+### Gate 1 — Spine 4.0.64
+
+2026-09-23，`jev-1.13.0` 最終決定 `APPROVED`：批准機率 0.97、回歸安全 0.98、證據品質 3.96/4。首輪因回歸安全證據不足而未達門檻；新增 Gate 0 相容性測試與乾淨安裝／完整測試證據後複審通過。完整紀錄見 [GATE_1_REVIEW.json](reviews/GATE_1_REVIEW.json)。

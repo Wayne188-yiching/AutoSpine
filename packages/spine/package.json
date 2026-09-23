@@ -17,5 +17,9 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@autospine/schemas": "0.0.0",
+    "@sinclair/typebox": "^0.34.52"
   }
 }

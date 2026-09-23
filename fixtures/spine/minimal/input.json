@@ -1,0 +1,67 @@
+{
+  "asset": {
+    "schemaVersion": "0.1",
+    "kind": "asset",
+    "id": "asset-minimal",
+    "name": "Minimal",
+    "source": { "type": "png-parts", "path": "fixtures/spine/minimal/images" },
+    "width": 16,
+    "height": 16,
+    "parts": [
+      {
+        "id": "part-square",
+        "name": "square",
+        "sourcePath": "square.png",
+        "bounds": { "x": 0, "y": 0, "width": 16, "height": 16 },
+        "drawOrder": 0
+      }
+    ]
+  },
+  "rig": {
+    "schemaVersion": "0.1",
+    "kind": "rig",
+    "id": "rig-minimal",
+    "name": "Minimal rig",
+    "type": "prop",
+    "bones": [
+      {
+        "id": "bone-child",
+        "name": "child",
+        "parentId": "bone-root",
+        "x": 8,
+        "y": 12,
+        "rotation": 0,
+        "length": 32
+      },
+      { "id": "bone-root", "name": "root", "x": 0, "y": 0, "rotation": 0, "length": 0 }
+    ]
+  },
+  "animation": {
+    "schemaVersion": "0.1",
+    "kind": "animation",
+    "id": "animation-turn",
+    "name": "turn",
+    "rigId": "rig-minimal",
+    "duration": 1,
+    "loop": false,
+    "motions": [],
+    "rotationTimelines": [
+      {
+        "boneId": "bone-child",
+        "keys": [
+          { "time": 0, "degrees": 0 },
+          { "time": 1, "degrees": 30 }
+        ]
+      }
+    ]
+  },
+  "imagesPath": "./images/",
+  "binding": {
+    "partId": "part-square",
+    "boneId": "bone-child",
+    "slotName": "child-slot",
+    "attachmentName": "square",
+    "x": 0,
+    "y": 0
+  }
+}

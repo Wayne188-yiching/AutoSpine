@@ -5,7 +5,7 @@ The authoritative Gate rules and status live in [AUTOSPINE_DEVELOPMENT_WORKFLOW.
 ## Foundation
 
 - Gate 0 — Repository, architecture, IR, tooling, ADRs, Gate 1 plan
-- Gate 1 — Minimal Spine 4.3 compiler
+- Gate 1 — Minimal Spine 4.0.64 compiler
 - Gate 2 — PNG Parts and PSD asset parsing
 
 ## Tail vertical slice

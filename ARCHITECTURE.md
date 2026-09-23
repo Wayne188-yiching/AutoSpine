@@ -45,7 +45,7 @@ Each schema is versioned, runtime-validatable, statically typed, serializable, a
 | ---------------- | --------------------------------------------------------------------------- |
 | `schemas`        | Runtime schemas and TypeScript types for the IR                             |
 | `packages/core`  | Stable engine-neutral facade over the IR and future deterministic engines   |
-| `packages/spine` | Spine-specific adapter boundary; no compiler exists in Gate 0               |
+| `packages/spine` | Spine-specific adapter; Gate 1 minimal 4.0.64 compiler                      |
 | `tests`          | Cross-package contracts and runtime schema checks                           |
 | `fixtures`       | Small, reviewable inputs and golden outputs introduced by their owning Gate |
 
@@ -77,8 +77,8 @@ The same input, specification, configuration, and seed must produce the same out
 
 ## Spine boundary
 
-Spine 4.3 is the first compatibility target. Gate 1 must establish compatibility from official documentation, official runtimes, the Spine CLI, and a real export before implementing the compiler. Unverified format details belong in `ASSUMPTIONS.md`, never silently in code.
+Spine 4.0.64 is the first compatibility target. Gate 1 evidence combines official documentation, a real editor export, the official 4.0 runtime, and Spine CLI import/export. Details and limits are in `docs/research/SPINE_FORMAT_RESEARCH.md`.
 
 ## Current implementation boundary
 
-Gate 0 contains contracts and tooling only. Geometry, weighting, constraints, animation generation, compilation, AI, MCP, Skill, preview rendering, and GUI behavior remain intentionally absent.
+Gate 1 adds only the minimal Spine compiler, validator, and thin CLI. Geometry, weighting, constraints, procedural animation generation, AI, MCP, Skill, preview rendering, and GUI behavior remain intentionally absent.

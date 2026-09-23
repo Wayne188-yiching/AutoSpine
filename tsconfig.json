@@ -3,6 +3,7 @@
   "references": [
     { "path": "./schemas" },
     { "path": "./packages/core" },
-    { "path": "./packages/spine" }
+    { "path": "./packages/spine" },
+    { "path": "./packages/cli" }
   ]
 }

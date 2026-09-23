@@ -147,6 +147,12 @@ describe("AutoSpine IR schema contracts", () => {
     expect(Value.Check(schema, value)).toBe(true);
   });
 
+  it("keeps Gate 0 animation documents valid without rotation timelines", () => {
+    expect("rotationTimelines" in animation).toBe(false);
+    expect(Value.Check(AnimationSpecSchema, animation)).toBe(true);
+    expect(AnimationSpecSchema.$id).toBe("AnimationSpec-0.1");
+  });
+
   it("rejects unknown properties", () => {
     expect(Value.Check(AssetSpecSchema, { ...asset, unexpected: true })).toBe(false);
   });
