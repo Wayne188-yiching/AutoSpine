@@ -21,13 +21,13 @@
 
 每項規則使用以下標記：
 
-| 標記 | 意義 |
-|---|---|
-| `OFFICIAL_VERIFIED` | 已由 Spine 官方說明或 Runtime 行為支持 |
-| `TUTORIAL_OBSERVED` | 可從現有課程畫面直接觀察 |
-| `ENGINE_POLICY` | AutoSpine 為了可重現、自動化與安全而採用的工程規則 |
-| `INFERRED` | 由畫面或既有技術推定，尚未由完整操作或檔案驗證 |
-| `SPINE_4_3_TODO` | 進入 Gate 1 前必須用 Spine 4.3 真實輸出確認 |
+| 標記                | 意義                                               |
+| ------------------- | -------------------------------------------------- |
+| `OFFICIAL_VERIFIED` | 已由 Spine 官方說明或 Runtime 行為支持             |
+| `TUTORIAL_OBSERVED` | 可從現有課程畫面直接觀察                           |
+| `ENGINE_POLICY`     | AutoSpine 為了可重現、自動化與安全而採用的工程規則 |
+| `INFERRED`          | 由畫面或既有技術推定，尚未由完整操作或檔案驗證     |
+| `SPINE_4_3_TODO`    | 進入 Gate 1 前必須用 Spine 4.3 真實輸出確認        |
 
 若同一段同時包含多種證據，以較弱的標記為準。禁止把 `INFERRED` 改寫成已驗證事實。
 
@@ -535,38 +535,38 @@ Spine project
 
 ## 14. 課程畫面索引與可用結論
 
-| 畫面 | 可直接觀察 | 不可由畫面單獨確認 |
-|---|---|---|
-| 第 01 課 基本介紹 | Spine Editor、Tree、Timeline、角色案例 | 精確版本與完整工作流 |
-| 第 02 課 基本操作 | 素材導入、場景擺放、Tree／Properties | 所有匯入設定值 |
-| 第 03 課 Skeleton/Bone/Slot/Attachment | 多 Attachment、骨架與 Tree 結構 | JSON 欄位與序列化規則 |
-| 05 骨骼綁定工具 | 軀幹骨骼建立與 pivot 操作 | 完整權重算法 |
-| 07 人物主體綁定 | 軀幹、頭、臉、四肢與 Mesh 操作 | 每個 joint 的最終 hierarchy |
-| 09 Tree hierarchy 與 Constraints | Hierarchy、控制物件與約束案例 | Constraint 類型的每個參數 |
-| 13 Path／Link Constraints | 沿 path 控制骨或物件 | 課程所用版本的序列化格式 |
-| 16 立繪上身綁定 | 上身 hierarchy、timeline、curve 調整 | 全部 key timing |
-| 18／19 頭部與附屬物 | 臉部、眼睛、毛髮／裝飾分離控制 | 完整 facial rig 規格 |
-| 28 受擊動畫 | Recoil、極端 pose 與回復過程 | 精確 anticipation／recovery frame |
-| 31 熊貓跑步 | 循環 pose、身體高度、武器與附屬運動 | 精確 run cycle timing |
-| 44 Spine 特效 | Glow、projectile、trail 的多層組合 | Blend mode 與 Runtime 差異 |
-| 47 Spine 與 Unity | Unity 匯入與 Runtime 元件 | Runtime 版本與 export 設定 |
-| 50 表情動畫 | 眼、眼皮、眉、嘴等獨立控制 | 表情系統完整狀態機 |
+| 畫面                                   | 可直接觀察                             | 不可由畫面單獨確認                |
+| -------------------------------------- | -------------------------------------- | --------------------------------- |
+| 第 01 課 基本介紹                      | Spine Editor、Tree、Timeline、角色案例 | 精確版本與完整工作流              |
+| 第 02 課 基本操作                      | 素材導入、場景擺放、Tree／Properties   | 所有匯入設定值                    |
+| 第 03 課 Skeleton/Bone/Slot/Attachment | 多 Attachment、骨架與 Tree 結構        | JSON 欄位與序列化規則             |
+| 05 骨骼綁定工具                        | 軀幹骨骼建立與 pivot 操作              | 完整權重算法                      |
+| 07 人物主體綁定                        | 軀幹、頭、臉、四肢與 Mesh 操作         | 每個 joint 的最終 hierarchy       |
+| 09 Tree hierarchy 與 Constraints       | Hierarchy、控制物件與約束案例          | Constraint 類型的每個參數         |
+| 13 Path／Link Constraints              | 沿 path 控制骨或物件                   | 課程所用版本的序列化格式          |
+| 16 立繪上身綁定                        | 上身 hierarchy、timeline、curve 調整   | 全部 key timing                   |
+| 18／19 頭部與附屬物                    | 臉部、眼睛、毛髮／裝飾分離控制         | 完整 facial rig 規格              |
+| 28 受擊動畫                            | Recoil、極端 pose 與回復過程           | 精確 anticipation／recovery frame |
+| 31 熊貓跑步                            | 循環 pose、身體高度、武器與附屬運動    | 精確 run cycle timing             |
+| 44 Spine 特效                          | Glow、projectile、trail 的多層組合     | Blend mode 與 Runtime 差異        |
+| 47 Spine 與 Unity                      | Unity 匯入與 Runtime 元件              | Runtime 版本與 export 設定        |
+| 50 表情動畫                            | 眼、眼皮、眉、嘴等獨立控制             | 表情系統完整狀態機                |
 
 ## 15. 對 AutoSpine Gate 的直接影響
 
-| 知識 | Gate |
-|---|---|
-| Bone／Slot／Attachment／draw order | 0、1 |
-| 素材拆分、顯示尺寸、PSD／PNG hierarchy | 2 |
-| Mesh topology 與 joint density | 3、6、7 |
-| Pivot、parent、chain | 4、12 |
-| Weights、smooth、prune、joint deformation | 5、6、7 |
-| Procedural timing、secondary motion、blink | 8 |
-| Graph／Curve | 9 |
-| Loop continuity | 10 |
-| Rig-check 與視覺檢查 | 11、15 |
-| IK／Transform／Path Constraint | 13 |
-| AI／Engine 邊界 | 14、16、17 |
+| 知識                                       | Gate       |
+| ------------------------------------------ | ---------- |
+| Bone／Slot／Attachment／draw order         | 0、1       |
+| 素材拆分、顯示尺寸、PSD／PNG hierarchy     | 2          |
+| Mesh topology 與 joint density             | 3、6、7    |
+| Pivot、parent、chain                       | 4、12      |
+| Weights、smooth、prune、joint deformation  | 5、6、7    |
+| Procedural timing、secondary motion、blink | 8          |
+| Graph／Curve                               | 9          |
+| Loop continuity                            | 10         |
+| Rig-check 與視覺檢查                       | 11、15     |
+| IK／Transform／Path Constraint             | 13         |
+| AI／Engine 邊界                            | 14、16、17 |
 
 ## 16. Gate 1 前必須完成的 Spine 4.3 驗證
 
@@ -611,15 +611,15 @@ Spine project
 模型：`jev-1.13.0`  
 決定：`APPROVED`
 
-| 檢查 | 結果 |
-|---|---:|
-| APPROVED probability | 1.00 |
-| Scope compliant | 0.96 |
-| Evidence separated | 0.97 |
-| Claims supported | 0.89 |
-| Future portability | 0.92 |
-| Risks disclosed | 0.95 |
-| Evidence quality | 3.85 / 4 |
-| Primary blocker | NONE |
+| 檢查                 |     結果 |
+| -------------------- | -------: |
+| APPROVED probability |     1.00 |
+| Scope compliant      |     0.96 |
+| Evidence separated   |     0.97 |
+| Claims supported     |     0.89 |
+| Future portability   |     0.92 |
+| Risks disclosed      |     0.95 |
+| Evidence quality     | 3.85 / 4 |
+| Primary blocker      |     NONE |
 
 Jev 使用量：8,807 input tokens、248 output tokens。所有集中式開發流程所定義的強制門檻均通過。

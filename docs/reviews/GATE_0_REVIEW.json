@@ -1,0 +1,142 @@
+{
+  "project": "AutoSpine",
+  "gate": 0,
+  "objective": "Establish a reproducible TypeScript repository, architecture boundaries, versioned IR schemas, development tooling, ADRs, fixture/test skeletons, and a Gate 1 plan without implementing Gate 1 behavior.",
+  "statusAtSubmission": "DEV_VERIFIED",
+  "inScope": [
+    "npm workspaces and TypeScript project references",
+    "format, lint, typecheck, test, build, and clean commands",
+    "schemas, core, and Spine adapter-boundary packages",
+    "AssetSpec, MeshSpec, RigSpec, WeightSpec, ConstraintSpec, AnimationSpec, BuildManifest, and ValidationReport",
+    "repository documentation, ADR-001 through ADR-006, fixture placeholders, and Gate 1 plan",
+    "runtime schema contract tests and package-boundary tests"
+  ],
+  "outOfScope": [
+    "Spine compiler or Spine JSON implementation",
+    "asset parsing, mesh generation, rig solving, weight solving, constraint solving, and animation generation",
+    "AI, MCP, Skill, preview renderer, GUI, and production CLI"
+  ],
+  "changedFiles": [
+    "root package/configuration files and package-lock.json",
+    "README.md, ARCHITECTURE.md, ROADMAP.md, ASSUMPTIONS.md, and BACKLOG.md",
+    "docs/adr/ADR-001 through ADR-006",
+    "docs/GATE_1_PLAN.md",
+    "schemas/src/*.ts",
+    "packages/core and packages/spine",
+    "tests/*.test.ts and tests/tsconfig.json",
+    "fixtures README placeholders",
+    "AUTOSPINE_DEVELOPMENT_WORKFLOW.md Gate 0 record"
+  ],
+  "assumptions": [
+    "Node.js 22.12+ and npm workspaces are the initial supported toolchain.",
+    "TypeBox 0.x LTS is the source for runtime JSON-schema-compatible contracts and inferred types.",
+    "IR schema version 0.1 is pre-MVP and changes require an explicit migration and ADR.",
+    "Gate 0 validates document shape; semantic validators are owned by later Gates.",
+    "Exact Spine 4.3 format details remain unverified until Gate 1 research.",
+    "A production CLI starts with the first real command surface rather than a Gate 0 no-op command."
+  ],
+  "implementationSummary": "The repository now has a deliberately small npm workspace. Schemas owns eight versioned runtime contracts and inferred TypeScript types. Core only re-exports engine-neutral contracts. The Spine package declares the 4.3 compatibility target but contains no compiler. Documentation fixes dependency direction, deterministic execution, AI boundaries, CLI-first delivery, and the Gate 1 research-first plan.",
+  "checks": [
+    {
+      "name": "clean install",
+      "command": "npm ci --ignore-scripts",
+      "status": "passed",
+      "evidence": "134 packages installed; npm audit reported 0 vulnerabilities."
+    },
+    {
+      "name": "full verification",
+      "command": "npm run verify",
+      "status": "passed",
+      "evidence": "Prettier, ESLint, TypeScript project build/typecheck, and Vitest all passed."
+    },
+    {
+      "name": "contract tests",
+      "command": "npm test",
+      "status": "passed",
+      "evidence": "2 test files and 13 tests passed, covering all eight schemas, rejection behavior, serialization/IDs, package facade, Spine target, and absence of compiler export."
+    },
+    {
+      "name": "deterministic build evidence",
+      "command": "clean/build/hash twice",
+      "status": "passed",
+      "evidence": "52 emitted files, excluding incremental metadata, had byte-identical SHA-256 hashes across two clean builds."
+    }
+  ],
+  "metrics": {
+    "schemaContracts": 8,
+    "testFilesPassed": 2,
+    "testsPassed": 13,
+    "emittedFilesCompared": 52,
+    "buildHashesIdentical": true,
+    "npmAuditVulnerabilities": 0
+  },
+  "compatibilityEvidence": [
+    "Spine 4.3 is recorded only as a target boundary; Gate 0 makes no claim that a compiler or serialized document is compatible.",
+    "Gate 1 requires official documentation/runtime evidence, a real editor export, a golden test, and CLI verification before accepting format behavior."
+  ],
+  "knownLimitations": [
+    "Fixture directories contain explicit README placeholders only because no engine behavior exists to generate honest artifacts in Gate 0.",
+    "Schemas enforce structural constraints but intentionally do not claim topology, hierarchy, weight-sum, or loop semantics.",
+    "There is no production CLI because Gate 0 has no real executable engine operation.",
+    "Spine coordinate, angle, omission, default-value, and patch-version conventions remain open Gate 1 questions."
+  ],
+  "risks": [
+    "IR schema 0.1 may need migration after a verified Spine export clarifies coordinate or attachment requirements.",
+    "A future Gate could accidentally leak target-specific fields into Core; ADRs and package-boundary tests are the current guardrails."
+  ],
+  "definitionOfDone": [
+    {
+      "criterion": "Repository and TypeScript workspace are reproducibly installable and buildable.",
+      "status": "passed",
+      "evidence": "package-lock.json exists; npm ci and two clean builds passed."
+    },
+    {
+      "criterion": "Format, lint, typecheck, test, build, and clean scripts exist and pass.",
+      "status": "passed",
+      "evidence": "npm run verify passed; clean/build determinism check passed."
+    },
+    {
+      "criterion": "Required repository documents and ADR-001 through ADR-006 exist and agree on boundaries.",
+      "status": "passed",
+      "evidence": "The documents consistently define engine-neutral Core, deterministic execution, AI as planner, Spine as adapter, CLI-first delivery, and deferred model selection."
+    },
+    {
+      "criterion": "Initial versioned IR types and runtime schemas exist and are tested.",
+      "status": "passed",
+      "evidence": "Eight registered schema contracts and 13 passing tests."
+    },
+    {
+      "criterion": "Gate 1 has an actionable research and implementation plan.",
+      "status": "passed",
+      "evidence": "docs/GATE_1_PLAN.md defines scope, research, tests, risks, DoD, and stop condition."
+    },
+    {
+      "criterion": "No Gate 1 or later product functionality is implemented.",
+      "status": "passed",
+      "evidence": "The Spine package exports only SPINE_COMPATIBILITY_TARGET; a test asserts compileSpine43 is absent. No AI, MCP, Skill, solver, preview, or GUI packages exist."
+    }
+  ],
+  "requestedJevDecision": "Evaluate the fixed Gate questions once. Approve only if every mandatory threshold in AUTOSPINE_DEVELOPMENT_WORKFLOW.md is met; otherwise identify the primary blocker.",
+  "jevReview": {
+    "date": "2026-09-23",
+    "model": "jev-1.13.0",
+    "decision": "APPROVED",
+    "decisionProbability": 0.88,
+    "thresholds": {
+      "scopeCompliant": 0.98,
+      "dodSatisfied": 0.94,
+      "testsCredible": 0.88,
+      "deterministicEvidence": 0.81,
+      "regressionSafe": 0.88,
+      "architectureCompliant": 0.97,
+      "evidenceQuality": 3.94,
+      "primaryBlocker": "NONE",
+      "primaryBlockerNoneProbability": 0.98
+    },
+    "usage": {
+      "inputTokens": 2702,
+      "outputTokens": 270
+    },
+    "policyResult": "All mandatory approval thresholds passed."
+  }
+}

@@ -261,26 +261,26 @@ primary_blocker.choice == NONE
 
 ## 6. Gate 路線圖與驗收門檻
 
-| Gate | 交付目標 | 主要驗證 | Jev 批准條件 | 建議模型 |
-|---|---|---|---|---|
-| 0 | Repository、工具鏈、架構、IR 初版、ADR、Gate 1 計畫 | 安裝、build、lint、test、Schema type check | 基礎結構可重現；文件一致；沒有 Gate 1 功能偷跑 | GPT-5.6 Sol High |
-| 1 | AutoSpine IR 到最小 Spine 4.3 JSON | Golden test；同 IR 重跑 100 次 | 最小 skeleton/bone/slot/skin/region/animation 可編譯；輸出一致；格式有可靠來源 | GPT-5.6 Sol High |
-| 2 | PNG Parts，再擴充 PSD 到 AssetSpec | Parser unit/integration tests；bounds 與 hierarchy fixtures | 解析結果可序列化、可驗證、順序穩定；不包含 AI Rigging | GPT-5.6 Sol High |
-| 3 | Tail alpha 到可變形 MeshSpec | Contour、simplification、triangulation 測試；Mesh Validator | 無非法 index、零面積三角形、自交或非預期斷裂；固定輸入固定輸出 | Astra 設計，Sol 實作 |
-| 4 | Deterministic ChainRigTemplate | 骨長、位置、旋轉、parent 單元測試 | start/end/boneCount 產出正確 chain；退化輸入有明確錯誤 | GPT-5.6 Sol High |
-| 5 | Weight Solver v1 | Sum、NaN、negative、top-K、orphan、smoothing tests | 每 vertex 有合法 influence；和為 1；最大 4；沒有假 Solver | Astra XHigh |
-| 6 | Tail deformation 與量化評估 | Root/middle/wave poses；inversion、stretch、tearing metrics | 指標門檻明確且通過；保存 baseline；具可檢視輸出 | Astra High/XHigh |
-| 7 | Arm fixture 與 elbow deformation | 0/30/60/90/120 度 regression | 無不可接受 collapse、inversion 或不連續；指標和視覺證據一致 | Astra High/XHigh |
-| 8 | Procedural Animation presets | 每個 preset 的輸出與 seed tests | wave、sway、breathing、bounce、float、rotateLoop、blink、followThrough、overshoot、squashStretch 由數值引擎生成 | GPT-5.6 Sol High |
-| 9 | 獨立 Curve Engine | Curve unit tests 與端點、單調性檢查 | linear、stepped、bezier、ease、overshoot 不與 preset 耦合 | GPT-5.6 Sol High |
-| 10 | Loop Validator | 首尾 translation/rotation/scale/deform 比較 | Loop Error Score 可重現；錯誤能指出 target 與 stage | GPT-5.6 Sol High |
-| 11 | 最小 Preview | 固定 frame 或 MP4 render integration test | Preview 能重現並對應同一 build manifest；不建立大型 GUI | GPT-5.6 Sol High |
-| 12 | Basic Humanoid Template | Hierarchy、對稱、fixture integration tests | 只含批准的基礎骨架；Tail 和 Arm regression 全過 | Sol 實作，Astra review |
-| 13 | Engine-neutral Constraints | IK、transform、path-like behavior tests | Core API 不暴露 Spine-specific constraint 結構；求解穩定 | Astra High |
-| 14 | AI Planner 到 Validated Spec | Structured output、schema rejection、fixture evals | AI 只能產生通過 Schema 的 Spec；無效輸出不得觸發 Core | GPT-5.6 Sol High |
-| 15 | Visual Critic 到 CorrectionSpec | 已知缺陷集、precision/recall 類 eval、no-direct-edit test | Critic 只提 CorrectionSpec；Core 決定重建；不直接改 geometry | Astra High |
-| 16 | MCP Adapter | Tool contract、error mapping、integration tests | 演算法留在 packages；MCP 只調用 Core API | GPT-5.6 Sol High |
-| 17 | AutoSpine Skill | Decision cases、tool policy、boundary review | Skill 是知識與規則；Core 不依賴 Skill；無重複 Engine 邏輯 | GPT-5.6 Sol High |
+| Gate | 交付目標                                            | 主要驗證                                                    | Jev 批准條件                                                                                                    | 建議模型               |
+| ---- | --------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| 0    | Repository、工具鏈、架構、IR 初版、ADR、Gate 1 計畫 | 安裝、build、lint、test、Schema type check                  | 基礎結構可重現；文件一致；沒有 Gate 1 功能偷跑                                                                  | GPT-5.6 Sol High       |
+| 1    | AutoSpine IR 到最小 Spine 4.3 JSON                  | Golden test；同 IR 重跑 100 次                              | 最小 skeleton/bone/slot/skin/region/animation 可編譯；輸出一致；格式有可靠來源                                  | GPT-5.6 Sol High       |
+| 2    | PNG Parts，再擴充 PSD 到 AssetSpec                  | Parser unit/integration tests；bounds 與 hierarchy fixtures | 解析結果可序列化、可驗證、順序穩定；不包含 AI Rigging                                                           | GPT-5.6 Sol High       |
+| 3    | Tail alpha 到可變形 MeshSpec                        | Contour、simplification、triangulation 測試；Mesh Validator | 無非法 index、零面積三角形、自交或非預期斷裂；固定輸入固定輸出                                                  | Astra 設計，Sol 實作   |
+| 4    | Deterministic ChainRigTemplate                      | 骨長、位置、旋轉、parent 單元測試                           | start/end/boneCount 產出正確 chain；退化輸入有明確錯誤                                                          | GPT-5.6 Sol High       |
+| 5    | Weight Solver v1                                    | Sum、NaN、negative、top-K、orphan、smoothing tests          | 每 vertex 有合法 influence；和為 1；最大 4；沒有假 Solver                                                       | Astra XHigh            |
+| 6    | Tail deformation 與量化評估                         | Root/middle/wave poses；inversion、stretch、tearing metrics | 指標門檻明確且通過；保存 baseline；具可檢視輸出                                                                 | Astra High/XHigh       |
+| 7    | Arm fixture 與 elbow deformation                    | 0/30/60/90/120 度 regression                                | 無不可接受 collapse、inversion 或不連續；指標和視覺證據一致                                                     | Astra High/XHigh       |
+| 8    | Procedural Animation presets                        | 每個 preset 的輸出與 seed tests                             | wave、sway、breathing、bounce、float、rotateLoop、blink、followThrough、overshoot、squashStretch 由數值引擎生成 | GPT-5.6 Sol High       |
+| 9    | 獨立 Curve Engine                                   | Curve unit tests 與端點、單調性檢查                         | linear、stepped、bezier、ease、overshoot 不與 preset 耦合                                                       | GPT-5.6 Sol High       |
+| 10   | Loop Validator                                      | 首尾 translation/rotation/scale/deform 比較                 | Loop Error Score 可重現；錯誤能指出 target 與 stage                                                             | GPT-5.6 Sol High       |
+| 11   | 最小 Preview                                        | 固定 frame 或 MP4 render integration test                   | Preview 能重現並對應同一 build manifest；不建立大型 GUI                                                         | GPT-5.6 Sol High       |
+| 12   | Basic Humanoid Template                             | Hierarchy、對稱、fixture integration tests                  | 只含批准的基礎骨架；Tail 和 Arm regression 全過                                                                 | Sol 實作，Astra review |
+| 13   | Engine-neutral Constraints                          | IK、transform、path-like behavior tests                     | Core API 不暴露 Spine-specific constraint 結構；求解穩定                                                        | Astra High             |
+| 14   | AI Planner 到 Validated Spec                        | Structured output、schema rejection、fixture evals          | AI 只能產生通過 Schema 的 Spec；無效輸出不得觸發 Core                                                           | GPT-5.6 Sol High       |
+| 15   | Visual Critic 到 CorrectionSpec                     | 已知缺陷集、precision/recall 類 eval、no-direct-edit test   | Critic 只提 CorrectionSpec；Core 決定重建；不直接改 geometry                                                    | Astra High             |
+| 16   | MCP Adapter                                         | Tool contract、error mapping、integration tests             | 演算法留在 packages；MCP 只調用 Core API                                                                        | GPT-5.6 Sol High       |
+| 17   | AutoSpine Skill                                     | Decision cases、tool policy、boundary review                | Skill 是知識與規則；Core 不依賴 Skill；無重複 Engine 邏輯                                                       | GPT-5.6 Sol High       |
 
 ## 7. 垂直切片與產品里程碑
 
@@ -437,26 +437,26 @@ Question to solve:
 
 ## 12. Gate 執行紀錄
 
-| Gate | 狀態 | 開始 | Developer Verify | Jev Decision | 備註 |
-|---|---|---|---|---|---|
-| 0 | NOT_STARTED | — | — | — | 第一個允許執行的 Gate |
-| 1 | NOT_STARTED | — | — | — | Gate 0 僅規劃，不實作 |
-| 2 | NOT_STARTED | — | — | — | 依賴 Gate 1 |
-| 3 | NOT_STARTED | — | — | — | 依賴 Gate 2 |
-| 4 | NOT_STARTED | — | — | — | 依賴 Gate 3 |
-| 5 | NOT_STARTED | — | — | — | 依賴 Gate 4 |
-| 6 | NOT_STARTED | — | — | — | Tail MVP 驗收點 |
-| 7 | NOT_STARTED | — | — | — | Arm MVP 驗收點 |
-| 8 | NOT_STARTED | — | — | — | 依賴 Joint baseline |
-| 9 | NOT_STARTED | — | — | — | 依賴 Gate 8 |
-| 10 | NOT_STARTED | — | — | — | 依賴 Gate 9 |
-| 11 | NOT_STARTED | — | — | — | Engine MVP 驗收點 |
-| 12 | NOT_STARTED | — | — | — | Tail + Arm 通過後才開始 |
-| 13 | NOT_STARTED | — | — | — | 依賴 Gate 12 |
-| 14 | NOT_STARTED | — | — | — | Core 成熟後才引入 AI |
-| 15 | NOT_STARTED | — | — | — | 依賴 Preview 與 AI Planner |
-| 16 | NOT_STARTED | — | — | — | MCP 僅作 Adapter |
-| 17 | NOT_STARTED | — | — | — | 最後建立 Skill |
+| Gate | 狀態        | 開始       | Developer Verify | Jev Decision  | 備註                       |
+| ---- | ----------- | ---------- | ---------------- | ------------- | -------------------------- |
+| 0    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.88 | Jev 1.13；Evidence 3.94/4  |
+| 1    | NOT_STARTED | —          | —                | —             | Gate 0 僅規劃，不實作      |
+| 2    | NOT_STARTED | —          | —                | —             | 依賴 Gate 1                |
+| 3    | NOT_STARTED | —          | —                | —             | 依賴 Gate 2                |
+| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3                |
+| 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                |
+| 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點            |
+| 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點             |
+| 8    | NOT_STARTED | —          | —                | —             | 依賴 Joint baseline        |
+| 9    | NOT_STARTED | —          | —                | —             | 依賴 Gate 8                |
+| 10   | NOT_STARTED | —          | —                | —             | 依賴 Gate 9                |
+| 11   | NOT_STARTED | —          | —                | —             | Engine MVP 驗收點          |
+| 12   | NOT_STARTED | —          | —                | —             | Tail + Arm 通過後才開始    |
+| 13   | NOT_STARTED | —          | —                | —             | 依賴 Gate 12               |
+| 14   | NOT_STARTED | —          | —                | —             | Core 成熟後才引入 AI       |
+| 15   | NOT_STARTED | —          | —                | —             | 依賴 Preview 與 AI Planner |
+| 16   | NOT_STARTED | —          | —                | —             | MCP 僅作 Adapter           |
+| 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill             |
 
 ## 13. 目前唯一允許的執行範圍
 
@@ -510,15 +510,11 @@ D:\Wayne\JevTest
   "changedFiles": ["..."],
   "assumptions": ["..."],
   "implementationSummary": "...",
-  "checks": [
-    { "name": "build", "status": "passed", "evidence": "..." }
-  ],
+  "checks": [{ "name": "build", "status": "passed", "evidence": "..." }],
   "metrics": {},
   "compatibilityEvidence": ["..."],
   "knownLimitations": ["..."],
-  "definitionOfDone": [
-    { "criterion": "...", "status": "passed", "evidence": "..." }
-  ]
+  "definitionOfDone": [{ "criterion": "...", "status": "passed", "evidence": "..." }]
 }
 ```
 

@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+package-lock.json
+_lesson_stills/
+_season3_materials/
+_season3_materials2/
+$out/
