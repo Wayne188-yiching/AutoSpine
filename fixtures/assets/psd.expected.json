@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "asset",
+  "id": "psd-test",
+  "name": "PSD Test",
+  "source": { "type": "psd", "path": "test.psd" },
+  "width": 10,
+  "height": 10,
+  "groups": [{ "id": "group-0", "name": "Body", "visible": false }],
+  "parts": [
+    {
+      "id": "layer-1",
+      "name": "Back",
+      "sourcePath": "test.psd#layer/1",
+      "bounds": { "x": 1, "y": 2, "width": 2, "height": 2 },
+      "pivotCandidate": [2, 3],
+      "drawOrder": 0,
+      "visible": true,
+      "alphaMask": { "width": 2, "height": 2, "encoding": "rle8", "runs": [4, 255] }
+    },
+    {
+      "id": "layer-0-0",
+      "name": "Front",
+      "sourcePath": "test.psd#layer/0/0",
+      "parentId": "group-0",
+      "bounds": { "x": 3, "y": 4, "width": 2, "height": 2 },
+      "pivotCandidate": [4.5, 4.5],
+      "drawOrder": 1,
+      "visible": true,
+      "alphaMask": { "width": 2, "height": 2, "encoding": "rle8", "runs": [1, 0, 1, 255, 2, 0] }
+    }
+  ]
+}

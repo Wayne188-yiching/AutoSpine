@@ -16,31 +16,46 @@ try {
   const sdkPath = resolve(sdkRoot, "node_modules/@typesafe-ai/sdk/dist/index.mjs");
   const { TypeSafeClient, choice, noul, score } = await import(pathToFileURL(sdkPath).href);
   const review = JSON.parse(await readFile(reviewPath, "utf8"));
-  if (review.gate !== 1 || review.jevReview)
-    throw new Error("Expected an unreviewed Gate 1 bundle");
+  if (![1, 2].includes(review.gate) || review.jevReview)
+    throw new Error("Expected an unreviewed Gate 1 or Gate 2 bundle");
+  const gate = review.gate;
+  const gateScope =
+    gate === 1
+      ? "the minimal Gate 1 Spine 4.0.64 slice"
+      : "Gate 2 PNG Parts and clean 8-bit RGB raster PSD parsing, without AI rigging";
+  const testScope =
+    gate === 1
+      ? "golden, runtime, CLI round-trip, and negative tests"
+      : "golden, parser, CLI smoke, negative, and prior-Gate regression tests";
+  const architectureScope =
+    gate === 1
+      ? "Spine-specific logic stay in the adapter and CLI stay thin"
+      : "asset parsing stay in the assets package, with CLI thin and Core/Spine adapter unchanged";
   const state = { ...review };
   delete state.jevAttempts;
   const result = await new TypeSafeClient().systemOne({
     state,
     questions: {
       verdict: choice(
-        "Should Gate 1 be accepted on the supplied evidence and stated narrow scope?",
+        `Should Gate ${gate} be accepted on the supplied evidence and stated narrow scope?`,
         {
-          APPROVED: "All required Gate 1 criteria are credibly met.",
+          APPROVED: `All required Gate ${gate} criteria are credibly met.`,
           REJECTED: "An in-scope implementation or test deficiency needs correction.",
           BLOCKED: "External input or authorization is required to decide.",
         },
       ),
-      scope_compliant: noul("Is implementation limited to the minimal Gate 1 Spine 4.0.64 slice?"),
-      dod_satisfied: noul("Are all Gate 1 definition-of-done items evidenced?"),
-      tests_credible: noul("Are golden, runtime, CLI round-trip, and negative tests credible?"),
+      scope_compliant: noul(`Is implementation limited to ${gateScope}?`),
+      dod_satisfied: noul(`Are all Gate ${gate} definition-of-done items evidenced?`),
+      tests_credible: noul(`Are ${testScope} credible?`),
       deterministic_evidence: noul(
-        "Does the 100-run exact serialization check support determinism?",
+        gate === 1
+          ? "Does the 100-run exact serialization check support determinism?"
+          : "Do repeated exact serialization checks and explicit ordering rules support determinism?",
       ),
-      regression_safe: noul("Are prior Gate 0 contracts and checks preserved?"),
-      architecture_compliant: noul(
-        "Does Spine-specific logic stay in the adapter and CLI stay thin?",
+      regression_safe: noul(
+        `Are prior Gate 0${gate === 2 ? " and Gate 1" : ""} contracts and checks preserved?`,
       ),
+      architecture_compliant: noul(`Does ${architectureScope}?`),
       evidence_quality: score("Rate the sufficiency and specificity of the evidence.", [
         "No usable evidence",
         "Weak evidence",

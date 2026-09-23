@@ -12,7 +12,7 @@ The deterministic Core must work without an AI model. AI may choose templates an
 
 ## Current status
 
-Gates 0 and 1 are approved. Gate 1 implements the minimal Spine 4.0.64 compiler and thin CLI, with a real editor-exported fixture, official 4.0 runtime load test, and Spine CLI round trip. Mesh generation, weight solving, AI, MCP, Skill, and GUI remain out of scope. Gate acceptance is tracked in the development workflow.
+Gates 0, 1, and 2 are approved. Gate 2 parses PNG Parts and clean raster PSDs into AssetSpec; Jev acceptance and limits are recorded in the development workflow and [Gate 2 review](docs/reviews/GATE_2_REVIEW.json). Mesh generation, weight solving, AI, MCP, Skill, and GUI remain out of scope.
 
 See:
 
@@ -37,6 +37,8 @@ npm run lint
 npm run test
 npm run verify
 npm run compile:minimal -- compile-minimal fixtures/spine/minimal/input.json output.json
+npm run parse:png -- path/to/png-parts output.json [manifest.json]
+npm run parse:psd -- path/to/layered.psd output.json
 ```
 
 ## Repository layout
@@ -44,12 +46,15 @@ npm run compile:minimal -- compile-minimal fixtures/spine/minimal/input.json out
 ```text
 packages/core/    Engine-neutral IR facade
 packages/spine/   Minimal Spine 4.0.64 adapter
-packages/cli/     Thin compile-minimal command
+packages/assets/  PNG Parts and PSD asset parsers
+packages/cli/     Thin file-based commands
 schemas/          Runtime schemas and inferred TypeScript types
 tests/            Cross-package validation tests
 fixtures/         Versioned test assets added gate by gate
 docs/adr/         Architecture decision records
 ```
+
+For PNG Parts, an optional manifest supplies canvas size, part positions, display dimensions, hierarchy and back-to-front `drawOrder`. Without one, only a deterministic flat import is possible: filenames sort by codepoint and positions default to `(0, 0)`. The parser never guesses the original composition. Both asset commands refuse to overwrite an existing output file; PSD source files are never modified. See [Gate 2 architecture](ARCHITECTURE.md#current-implementation-boundary) for supported PSD features and limits.
 
 ## License
 

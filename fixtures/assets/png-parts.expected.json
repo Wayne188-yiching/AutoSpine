@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "asset",
+  "id": "asset-test",
+  "name": "Test",
+  "source": { "type": "png-parts", "path": "assets/test" },
+  "width": 20,
+  "height": 20,
+  "groups": [{ "id": "character", "name": "Character" }],
+  "parts": [
+    {
+      "id": "back",
+      "name": "Back",
+      "sourcePath": "back.png",
+      "bounds": { "x": 1, "y": 2, "width": 2, "height": 2 },
+      "pivotCandidate": [2, 3],
+      "drawOrder": 0,
+      "parentId": "character",
+      "alphaMask": { "width": 2, "height": 2, "encoding": "rle8", "runs": [1, 255, 2, 0, 1, 255] }
+    },
+    {
+      "id": "front",
+      "name": "Front",
+      "sourcePath": "front.png",
+      "bounds": { "x": 3, "y": 5, "width": 4, "height": 4 },
+      "pivotCandidate": [6, 6],
+      "drawOrder": 1,
+      "parentId": "character",
+      "alphaMask": { "width": 2, "height": 2, "encoding": "rle8", "runs": [1, 0, 1, 255, 2, 0] }
+    }
+  ]
+}

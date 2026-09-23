@@ -16,7 +16,8 @@
     "paths": {
       "@autospine/core": ["./packages/core/src/index.ts"],
       "@autospine/schemas": ["./schemas/src/index.ts"],
-      "@autospine/spine": ["./packages/spine/src/index.ts"]
+      "@autospine/spine": ["./packages/spine/src/index.ts"],
+      "@autospine/assets": ["./packages/assets/src/index.ts"]
     }
   }
 }

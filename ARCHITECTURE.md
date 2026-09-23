@@ -41,26 +41,25 @@ Each schema is versioned, runtime-validatable, statically typed, serializable, a
 
 ## Package responsibilities
 
-| Location         | Responsibility                                                              |
-| ---------------- | --------------------------------------------------------------------------- |
-| `schemas`        | Runtime schemas and TypeScript types for the IR                             |
-| `packages/core`  | Stable engine-neutral facade over the IR and future deterministic engines   |
-| `packages/spine` | Spine-specific adapter; Gate 1 minimal 4.0.64 compiler                      |
-| `tests`          | Cross-package contracts and runtime schema checks                           |
-| `fixtures`       | Small, reviewable inputs and golden outputs introduced by their owning Gate |
+| Location          | Responsibility                                                              |
+| ----------------- | --------------------------------------------------------------------------- |
+| `schemas`         | Runtime schemas and TypeScript types for the IR                             |
+| `packages/core`   | Stable engine-neutral facade over the IR and future deterministic engines   |
+| `packages/assets` | Gate 2 PNG Parts and clean raster PSD parsers into AssetSpec                |
+| `packages/spine`  | Spine-specific adapter; Gate 1 minimal 4.0.64 compiler                      |
+| `packages/cli`    | Thin file-based commands that call the packages                             |
+| `tests`           | Cross-package contracts and runtime schema checks                           |
+| `fixtures`        | Small, reviewable inputs and golden outputs introduced by their owning Gate |
 
 ## Dependency direction
 
 ```text
-schemas
-   ^
-   |
-core
-   ^
-   |
-spine adapter
+schemas <- core
+schemas <- assets
+schemas <- spine adapter
+assets + spine adapter <- CLI
 
-AI / MCP / Skill -> core
+AI / MCP / Skill -> core (future Gates)
 ```
 
 Future engine packages may depend on `schemas` and approved lower-level engine contracts. Circular dependencies and manager-style catch-all services are prohibited.
@@ -81,4 +80,6 @@ Spine 4.0.64 is the first compatibility target. Gate 1 evidence combines officia
 
 ## Current implementation boundary
 
-Gate 1 adds only the minimal Spine compiler, validator, and thin CLI. Geometry, weighting, constraints, procedural animation generation, AI, MCP, Skill, preview rendering, and GUI behavior remain intentionally absent.
+Gate 2 adds only asset parsing. PNG Parts can use a manifest for canvas dimensions, layer order, display dimensions, and hierarchy; without a manifest, filenames are sorted and positions default to zero because a directory has no composition metadata. Clean 8-bit RGB raster PSDs preserve top-to-bottom layer identity, group hierarchy, visibility, bounds, and alpha. `AssetSpec.drawOrder` is zero for the backmost part. `alphaMask` is exact 8-bit alpha in run-length encoding; `pivotCandidate` is the center of the nonzero-alpha bounds, scaled into display coordinates, not an inferred anatomical joint. PSD part `sourcePath` uses `<source.psd>#layer/<index-path>` as a stable source reference, not an extracted PNG path. No source image is changed.
+
+Text, adjustment, vector, masked, effected, blended, clipped, non-8-bit and non-RGB PSD layers are rejected rather than silently flattened. Geometry, weighting, constraints, procedural animation generation, AI, MCP, Skill, preview rendering, and GUI behavior remain absent.

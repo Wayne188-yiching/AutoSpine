@@ -437,32 +437,32 @@ Question to solve:
 
 ## 12. Gate 執行紀錄
 
-| Gate | 狀態        | 開始       | Developer Verify | Jev Decision  | 備註                                                             |
-| ---- | ----------- | ---------- | ---------------- | ------------- | ---------------------------------------------------------------- |
-| 0    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.88 | Jev 1.13；Evidence 3.94/4                                        |
-| 1    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.97 | Spine 4.0.64；18 tests、100 runs、Runtime/CLI 通過；Jev 複審核准 |
-| 2    | NOT_STARTED | —          | —                | —             | 依賴 Gate 1                                                      |
-| 3    | NOT_STARTED | —          | —                | —             | 依賴 Gate 2                                                      |
-| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3                                                      |
-| 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                                                      |
-| 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點                                                  |
-| 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點                                                   |
-| 8    | NOT_STARTED | —          | —                | —             | 依賴 Joint baseline                                              |
-| 9    | NOT_STARTED | —          | —                | —             | 依賴 Gate 8                                                      |
-| 10   | NOT_STARTED | —          | —                | —             | 依賴 Gate 9                                                      |
-| 11   | NOT_STARTED | —          | —                | —             | Engine MVP 驗收點                                                |
-| 12   | NOT_STARTED | —          | —                | —             | Tail + Arm 通過後才開始                                          |
-| 13   | NOT_STARTED | —          | —                | —             | 依賴 Gate 12                                                     |
-| 14   | NOT_STARTED | —          | —                | —             | Core 成熟後才引入 AI                                             |
-| 15   | NOT_STARTED | —          | —                | —             | 依賴 Preview 與 AI Planner                                       |
-| 16   | NOT_STARTED | —          | —                | —             | MCP 僅作 Adapter                                                 |
-| 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill                                                   |
+| Gate | 狀態        | 開始       | Developer Verify | Jev Decision  | 備註                                                               |
+| ---- | ----------- | ---------- | ---------------- | ------------- | ------------------------------------------------------------------ |
+| 0    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.88 | Jev 1.13；Evidence 3.94/4                                          |
+| 1    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.97 | Spine 4.0.64；18 tests、100 runs、Runtime/CLI 通過；Jev 複審核准   |
+| 2    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | PNG Parts 與 8-bit RGB PSD → AssetSpec；25 tests；Jev 2,739 tokens |
+| 3    | NOT_STARTED | —          | —                | —             | 依賴 Gate 2                                                        |
+| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3                                                        |
+| 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                                                        |
+| 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點                                                    |
+| 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點                                                     |
+| 8    | NOT_STARTED | —          | —                | —             | 依賴 Joint baseline                                                |
+| 9    | NOT_STARTED | —          | —                | —             | 依賴 Gate 8                                                        |
+| 10   | NOT_STARTED | —          | —                | —             | 依賴 Gate 9                                                        |
+| 11   | NOT_STARTED | —          | —                | —             | Engine MVP 驗收點                                                  |
+| 12   | NOT_STARTED | —          | —                | —             | Tail + Arm 通過後才開始                                            |
+| 13   | NOT_STARTED | —          | —                | —             | 依賴 Gate 12                                                       |
+| 14   | NOT_STARTED | —          | —                | —             | Core 成熟後才引入 AI                                               |
+| 15   | NOT_STARTED | —          | —                | —             | 依賴 Preview 與 AI Planner                                         |
+| 16   | NOT_STARTED | —          | —                | —             | MCP 僅作 Adapter                                                   |
+| 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill                                                     |
 
-Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。當時 Codex 的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1 細目見 `docs/reviews/GATE_1_REVIEW.json`。
+Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）；Gate 2 的 Jev 審查為 2,739 tokens（input 2,469、output 270）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。Codex 的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1、2 細目見 `docs/reviews/GATE_1_REVIEW.json` 與 `docs/reviews/GATE_2_REVIEW.json`。
 
 ## 13. Gate 0 歷史範圍與下階段規則
 
-Gate 0 與 Gate 1 均已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate；下一 Gate 仍須由使用者啟動：
+Gate 0～2 均已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate；下一 Gate 仍須由使用者啟動：
 
 1. 建立 Repository 與 TypeScript workspace。
 2. 建立 lint、formatter、test、build scripts。

@@ -109,6 +109,7 @@ Generated setup pose == source composition
 Engine 規則：
 
 - Asset Parser 必須保存來源 draw order。
+- Gate 2 PSD parser 將 Photoshop top-to-bottom 圖層轉為 AssetSpec back-to-front `drawOrder`（0 為最底層）；PNG 資料夾本身沒有原始圖層順序，必須有 manifest 才能宣稱保存構圖，否則僅提供固定檔名順序。
 - Rig 推定不得因重新 parenting 而改變 Slot order。
 - Animation Engine 只有在明確的 `DrawOrderMotion` 中才能改變 draw order。
 
@@ -136,6 +137,7 @@ Engine 規則：
 - 為節省貼圖而縮小 PNG 時，不能把 skeleton display size 一起縮小。
 - 所有 texture-space 到 world-space 的換算必須顯式使用 scale。
 - X/Y scale 差異過大應報告為可能的 stale manifest 或錯誤圖片。
+- Gate 2 的 `alphaMask` 保存 8-bit alpha；display bounds 可與貼圖像素尺寸不同。`pivotCandidate` 是可重現的非透明像素外框中心，不代表關節位置。PSD 特殊合成與圖層效果不在本 Gate 支援範圍，遇到時明確拒絕。
 
 ### 5.3 命名只提供提示
 

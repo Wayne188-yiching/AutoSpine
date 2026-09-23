@@ -11,6 +11,7 @@
     "clean": "tsc -b --clean"
   },
   "dependencies": {
+    "@autospine/assets": "0.0.0",
     "@autospine/spine": "0.0.0"
   }
 }
