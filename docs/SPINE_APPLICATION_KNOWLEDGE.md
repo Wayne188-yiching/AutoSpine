@@ -232,7 +232,7 @@ Alpha mask
 - disconnected deform region
 - setup pose coverage 明顯不足
 
-Gate 3 的暫行可驗證範圍：以非零 alpha 的單一 4-connected 區塊做像素邊界輪廓，精確移除共線點；`MeshSpec.hull` 保存可能凹陷的有序外輪廓，UV 對應完整原始 PNG 像素尺寸。真實素材若有微小孤立像素、角點 pinch 或單像素孔洞，只有呼叫者提供明確的總變更比例上限時才做前處理，並回報各類變更數量；超限即拒絕。這不是關節感知拓樸、權重或 Spine 4.0.64 mesh 格式驗證。
+Gate 3 的暫行可驗證範圍：以非零 alpha 的單一 4-connected 區塊做像素邊界輪廓，精確移除共線點；Gate 3.1 再加入有界輪廓簡化（一般素材前景漏覆與背景多覆各 ≤1%，長形低頂點素材各 ≤2%）、沿主軸的五個內部中線點，以及改善最小三角形角度的內部邊翻轉。`MeshSpec.hull` 保存可能凹陷的有序外輪廓，UV 對應完整原始 PNG 像素尺寸。真實素材若有微小孤立像素、角點 pinch 或單像素孔洞，只有呼叫者提供明確的總變更比例上限時才做前處理，並回報各類變更數量；超限即拒絕。這不是關節感知拓樸、權重、變形品質或 Spine 4.0.64 mesh 格式驗證。
 
 ## 8. Weights
 
@@ -634,3 +634,7 @@ Jev 使用量：8,807 input tokens、248 output tokens。所有集中式開發�
 ### Gate 3 — Tail MeshSpec
 
 2026-09-23，`jev-1.13.0` 決定 `APPROVED`：批准機率 0.98、證據品質 3.95/4。範圍是 deterministic、單一外輪廓的 MeshSpec 與獨立拓樸驗證；私有尾巴素材只作唯讀驗證，未提交。完整證據與仍待 Gate 6 進行的變形品質測試見 [GATE_3_REVIEW.json](reviews/GATE_3_REVIEW.json)。
+
+### Gate 3.1 — Tail Mesh 品質修正
+
+2026-09-23，`jev-1.13.0` 複審決定 `APPROVED`：批准機率 0.95、證據品質 3.84/4。對照使用者提供的 Spine 截圖（23 頂點）後，私有尾巴輸出降至 24 頂點與 27 個三角形，內部沿尾巴中線佈點；這仍不是逐頂點還原或動畫變形驗收。數據與範圍見 [GATE_3_1_REVIEW.json](reviews/GATE_3_1_REVIEW.json)。

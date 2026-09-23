@@ -267,6 +267,7 @@ primary_blocker.choice == NONE
 | 1    | AutoSpine IR 到最小 Spine 4.0.64 JSON               | Golden test；同 IR 重跑 100 次                              | 最小 skeleton/bone/slot/skin/region/animation 可編譯；輸出一致；格式有可靠來源                                  | GPT-5.6 Sol High       |
 | 2    | PNG Parts，再擴充 PSD 到 AssetSpec                  | Parser unit/integration tests；bounds 與 hierarchy fixtures | 解析結果可序列化、可驗證、順序穩定；不包含 AI Rigging                                                           | GPT-5.6 Sol High       |
 | 3    | Tail alpha 到可變形 MeshSpec                        | Contour、simplification、triangulation 測試；Mesh Validator | 無非法 index、零面積三角形、自交或非預期斷裂；固定輸入固定輸出                                                  | Astra 設計，Sol 實作   |
+| 3.1  | Tail Mesh 參考佈線與頂點預算                        | Spine 23 頂點參考、輪廓覆蓋率、內部中線、回歸測試           | 維持合法與確定性；長形素材輪廓漏覆／多覆各 ≤2%；尾巴頂點數接近人工參考                                          | Sol 實作，Jev 驗收     |
 | 4    | Deterministic ChainRigTemplate                      | 骨長、位置、旋轉、parent 單元測試                           | start/end/boneCount 產出正確 chain；退化輸入有明確錯誤                                                          | GPT-5.6 Sol High       |
 | 5    | Weight Solver v1                                    | Sum、NaN、negative、top-K、orphan、smoothing tests          | 每 vertex 有合法 influence；和為 1；最大 4；沒有假 Solver                                                       | Astra XHigh            |
 | 6    | Tail deformation 與量化評估                         | Root/middle/wave poses；inversion、stretch、tearing metrics | 指標門檻明確且通過；保存 baseline；具可檢視輸出                                                                 | Astra High/XHigh       |
@@ -443,7 +444,8 @@ Question to solve:
 | 1    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.97 | Spine 4.0.64；18 tests、100 runs、Runtime/CLI 通過；Jev 複審核准            |
 | 2    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | PNG Parts 與 8-bit RGB PSD → AssetSpec；25 tests；Jev 2,739 tokens          |
 | 3    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.98 | Tail alpha → MeshSpec；34 tests；實際 Tail.png 100 次一致；Jev 3,342 tokens |
-| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3                                                                 |
+| 3.1  | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | 參考 23 頂點；實測 24 頂點／27 三角形；35 tests；Jev 5,290 tokens           |
+| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3.1                                                               |
 | 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                                                                 |
 | 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點                                                             |
 | 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點                                                              |
@@ -458,7 +460,7 @@ Question to solve:
 | 16   | NOT_STARTED | —          | —                | —             | MCP 僅作 Adapter                                                            |
 | 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill                                                              |
 
-Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）；Gate 2 的 Jev 審查為 2,739 tokens（input 2,469、output 270）；Gate 3 的 Jev 審查為 3,342 tokens（input 3,072、output 270）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。Codex 主代理與 Gate 3 Astra 子代理的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1～3 細目見 `docs/reviews/GATE_1_REVIEW.json`、`docs/reviews/GATE_2_REVIEW.json` 與 `docs/reviews/GATE_3_REVIEW.json`。
+Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）；Gate 2 的 Jev 審查為 2,739 tokens（input 2,469、output 270）；Gate 3 的 Jev 審查為 3,342 tokens（input 3,072、output 270）；Gate 3.1 的兩次 Jev 審查共 5,290 tokens（input 4,750、output 540）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。Codex 主代理與 Gate 3 Astra 子代理的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1～3.1 細目見 `docs/reviews/GATE_1_REVIEW.json`、`docs/reviews/GATE_2_REVIEW.json`、`docs/reviews/GATE_3_REVIEW.json` 與 `docs/reviews/GATE_3_1_REVIEW.json`。
 
 ### Gate 3 執行基線（Jev 已核准）
 
@@ -469,9 +471,16 @@ Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、outpu
 - 私有實測素材選用喵助 `Tail.png`（294×530，SHA-256 `B62426BE390AD824DB5A691C63B9E38A61DB52405BD5AF105164C2E48BF8B7F6`），不提交原圖或導出網格。0.5% 總變更預算下排除孤立像素 154、補角點 1、補 5 個單像素孔洞，產生 1,214 vertices／1,476 triangles，最小／最大三角形面積 0.5／504 pixel²；100 次額外產生的序列化完全相同。此結果是結構與確定性證據，不宣稱已有藝術品質或變形驗收。
 - 未涵蓋：骨骼、權重、關節感知拓樸、動畫、Spine mesh 序列化與正式視覺 Preview；這些必須留待後續 Gate。
 
+### Gate 3.1 Mesh 參考佈線修正（Jev 複審核准）
+
+- 使用者提供的 Spine 尾巴截圖顯示 23 個頂點、稀疏外輪廓與沿尾巴走向的內部頂點。首次 334 頂點版本雖獲 Jev 初審核准，對照此參考仍過密，因此以同一 Gate 複審，並保留初審紀錄。
+- 使用同一張私有喵助 `Tail.png` 與同一個 0.5% alpha 前處理預算，輪廓由 950 降至 19 個頂點，內部採五個等距截面中點；總頂點由 1,214 降至 24，三角形由 1,476 降至 27。新網格獨立拓樸驗證通過，100 次額外生成完全一致。
+- 閉合輪廓簡化有自交防護；修正後 81,641 個前景像素中漏覆 1,297（1.589%），多覆背景 306（0.375%），各低於長形低頂點素材的 2% 門檻。27 個三角形都沒有小於 10° 的最小角；最大面積 5,565.625 pixel²。前後對照圖已本機檢查，私有原圖、參考截圖與導出圖／網格均不提交。
+- 可攜的 240×320 曲線素材測試驗證 ≤32 頂點、至少五個內部點、輪廓覆蓋率、三角形品質與固定輸出；全套 35 tests 通過。這仍是靜態 MeshSpec，並非與人工 23 頂點專案逐頂點相同，也不宣稱骨骼彎曲品質或 Spine 編輯器驗收；Gate 6 才驗證動態變形。完整證據見 `docs/reviews/GATE_3_1_REVIEW.json`。
+
 ## 13. Gate 0 歷史範圍與下階段規則
 
-Gate 0～3 均已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate；下一 Gate 仍須由使用者啟動：
+Gate 0～3.1 均已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate；下一 Gate 仍須由使用者啟動：
 
 1. 建立 Repository 與 TypeScript workspace。
 2. 建立 lint、formatter、test、build scripts。

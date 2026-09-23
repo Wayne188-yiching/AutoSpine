@@ -12,7 +12,7 @@ The deterministic Core must work without an AI model. AI may choose templates an
 
 ## Current status
 
-Gates 0 through 3 are approved. Gate 3 adds a deterministic Tail alpha-to-MeshSpec engine; its evidence and limits are in the [Gate 3 review](docs/reviews/GATE_3_REVIEW.json). Weight solving, AI, MCP, Skill, and GUI remain out of scope. Gate status and acceptance live in the [development workflow](AUTOSPINE_DEVELOPMENT_WORKFLOW.md).
+Gates 0 through 3.1 are approved. Gate 3 adds a deterministic Tail alpha-to-MeshSpec engine, and Gate 3.1 reduces silhouette density and skinny fan triangles without claiming animated deformation quality. Evidence and limits are in the [Gate 3 review](docs/reviews/GATE_3_REVIEW.json) and [Gate 3.1 review](docs/reviews/GATE_3_1_REVIEW.json). Weight solving, AI, MCP, Skill, and GUI remain out of scope. Gate status and acceptance live in the [development workflow](AUTOSPINE_DEVELOPMENT_WORKFLOW.md).
 
 See:
 

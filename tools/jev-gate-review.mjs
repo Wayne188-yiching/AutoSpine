@@ -16,27 +16,33 @@ try {
   const sdkPath = resolve(sdkRoot, "node_modules/@typesafe-ai/sdk/dist/index.mjs");
   const { TypeSafeClient, choice, noul, score } = await import(pathToFileURL(sdkPath).href);
   const review = JSON.parse(await readFile(reviewPath, "utf8"));
-  if (![1, 2, 3].includes(review.gate) || review.jevReview)
-    throw new Error("Expected an unreviewed Gate 1, 2, or 3 bundle");
+  if (![1, 2, 3, 3.1].includes(review.gate) || review.jevReview)
+    throw new Error("Expected an unreviewed Gate 1, 2, 3, or 3.1 bundle");
   const gate = review.gate;
   const gateScope =
     gate === 1
       ? "the minimal Gate 1 Spine 4.0.64 slice"
       : gate === 2
         ? "Gate 2 PNG Parts and clean 8-bit RGB raster PSD parsing, without AI rigging"
-        : "Gate 3 tail alpha-to-MeshSpec topology, without rigging, weights, or Spine mesh output";
+        : gate === 3.1
+          ? "Gate 3.1 low-vertex tail topology guided by the user's 23-vertex Spine screenshot, without bones, weights, or deformation claims"
+          : "Gate 3 tail alpha-to-MeshSpec topology, without rigging, weights, or Spine mesh output";
   const testScope =
     gate === 1
       ? "golden, runtime, CLI round-trip, and negative tests"
       : gate === 2
         ? "golden, parser, CLI smoke, negative, and prior-Gate regression tests"
-        : "golden, independent topology mutation, private real-tail smoke, determinism, and prior-Gate regression tests";
+        : gate === 3.1
+          ? "portable curved-art coverage and 32-vertex cap regression, independent topology checks, private 24-vertex Tail.png metrics, 100-run determinism, and prior-Gate regression tests"
+          : "golden, independent topology mutation, private real-tail smoke, determinism, and prior-Gate regression tests";
   const architectureScope =
     gate === 1
       ? "Spine-specific logic stay in the adapter and CLI stay thin"
       : gate === 2
         ? "asset parsing stay in the assets package, with CLI thin and Core/Spine adapter unchanged"
-        : "geometry stay in the mesh package, CLI stay thin, and prior packages remain engine-neutral";
+        : gate === 3.1
+          ? "the refinement stay in the deterministic mesh package, preserve the MeshSpec contract, and leave other engines unchanged"
+          : "geometry stay in the mesh package, CLI stay thin, and prior packages remain engine-neutral";
   const state = { ...review };
   delete state.jevAttempts;
   const result = await new TypeSafeClient().systemOne({
@@ -61,7 +67,7 @@ try {
             : "Do 100-run exact output checks for synthetic and real-tail inputs support determinism?",
       ),
       regression_safe: noul(
-        `Are prior Gate ${gate === 1 ? "0" : gate === 2 ? "0 and Gate 1" : "0, Gate 1, and Gate 2"} contracts and checks preserved?`,
+        `Are prior Gate ${gate === 1 ? "0" : gate === 2 ? "0 and Gate 1" : gate === 3.1 ? "0, Gate 1, Gate 2, and Gate 3" : "0, Gate 1, and Gate 2"} contracts and checks preserved?`,
       ),
       architecture_compliant: noul(`Does ${architectureScope}?`),
       evidence_quality: score("Rate the sufficiency and specificity of the evidence.", [

@@ -12,6 +12,144 @@ export function signedArea2(points: Point[]): number {
   return area;
 }
 
+function distanceToSegment2(point: Point, a: Point, b: Point): number {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const fraction =
+    dx === 0 && dy === 0
+      ? 0
+      : Math.max(
+          0,
+          Math.min(1, ((point[0] - a[0]) * dx + (point[1] - a[1]) * dy) / (dx * dx + dy * dy)),
+        );
+  const x = a[0] + fraction * dx - point[0];
+  const y = a[1] + fraction * dy - point[1];
+  return x * x + y * y;
+}
+
+function simplifyArc(points: Point[], start: number, end: number, tolerance2: number): number[] {
+  let farthest = -1;
+  let distance = tolerance2;
+  for (let index = start + 1; index < end; index++) {
+    const current = distanceToSegment2(points[index]!, points[start]!, points[end]!);
+    if (current > distance) {
+      distance = current;
+      farthest = index;
+    }
+  }
+  if (farthest < 0) return [start, end];
+  return [
+    ...simplifyArc(points, start, farthest, tolerance2).slice(0, -1),
+    ...simplifyArc(points, farthest, end, tolerance2),
+  ];
+}
+
+function segmentsCross(a: Point, b: Point, c: Point, d: Point): boolean {
+  const cross = (p: Point, q: Point, r: Point): number =>
+    (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  const abC = cross(a, b, c);
+  const abD = cross(a, b, d);
+  const cdA = cross(c, d, a);
+  const cdB = cross(c, d, b);
+  const onSegment = (p: Point, q: Point, r: Point): boolean =>
+    r[0] >= Math.min(p[0], q[0]) &&
+    r[0] <= Math.max(p[0], q[0]) &&
+    r[1] >= Math.min(p[1], q[1]) &&
+    r[1] <= Math.max(p[1], q[1]);
+  return (
+    (abC === 0 && onSegment(a, b, c)) ||
+    (abD === 0 && onSegment(a, b, d)) ||
+    (cdA === 0 && onSegment(c, d, a)) ||
+    (cdB === 0 && onSegment(c, d, b)) ||
+    (((abC > 0 && abD < 0) || (abC < 0 && abD > 0)) &&
+      ((cdA > 0 && cdB < 0) || (cdA < 0 && cdB > 0)))
+  );
+}
+
+function isSimple(points: Point[]): boolean {
+  for (let left = 0; left < points.length; left++) {
+    const a = points[left]!;
+    const b = points[(left + 1) % points.length]!;
+    for (let right = left + 2; right < points.length; right++) {
+      if (left === 0 && right === points.length - 1) continue;
+      if (segmentsCross(a, b, points[right]!, points[(right + 1) % points.length]!)) return false;
+    }
+  }
+  return true;
+}
+
+function withinRasterBudget(
+  simplified: Point[],
+  alpha: Uint8Array,
+  width: number,
+  height: number,
+  maxDifference: number,
+): boolean {
+  let foreground = 0;
+  let missed = 0;
+  let added = 0;
+  for (let y = 0; y < height; y++) {
+    const intersections: number[] = [];
+    for (let index = 0; index < simplified.length; index++) {
+      const a = simplified[index]!;
+      const b = simplified[(index + 1) % simplified.length]!;
+      if (a[1] > y + 0.5 !== b[1] > y + 0.5)
+        intersections.push(a[0] + ((y + 0.5 - a[1]) * (b[0] - a[0])) / (b[1] - a[1]));
+    }
+    intersections.sort((a, b) => a - b);
+    const covered = new Uint8Array(width);
+    for (let index = 0; index + 1 < intersections.length; index += 2) {
+      const start = Math.max(0, Math.ceil(intersections[index]! - 0.5));
+      const end = Math.min(width, Math.ceil(intersections[index + 1]! - 0.5));
+      covered.fill(1, start, end);
+    }
+    for (let x = 0; x < width; x++) {
+      const filled = alpha[y * width + x]! > 0;
+      const inside = covered[x]! > 0;
+      if (filled) foreground++;
+      if (filled && !inside) missed++;
+      if (!filled && inside) added++;
+    }
+  }
+  return missed / foreground <= maxDifference && added / foreground <= maxDifference;
+}
+
+/** Simplify the closed outline without crossing edges or exceeding the raster-change budget. */
+export function simplifyContour(
+  outline: Point[],
+  alpha: Uint8Array,
+  width: number,
+  height: number,
+  lowPoly: boolean,
+): Point[] {
+  const tolerance = lowPoly
+    ? Math.min(6, Math.sqrt(width * height) / 50)
+    : Math.min(1.5, Math.sqrt(width * height) / 100);
+  if (tolerance < 0.5 || outline.length < 8) return outline;
+  let opposite = 1;
+  for (let index = 2; index < outline.length; index++) {
+    const current = distanceToSegment2(outline[index]!, outline[0]!, outline[0]!);
+    const previous = distanceToSegment2(outline[opposite]!, outline[0]!, outline[0]!);
+    if (current > previous) opposite = index;
+  }
+  const ring = [...outline, outline[0]!];
+  for (let attempt = tolerance; attempt >= 0.5; attempt *= 0.75) {
+    const indices = [
+      ...simplifyArc(ring, 0, opposite, attempt * attempt).slice(0, -1),
+      ...simplifyArc(ring, opposite, outline.length, attempt * attempt).slice(0, -1),
+    ];
+    const simplified = indices.map((index) => ring[index]!);
+    if (
+      simplified.length >= 3 &&
+      signedArea2(simplified) > 0 &&
+      isSimple(simplified) &&
+      withinRasterBudget(simplified, alpha, width, height, lowPoly ? 0.02 : 0.01)
+    )
+      return simplified;
+  }
+  return outline;
+}
+
 /** Explicitly keep one connected region; callers receive exact dropped-pixel counts. */
 export function selectPrimaryComponent(
   alpha: Uint8Array,

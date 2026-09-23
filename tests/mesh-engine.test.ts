@@ -41,6 +41,45 @@ function codes(mesh: unknown): string[] {
   return validateMeshSpec(mesh).issues.map((entry) => entry.code);
 }
 
+function insidePolygon(points: [number, number][], x: number, y: number): boolean {
+  let inside = false;
+  for (let index = 0; index < points.length; index++) {
+    const a = points[index]!;
+    const b = points[(index + 1) % points.length]!;
+    if (a[1] > y !== b[1] > y) {
+      const edgeX = a[0] + ((y - a[1]) * (b[0] - a[0])) / (b[1] - a[1]);
+      if (edgeX > x) inside = !inside;
+    }
+  }
+  return inside;
+}
+
+function minimumTriangleAngle(mesh: MeshSpec, index: number): number {
+  const points = mesh.triangles.slice(index, index + 3).map((vertex) => mesh.vertices[vertex]!);
+  const sides = [
+    Math.hypot(points[1]![0] - points[2]![0], points[1]![1] - points[2]![1]),
+    Math.hypot(points[2]![0] - points[0]![0], points[2]![1] - points[0]![1]),
+    Math.hypot(points[0]![0] - points[1]![0], points[0]![1] - points[1]![1]),
+  ];
+  return Math.min(
+    ...sides.map(
+      (side, corner) =>
+        (Math.acos(
+          Math.max(
+            -1,
+            Math.min(
+              1,
+              (sides[(corner + 1) % 3]! ** 2 + sides[(corner + 2) % 3]! ** 2 - side ** 2) /
+                (2 * sides[(corner + 1) % 3]! * sides[(corner + 2) % 3]!),
+            ),
+          ),
+        ) *
+          180) /
+        Math.PI,
+    ),
+  );
+}
+
 describe("Gate 3 deterministic mesh engine", () => {
   it("meshes a tapered curved tail with internal vertices and byte-identical output", () => {
     const input = part([
@@ -105,6 +144,47 @@ describe("Gate 3 deterministic mesh engine", () => {
       );
     }
     expect(largest).toBeLessThanOrEqual(512);
+  });
+
+  it("simplifies a large curved silhouette and avoids fan-like skinny triangles", () => {
+    const width = 240;
+    const height = 320;
+    const rows = Array.from({ length: height }, (_, y) => {
+      const offset = (y + 0.5 - height / 2) / (height / 2);
+      const radius = 70 * Math.sqrt(1 - offset * offset);
+      const center = width / 2 + 24 * Math.sin(y / 70);
+      return Array.from({ length: width }, (_, x) =>
+        Math.abs(x + 0.5 - center) <= radius ? "#" : ".",
+      ).join("");
+    });
+    const input = part(rows);
+    const exact = traceContour(input.alpha, width, height);
+    const mesh = generateMesh(input.source, input.alpha);
+    expect(validateMeshSpec(mesh).status).toBe("passed");
+    expect(mesh.hull.length).toBeLessThan(exact.length / 3);
+    expect(mesh.vertices.length).toBeLessThanOrEqual(32);
+    expect(mesh.vertices.length - mesh.hull.length).toBeGreaterThanOrEqual(5);
+    const hull = mesh.hull.map((index) => mesh.vertices[index]!);
+    let foreground = 0;
+    let missed = 0;
+    let added = 0;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const filled = input.alpha[y * width + x]! > 0;
+        const covered = insidePolygon(hull, x + 0.5, y + 0.5);
+        if (filled) foreground++;
+        if (filled && !covered) missed++;
+        if (!filled && covered) added++;
+      }
+    }
+    expect(missed / foreground).toBeLessThanOrEqual(0.02);
+    expect(added / foreground).toBeLessThanOrEqual(0.02);
+    const smallAngles = Array.from(
+      { length: mesh.triangles.length / 3 },
+      (_, index) => minimumTriangleAngle(mesh, index * 3) < 10,
+    ).filter(Boolean).length;
+    expect(smallAngles / (mesh.triangles.length / 3)).toBeLessThan(0.1);
+    expect(JSON.stringify(generateMesh(input.source, input.alpha))).toBe(JSON.stringify(mesh));
   });
 
   it("rejects empty, disconnected, diagonal-touching, and holed alpha", () => {

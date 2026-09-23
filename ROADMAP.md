@@ -11,6 +11,7 @@ The authoritative Gate rules and status live in [AUTOSPINE_DEVELOPMENT_WORKFLOW.
 ## Tail vertical slice
 
 - Gate 3 — Tail mesh generation
+- Gate 3.1 — Tail mesh density and triangle quality refinement
 - Gate 4 — Deterministic chain rig
 - Gate 5 — Weight Solver v1
 - Gate 6 — Tail deformation metrics and regression

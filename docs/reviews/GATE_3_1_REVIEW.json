@@ -1,0 +1,143 @@
+{
+  "project": "AutoSpine",
+  "gate": 3.1,
+  "objective": "Refine Gate 3 MeshSpec topology against the user's Spine tail reference: about 23 vertices, sparse outline and five centerline points, without overstating static or deformation quality.",
+  "statusAtSubmission": "DEV_VERIFIED",
+  "inScope": [
+    "Deterministic closed-contour simplification with self-intersection rejection and separate 2% foreground-loss and background-addition guards for elongated low-poly parts",
+    "Five evenly spaced cross-section centers for elongated parts instead of a uniform interior grid; a small candidate count and shape-proportional triangle area budget",
+    "Local interior-edge flips that improve the minimum angle of adjacent triangles while preserving the hull and independent topology validation",
+    "Portable curved-silhouette quality regression, updated golden MeshSpec, private real-tail comparison, 100-run determinism, and prior-Gate regression checks"
+  ],
+  "outOfScope": [
+    "Bones, skin weights, joint-aware edge flow, animated deformation, Spine 4.0.64 mesh serialization, and production-art approval",
+    "Changing source artwork, implicit alpha cleanup, or embedding private art in the repository"
+  ],
+  "implementationSummary": "The exact raster contour remains the input. For parts whose foreground bounds are at least 1.5:1 and whose raster exceeds 256 pixels, closed-arc simplification tries decreasing tolerances up to 6 raster pixels and accepts the first simple polygon with no more than 2% corrected-foreground loss or extra-background coverage. Five equally spaced major-axis cross sections select the center of the longest opaque span, giving a sparse centerline instead of a uniform grid. The other shapes retain the prior bounded 1% simplification and uniform interior sample. Earcut remains the initial triangulator; deterministic convex edge flips improve minimum angle and area splitting uses a shape-proportional budget for long parts. The independent MeshSpec validator remains unchanged. No AI computes geometry.",
+  "checks": [
+    {
+      "name": "Full repository verification",
+      "status": "passed",
+      "evidence": "npm run verify passed formatting, ESLint, TypeScript typecheck/build, and 5 Vitest files with 35 tests; prior Gate 0-3 tests remain passing. git diff --check passed."
+    },
+    {
+      "name": "Portable curved-art quality regression",
+      "status": "passed",
+      "evidence": "A code-defined 240x320 elongated curved alpha silhouette produces a valid MeshSpec with no more than 32 total vertices and at least five interior vertices. The simplified hull has under one-third of the exact raster-outline vertices; raster foreground loss and added background each remain at or below 2%; fewer than 10% of triangles have a minimum angle under 10 degrees; a repeat run serializes identically."
+    },
+    {
+      "name": "Private real-tail comparison",
+      "status": "passed",
+      "evidence": "The user's Spine screenshot visibly reports 23 vertices and shows a sparse perimeter plus centerline-oriented internal points. Read-only 294x530 Tail.png SHA-256 B62426BE390AD824DB5A691C63B9E38A61DB52405BD5AF105164C2E48BF8B7F6 uses the same explicit 0.5% alpha-cleanup budget as Gate 3: 154 detached pixels discarded, 1 corner pinch and 5 one-pixel holes filled. Baseline 1,214 vertices, 950 hull vertices, 1,476 triangles; revised mesh 24 vertices (19 hull and 5 internal), 27 triangles. On 81,641 corrected foreground pixels, the revised polygon misses 1,297 (1.589%) and covers 306 background pixels (0.375%). Zero of 27 triangles have a minimum angle below 10 degrees; maximum triangle area 5,565.625 raster pixels squared under the sparse-mode budget. Independent validator passes. The local preview was visually inspected; private source, user screenshot, and derived outputs are not committed."
+    },
+    {
+      "name": "Determinism and contracts",
+      "status": "passed",
+      "evidence": "100 additional full real-tail mesh generations of the 24-vertex result were byte-identical; the existing synthetic golden still verifies exact output after being updated for improved triangulation and repeats 100 times. MeshSpec schema, CLI contract, source alpha, and all unrelated packages are unchanged."
+    }
+  ],
+  "metrics": {
+    "testsPassed": 35,
+    "realTailBaselineVertices": 1214,
+    "referenceScreenshotVertices": 23,
+    "realTailRefinedVertices": 24,
+    "realTailBaselineHullVertices": 950,
+    "realTailRefinedHullVertices": 19,
+    "realTailRefinedInteriorVertices": 5,
+    "realTailBaselineTriangles": 1476,
+    "realTailRefinedTriangles": 27,
+    "realTailCorrectedForegroundPixels": 81641,
+    "realTailMissedForegroundPixels": 1297,
+    "realTailAddedBackgroundPixels": 306,
+    "realTailTrianglesBelow10Degrees": 0,
+    "realTailTrianglesBelow5Degrees": 0,
+    "realTailMaximumTriangleArea": 5565.625,
+    "realTailAdditionalDeterminismRuns": 100
+  },
+  "knownLimitations": [
+    "The reference is a screenshot rather than the editable Spine mesh data, so 24 vertices and similar-looking flow do not prove vertex-for-vertex equivalence with the artist's 23-vertex mesh.",
+    "This is a static MeshSpec, not an artist-approved deformation. Gate 6 still needs root/middle/wave pose measurements and visual review after bones and weights exist; joint-aware topology may need further adjustment.",
+    "The low-poly contour does not preserve the silhouette pixel-for-pixel; its measured 1.589% foreground loss must be reviewed visually and may be unacceptable for some art even though it is under the explicit 2% bound.",
+    "The proprietary Tail.png and comparison image stay local and are not included in GitHub."
+  ],
+  "definitionOfDone": [
+    {
+      "criterion": "Real tail mesh approaches the supplied 23-vertex reference with centerline flow and no more than 2% raster loss or addition",
+      "status": "passed"
+    },
+    {
+      "criterion": "Independent topology, fixed-output determinism, and all prior Gate contracts remain valid",
+      "status": "passed"
+    },
+    {
+      "criterion": "User receives a truthful before/after image from the same private source",
+      "status": "passed"
+    }
+  ],
+  "requestedJevDecision": "Re-review the 24-vertex revision after the user's 23-vertex Spine reference. Approve only if low-poly contour coverage, centerline-oriented topology, determinism, prior-Gate regression, and explicit deformation limitations are credible. Do not infer exact equivalence to the screenshot or artist-approved animation.",
+  "jevAttempts": [
+    {
+      "date": "2026-09-23",
+      "model": "jev-1.13.0",
+      "decision": "APPROVED",
+      "thresholds": {
+        "verdict": "APPROVED",
+        "verdictProbability": 0.98,
+        "scopeCompliant": 0.98,
+        "dodSatisfied": 0.94,
+        "testsCredible": 0.87,
+        "deterministicEvidence": 0.97,
+        "regressionSafe": 0.96,
+        "architectureCompliant": 0.95,
+        "evidenceQuality": 3.89,
+        "primaryBlocker": "NONE"
+      },
+      "usage": {
+        "inputTokens": 2240,
+        "outputTokens": 270
+      },
+      "policyResult": "Superseded by the user's 23-vertex reference and the subsequent sparse-centerline revision."
+    }
+  ],
+  "jevReview": {
+    "date": "2026-09-23",
+    "model": "jev-1.13.0",
+    "decision": "APPROVED",
+    "thresholds": {
+      "verdict": "APPROVED",
+      "verdictProbability": 0.95,
+      "scopeCompliant": 0.97,
+      "dodSatisfied": 0.89,
+      "testsCredible": 0.89,
+      "deterministicEvidence": 0.98,
+      "regressionSafe": 0.96,
+      "architectureCompliant": 0.97,
+      "evidenceQuality": 3.84,
+      "primaryBlocker": "NONE"
+    },
+    "usage": {
+      "inputTokens": 2510,
+      "outputTokens": 270
+    },
+    "policyResult": "All mandatory approval thresholds passed."
+  },
+  "tokenUsage": {
+    "scope": "Gate 3.1 optimization and user-reference revision through final Jev re-approval",
+    "mainCodex": {
+      "status": "unavailable",
+      "inputTokens": null,
+      "outputTokens": null,
+      "totalTokens": null
+    },
+    "jev": {
+      "model": "jev-1.13.0",
+      "status": "measured",
+      "attempts": 2,
+      "inputTokens": 4750,
+      "outputTokens": 540,
+      "totalTokens": 5290
+    },
+    "allModelsTotalTokens": null,
+    "note": "Jev counts are exact SDK usage for both reviews. Codex main-agent per-Gate usage is not exposed; null does not mean zero."
+  }
+}
