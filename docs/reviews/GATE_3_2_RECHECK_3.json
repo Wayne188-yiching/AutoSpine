@@ -1,0 +1,211 @@
+{
+  "project": "AutoSpine",
+  "gate": 3.2,
+  "revision": "artist-profile-architecture-evidence",
+  "statusAtSubmission": "DEV_VERIFIED",
+  "objective": "Reassess the reference calibrated static mesh after the owner's symmetric +/-20% artist count rule; verify that reference parsing stays outside the engine-neutral Mesh package.",
+  "priorAttempts": [
+    {
+      "file": "docs/reviews/GATE_3_2_REVIEW.json",
+      "decision": "historical approval under superseded one-sided count rule",
+      "usage": {
+        "inputTokens": 3631,
+        "outputTokens": 270
+      }
+    },
+    {
+      "file": "docs/reviews/GATE_3_2_RECHECK.json",
+      "decision": "rejected; point distribution evidence insufficient",
+      "usage": {
+        "inputTokens": 3387,
+        "outputTokens": 289
+      }
+    },
+    {
+      "file": "docs/reviews/GATE_3_2_RECHECK_2.json",
+      "decision": "rejected only on architecture confidence 0.77 < 0.8; approval probability 0.87, DoD 0.90, artist topology 0.89",
+      "usage": {
+        "inputTokens": 3598,
+        "outputTokens": 289
+      }
+    }
+  ],
+  "inScope": [
+    "Use artist counts and normalized cross-section profile from the matching original Spine 4.0.64 attachment to guide static contour and interior control density.",
+    "Enforce +/-20% on beard and house separately before SDK load; compare outer/inner distributions and visual topology; preserve separate <=2% alpha errors and Tail baseline.",
+    "Explicitly verify the package boundary behind the prior Jev architecture concern."
+  ],
+  "outOfScope": [
+    "Bone/weight/deform generation, head animation quality, full Spine JSON import into Mesh, schema changes, production-art approval, private source files in Git"
+  ],
+  "architectureEvidence": {
+    "meshDependencies": ["@autospine/schemas", "@sinclair/typebox", "earcut"],
+    "meshTsProjectReferences": ["../../schemas"],
+    "meshSourceImports": ["earcut", "@autospine/schemas"],
+    "privateReferenceParsingLocation": "tools/mesh-reference-check.mjs (developer tool, not a runtime package)",
+    "engineInput": "Plain numeric MeshGenerationOptions.referenceTopology: total vertices, hull vertices and optional dimensionless {position,widthFraction} bands. It contains no Spine JSON object, bone, skin, slot, attachment or artist XY coordinates. The Mesh engine rebuilds coordinates from the current alpha raster. A generic caller can pass equivalent numeric metadata without Spine.",
+    "irSchemaChanges": 0,
+    "runtimeDependencyChanges": 0,
+    "spineCoreMeshImports": 0,
+    "automatedCheck": "tests/package-boundaries.test.ts checks Mesh package dependencies, TypeScript project references and absence of Spine/asset/core/Jev imports in the reference-aware mesh generator; this test passes.",
+    "documentation": "ARCHITECTURE.md describes precisely how dev-only Spine reference parsing hands numeric data into engine-neutral Mesh."
+  },
+  "implementationSummary": "Original matching UV/hull/triangle arrays are parsed only by a developer-side tool. The tool validates exact image dimensions and derives artist counts and normalized interior structural bands. Mesh receives these numeric guides, uses deterministic raster contour simplification with cumulative +/-2% coverage guards, and computes interior control coordinates from current opaque cross-sections. No artist XY/edges are copied. Existing schema and package dependency direction stay unchanged. Unknown assets without a reference use the earlier sparse starter path and remain explicitly flagged for review. Jev always receives a local precheck result first.",
+  "checks": [
+    {
+      "name": "Package boundaries and full verification",
+      "status": "passed",
+      "evidence": "npm run verify passes Prettier, ESLint, TypeScript build/typecheck and 49 tests in 7 files including the new architecture test. packages/mesh/package.json has only schemas, TypeBox and Earcut dependencies; packages/mesh/tsconfig.json references only schemas; source has zero Spine, asset, core or Jev imports. No schemas or runtime package manifests were changed. git diff --check passes."
+    },
+    {
+      "name": "Matched artist count hard rule",
+      "status": "passed",
+      "evidence": "Beard 24 artist and 24 generated: 24 hull, zero interior, 22 triangles each. House 25 artist and 25 generated: 19 hull, six interior, 29 triangles each. Signed deviations are 0%, inside each required +/-20% interval. The previous 11/25 house fails the local rule before the Jev SDK loads; missing references block. Tests exercise interval boundaries and the actual review runner."
+    },
+    {
+      "name": "Reference topology proximity",
+      "status": "passed-with-limits",
+      "evidence": "The first repaired house mesh placed its six interior points at generic equal-height, one-third/two-thirds cross sections, with independent symmetric mean nearest interior distance 43.9309 pixels to original artist points. After deriving dimensionless reference bands, the same metric is 2.8183 pixels; hull mean nearest is 5.3380 pixels. Beard boundary mean nearest is 2.8238 pixels, and its hull-only distribution matches artist. Exact artist/old/new coordinate overlays were inspected. Beard still has four narrow triangles vs artist zero; house has five vs artist twelve. This is static topology evidence, not identical connectivity or animated approval."
+    },
+    {
+      "name": "Coverage and repeatability",
+      "status": "passed",
+      "evidence": "Independent pixel-center test on original PNGs after the same explicit 0.5% cleanup: beard misses/adds 16/16 of 882 corrected foreground (1.8141% each); house 112/423 of 51,606 (0.2170%/0.8197%). Both pass independent MeshSpec validation. The previously approved Tail remains 24 vertices/27 triangles and misses/adds 1297/306 of 81,641; all three private cases generate byte-identically 100 times. Portable synthetic reference profile also repeats 100 times."
+    },
+    {
+      "name": "Source provenance and privacy",
+      "status": "passed",
+      "evidence": "Direct Spine 4.0.64 exports were matched by named skin/slot/attachment to exact image dimensions. Beard PNG SHA256 81BEA8EDACA7192A42A74BE6306A96B70CC3A8E581ADAD2B2FAD7693CEFA4DF6; house B6390F98F2ED123F61071DD35D42764CFCB497E73AC9BC0F19D3F7EC6112BF07. The private source PNG, project/export JSON, mesh JSON and plotted overlays remain outside Git."
+    }
+  ],
+  "metrics": {
+    "testsPassed": 49,
+    "beard": {
+      "artist": {
+        "vertices": 24,
+        "hull": 24,
+        "interior": 0
+      },
+      "generated": {
+        "vertices": 24,
+        "hull": 24,
+        "interior": 0,
+        "missedFraction": 0.0181405896,
+        "addedFraction": 0.0181405896,
+        "trianglesBelow10Degrees": 4
+      },
+      "signedVertexDeviation": 0,
+      "hullNearestDistancePixels": 2.8237760394,
+      "deterministicRuns": 100
+    },
+    "house": {
+      "artist": {
+        "vertices": 25,
+        "hull": 19,
+        "interior": 6
+      },
+      "generated": {
+        "vertices": 25,
+        "hull": 19,
+        "interior": 6,
+        "missedFraction": 0.0021702903,
+        "addedFraction": 0.0081967213,
+        "trianglesBelow10Degrees": 5
+      },
+      "signedVertexDeviation": 0,
+      "hullNearestDistancePixels": 5.3380245729,
+      "interiorNearestDistancePixels": 2.8182595485,
+      "priorInteriorNearestDistancePixels": 43.9309340316,
+      "deterministicRuns": 100
+    },
+    "tail": {
+      "vertices": 24,
+      "triangles": 27,
+      "missed": 1297,
+      "added": 306,
+      "foreground": 81641,
+      "deterministicRuns": 100
+    }
+  },
+  "definitionOfDone": [
+    {
+      "criterion": "Every in-scope original artist attachment within +/-20% count",
+      "status": "passed",
+      "evidence": "Beard 24/24 and house 25/25; hard local check mandatory before Jev."
+    },
+    {
+      "criterion": "Artist wiring is a substantive standard beyond count",
+      "status": "passed-with-limits",
+      "evidence": "Boundary/interior split exactly matches, and normalized band transfer cut house interior nearest distance from 43.93 to 2.82 px. The remaining angle/edge differences are identified."
+    },
+    {
+      "criterion": "Valid and bounded static topology with tail regression",
+      "status": "passed",
+      "evidence": "Separate <=2% coverage budgets, independent validator, 100 repeat checks each, 49 portable tests."
+    },
+    {
+      "criterion": "No architecture boundary change",
+      "status": "passed",
+      "evidence": "New package-boundary test verifies numeric-only engine input and no Spine parsing/imports/dependency in Mesh; schema/dependency manifests unchanged."
+    }
+  ],
+  "knownLimitations": [
+    "An artist reference file is needed to obtain profile metadata. New art without one remains a review-required starter mesh.",
+    "Vertex-location proximity does not prove matching triangle edges or animation deformation. Beard retains four sub-10-degree triangles.",
+    "Head with Idle deform remains unresolved; Rig, Weight and animation remain later Gates."
+  ],
+  "tokenUsage": {
+    "pastJevInput": 10616,
+    "pastJevOutput": 848,
+    "codex": "unavailable",
+    "otherModels": "not used",
+    "allGateTotal": "cannot precisely sum"
+  },
+  "artistVertexPrecheck": {
+    "maxRelativeDeviation": 0.2,
+    "status": "PASSED",
+    "cases": [
+      {
+        "id": "beard",
+        "artistVertices": 24,
+        "generatedVertices": 24,
+        "minimum": 20,
+        "maximum": 28,
+        "signedDeviation": 0,
+        "status": "PASSED"
+      },
+      {
+        "id": "house",
+        "artistVertices": 25,
+        "generatedVertices": 25,
+        "minimum": 20,
+        "maximum": 30,
+        "signedDeviation": 0,
+        "status": "PASSED"
+      }
+    ]
+  },
+  "jevReview": {
+    "date": "2026-09-23",
+    "model": "jev-1.13.0",
+    "decision": "REJECTED",
+    "thresholds": {
+      "verdict": "APPROVED",
+      "verdictProbability": 0.95,
+      "scopeCompliant": 0.96,
+      "dodSatisfied": 0.9,
+      "testsCredible": 0.82,
+      "deterministicEvidence": 0.9,
+      "regressionSafe": 0.73,
+      "architectureCompliant": 0.91,
+      "evidenceQuality": 3.96,
+      "primaryBlocker": "NONE",
+      "artistTopologySupported": 0.86
+    },
+    "usage": {
+      "inputTokens": 3666,
+      "outputTokens": 289
+    },
+    "policyResult": "One or more mandatory approval thresholds failed."
+  }
+}

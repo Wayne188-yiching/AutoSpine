@@ -1,0 +1,187 @@
+{
+  "project": "AutoSpine",
+  "gate": 3.2,
+  "revision": "artist-reference-recheck",
+  "objective": "Revalidate static mesh topology after the owner imposed a symmetric +/-20% vertex budget for the matching original artist attachment.",
+  "statusAtSubmission": "DEV_VERIFIED",
+  "historicalReview": "docs/reviews/GATE_3_2_REVIEW.json retains the previous 3,901-token Jev approval under the superseded one-sided count rule; it cannot unlock Gate 4.",
+  "inScope": [
+    "Read the exact same Spine 4.0.64 attachment and matching PNG to obtain artist total, hull and interior counts",
+    "Use those counts to guide deterministic contour simplification and filled cross-section controls without copying artist vertex positions",
+    "Before Jev, block each matched case outside its own +/-20% count range; retain separate <=2% corrected foreground missed/added budgets",
+    "Compare triangulation and outer/inner point distribution visually against the exact artist JSON, preserving tail regressions"
+  ],
+  "outOfScope": [
+    "Weights, bones, deformation, head mesh, production art signoff, exact reproduction of artist coordinates",
+    "Source art alteration or private PNG, .spine, exported skeleton, mesh coordinates, and comparison images in Git"
+  ],
+  "implementationSummary": "MeshGenerationOptions can carry referenceTopology counts from a verified matching attachment. The low curvature contour pass stops near the artist's hull count while retaining simple-polygon, original-edge-distance and separate 2% raster checks. On matched meshes, interior controls are placed at opaque left/right cross-sections derived from the PNG alpha, two per section, up to the reference interior count. They are not sampled from artist vertex coordinates. The independent MeshSpec validator, Earcut, edge improvement and existing geometry paths remain. The reference checker parses the actual exported Spine mesh before generation and passes only its counts. A local hard gate checks signed vertex deviations for required beard and house before SDK load; Jev cannot override a failed count. The tool warns when a generated mesh exceeds the count budget, and always warns deformation is unverified.",
+  "humanDecision": "User selected +/-20% of each original human attachment and made excessive count deviation disqualifying; topology quality also requires separate review.",
+  "checks": [
+    {
+      "name": "Full repository verification",
+      "status": "passed",
+      "evidence": "npm run verify: Prettier, ESLint, TypeScript and 48 tests across 7 files. New portable synthetic reference mesh checks include 100 exact repeats and invalid metadata rejection; prior golden, Tail, CLI and schema checks remain passing."
+    },
+    {
+      "name": "Independent private matched data",
+      "status": "passed",
+      "evidence": "Direct Spine 4.0.64 JSON export and same-size PNGs: beard 39x59 SHA256 81BEA8EDACA7192A42A74BE6306A96B70CC3A8E581ADAD2B2FAD7693CEFA4DF6; house 268x242 SHA256 B6390F98F2ED123F61071DD35D42764CFCB497E73AC9BC0F19D3F7EC6112BF07. Artist UV/hull/triangle arrays are parsed before generation; artist positions are used for comparison only. Raster coverage is measured independently by pixel-center polygon test. Each generated output passed an independent MeshSpec validator and 100 byte-identical runs."
+    },
+    {
+      "name": "Hard artist budget",
+      "status": "passed",
+      "evidence": "Beard 24 artist / 24 generated, 24 hull / 0 interior both. House 25 artist / 25 generated, 19 hull / 6 interior both. Each exact count lies inside its individual +/-20% allowed interval. The mandatory local precheck rejects the prior 11/25 house before SDK load; boundary, missing-reference and actual runner tests pass."
+    },
+    {
+      "name": "Coverage and tail regression",
+      "status": "passed",
+      "evidence": "Beard corrected foreground 882: 16 missed (1.8141%), 16 added (1.8141%). House corrected foreground 51,606 after explicit cleanup of 17 detached pixels: 112 missed (0.2170%), 423 added (0.8197%). Existing Tail 24 vertices/27 triangles, 1,297 missed and 306 added of 81,641 corrected foreground cells; all match Gate 3.1. Tail SHA256 B62426BE390AD824DB5A691C63B9E38A61DB52405BD5AF105164C2E48BF8B7F6; 100 identical runs."
+    },
+    {
+      "name": "Visual comparison",
+      "status": "passed-with-limitations",
+      "evidence": "Exact artist/Gate 3.2 old/Gate 3.2 revised JSON mesh overlays inspected locally. Beard now has artist-like boundary-only topology but four triangles under 10 degrees versus artist zero. House has six interior controls across top/middle/lower broad spans, corresponding in distribution to the artist's six controls, although coordinates and edges differ. Three triangles are under 10 degrees versus artist twelve. Count and coarse distribution are close; no claim of identical edge flow or deformation quality."
+    }
+  ],
+  "metrics": {
+    "testsPassed": 48,
+    "beard": {
+      "artist": {
+        "vertices": 24,
+        "hull": 24,
+        "interior": 0,
+        "triangles": 22,
+        "trianglesBelow10Degrees": 0
+      },
+      "generated": {
+        "vertices": 24,
+        "hull": 24,
+        "interior": 0,
+        "triangles": 22,
+        "foreground": 882,
+        "missed": 16,
+        "added": 16,
+        "missedFraction": 0.018140589569160998,
+        "addedFraction": 0.018140589569160998,
+        "trianglesBelow10Degrees": 4
+      },
+      "deterministicRuns": 100
+    },
+    "house": {
+      "artist": {
+        "vertices": 25,
+        "hull": 19,
+        "interior": 6,
+        "triangles": 29,
+        "trianglesBelow10Degrees": 12
+      },
+      "generated": {
+        "vertices": 25,
+        "hull": 19,
+        "interior": 6,
+        "triangles": 29,
+        "foreground": 51606,
+        "missed": 112,
+        "added": 423,
+        "missedFraction": 0.0021702902763244586,
+        "addedFraction": 0.00819672131147541,
+        "trianglesBelow10Degrees": 3
+      },
+      "deterministicRuns": 100
+    },
+    "tail": {
+      "vertices": 24,
+      "hull": 19,
+      "interior": 5,
+      "triangles": 27,
+      "foreground": 81641,
+      "missed": 1297,
+      "added": 306,
+      "trianglesBelow10Degrees": 0,
+      "deterministicRuns": 100
+    }
+  },
+  "definitionOfDone": [
+    {
+      "criterion": "Matched artist counts individually within +/-20%",
+      "status": "passed",
+      "evidence": "Both 0% total, hull and interior count differences. Artist source JSON and same-size PNG were matched."
+    },
+    {
+      "criterion": "No artificial point padding; meaningful distribution",
+      "status": "passed-with-limitations",
+      "evidence": "Contour vertices come from raster corners, selected under error guards. Interior controls come from opaque cross sections; house top/middle/lower pairs approximate the reference distribution. Exact artist edges are not reproduced, and beard skinny triangles are explicitly flagged."
+    },
+    {
+      "criterion": "Static coverage <=2% separately and independent topology valid",
+      "status": "passed",
+      "evidence": "Beard 1.8141%/1.8141%; house 0.2170%/0.8197%; both MeshSpec validators passed."
+    },
+    {
+      "criterion": "Tail/prior Gate regression and repeatability",
+      "status": "passed",
+      "evidence": "48 tests, private beard/house/tail each 100 exact repeats; Tail approved 24/27 and coverage unchanged."
+    }
+  ],
+  "knownLimitations": [
+    "Matched reference count metadata is required for artist-calibrated output; unknown art uses the earlier starter heuristic and requires review.",
+    "Beard triangulation still has four triangles with a minimum angle below 10 degrees, versus none in the artist mesh; animated quality requires later measurement.",
+    "The house interior controls follow raster cross-sections and do not reproduce exact artist positions or edge pairings.",
+    "No bones, weights or deformation have been implemented in Gate 3.2. Head with Idle deform remains unresolved."
+  ],
+  "tokenUsage": {
+    "historicalJevInput": 3631,
+    "historicalJevOutput": 270,
+    "codex": "unavailable",
+    "otherModels": "not used",
+    "total": "cannot precisely sum; add new review usage when available"
+  },
+  "artistVertexPrecheck": {
+    "maxRelativeDeviation": 0.2,
+    "status": "PASSED",
+    "cases": [
+      {
+        "id": "beard",
+        "artistVertices": 24,
+        "generatedVertices": 24,
+        "minimum": 20,
+        "maximum": 28,
+        "signedDeviation": 0,
+        "status": "PASSED"
+      },
+      {
+        "id": "house",
+        "artistVertices": 25,
+        "generatedVertices": 25,
+        "minimum": 20,
+        "maximum": 30,
+        "signedDeviation": 0,
+        "status": "PASSED"
+      }
+    ]
+  },
+  "jevReview": {
+    "date": "2026-09-23",
+    "model": "jev-1.13.0",
+    "decision": "REJECTED",
+    "thresholds": {
+      "verdict": "APPROVED",
+      "verdictProbability": 0.58,
+      "scopeCompliant": 0.96,
+      "dodSatisfied": 0.72,
+      "testsCredible": 0.84,
+      "deterministicEvidence": 0.89,
+      "regressionSafe": 0.92,
+      "architectureCompliant": 0.81,
+      "evidenceQuality": 3.97,
+      "primaryBlocker": "NONE",
+      "artistTopologySupported": 0.86
+    },
+    "usage": {
+      "inputTokens": 3387,
+      "outputTokens": 289
+    },
+    "policyResult": "One or more mandatory approval thresholds failed."
+  }
+}

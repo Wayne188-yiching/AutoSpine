@@ -4,6 +4,22 @@ import { SPEC_SCHEMAS } from "@autospine/core";
 import * as spine from "@autospine/spine";
 
 describe("Gate 0 package boundaries", () => {
+  it("keeps artist-reference geometry in the engine-neutral Mesh package", () => {
+    const meshPackage = JSON.parse(readFileSync(resolve("packages/mesh/package.json"), "utf8")) as {
+      dependencies: Record<string, string>;
+    };
+    const meshConfig = JSON.parse(readFileSync(resolve("packages/mesh/tsconfig.json"), "utf8")) as {
+      references: { path: string }[];
+    };
+    const meshSource = readFileSync(resolve("packages/mesh/src/generate.ts"), "utf8");
+    expect(Object.keys(meshPackage.dependencies).sort()).toEqual([
+      "@autospine/schemas",
+      "@sinclair/typebox",
+      "earcut",
+    ]);
+    expect(meshConfig.references).toEqual([{ path: "../../schemas" }]);
+    expect(meshSource).not.toMatch(/@autospine\/(spine|assets|core)|typesafe|\.spine|SkeletonJson/);
+  });
   it("exposes the shared IR through core", () => {
     expect(Object.keys(SPEC_SCHEMAS)).toHaveLength(8);
   });
@@ -13,3 +29,5 @@ describe("Gate 0 package boundaries", () => {
     expect(spine.compileSpine40).toBeTypeOf("function");
   });
 });
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";

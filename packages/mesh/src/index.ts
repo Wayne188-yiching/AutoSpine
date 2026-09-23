@@ -1,4 +1,8 @@
-export { generateMesh } from "./generate.js";
+export {
+  generateMesh,
+  generateMeshWithDiagnostics,
+  type MeshGenerationOptions,
+} from "./generate.js";
 export { MeshError, validateMeshSpec } from "./validation.js";
 export {
   fillEnclosedHoles,

@@ -9,7 +9,12 @@ import {
   validateAssetSpec,
   type PngPartsManifest,
 } from "@autospine/assets";
-import { generateMesh, MeshError, prepareAlphaForMesh } from "@autospine/mesh";
+import {
+  generateMeshWithDiagnostics,
+  MeshError,
+  prepareAlphaForMesh,
+  type MeshGenerationOptions,
+} from "@autospine/mesh";
 
 import {
   SpineCompileError,
@@ -19,12 +24,13 @@ import {
 } from "@autospine/spine";
 
 const usage =
-  "Usage: autospine <compile-minimal|parse-png|parse-psd|mesh-png|mesh-asset> <input> <output.json> [manifest.json|part-id|cleanup-fraction] [cleanup-fraction]";
+  "Usage: autospine <compile-minimal|parse-png|parse-psd|mesh-png|mesh-asset> <input> <output.json> [manifest.json|part-id|cleanup-fraction] [cleanup-fraction] [--intent=rigid|chain|unknown] [--reference-profile=profile.json]";
 
 async function writeMesh(
-  part: Parameters<typeof generateMesh>[0],
+  part: Parameters<typeof generateMeshWithDiagnostics>[0],
   destination: string,
   cleanupArgument?: string,
+  options: MeshGenerationOptions = {},
 ): Promise<void> {
   if (!part.alphaMask) throw new Error("Selected part has no alpha mask");
   const decoded = decodeAlphaMask(part.alphaMask);
@@ -35,11 +41,16 @@ async function writeMesh(
     fraction === undefined
       ? undefined
       : prepareAlphaForMesh(decoded, part.alphaMask.width, part.alphaMask.height, fraction);
-  const mesh = generateMesh(part, prepared?.alpha ?? decoded);
+  const { mesh, diagnostics } = generateMeshWithDiagnostics(
+    part,
+    prepared?.alpha ?? decoded,
+    options,
+  );
   await writeFile(destination, `${JSON.stringify(mesh, null, 2)}\n`, {
     encoding: "utf8",
     flag: "wx",
   });
+  console.error(JSON.stringify({ meshDiagnostics: diagnostics }));
   if (prepared)
     console.error(
       JSON.stringify({
@@ -55,8 +66,35 @@ async function writeMesh(
 }
 
 async function main(): Promise<void> {
-  const [command, source, destination, manifestPath, extra] = process.argv.slice(2);
+  const args = process.argv.slice(2);
+  const intentFlags = args.filter((arg) => arg.startsWith("--intent="));
+  const profileFlags = args.filter((arg) => arg.startsWith("--reference-profile="));
+  const positional = args.filter(
+    (arg) => !arg.startsWith("--intent=") && !arg.startsWith("--reference-profile="),
+  );
+  const [command, source, destination, manifestPath, extra] = positional;
+  if (
+    positional.length > 5 ||
+    intentFlags.length > 1 ||
+    profileFlags.length > 1 ||
+    ((intentFlags.length || profileFlags.length) &&
+      command !== "mesh-png" &&
+      command !== "mesh-asset")
+  )
+    throw new Error(usage);
+  const intent = intentFlags[0]?.slice("--intent=".length) ?? "unknown";
+  if (intent !== "rigid" && intent !== "chain" && intent !== "unknown") throw new Error(usage);
   if (!source || !destination || resolve(source) === resolve(destination)) throw new Error(usage);
+  const profilePath = profileFlags[0]?.slice("--reference-profile=".length);
+  if (profilePath === "") throw new Error(usage);
+  const meshOptions: MeshGenerationOptions = {
+    intent,
+    referenceTopology: profilePath
+      ? (JSON.parse(
+          await readFile(profilePath, "utf8"),
+        ) as MeshGenerationOptions["referenceTopology"])
+      : undefined,
+  };
   if (command === "compile-minimal" && !manifestPath) {
     const input = JSON.parse(await readFile(source, "utf8")) as MinimalSpineInput;
     const document = compileSpine40(input);
@@ -106,7 +144,7 @@ async function main(): Promise<void> {
         parts: [{ id: name, name, file: basename(source), x: 0, y: 0, drawOrder: 0 }],
       },
     });
-    await writeMesh(asset.parts[0]!, destination, manifestPath);
+    await writeMesh(asset.parts[0]!, destination, manifestPath, meshOptions);
     return;
   }
   if (command === "mesh-asset" && manifestPath) {
@@ -117,7 +155,7 @@ async function main(): Promise<void> {
       (candidate) => candidate.id === manifestPath,
     );
     if (!part) throw new Error(`AssetSpec has no part '${manifestPath}'`);
-    await writeMesh(part, destination, extra);
+    await writeMesh(part, destination, extra, meshOptions);
     return;
   }
   throw new Error(usage);

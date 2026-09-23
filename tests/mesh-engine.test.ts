@@ -7,6 +7,7 @@ import { decodeAlphaMask, encodeAlphaMask } from "@autospine/assets";
 import {
   fillEnclosedHoles,
   generateMesh,
+  generateMeshWithDiagnostics,
   MeshError,
   repairCornerPinches,
   selectPrimaryComponent,
@@ -81,6 +82,145 @@ function minimumTriangleAngle(mesh: MeshSpec, index: number): number {
 }
 
 describe("Gate 3 deterministic mesh engine", () => {
+  it("uses matched artist counts to preserve editable outer and interior structure", () => {
+    const rows = Array.from({ length: 64 }, (_, y) => {
+      const halfWidth = y < 16 ? Math.max(2, y * 2) : y > 50 ? 33 : 29;
+      return Array.from({ length: 80 }, (_, x) => (Math.abs(x - 40) <= halfWidth ? "#" : ".")).join(
+        "",
+      );
+    });
+    const input = part(rows);
+    const starter = JSON.stringify(generateMesh(input.source, input.alpha, { intent: "rigid" }));
+    const options = {
+      intent: "rigid" as const,
+      referenceTopology: {
+        vertices: 25,
+        hull: 19,
+        bands: [
+          { position: 0.31, widthFraction: 0.8 },
+          { position: 0.48, widthFraction: 0.65 },
+          { position: 0.8, widthFraction: 0.6 },
+        ],
+      },
+    };
+    const { mesh, diagnostics } = generateMeshWithDiagnostics(input.source, input.alpha, options);
+    expect(validateMeshSpec(mesh).status).toBe("passed");
+    expect(mesh.vertices.length).toBeGreaterThanOrEqual(20);
+    expect(mesh.vertices.length).toBeLessThanOrEqual(30);
+    expect(mesh.vertices.length - mesh.hull.length).toBeGreaterThan(0);
+    const interiorRows = mesh.uvs.slice(mesh.hull.length).map((point) => Math.floor(point[1] * 64));
+    expect(interiorRows).toContain(19);
+    expect(interiorRows).toContain(30);
+    expect(interiorRows).toContain(51);
+    const hull = mesh.hull.map((index) => mesh.vertices[index]!);
+    let foreground = 0,
+      missed = 0,
+      added = 0;
+    for (let y = 0; y < 64; y++)
+      for (let x = 0; x < 80; x++) {
+        const filled = input.alpha[y * 80 + x]! > 0;
+        const covered = insidePolygon(hull, x + 0.5, y + 0.5);
+        foreground += Number(filled);
+        missed += Number(filled && !covered);
+        added += Number(!filled && covered);
+      }
+    expect(missed / foreground).toBeLessThanOrEqual(0.02);
+    expect(added / foreground).toBeLessThanOrEqual(0.02);
+    expect(diagnostics.warnings).not.toContain("ARTIST_VERTEX_BUDGET_EXCEEDED");
+    const golden = JSON.stringify(mesh);
+    for (let run = 0; run < 100; run++)
+      expect(JSON.stringify(generateMesh(input.source, input.alpha, options))).toBe(golden);
+    expect(JSON.stringify(generateMesh(input.source, input.alpha, { intent: "rigid" }))).toBe(
+      starter,
+    );
+  });
+
+  it("rejects invalid reference counts instead of silently copying artist positions", () => {
+    const input = part(Array.from({ length: 32 }, () => "#".repeat(32)));
+    for (const referenceTopology of [
+      { vertices: 10, hull: 11 },
+      { vertices: 2, hull: 2 },
+      { vertices: 2600, hull: 5 },
+      { vertices: 25.5, hull: 19 },
+      { vertices: 25, hull: 19, bands: [{ position: 0.3, widthFraction: 0.5 }] },
+    ])
+      expect(() => generateMesh(input.source, input.alpha, { referenceTopology })).toThrow(
+        MeshError,
+      );
+    const mesh = generateMesh(input.source, input.alpha, {
+      referenceTopology: { vertices: 4, hull: 4 },
+      intent: "rigid",
+    });
+    expect(mesh.hull).toHaveLength(4);
+  });
+
+  it("keeps rigid broad parts sparse at different resolutions", () => {
+    for (const size of [32, 128]) {
+      const input = part(Array.from({ length: size }, () => "#".repeat(size)));
+      const original = input.alpha.slice();
+      const { mesh, diagnostics } = generateMeshWithDiagnostics(input.source, input.alpha, {
+        intent: "rigid",
+      });
+      expect(mesh.vertices).toHaveLength(4);
+      expect(mesh.triangles).toHaveLength(6);
+      expect(diagnostics).toMatchObject({
+        intent: "rigid",
+        deformationVerified: false,
+        requiresReview: true,
+      });
+      expect(diagnostics.warnings).not.toContain("INTENT_UNKNOWN");
+      for (let run = 0; run < 100; run++)
+        expect(generateMesh(input.source, input.alpha, { intent: "rigid" })).toEqual(mesh);
+      expect(input.alpha).toEqual(original);
+    }
+  });
+
+  it("reduces a small curved part within separate two-percent raster budgets", () => {
+    const width = 39,
+      height = 59;
+    const rows = Array.from({ length: height }, (_, y) => {
+      const radius = 8 * Math.sqrt(1 - ((y + 0.5 - height / 2) / (height / 2)) ** 2);
+      const center = 18 + 5 * Math.sin(y / 18);
+      return Array.from({ length: width }, (_, x) =>
+        Math.abs(x + 0.5 - center) <= radius ? "#" : ".",
+      ).join("");
+    });
+    const input = part(rows);
+    const { mesh, diagnostics } = generateMeshWithDiagnostics(input.source, input.alpha, {
+      intent: "chain",
+    });
+    expect(validateMeshSpec(mesh).status).toBe("passed");
+    expect(mesh.vertices.length).toBeLessThanOrEqual(36);
+    const hull = mesh.hull.map((index) => mesh.vertices[index]!);
+    let missed = 0,
+      added = 0;
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < width; x++) {
+        const filled = input.alpha[y * width + x]! > 0;
+        const covered = insidePolygon(hull, x + 0.5, y + 0.5);
+        missed += Number(filled && !covered);
+        added += Number(!filled && covered);
+      }
+    const foreground = input.alpha.filter(Boolean).length;
+    expect(missed / foreground).toBeLessThanOrEqual(0.02);
+    expect(added / foreground).toBeLessThanOrEqual(0.02);
+    expect(diagnostics.deformationVerified).toBe(false);
+    for (let run = 0; run < 100; run++)
+      expect(generateMesh(input.source, input.alpha, { intent: "chain" })).toEqual(mesh);
+  });
+
+  it("does not infer animation readiness or intent from a part name", () => {
+    const input = part(Array.from({ length: 32 }, () => "#".repeat(32)));
+    const result = generateMeshWithDiagnostics(input.source, input.alpha);
+    expect(result.diagnostics.warnings).toEqual(["DEFORMATION_NOT_VERIFIED", "INTENT_UNKNOWN"]);
+    expect(result.diagnostics.requiresReview).toBe(true);
+    const renamed = { ...input.source, name: "head-with-deform" };
+    expect(generateMesh(renamed, input.alpha).vertices).toEqual(result.mesh.vertices);
+    expect(() => generateMesh(input.source, input.alpha, { intent: "invalid" as "chain" })).toThrow(
+      MeshError,
+    );
+  });
+
   it("meshes a tapered curved tail with internal vertices and byte-identical output", () => {
     const input = part([
       "##.........",
@@ -143,7 +283,7 @@ describe("Gate 3 deterministic mesh engine", () => {
         ((b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])) / 2,
       );
     }
-    expect(largest).toBeLessThanOrEqual(512);
+    expect(largest).toBeLessThanOrEqual(input.alpha.filter(Boolean).length / 6);
   });
 
   it("simplifies a large curved silhouette and avoids fan-like skinny triangles", () => {
@@ -159,7 +299,7 @@ describe("Gate 3 deterministic mesh engine", () => {
     });
     const input = part(rows);
     const exact = traceContour(input.alpha, width, height);
-    const mesh = generateMesh(input.source, input.alpha);
+    const mesh = generateMesh(input.source, input.alpha, { intent: "chain" });
     expect(validateMeshSpec(mesh).status).toBe("passed");
     expect(mesh.hull.length).toBeLessThan(exact.length / 3);
     expect(mesh.vertices.length).toBeLessThanOrEqual(32);
@@ -184,7 +324,9 @@ describe("Gate 3 deterministic mesh engine", () => {
       (_, index) => minimumTriangleAngle(mesh, index * 3) < 10,
     ).filter(Boolean).length;
     expect(smallAngles / (mesh.triangles.length / 3)).toBeLessThan(0.1);
-    expect(JSON.stringify(generateMesh(input.source, input.alpha))).toBe(JSON.stringify(mesh));
+    expect(JSON.stringify(generateMesh(input.source, input.alpha, { intent: "chain" }))).toBe(
+      JSON.stringify(mesh),
+    );
   });
 
   it("rejects empty, disconnected, diagonal-touching, and holed alpha", () => {

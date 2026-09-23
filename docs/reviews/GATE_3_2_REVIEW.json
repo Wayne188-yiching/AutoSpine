@@ -1,0 +1,234 @@
+{
+  "project": "AutoSpine",
+  "gate": 3.2,
+  "reopenFinding": {
+    "date": "2026-09-23",
+    "status": "REJECTED",
+    "source": "user-confirmed local hard rule; not a new Jev response",
+    "rule": "Same original artist attachment is the topology baseline; absolute vertex-count deviation divided by artist count must be <=0.20, in both directions. Count compliance is necessary but not sufficient.",
+    "userConfirmedMaxRelativeDeviation": 0.2,
+    "beard": {
+      "artistVertices": 24,
+      "generatedVertices": 25,
+      "allowedIntegerRange": [20, 28],
+      "signedDeviation": 0.0416666667,
+      "vertexCountStatus": "PASSED",
+      "topologyStatus": "requires re-review"
+    },
+    "house": {
+      "artistVertices": 25,
+      "generatedVertices": 11,
+      "allowedIntegerRange": [20, 30],
+      "signedDeviation": -0.56,
+      "vertexCountStatus": "REJECTED"
+    },
+    "historicalReviewPreserved": true,
+    "historicalApprovalMayUnlockGate4": false,
+    "jevResubmitted": false,
+    "ruleVerification": "Full npm run verify passed: 46 tests in 7 files, including both +/-20% boundaries, missing reference rejection, current house failure, and actual review-runner rejection before SDK load or Jev call.",
+    "note": "The original submission and jevReview below are immutable historical evidence under the superseded one-sided <=1.5x cap. Do not treat that approval as current. Repair topology, regenerate evidence, and submit a new revision only after hard checks pass. Tail screenshot-only counts are not a matched-file baseline; retain Tail regression without claiming artist-file equivalence."
+  },
+  "supersededBy": "docs/reviews/GATE_3_2_RECHECK_5.json (new +/-20% rule APPROVED)",
+  "objective": "Calibrate static mesh density on matched AWP beard and rigid house references while preserving the approved Tail coverage and deterministic MeshSpec contract.",
+  "statusAtSubmission": "DEV_VERIFIED",
+  "inScope": [
+    "Deterministic contour simplification with independent 2% foreground-loss and background-addition limits, low-curvature corner removal and non-crossing edges",
+    "Explicit chain/rigid/unknown purpose hints; no filename-based classification; sparse interior generation instead of resolution-driven grid filling",
+    "Developer-only private reference metrics and exact-coordinate comparison images, portable synthetic and CLI tests, warning diagnostics"
+  ],
+  "outOfScope": [
+    "Bone chains, weights, animation, joint-aware topology, head deform repair, Spine mesh serialization, production-art approval",
+    "AI deciding geometric coordinates, copying private art into Git, changing schemas or runtime dependencies"
+  ],
+  "implementationSummary": "Earcut, edge flips and the independent validator remain in place. Raster images above 256 pixels now use the sparse contour path independent of aspect ratio. RDP tolerance has a 1.5-pixel floor capped at 6; subsequent deterministic low-curvature deletion accepts only simple positive-area contours, keeps original outline corners within that tolerance, and checks cumulative raster coverage against 2% separately for missed foreground and added transparent background. Rigid parts add no interior points. Explicit chain parts retain the five cross-section candidates from the accepted Tail baseline; these are not inferred joints. Unknown purpose uses sparse geometric subdivision and requires review. Area splitting is proportional to foreground/6 for production-sized nonrigid parts rather than the previous fixed 512-pixel area; tiny golden fixtures keep their existing behavior. MeshSpec is unchanged. generateMeshWithDiagnostics and CLI report intent, unverified deformation and triangles below 10 degrees.",
+  "humanDecision": {
+    "date": "2026-09-23",
+    "issue": "Artist hulls themselves exceed the original 2% transparent-background coverage threshold: beard 24.7166%, house 3.2225%. This is transparent padding, not foreground loss.",
+    "userReply": "維持 2%，人工網格作參考（建議）",
+    "effect": "Generated meshes retain the original separate 2% thresholds. Artist topology/counts are calibration evidence, not unconditional acceptance targets. Final production art and dynamic quality remain unapproved."
+  },
+  "checks": [
+    {
+      "name": "Full repository verification",
+      "status": "passed",
+      "evidence": "npm run verify passes formatting, lint, TypeScript build/typecheck and 41 tests in 6 files. A sandbox run could not start CLI subprocesses (null exit status); the identical full suite passed with authorized subprocess execution. Upstream Spine runtime sourcemap warnings remain non-fatal."
+    },
+    {
+      "name": "Portable regressions",
+      "status": "passed",
+      "evidence": "32x32 and 128x128 rigid rectangles each produce 4 vertices and 2 triangles with 100 repeats and no alpha mutation; 39x59 synthetic curved part meets <=36 vertices and separate <=2% raster budgets with 100 repeats. Existing 240x320 tail retains <=32 vertices, >=5 interior points, <=2% coverage errors and <10% skinny triangles using explicit chain intent. Tiny exact golden, topology-negative mutations, alpha cleanup and all previous Gate contracts pass. Default unknown purpose warns and does not classify a renamed head as animation-ready."
+    },
+    {
+      "name": "CLI integration",
+      "status": "passed",
+      "evidence": "Real CLI subprocesses verify rigid intent, legacy default syntax, unknown/deformation diagnostics, source preservation, refusal to overwrite existing output, invalid/duplicate/nonmesh intent and extra argument rejection."
+    },
+    {
+      "name": "Matched private AWP and Tail tests",
+      "status": "passed",
+      "evidence": "tools/mesh-reference-check.mjs reads original PNG alpha and exact matching mesh UV/hull/triangle arrays from directly exported Spine 4.0.64 projects, validates matching image dimensions, measures pixel-center coverage independently of the generator's scanline implementation and reports triangle angles. Each of beard, house, tail generated 100 byte-identical outputs and passed the independent MeshSpec validator. Private inputs/exports/meshes/plots stay outside Git."
+    },
+    {
+      "name": "Visual inspection",
+      "status": "passed-with-limitations",
+      "evidence": "Developer inspected local exact JSON overlays, artist/Gate3.1/Gate3.2 side by side. Beard no longer has the dense jagged boundary but still has two narrow triangles and interior centerline hubs unlike the artist's boundary-only strip; house no longer has uniform interior grid and is only suitable for the explicitly confirmed rigid scope. Tail baseline silhouette and topology preserved. These plots are not generated by an image model and are not Spine editor or deformation acceptance."
+    }
+  ],
+  "metrics": {
+    "testsPassed": 41,
+    "beard": {
+      "pngSha256": "81BEA8EDACA7192A42A74BE6306A96B70CC3A8E581ADAD2B2FAD7693CEFA4DF6",
+      "dimensions": [39, 59],
+      "intent": "chain",
+      "artist": {
+        "vertices": 24,
+        "hull": 24,
+        "triangles": 22,
+        "missed": 0,
+        "added": 218,
+        "minAngleDegrees": 19.669859,
+        "trianglesBelow10Degrees": 0
+      },
+      "previous": {
+        "vertices": 51,
+        "hull": 46,
+        "triangles": 54,
+        "missed": 4,
+        "added": 13,
+        "trianglesBelow10Degrees": 7
+      },
+      "generated": {
+        "vertices": 25,
+        "hull": 20,
+        "interior": 5,
+        "triangles": 28,
+        "foreground": 882,
+        "missed": 17,
+        "added": 17,
+        "missedFraction": 0.0192743764,
+        "addedFraction": 0.0192743764,
+        "minAngleDegrees": 4.752048,
+        "trianglesBelow10Degrees": 2
+      },
+      "cleanupChangedPixels": 0,
+      "deterministicRuns": 100
+    },
+    "house": {
+      "pngSha256": "B6390F98F2ED123F61071DD35D42764CFCB497E73AC9BC0F19D3F7EC6112BF07",
+      "dimensions": [268, 242],
+      "intent": "rigid",
+      "intentEvidence": "Reference mesh has one bone influence and no deform timeline; caller explicitly selects rigid, not auto-inferred from its PNG.",
+      "artist": {
+        "vertices": 25,
+        "hull": 19,
+        "triangles": 29,
+        "missed": 7,
+        "added": 1663,
+        "minAngleDegrees": 2.451401,
+        "trianglesBelow10Degrees": 12
+      },
+      "previous": {
+        "vertices": 275,
+        "hull": 35,
+        "triangles": 513,
+        "missed": 150,
+        "added": 42,
+        "trianglesBelow10Degrees": 34
+      },
+      "generated": {
+        "vertices": 11,
+        "hull": 11,
+        "interior": 0,
+        "triangles": 9,
+        "foreground": 51606,
+        "missed": 148,
+        "added": 530,
+        "missedFraction": 0.0028678836,
+        "addedFraction": 0.0102701236,
+        "minAngleDegrees": 9.097425,
+        "trianglesBelow10Degrees": 1
+      },
+      "cleanupChangedPixels": 17,
+      "deterministicRuns": 100
+    },
+    "tail": {
+      "pngSha256": "B62426BE390AD824DB5A691C63B9E38A61DB52405BD5AF105164C2E48BF8B7F6",
+      "intent": "chain",
+      "vertices": 24,
+      "hull": 19,
+      "interior": 5,
+      "triangles": 27,
+      "foreground": 81641,
+      "missed": 1297,
+      "added": 306,
+      "minAngleDegrees": 14.248149,
+      "trianglesBelow10Degrees": 0,
+      "cleanupDiscardedPixels": 154,
+      "cleanupPinchFilledPixels": 1,
+      "cleanupHoleFilledPixels": 5,
+      "deterministicRuns": 100,
+      "coverageAndCountsMatchGate31": true
+    }
+  },
+  "definitionOfDone": [
+    {
+      "criterion": "Matched beard and house each <=1.5 times artist vertex count",
+      "status": "passed",
+      "evidence": "25 <=36; 11 <=37.5. Counts alone do not imply artist equivalence."
+    },
+    {
+      "criterion": "Separate generated foreground-loss/background-addition <=2%",
+      "status": "passed",
+      "evidence": "Beard 1.9274%/1.9274%; house 0.2868%/1.0270%. Artist exceptions explicitly disclosed and user confirmed preserving thresholds."
+    },
+    {
+      "criterion": "Tail coverage and valid topology preserved",
+      "status": "passed",
+      "evidence": "Same 24/19/5/27 counts and 1297/306 coverage errors as Gate3.1, no triangles <10 degrees."
+    },
+    {
+      "criterion": "Portable tests, real evidence, determinism and visual comparison",
+      "status": "passed",
+      "evidence": "41 tests; three private 100-run checks; exact artist/generated overlays inspected with limitations disclosed."
+    },
+    {
+      "criterion": "No false head/deformation approval or scope expansion",
+      "status": "passed",
+      "evidence": "tou_1_3 80-vertex artist with Idle deform remains unresolved; no bones/weights/deformation outputs; API and CLI explicitly require review."
+    }
+  ],
+  "knownLimitations": [
+    "Five chain candidates remain a heuristic, not a skeleton-aware or general head topology solution; unsuitable major-axis chains still need manual review.",
+    "Beard artist is boundary-only, whereas generated mesh has five inner hubs and two triangles below 10 degrees; density improved, not artist-equivalent edge flow.",
+    "House rigid mesh has one triangle below 10 degrees; unknown or deforming uses must not reuse rigid acceptance.",
+    "Contour changes trade detail for sparse editable points within the accepted binary-alpha budgets; global 2% coverage does not prove perceptual equivalence.",
+    "Main Codex exact per-Gate input/output usage is unavailable. Jev usage will be recorded verbatim, all formal attempts included. No additional collaboration model used."
+  ],
+  "tokenUsage": {
+    "codex": "unavailable",
+    "otherModels": "not used",
+    "total": "cannot precisely sum; Jev usage recorded by runner"
+  },
+  "jevReview": {
+    "date": "2026-09-23",
+    "model": "jev-1.13.0",
+    "decision": "APPROVED",
+    "thresholds": {
+      "verdict": "APPROVED",
+      "verdictProbability": 0.94,
+      "scopeCompliant": 0.97,
+      "dodSatisfied": 0.91,
+      "testsCredible": 0.89,
+      "deterministicEvidence": 0.9,
+      "regressionSafe": 0.93,
+      "architectureCompliant": 0.9,
+      "evidenceQuality": 3.95,
+      "primaryBlocker": "NONE"
+    },
+    "usage": {
+      "inputTokens": 3631,
+      "outputTokens": 270
+    },
+    "policyResult": "All mandatory approval thresholds passed."
+  }
+}

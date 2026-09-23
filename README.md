@@ -12,7 +12,7 @@ The deterministic Core must work without an AI model. AI may choose templates an
 
 ## Current status
 
-Gates 0 through 3.1 are approved. Gate 3 adds a deterministic Tail alpha-to-MeshSpec engine, and Gate 3.1 reduces silhouette density and skinny fan triangles without claiming animated deformation quality. Evidence and limits are in the [Gate 3 review](docs/reviews/GATE_3_REVIEW.json) and [Gate 3.1 review](docs/reviews/GATE_3_1_REVIEW.json). Weight solving, AI, MCP, Skill, and GUI remain out of scope. Gate status and acceptance live in the [development workflow](AUTOSPINE_DEVELOPMENT_WORKFLOW.md).
+Gates 0 through 3.2 are approved. Gate 3.2 was repaired after the owner required each mesh to stay within +/-20% of its matching original artist attachment: beard is now 24/24 vertices and house is 25/25, with matched outer/interior distributions. The final [Gate 3.2 Jev review](docs/reviews/GATE_3_2_RECHECK_5.json) approved the static topology evidence after 50 tests; deformation quality remains for later Gates. Prior rejected reviews remain in `docs/reviews/` for audit. The [development workflow](AUTOSPINE_DEVELOPMENT_WORKFLOW.md) holds the current status and exact Jev token usage.
 
 See:
 
@@ -42,6 +42,10 @@ npm run parse:psd -- path/to/layered.psd output.json
 npm run mesh:png -- path/to/tail.png mesh.json [cleanup-fraction]
 npm run mesh:asset -- asset.json mesh.json part-id [cleanup-fraction]
 ```
+
+Gate 3.2 adds optional `--intent=chain|rigid|unknown` and `--reference-profile=profile.json` to both mesh commands. The profile is a small numeric JSON object with `vertices`, `hull`, and optional `bands` (`position` and `widthFraction` between zero and one); it contains no Spine coordinates. Use an explicit `chain` hint for the previously approved Tail use case and `rigid` for a confirmed non-deforming part. The default is `unknown`, never inferred from filenames; it produces a sparse geometric starter and a review warning. CLI diagnostics always state that deformation is unverified and report skinny triangles. Programmatic callers can use `generateMeshWithDiagnostics`; the existing `generateMesh` API and MeshSpec schema remain available. These hints do not supply bones, weights, or joint-aware topology.
+
+Developer-only private reference checks: `node tools/mesh-reference-check.mjs <private-config.json> <external-output-dir>`. The config contains `runs` (100 for acceptance), `cleanupFraction`, and `cases` with `id`, `png`, optional `options.intent`, and optional `skeleton`/`slot`/`attachment` identifying an exact-size exported Spine mesh. It reports independent raster coverage, angles, validation and repeatability, and writes a small `<id>.profile.json` for reuse with `--reference-profile`. Outputs inside this repository are rejected. Optional `tools/plot-mesh-comparison.py` renders those exact coordinates with Pillow; Python/Pillow are not Engine or CI dependencies. Keep configurations, artwork, exported skeletons and plotted meshes outside Git.
 
 ## Repository layout
 

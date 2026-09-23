@@ -121,9 +121,10 @@ export function simplifyContour(
   width: number,
   height: number,
   lowPoly: boolean,
+  referenceHull?: number,
 ): Point[] {
   const tolerance = lowPoly
-    ? Math.min(6, Math.sqrt(width * height) / 50)
+    ? Math.min(6, Math.max(1.5, Math.sqrt(width * height) / 50))
     : Math.min(1.5, Math.sqrt(width * height) / 100);
   if (tolerance < 0.5 || outline.length < 8) return outline;
   let opposite = 1;
@@ -133,6 +134,7 @@ export function simplifyContour(
     if (current > previous) opposite = index;
   }
   const ring = [...outline, outline[0]!];
+  let closest: Point[] | undefined;
   for (let attempt = tolerance; attempt >= 0.5; attempt *= 0.75) {
     const indices = [
       ...simplifyArc(ring, 0, opposite, attempt * attempt).slice(0, -1),
@@ -144,10 +146,67 @@ export function simplifyContour(
       signedArea2(simplified) > 0 &&
       isSimple(simplified) &&
       withinRasterBudget(simplified, alpha, width, height, lowPoly ? 0.02 : 0.01)
-    )
-      return simplified;
+    ) {
+      const candidate = lowPoly
+        ? reduceContour(simplified, outline, alpha, width, height, tolerance, referenceHull)
+        : simplified;
+      if (referenceHull === undefined || candidate.length === referenceHull) return candidate;
+      if (
+        !closest ||
+        Math.abs(candidate.length - referenceHull) < Math.abs(closest.length - referenceHull)
+      )
+        closest = candidate;
+    }
   }
-  return outline;
+  return closest ?? outline;
+}
+
+/** Remove redundant low-curvature corners, checking the total (not per-step) pixel error.
+ * Each original corner must also remain near the new boundary, protecting thin features.
+ */
+function reduceContour(
+  initial: Point[],
+  original: Point[],
+  alpha: Uint8Array,
+  width: number,
+  height: number,
+  tolerance: number,
+  minimumVertices = 3,
+): Point[] {
+  let points = initial;
+  while (points.length > Math.max(3, minimumVertices)) {
+    const candidates = points
+      .map((point, index) => ({
+        index,
+        error: distanceToSegment2(
+          point,
+          points[(index + points.length - 1) % points.length]!,
+          points[(index + 1) % points.length]!,
+        ),
+      }))
+      .sort((a, b) => a.error - b.error || a.index - b.index);
+    let removed = false;
+    for (const { index, error } of candidates) {
+      if (error > tolerance * tolerance) break;
+      const next = points.filter((_, i) => i !== index);
+      if (signedArea2(next) <= 0 || !isSimple(next)) continue;
+      if (
+        !original.every((point) =>
+          next.some(
+            (a, i) =>
+              distanceToSegment2(point, a, next[(i + 1) % next.length]!) <= tolerance * tolerance,
+          ),
+        )
+      )
+        continue;
+      if (!withinRasterBudget(next, alpha, width, height, 0.02)) continue;
+      points = next;
+      removed = true;
+      break;
+    }
+    if (!removed) break;
+  }
+  return points;
 }
 
 /** Explicitly keep one connected region; callers receive exact dropped-pixel counts. */

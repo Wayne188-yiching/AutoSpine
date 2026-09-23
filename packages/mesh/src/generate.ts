@@ -3,6 +3,47 @@ import type { AssetPart, MeshSpec } from "@autospine/schemas";
 import { signedArea2, simplifyContour, traceContour, type Point } from "./contour.js";
 import { failMesh, MeshError, validateMeshSpec } from "./validation.js";
 
+export interface MeshGenerationOptions {
+  /** Caller-supplied purpose, never inferred from the file name. */
+  intent?: "rigid" | "chain" | "unknown";
+  /** Counts and normalized cross-section profile from a matched artist attachment. */
+  referenceTopology?: {
+    vertices: number;
+    hull: number;
+    bands?: { position: number; widthFraction: number }[];
+  };
+}
+
+/** Geometric validity is not an approval of artistic topology or animated deformation. */
+export function generateMeshWithDiagnostics(
+  part: AssetPart,
+  alpha: Uint8Array,
+  options: MeshGenerationOptions = {},
+) {
+  const mesh = generateMesh(part, alpha, options);
+  const intent = options.intent ?? "unknown";
+  const warnings = ["DEFORMATION_NOT_VERIFIED"];
+  if (intent === "unknown") warnings.push("INTENT_UNKNOWN");
+  const skinnyTriangles = Array.from({ length: mesh.triangles.length / 3 }, (_, i) =>
+    minimumAngle(mesh.vertices, mesh.triangles.slice(i * 3, i * 3 + 3) as [number, number, number]),
+  ).filter((angle) => angle < Math.PI / 18).length;
+  if (skinnyTriangles) warnings.push("SKINNY_TRIANGLES");
+  const reference = options.referenceTopology;
+  if (reference && Math.abs(mesh.vertices.length - reference.vertices) * 5 > reference.vertices)
+    warnings.push("ARTIST_VERTEX_BUDGET_EXCEEDED");
+  return {
+    mesh,
+    diagnostics: {
+      intent,
+      requiresReview: true,
+      deformationVerified: false,
+      skinnyTriangles,
+      referenceTopology: reference,
+      warnings,
+    },
+  };
+}
+
 function cross(a: Point, b: Point, c: Point): number {
   return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
 }
@@ -134,7 +175,35 @@ function subdivideOversized(
 }
 
 /** Build a single simple raster-part mesh. No bones, weights, or Spine JSON are produced. */
-export function generateMesh(part: AssetPart, alpha: Uint8Array): MeshSpec {
+export function generateMesh(
+  part: AssetPart,
+  alpha: Uint8Array,
+  options: MeshGenerationOptions = {},
+): MeshSpec {
+  const intent = options.intent ?? "unknown";
+  if (!["rigid", "chain", "unknown"].includes(intent))
+    failMesh("MESH_INTENT", "Mesh intent must be rigid, chain, or unknown");
+  const reference = options.referenceTopology;
+  if (
+    reference &&
+    (!Number.isSafeInteger(reference.vertices) ||
+      !Number.isSafeInteger(reference.hull) ||
+      reference.hull < 3 ||
+      reference.vertices < reference.hull ||
+      reference.vertices > 2560 ||
+      (reference.bands &&
+        (reference.bands.length * 2 !== reference.vertices - reference.hull ||
+          reference.bands.some(
+            ({ position, widthFraction }) =>
+              !Number.isFinite(position) ||
+              position <= 0 ||
+              position >= 1 ||
+              !Number.isFinite(widthFraction) ||
+              widthFraction <= 0 ||
+              widthFraction >= 1,
+          ))))
+  )
+    failMesh("MESH_REFERENCE", "Reference topology counts are invalid");
   const mask = part.alphaMask;
   if (!mask || mask.encoding !== "rle8")
     failMesh("ALPHA_MISSING", "Part must include a Gate 2 alpha mask");
@@ -153,8 +222,8 @@ export function generateMesh(part: AssetPart, alpha: Uint8Array): MeshSpec {
   const ys = exactOutline.map(([, y]) => y);
   const spanX = Math.max(...xs) - Math.min(...xs);
   const spanY = Math.max(...ys) - Math.min(...ys);
-  const lowPoly = Math.max(spanX, spanY) / Math.min(spanX, spanY) >= 1.5 && width * height > 256;
-  const outline = simplifyContour(exactOutline, alpha, width, height, lowPoly);
+  const lowPoly = width * height > 256;
+  const outline = simplifyContour(exactOutline, alpha, width, height, lowPoly, reference?.hull);
   const points: Point[] = [...outline];
   const flat = outline.flatMap((point) => point);
   const raw = earcut(flat);
@@ -175,10 +244,35 @@ export function generateMesh(part: AssetPart, alpha: Uint8Array): MeshSpec {
   )
     failMesh("TRIANGULATION", "Triangulation area differs from contour area");
 
-  // Long parts use a sparse centerline; other silhouettes keep a bounded uniform sample.
+  // A chain is an explicit purpose. Unknown parts receive a bounded geometric starter.
   const foreground = alpha.reduce((count, value) => count + Number(value > 0), 0);
   const candidates: Point[] = [];
-  if (lowPoly) {
+  if (reference && reference.vertices > reference.hull) {
+    // The reference supplies normalized structural bands; actual points are rebuilt from
+    // this PNG's filled cross-sections, so a different raster can reuse the topology profile.
+    const needed = reference.vertices - reference.hull;
+    const sections = Math.ceil(needed / 2);
+    for (let section = 1; section <= sections; section++) {
+      const band = reference.bands?.[section - 1];
+      const y = Math.min(
+        height - 1,
+        Math.floor(
+          band ? band.position * height : Math.min(...ys) + (spanY * section) / (sections + 1),
+        ),
+      );
+      const filled = Array.from({ length: width }, (_, x) => x).filter(
+        (x) => alpha[y * width + x]! > 0,
+      );
+      if (filled.length < 2) continue;
+      const left = filled[0]!,
+        right = filled[filled.length - 1]! + 1;
+      const halfSpread = (band?.widthFraction ?? 1 / 3) / 2;
+      for (const fraction of [0.5 - halfSpread, 0.5 + halfSpread]) {
+        if (candidates.length < needed)
+          candidates.push([left + (right - left) * fraction, y + 0.5]);
+      }
+    }
+  } else if (intent === "chain" && lowPoly && !reference) {
     const vertical = spanY >= spanX;
     const start = vertical ? Math.min(...ys) : Math.min(...xs);
     const span = vertical ? spanY : spanX;
@@ -209,7 +303,7 @@ export function generateMesh(part: AssetPart, alpha: Uint8Array): MeshSpec {
         candidates.push(vertical ? [middle, coordinate + 0.5] : [coordinate + 0.5, middle]);
       }
     }
-  } else {
+  } else if (!lowPoly && intent !== "rigid" && !reference) {
     const spacing = Math.max(4, Math.ceil(Math.sqrt(foreground / 256)));
     for (let y = spacing / 2; y < height; y += spacing)
       for (let x = spacing / 2; x < width; x += spacing) candidates.push([x, y]);
@@ -239,7 +333,7 @@ export function generateMesh(part: AssetPart, alpha: Uint8Array): MeshSpec {
     const [a, b, c] = triangles[target]!;
     triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
   }
-  if (points.length === outline.length && foreground > 4) {
+  if (intent !== "rigid" && !reference && points.length === outline.length && foreground > 4) {
     const target = triangles.reduce(
       (best, triangle, index) =>
         cross(points[triangle[0]]!, points[triangle[1]]!, points[triangle[2]]!) >
@@ -254,10 +348,11 @@ export function generateMesh(part: AssetPart, alpha: Uint8Array): MeshSpec {
     );
     splitAtCentroid(points, triangles, target);
   }
-  const maxArea = lowPoly ? Math.max(512, foreground / 6) : 512;
-  subdivideOversized(points, triangles, maxArea);
+  // Relative area avoids increasing topology density merely with texture resolution.
+  const maxArea = lowPoly ? foreground / 6 : 512;
+  if (intent !== "rigid" && !reference) subdivideOversized(points, triangles, maxArea);
   improveTriangulation(points, triangles);
-  subdivideOversized(points, triangles, maxArea);
+  if (intent !== "rigid" && !reference) subdivideOversized(points, triangles, maxArea);
   const ordered = triangles
     .map(canonicalTriangle)
     .sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);

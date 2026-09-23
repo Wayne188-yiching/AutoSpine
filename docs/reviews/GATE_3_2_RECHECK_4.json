@@ -1,0 +1,202 @@
+{
+  "project": "AutoSpine",
+  "gate": 3.2,
+  "revision": "baseline-byte-regression",
+  "statusAtSubmission": "DEV_VERIFIED",
+  "objective": "Accept Gate 3.2 only after the artist +/-20% count, topology proximity, architecture and exact prior output regression are all evidenced.",
+  "priorAttempts": [
+    {
+      "file": "docs/reviews/GATE_3_2_REVIEW.json",
+      "status": "obsolete one-sided-rule APPROVED",
+      "usage": {
+        "inputTokens": 3631,
+        "outputTokens": 270
+      }
+    },
+    {
+      "file": "docs/reviews/GATE_3_2_RECHECK.json",
+      "status": "REJECTED: topology/DoD",
+      "usage": {
+        "inputTokens": 3387,
+        "outputTokens": 289
+      }
+    },
+    {
+      "file": "docs/reviews/GATE_3_2_RECHECK_2.json",
+      "status": "REJECTED: architecture 0.77",
+      "usage": {
+        "inputTokens": 3598,
+        "outputTokens": 289
+      }
+    },
+    {
+      "file": "docs/reviews/GATE_3_2_RECHECK_3.json",
+      "status": "REJECTED: regression safety 0.73",
+      "usage": {
+        "inputTokens": 3666,
+        "outputTokens": 289
+      }
+    }
+  ],
+  "inScope": [
+    "Use the matching original Spine 4.0.64 attachment as the artist reference for beard and house; require each generated total within +/-20%",
+    "Use dimensionless artist interior band profiles to guide PNG-derived static points and compare visual/quantitative topology",
+    "Preserve no-reference behavior, independent MeshSpec topology validation, separate <=2% raster budgets, and all earlier Gate contracts"
+  ],
+  "outOfScope": [
+    "Bones, weights, dynamic deformation, head deform, artist XY/edge copying, production approval, private source files in Git"
+  ],
+  "implementationSummary": "The reference checker outside runtime packages verifies matching skin/slot/attachment and image dimensions, then passes counts and dimensionless band fractions into engine-neutral Mesh. Generated points come from current PNG alpha; missing reference takes the unchanged starter path. The 20% local count gate runs before Jev, while Jev independently grades artist topology evidence. No schema, runtime dependency or package direction changed.",
+  "checks": [
+    {
+      "name": "Exact no-reference regression against saved prior Gate 3.2 outputs",
+      "status": "passed",
+      "evidence": "Recomputed all three private inputs without referenceTopology using exactly the same id, bounds, explicit 0.5% alpha cleanup and intent as the previously saved pre-repair verified32 meshes. JSON.stringify of the complete MeshSpec object, including every vertex, UV, triangle and hull index, is byte-for-byte identical for beard (25 vertices/28 triangles), house (11/9) and Tail (24/27). This is a stronger check than matching counts or coverage alone. A new portable test generates a starter mesh, generates an artist-profile mesh from the same synthetic alpha, then regenerates the starter and asserts exact serialized equality. Existing tiny golden and all prior Gate tests also pass."
+    },
+    {
+      "name": "Artist hard budget and topology",
+      "status": "passed-with-disclosed-limits",
+      "evidence": "Same original artist mesh and PNG dimensions: beard 24 artist / 24 generated vertices, all boundary, 22 triangles; house 25/25, 19 boundary plus six inner, 29 triangles. Individual signed deviations are 0%, inside +/-20%; old 11/25 house and absent references fail the local pre-Jev check. House symmetric nearest inner point distance improved from 43.9309 to 2.8183 pixels after using normalized artist band positions/spreads; house hull 5.3380 px, beard hull 2.8238 px. Private coordinate overlays show the house controls at upper cornice, middle and lower plinth comparable to the artist. Triangle edge sets are not identical; beard has four sub-10-degree triangles vs artist zero, house five vs artist twelve. No deformation approval is claimed."
+    },
+    {
+      "name": "Static coverage, validation and determinism",
+      "status": "passed",
+      "evidence": "Independent pixel-center test after explicit 0.5% alpha cleanup: beard 16 missed / 16 background added of 882 corrected foreground (1.8141% each); house 112 missed / 423 added of 51,606 (0.2170% / 0.8197%). Independent MeshSpec validator passes. Three real cases each had 100 identical full serialized outputs. Original Tail retains 24 vertices/27 triangles and exact 1297/306 missed/added of 81,641 foreground. npm run verify passes format, lint, TypeScript and 49 tests in seven files."
+    },
+    {
+      "name": "Architecture boundary",
+      "status": "passed",
+      "evidence": "packages/mesh dependencies remain only schemas, TypeBox and Earcut; TypeScript project references only schemas. A new package-boundary test checks that the generator has no Spine, asset, core or Jev imports. The direct Spine .json parser is confined to a private dev tool; Mesh receives only numeric counts/bands. No IR schema or runtime dependency changed. ARCHITECTURE.md records this contract."
+    },
+    {
+      "name": "Source provenance/privacy",
+      "status": "passed",
+      "evidence": "Direct 4.0.64 exports and same-size PNGs were matched by skin/slot/attachment. Beard SHA256 81BEA8EDACA7192A42A74BE6306A96B70CC3A8E581ADAD2B2FAD7693CEFA4DF6; house B6390F98F2ED123F61071DD35D42764CFCB497E73AC9BC0F19D3F7EC6112BF07; Tail B62426BE390AD824DB5A691C63B9E38A61DB52405BD5AF105164C2E48BF8B7F6. Source projects, PNG, exported skeletons, full mesh arrays and images remain outside Git."
+    }
+  ],
+  "metrics": {
+    "testsPassed": 49,
+    "exactNoReferenceSerializationsEqualToPreRepair": {
+      "beard": true,
+      "house": true,
+      "tail": true
+    },
+    "beard": {
+      "artist": {
+        "vertices": 24
+      },
+      "generated": {
+        "vertices": 24
+      },
+      "hull": 24,
+      "interior": 0,
+      "missedFraction": 0.0181405896,
+      "addedFraction": 0.0181405896,
+      "artistHullNearestDistancePixels": 2.8237760394,
+      "deterministicRuns": 100
+    },
+    "house": {
+      "artist": {
+        "vertices": 25
+      },
+      "generated": {
+        "vertices": 25
+      },
+      "hull": 19,
+      "interior": 6,
+      "missedFraction": 0.0021702903,
+      "addedFraction": 0.0081967213,
+      "artistInteriorNearestDistancePixels": 2.8182595485,
+      "previousInteriorNearestDistancePixels": 43.9309340316,
+      "deterministicRuns": 100
+    },
+    "tail": {
+      "vertices": 24,
+      "triangles": 27,
+      "missed": 1297,
+      "added": 306,
+      "deterministicRuns": 100
+    }
+  },
+  "definitionOfDone": [
+    {
+      "criterion": "Per-attachment +/-20% original artist vertex count",
+      "status": "passed",
+      "evidence": "0% deviation on both matched cases, hard local precheck."
+    },
+    {
+      "criterion": "Artist topology distribution, not counts alone",
+      "status": "passed-with-disclosed-limits",
+      "evidence": "Exact boundary/interior splits and triangles; house inner proximity 2.82 px. Angle and edge differences disclosed."
+    },
+    {
+      "criterion": "Full old-path regression",
+      "status": "passed",
+      "evidence": "Complete serialized no-reference meshes identical to all three saved private pre-repair outputs; portable starter-after-profile regression and 49 tests pass."
+    },
+    {
+      "criterion": "Scope and architecture",
+      "status": "passed",
+      "evidence": "Numeric-only Mesh input, dev-only Spine parser, unchanged schema/runtime dependencies, explicit package-boundary test."
+    }
+  ],
+  "knownLimitations": [
+    "Artist band guidance requires an original matching reference mesh and is not a universal learned topology model",
+    "Mean nearest vertex proximity does not prove identical connectivity or animated deformation; four skinny beard triangles remain",
+    "Head with Idle deform is unresolved; Gates 4-5 will add rig and weights, and later Gates must test deformation"
+  ],
+  "tokenUsage": {
+    "pastJevInput": 14282,
+    "pastJevOutput": 1137,
+    "codex": "unavailable",
+    "otherModels": "not used",
+    "fullGateTotal": "cannot precisely sum"
+  },
+  "artistVertexPrecheck": {
+    "maxRelativeDeviation": 0.2,
+    "status": "PASSED",
+    "cases": [
+      {
+        "id": "beard",
+        "artistVertices": 24,
+        "generatedVertices": 24,
+        "minimum": 20,
+        "maximum": 28,
+        "signedDeviation": 0,
+        "status": "PASSED"
+      },
+      {
+        "id": "house",
+        "artistVertices": 25,
+        "generatedVertices": 25,
+        "minimum": 20,
+        "maximum": 30,
+        "signedDeviation": 0,
+        "status": "PASSED"
+      }
+    ]
+  },
+  "jevReview": {
+    "date": "2026-09-23",
+    "model": "jev-1.13.0",
+    "decision": "REJECTED",
+    "thresholds": {
+      "verdict": "APPROVED",
+      "verdictProbability": 0.92,
+      "scopeCompliant": 0.96,
+      "dodSatisfied": 0.89,
+      "testsCredible": 0.78,
+      "deterministicEvidence": 0.89,
+      "regressionSafe": 0.86,
+      "architectureCompliant": 0.9,
+      "evidenceQuality": 3.95,
+      "primaryBlocker": "NONE",
+      "artistTopologySupported": 0.9
+    },
+    "usage": {
+      "inputTokens": 3395,
+      "outputTokens": 289
+    },
+    "policyResult": "One or more mandatory approval thresholds failed."
+  }
+}
