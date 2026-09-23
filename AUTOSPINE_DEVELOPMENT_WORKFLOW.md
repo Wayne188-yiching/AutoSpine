@@ -425,6 +425,7 @@ Question to solve:
 為避免資訊分散：
 
 - `AUTOSPINE_DEVELOPMENT_WORKFLOW.md`：唯一流程、Gate 狀態與驗收規則。
+- `docs/SPINE_APPLICATION_KNOWLEDGE.md`：唯一 Spine 實務知識基線；所有 Spine 相關 Gate 開始前必讀。
 - `ARCHITECTURE.md`：只記錄當前架構和依賴，不重複 Gate 流程。
 - `ROADMAP.md`：只提供里程碑摘要並連回本文件，不另寫一套流程。
 - `ASSUMPTIONS.md`：只記錄尚未驗證且會影響行為的假設。
