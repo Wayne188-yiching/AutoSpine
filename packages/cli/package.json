@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@autospine/assets": "0.0.0",
+    "@autospine/mesh": "0.0.0",
     "@autospine/spine": "0.0.0"
   }
 }

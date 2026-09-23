@@ -5,6 +5,7 @@
     { "path": "./packages/core" },
     { "path": "./packages/spine" },
     { "path": "./packages/assets" },
+    { "path": "./packages/mesh" },
     { "path": "./packages/cli" }
   ]
 }

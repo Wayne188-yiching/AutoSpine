@@ -46,6 +46,7 @@ Each schema is versioned, runtime-validatable, statically typed, serializable, a
 | `schemas`         | Runtime schemas and TypeScript types for the IR                             |
 | `packages/core`   | Stable engine-neutral facade over the IR and future deterministic engines   |
 | `packages/assets` | Gate 2 PNG Parts and clean raster PSD parsers into AssetSpec                |
+| `packages/mesh`   | Gate 3 deterministic alpha contour, triangulation, and mesh validation      |
 | `packages/spine`  | Spine-specific adapter; Gate 1 minimal 4.0.64 compiler                      |
 | `packages/cli`    | Thin file-based commands that call the packages                             |
 | `tests`           | Cross-package contracts and runtime schema checks                           |
@@ -56,8 +57,9 @@ Each schema is versioned, runtime-validatable, statically typed, serializable, a
 ```text
 schemas <- core
 schemas <- assets
+schemas <- mesh
 schemas <- spine adapter
-assets + spine adapter <- CLI
+assets + mesh + spine adapter <- CLI
 
 AI / MCP / Skill -> core (future Gates)
 ```
@@ -82,4 +84,8 @@ Spine 4.0.64 is the first compatibility target. Gate 1 evidence combines officia
 
 Gate 2 adds only asset parsing. PNG Parts can use a manifest for canvas dimensions, layer order, display dimensions, and hierarchy; without a manifest, filenames are sorted and positions default to zero because a directory has no composition metadata. Clean 8-bit RGB raster PSDs preserve top-to-bottom layer identity, group hierarchy, visibility, bounds, and alpha. `AssetSpec.drawOrder` is zero for the backmost part. `alphaMask` is exact 8-bit alpha in run-length encoding; `pivotCandidate` is the center of the nonzero-alpha bounds, scaled into display coordinates, not an inferred anatomical joint. PSD part `sourcePath` uses `<source.psd>#layer/<index-path>` as a stable source reference, not an extracted PNG path. No source image is changed.
 
-Text, adjustment, vector, masked, effected, blended, clipped, non-8-bit and non-RGB PSD layers are rejected rather than silently flattened. Geometry, weighting, constraints, procedural animation generation, AI, MCP, Skill, preview rendering, and GUI behavior remain absent.
+Text, adjustment, vector, masked, effected, blended, clipped, non-8-bit and non-RGB PSD layers are rejected rather than silently flattened.
+
+Gate 3 takes one part's exact Gate 2 alpha mask and display bounds. It traces exposed pixel-cell edges, removes exact collinear points, triangulates a simple single-region contour, adds bounded interior vertices, and independently validates MeshSpec topology. Coordinates use top-left raster origin with positive y downward; output vertices scale into display bounds, while UVs use the full PNG raster. `hull` is the ordered possibly concave outer boundary, not a convex hull. The Mapbox Earcut library supplies candidate triangles, but its own documentation says triangulation is not guaranteed for arbitrary invalid input, so AutoSpine validates both input contour and output mesh. Optional preprocessing has a single explicit changed-pixel fraction budget and reports discarded/fill counts. It never edits source pixels. Holes or detached regions beyond the budget are errors; no AI chooses topology.
+
+Gate 3 does not add weights, bones, constraints, animation, Spine mesh serialization, preview rendering, or GUI behavior. Its mesh is an engine-neutral intermediate result, not a production-ready rig.

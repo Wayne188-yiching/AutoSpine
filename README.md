@@ -12,7 +12,7 @@ The deterministic Core must work without an AI model. AI may choose templates an
 
 ## Current status
 
-Gates 0, 1, and 2 are approved. Gate 2 parses PNG Parts and clean raster PSDs into AssetSpec; Jev acceptance and limits are recorded in the development workflow and [Gate 2 review](docs/reviews/GATE_2_REVIEW.json). Mesh generation, weight solving, AI, MCP, Skill, and GUI remain out of scope.
+Gates 0 through 3 are approved. Gate 3 adds a deterministic Tail alpha-to-MeshSpec engine; its evidence and limits are in the [Gate 3 review](docs/reviews/GATE_3_REVIEW.json). Weight solving, AI, MCP, Skill, and GUI remain out of scope. Gate status and acceptance live in the [development workflow](AUTOSPINE_DEVELOPMENT_WORKFLOW.md).
 
 See:
 
@@ -39,6 +39,8 @@ npm run verify
 npm run compile:minimal -- compile-minimal fixtures/spine/minimal/input.json output.json
 npm run parse:png -- path/to/png-parts output.json [manifest.json]
 npm run parse:psd -- path/to/layered.psd output.json
+npm run mesh:png -- path/to/tail.png mesh.json [cleanup-fraction]
+npm run mesh:asset -- asset.json mesh.json part-id [cleanup-fraction]
 ```
 
 ## Repository layout
@@ -47,6 +49,7 @@ npm run parse:psd -- path/to/layered.psd output.json
 packages/core/    Engine-neutral IR facade
 packages/spine/   Minimal Spine 4.0.64 adapter
 packages/assets/  PNG Parts and PSD asset parsers
+packages/mesh/    Deterministic alpha contour, triangulation, and MeshSpec validator
 packages/cli/     Thin file-based commands
 schemas/          Runtime schemas and inferred TypeScript types
 tests/            Cross-package validation tests
@@ -55,6 +58,8 @@ docs/adr/         Architecture decision records
 ```
 
 For PNG Parts, an optional manifest supplies canvas size, part positions, display dimensions, hierarchy and back-to-front `drawOrder`. Without one, only a deterministic flat import is possible: filenames sort by codepoint and positions default to `(0, 0)`. The parser never guesses the original composition. Both asset commands refuse to overwrite an existing output file; PSD source files are never modified. See [Gate 2 architecture](ARCHITECTURE.md#current-implementation-boundary) for supported PSD features and limits.
+
+Gate 3 mesh commands are strict by default: disconnected alpha, holes, and corner pinches fail with structured errors. An explicit `cleanup-fraction` such as `0.005` permits at most 0.5% combined pixel changes to select the primary region and repair tiny pinches/holes; the CLI prints exact counts. Input images are never rewritten. On Windows, a UNC path containing parentheses may need the direct form `node packages/cli/dist/index.js mesh-png ...` because npm's command wrapper can alter the path.
 
 ## License
 

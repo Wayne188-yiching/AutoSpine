@@ -8,7 +8,8 @@
     { "path": "../schemas" },
     { "path": "../packages/core" },
     { "path": "../packages/spine" },
-    { "path": "../packages/assets" }
+    { "path": "../packages/assets" },
+    { "path": "../packages/mesh" }
   ],
   "include": ["**/*.ts"]
 }

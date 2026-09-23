@@ -7,6 +7,6 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo",
     "types": ["node"]
   },
-  "references": [{ "path": "../spine" }, { "path": "../assets" }],
+  "references": [{ "path": "../spine" }, { "path": "../assets" }, { "path": "../mesh" }],
   "include": ["src/**/*.ts"]
 }

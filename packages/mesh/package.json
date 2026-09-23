@@ -1,0 +1,26 @@
+{
+  "name": "@autospine/mesh",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "dependencies": {
+    "@autospine/schemas": "0.0.0",
+    "@sinclair/typebox": "^0.34.52",
+    "earcut": "^3.2.3"
+  }
+}

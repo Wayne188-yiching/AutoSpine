@@ -437,32 +437,41 @@ Question to solve:
 
 ## 12. Gate 執行紀錄
 
-| Gate | 狀態        | 開始       | Developer Verify | Jev Decision  | 備註                                                               |
-| ---- | ----------- | ---------- | ---------------- | ------------- | ------------------------------------------------------------------ |
-| 0    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.88 | Jev 1.13；Evidence 3.94/4                                          |
-| 1    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.97 | Spine 4.0.64；18 tests、100 runs、Runtime/CLI 通過；Jev 複審核准   |
-| 2    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | PNG Parts 與 8-bit RGB PSD → AssetSpec；25 tests；Jev 2,739 tokens |
-| 3    | NOT_STARTED | —          | —                | —             | 依賴 Gate 2                                                        |
-| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3                                                        |
-| 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                                                        |
-| 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點                                                    |
-| 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點                                                     |
-| 8    | NOT_STARTED | —          | —                | —             | 依賴 Joint baseline                                                |
-| 9    | NOT_STARTED | —          | —                | —             | 依賴 Gate 8                                                        |
-| 10   | NOT_STARTED | —          | —                | —             | 依賴 Gate 9                                                        |
-| 11   | NOT_STARTED | —          | —                | —             | Engine MVP 驗收點                                                  |
-| 12   | NOT_STARTED | —          | —                | —             | Tail + Arm 通過後才開始                                            |
-| 13   | NOT_STARTED | —          | —                | —             | 依賴 Gate 12                                                       |
-| 14   | NOT_STARTED | —          | —                | —             | Core 成熟後才引入 AI                                               |
-| 15   | NOT_STARTED | —          | —                | —             | 依賴 Preview 與 AI Planner                                         |
-| 16   | NOT_STARTED | —          | —                | —             | MCP 僅作 Adapter                                                   |
-| 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill                                                     |
+| Gate | 狀態        | 開始       | Developer Verify | Jev Decision  | 備註                                                                        |
+| ---- | ----------- | ---------- | ---------------- | ------------- | --------------------------------------------------------------------------- |
+| 0    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.88 | Jev 1.13；Evidence 3.94/4                                                   |
+| 1    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.97 | Spine 4.0.64；18 tests、100 runs、Runtime/CLI 通過；Jev 複審核准            |
+| 2    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | PNG Parts 與 8-bit RGB PSD → AssetSpec；25 tests；Jev 2,739 tokens          |
+| 3    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.98 | Tail alpha → MeshSpec；34 tests；實際 Tail.png 100 次一致；Jev 3,342 tokens |
+| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3                                                                 |
+| 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                                                                 |
+| 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點                                                             |
+| 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點                                                              |
+| 8    | NOT_STARTED | —          | —                | —             | 依賴 Joint baseline                                                         |
+| 9    | NOT_STARTED | —          | —                | —             | 依賴 Gate 8                                                                 |
+| 10   | NOT_STARTED | —          | —                | —             | 依賴 Gate 9                                                                 |
+| 11   | NOT_STARTED | —          | —                | —             | Engine MVP 驗收點                                                           |
+| 12   | NOT_STARTED | —          | —                | —             | Tail + Arm 通過後才開始                                                     |
+| 13   | NOT_STARTED | —          | —                | —             | 依賴 Gate 12                                                                |
+| 14   | NOT_STARTED | —          | —                | —             | Core 成熟後才引入 AI                                                        |
+| 15   | NOT_STARTED | —          | —                | —             | 依賴 Preview 與 AI Planner                                                  |
+| 16   | NOT_STARTED | —          | —                | —             | MCP 僅作 Adapter                                                            |
+| 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill                                                              |
 
-Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）；Gate 2 的 Jev 審查為 2,739 tokens（input 2,469、output 270）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。Codex 的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1、2 細目見 `docs/reviews/GATE_1_REVIEW.json` 與 `docs/reviews/GATE_2_REVIEW.json`。
+Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）；Gate 2 的 Jev 審查為 2,739 tokens（input 2,469、output 270）；Gate 3 的 Jev 審查為 3,342 tokens（input 3,072、output 270）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。Codex 主代理與 Gate 3 Astra 子代理的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1～3 細目見 `docs/reviews/GATE_1_REVIEW.json`、`docs/reviews/GATE_2_REVIEW.json` 與 `docs/reviews/GATE_3_REVIEW.json`。
+
+### Gate 3 執行基線（Jev 已核准）
+
+- Astra High 子代理僅提出設計與測試判準，未修改程式；主代理實作 deterministic mesh，Jev 仍是正式驗收者。
+- 輸入：Gate 2 `AssetPart.alphaMask` 的非零 alpha 與顯示 bounds；輸出：既有 `MeshSpec-0.1`，不改 Schema。
+- 最小方法：4-connected 單一區塊、像素邊界、精確共線簡化、Earcut 候選三角形、內部頂點、獨立 Mesh Validator。固定輸入須固定輸出。
+- 嚴格模式拒絕孤立區、角點 pinch 與孔洞；選用前處理必須由呼叫者設定總變更像素比例上限並記錄捨棄與填補數量，不默默丟圖。
+- 私有實測素材選用喵助 `Tail.png`（294×530，SHA-256 `B62426BE390AD824DB5A691C63B9E38A61DB52405BD5AF105164C2E48BF8B7F6`），不提交原圖或導出網格。0.5% 總變更預算下排除孤立像素 154、補角點 1、補 5 個單像素孔洞，產生 1,214 vertices／1,476 triangles，最小／最大三角形面積 0.5／504 pixel²；100 次額外產生的序列化完全相同。此結果是結構與確定性證據，不宣稱已有藝術品質或變形驗收。
+- 未涵蓋：骨骼、權重、關節感知拓樸、動畫、Spine mesh 序列化與正式視覺 Preview；這些必須留待後續 Gate。
 
 ## 13. Gate 0 歷史範圍與下階段規則
 
-Gate 0～2 均已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate；下一 Gate 仍須由使用者啟動：
+Gate 0～3 均已完成並獲 Jev 核准。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate；下一 Gate 仍須由使用者啟動：
 
 1. 建立 Repository 與 TypeScript workspace。
 2. 建立 lint、formatter、test、build scripts。
