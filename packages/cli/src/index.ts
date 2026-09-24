@@ -15,6 +15,7 @@ import {
   prepareAlphaForMesh,
   type MeshGenerationOptions,
 } from "@autospine/mesh";
+import { ChainRigError, generateChainRig } from "@autospine/rig";
 
 import {
   SpineCompileError,
@@ -24,7 +25,7 @@ import {
 } from "@autospine/spine";
 
 const usage =
-  "Usage: autospine <compile-minimal|parse-png|parse-psd|mesh-png|mesh-asset> <input> <output.json> [manifest.json|part-id|cleanup-fraction] [cleanup-fraction] [--intent=rigid|chain|unknown] [--reference-profile=profile.json]";
+  "Usage: autospine <compile-minimal|parse-png|parse-psd|mesh-png|mesh-asset|rig-chain> <input> <output.json> [manifest.json|part-id|cleanup-fraction] [cleanup-fraction] [--intent=rigid|chain|unknown] [--reference-profile=profile.json]";
 
 async function writeMesh(
   part: Parameters<typeof generateMeshWithDiagnostics>[0],
@@ -95,6 +96,15 @@ async function main(): Promise<void> {
         ) as MeshGenerationOptions["referenceTopology"])
       : undefined,
   };
+  if (command === "rig-chain" && !manifestPath && !extra) {
+    const input = JSON.parse(await readFile(source, "utf8")) as unknown;
+    const rig = generateChainRig(input);
+    await writeFile(destination, `${JSON.stringify(rig, null, 2)}\n`, {
+      encoding: "utf8",
+      flag: "wx",
+    });
+    return;
+  }
   if (command === "compile-minimal" && !manifestPath) {
     const input = JSON.parse(await readFile(source, "utf8")) as MinimalSpineInput;
     const document = compileSpine40(input);
@@ -165,7 +175,8 @@ main().catch((error: unknown) => {
   if (
     error instanceof SpineCompileError ||
     error instanceof AssetParseError ||
-    error instanceof MeshError
+    error instanceof MeshError ||
+    error instanceof ChainRigError
   )
     console.error(JSON.stringify(error.validation));
   else console.error(error instanceof Error ? error.message : String(error));

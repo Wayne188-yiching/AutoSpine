@@ -25,6 +25,7 @@
     "parse:psd": "npm run build && node packages/cli/dist/index.js parse-psd",
     "mesh:png": "npm run build && node packages/cli/dist/index.js mesh-png",
     "mesh:asset": "npm run build && node packages/cli/dist/index.js mesh-asset",
+    "rig:chain": "npm run build && node packages/cli/dist/index.js rig-chain",
     "typecheck": "tsc -b && tsc -p tests/tsconfig.json --noEmit",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test"
   },

@@ -12,7 +12,7 @@ The deterministic Core must work without an AI model. AI may choose templates an
 
 ## Current status
 
-Gates 0 through 3.2 are approved. Gate 3.2 was repaired after the owner required each mesh to stay within +/-20% of its matching original artist attachment: beard is now 24/24 vertices and house is 25/25, with matched outer/interior distributions. The final [Gate 3.2 Jev review](docs/reviews/GATE_3_2_RECHECK_5.json) approved the static topology evidence after 50 tests; deformation quality remains for later Gates. Prior rejected reviews remain in `docs/reviews/` for audit. The [development workflow](AUTOSPINE_DEVELOPMENT_WORKFLOW.md) holds the current status and exact Jev token usage.
+Gates 0 through 4 are approved. Gate 3.2 was repaired after the owner required each mesh to stay within +/-20% of its matching original artist attachment: beard is now 24/24 vertices and house is 25/25, with matched outer/interior distributions. The [Gate 3.2 Jev review](docs/reviews/GATE_3_2_RECHECK_5.json) approved that static topology evidence; deformation quality remains for later Gates. Gate 4 adds a deterministic straight [ChainRigTemplate](docs/reviews/GATE_4_REVIEW.json) from explicit endpoints and bone count, with 69 passing tests. Prior rejected reviews remain in `docs/reviews/` for audit. The [development workflow](AUTOSPINE_DEVELOPMENT_WORKFLOW.md) holds the current status and exact Jev token usage.
 
 See:
 
@@ -41,7 +41,10 @@ npm run parse:png -- path/to/png-parts output.json [manifest.json]
 npm run parse:psd -- path/to/layered.psd output.json
 npm run mesh:png -- path/to/tail.png mesh.json [cleanup-fraction]
 npm run mesh:asset -- asset.json mesh.json part-id [cleanup-fraction]
+npm run rig:chain -- chain-input.json rig.json
 ```
+
+For `rig:chain`, the input JSON is `{ "id": "tail", "name": "Tail", "start": [0, 0], "end": [0, 120], "boneCount": 5 }`. It produces an equal-length, parent-first `RigSpec` starter chain; it does not infer pivots, bind artwork, calculate weights or produce a final Spine scene. Input is preserved and existing output is not overwritten.
 
 Gate 3.2 adds optional `--intent=chain|rigid|unknown` and `--reference-profile=profile.json` to both mesh commands. The profile is a small numeric JSON object with `vertices`, `hull`, and optional `bands` (`position` and `widthFraction` between zero and one); it contains no Spine coordinates. Use an explicit `chain` hint for the previously approved Tail use case and `rigid` for a confirmed non-deforming part. The default is `unknown`, never inferred from filenames; it produces a sparse geometric starter and a review warning. CLI diagnostics always state that deformation is unverified and report skinny triangles. Programmatic callers can use `generateMeshWithDiagnostics`; the existing `generateMesh` API and MeshSpec schema remain available. These hints do not supply bones, weights, or joint-aware topology.
 
@@ -54,6 +57,7 @@ packages/core/    Engine-neutral IR facade
 packages/spine/   Minimal Spine 4.0.64 adapter
 packages/assets/  PNG Parts and PSD asset parsers
 packages/mesh/    Deterministic alpha contour, triangulation, and MeshSpec validator
+packages/rig/     Deterministic straight chain RigSpec generator
 packages/cli/     Thin file-based commands
 schemas/          Runtime schemas and inferred TypeScript types
 tests/            Cross-package validation tests

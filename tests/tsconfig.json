@@ -9,7 +9,8 @@
     { "path": "../packages/core" },
     { "path": "../packages/spine" },
     { "path": "../packages/assets" },
-    { "path": "../packages/mesh" }
+    { "path": "../packages/mesh" },
+    { "path": "../packages/rig" }
   ],
   "include": ["**/*.ts"]
 }

@@ -18,7 +18,8 @@
       "@autospine/schemas": ["./schemas/src/index.ts"],
       "@autospine/spine": ["./packages/spine/src/index.ts"],
       "@autospine/assets": ["./packages/assets/src/index.ts"],
-      "@autospine/mesh": ["./packages/mesh/src/index.ts"]
+      "@autospine/mesh": ["./packages/mesh/src/index.ts"],
+      "@autospine/rig": ["./packages/rig/src/index.ts"]
     }
   }
 }

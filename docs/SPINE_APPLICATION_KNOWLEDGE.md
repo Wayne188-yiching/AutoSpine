@@ -1,8 +1,8 @@
 # AutoSpine — Spine 應用知識基線
 
 版本：0.1  
-狀態：Gate 0 知識基線；Gate 1 最小格式已以 Spine 4.0.64 驗證；Gate 3 MeshSpec 拓樸已驗收
-最後整理：2026-09-22
+狀態：Gate 0 知識基線；Gate 1 最小格式已以 Spine 4.0.64 驗證；Gate 3 MeshSpec 拓樸、Gate 4 明確端點骨鏈已驗收
+最後整理：2026-09-24
 
 ## 1. 文件用途
 
@@ -183,6 +183,8 @@ joint candidate = centroid(alpha(parent) ∩ alpha(child))
 - Parent 必須先於 child 序列化。
 - 不允許 cycle、missing parent 或零長度 deform chain。
 - 背景、全局特效和陰影不得誤掛在局部變形骨下。
+
+Gate 4 的 `ChainRigTemplate` 僅處理已明確給定的 `start`、`end` 和 `boneCount`，不從圖像猜 joint 或 pivot。`RigSpec` 的根骨 `x/y` 是世界起點；子骨 `x/y` 是相對父骨的 setup pose 座標，`rotation` 是相對父骨的角度（度），`length` 是父骨局部 X 軸上的長度。每節等長、按 parent-first 排序；第一節指向終點，後續節點 local rotation 為 0。這是 AutoSpine 的確定性直鏈政策，不代表所有美術素材都應用等長骨骼；由人工或後續模組決定曲線、關節分布與 attachment 綁定。零距離、不合法點數或非有限座標必須回報 rig-stage 錯誤。
 
 ## 7. Mesh
 
@@ -644,3 +646,7 @@ Jev 使用量：8,807 input tokens、248 output tokens。所有集中式開發�
 **現況修正**：以下最初核准是舊規則的歷史紀錄；使用者追加同檔人工佈線為標準、頂點數雙向誤差 ≤20%。返工後鬍鬚 24／24 點、房屋 25／25 點，外框與內部數量也與原檔相同；最終 [Jev 複審](reviews/GATE_3_2_RECHECK_5.json) 已核准。房屋內部點與人工頂點平均最近距離 2.82 px，但不代表完全相同邊線或變形品質。生效規則與 Token 細目以集中開發流程為準。
 
 2026-09-23，Jev `APPROVED` 0.94。同圖 AWP 鬍鬚／房屋生成頂點由 51／275 降至 25／11，Tail 保留 24 點與既有覆蓋；流程、用途設定、41 tests、100 次固定輸出及 Token 紀錄集中於 [開發流程](../AUTOSPINE_DEVELOPMENT_WORKFLOW.md)。人工網格可能故意包含透明 padding，不宜只靠貼像素程度或點數判斷優劣；使用者確認生成仍維持各 2% 漏覆／多覆門檻。`chain` 的五個截面候選點並非推定關節；`rigid` 不適用待變形部件，`unknown` 必須複查。所有輸出仍未驗證動態變形，頭部 deform 尚未解決；不能將本核准外推為人工同等佈線品質。
+
+### Gate 4 — 明確端點骨鏈
+
+2026-09-24，Jev `APPROVED` 0.96。`ChainRigTemplate` 以外部給定的兩端點與骨數，產生 parent-first、等長、可重現的 `RigSpec` 直鏈；獨立正向運動學測試檢查每節世界位置及終點，69 個完整測試通過。這僅證明骨鏈數學與資料結構正確，**不代表**已從 AWP 或任何人物圖像推定符合人工標準的 pivot、骨骼數、權重或動畫變形。見 [Gate 4 Jev 驗收](reviews/GATE_4_REVIEW.json)。

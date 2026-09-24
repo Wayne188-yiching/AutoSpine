@@ -448,7 +448,7 @@ Question to solve:
 | 3    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.98 | Tail alpha → MeshSpec；34 tests；實際 Tail.png 100 次一致；Jev 3,342 tokens |
 | 3.1  | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95 | 參考 23 頂點；實測 24 頂點／27 三角形；35 tests；Jev 5,290 tokens           |
 | 3.2  | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.87 | 人工／生成鬍鬚 24／24、房屋 25／25；50 tests；Jev 累計 23,170 tokens        |
-| 4    | NOT_STARTED | —          | —                | —             | 依賴 Gate 3.2                                                               |
+| 4    | APPROVED    | 2026-09-23 | 2026-09-24       | APPROVED 0.96 | 直線等長骨鏈；69 tests；100 次一致；Jev 2,588 tokens                        |
 | 5    | NOT_STARTED | —          | —                | —             | 依賴 Gate 4                                                                 |
 | 6    | NOT_STARTED | —          | —                | —             | Tail MVP 驗收點                                                             |
 | 7    | NOT_STARTED | —          | —                | —             | Arm MVP 驗收點                                                              |
@@ -464,6 +464,14 @@ Question to solve:
 | 17   | NOT_STARTED | —          | —                | —             | 最後建立 Skill                                                              |
 
 Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）；Gate 2 的 Jev 審查為 2,739 tokens（input 2,469、output 270）；Gate 3 的 Jev 審查為 3,342 tokens（input 3,072、output 270）；Gate 3.1 的兩次 Jev 審查共 5,290 tokens（input 4,750、output 540）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。Codex 主代理與 Gate 3 Astra 子代理的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1～3.1 細目見 `docs/reviews/GATE_1_REVIEW.json`、`docs/reviews/GATE_2_REVIEW.json`、`docs/reviews/GATE_3_REVIEW.json` 與 `docs/reviews/GATE_3_1_REVIEW.json`。
+
+Gate 4 Token 用量：Jev 正式驗收一次，實測 input 2,318、output 270，合計 **2,588 tokens**，見 `docs/reviews/GATE_4_REVIEW.json`。Codex 主代理的逐 Gate input/output 精確用量無法取得；其他協作模型未使用，因此全 Gate 總計無法精確合計，不以 Jev 數字冒充總開發量。
+
+### Gate 4 執行基線（Jev 已核准）
+
+- 明確的 `start`、`end`、`boneCount` 輸入，產生 schema-valid `RigSpec` 直線等長骨鏈；根骨使用世界起點與朝向，子骨使用相對父骨的局部位移及零局部旋轉，parent-first 排序。Gate 4 不從圖片推測關節或自動綁定 Mesh，也不提前實作權重／動畫。
+- 獨立正向運動學測試覆蓋水平、向上、斜向與反向，逐節核對 world joint 與終點；11 種退化輸入回傳 rig-stage 結構化錯誤。CLI 不覆寫輸入或既有輸出；固定輸入 100 次序列化完全一致。
+- `npm run verify`：格式、lint、build/typecheck 與 69 tests／9 files 全過，包含先前 50 個測試。Jev `jev-1.13.0` 於 2026-09-24 核准，APPROVED probability 0.96、tests credible 0.86、evidence quality 3.95/4。下一 Gate 為 Gate 5 Weight Solver v1，依流程等待新的開發指令。
 
 ### Gate 3 執行基線（Jev 已核准）
 

@@ -20,6 +20,14 @@ describe("Gate 0 package boundaries", () => {
     expect(meshConfig.references).toEqual([{ path: "../../schemas" }]);
     expect(meshSource).not.toMatch(/@autospine\/(spine|assets|core)|typesafe|\.spine|SkeletonJson/);
   });
+  it("keeps deterministic chain math independent of Spine, Mesh, assets, and AI", () => {
+    const rigPackage = JSON.parse(readFileSync(resolve("packages/rig/package.json"), "utf8")) as {
+      dependencies: Record<string, string>;
+    };
+    const rigSource = readFileSync(resolve("packages/rig/src/index.ts"), "utf8");
+    expect(Object.keys(rigPackage.dependencies)).toEqual(["@autospine/schemas"]);
+    expect(rigSource).not.toMatch(/@autospine\/(spine|mesh|assets|core)|typesafe|\.spine/);
+  });
   it("exposes the shared IR through core", () => {
     expect(Object.keys(SPEC_SCHEMAS)).toHaveLength(8);
   });
