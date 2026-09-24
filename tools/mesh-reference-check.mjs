@@ -13,6 +13,8 @@ import {
   prepareAlphaForMesh,
   validateMeshSpec,
 } from "@autospine/mesh";
+import { classifySpineMeshEdges } from "./spine-edge-classification.mjs";
+import { compareArtistTopology } from "./artist-topology-policy.mjs";
 
 function inside(polygon, x, y) {
   let result = false;
@@ -149,10 +151,13 @@ for (const entry of config.cases) {
       attachment.uvs[i * 2 + 1] * height,
     ]);
     const hull = Array.from({ length: attachment.hull }, (_, i) => i);
-    artistGeometry = { vertices: points, hull, triangles: attachment.triangles };
+    const edgeClasses = classifySpineMeshEdges(attachment);
+    artistGeometry = { vertices: points, hull, triangles: attachment.triangles, ...edgeClasses };
     artist = {
       spineVersion: document.skeleton.spine,
       ...metrics(points, hull, attachment.triangles, prepared.alpha, width, height),
+      manualEdges: edgeClasses.manualEdges.length,
+      automaticTriangleEdges: edgeClasses.automaticTriangleEdges.length,
     };
   }
   const referenceTopology =
@@ -229,6 +234,13 @@ for (const entry of config.cases) {
             artistGeometry.vertices.slice(artistGeometry.hull.length),
             mesh.vertices.slice(mesh.hull.length),
           ),
+          topology: compareArtistTopology({
+            id: entry.id,
+            artist: artistGeometry,
+            generated: mesh,
+            width,
+            height,
+          }),
         }
       : null,
     deterministicRuns: runs,
@@ -237,3 +249,10 @@ for (const entry of config.cases) {
   console.log(JSON.stringify(result));
 }
 await writeFile(join(out, "report.json"), JSON.stringify(results, null, 2), { flag: "wx" });
+if (
+  results.some(
+    (result) =>
+      result.referenceComparison && result.referenceComparison.topology.status !== "PASSED",
+  )
+)
+  process.exitCode = 2;

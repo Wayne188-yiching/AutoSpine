@@ -9,6 +9,23 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 
+def dashed_line(draw, start, end, color, dash=6, gap=5):
+    dx, dy = end[0] - start[0], end[1] - start[1]
+    length = (dx * dx + dy * dy) ** 0.5
+    if not length:
+        return
+    for offset in range(0, int(length), dash + gap):
+        last = min(length, offset + dash)
+        draw.line(
+            (
+                (start[0] + dx * offset / length, start[1] + dy * offset / length),
+                (start[0] + dx * last / length, start[1] + dy * last / length),
+            ),
+            fill=color,
+            width=1,
+        )
+
+
 def render(config_path, baseline_dir, candidate_dir, output_dir):
     config = json.loads(Path(config_path).read_text(encoding="utf-8"))
     destination = Path(output_dir)
@@ -26,6 +43,8 @@ def render(config_path, baseline_dir, candidate_dir, output_dir):
         scale = min((width - 50) / image.width, (height - 180) / image.height)
         scaled = image.resize((round(image.width * scale), round(image.height * scale)), Image.Resampling.NEAREST)
         for column, (label, mesh) in enumerate(panels):
+            if label == "Artist reference" and "manualEdges" not in mesh:
+                raise ValueError("Artist reference must include classified Spine edges")
             ox = column * width + (width - scaled.width) // 2
             oy = 130 + (height - 180 - scaled.height) // 2
             for y in range(oy, oy + scaled.height, 16):
@@ -40,9 +59,18 @@ def render(config_path, baseline_dir, candidate_dir, output_dir):
                 tri = indices[i:i+3]
                 for a, b in zip(tri, tri[1:] + tri[:1]):
                     edges.add(tuple(sorted((a, b))))
-            for a, b in edges:
-                draw.line((points[a], points[b]), fill="#ffcb69", width=1)
             hull = mesh["hull"]
+            hull_edges = {
+                tuple(sorted((hull[i], hull[(i + 1) % len(hull)])))
+                for i in range(len(hull))
+            }
+            manual_edges = {
+                tuple(sorted(edge)) for edge in mesh.get("manualEdges", [])
+            }
+            for a, b in sorted(edges - hull_edges - manual_edges):
+                dashed_line(draw, points[a], points[b], "#aab4c3")
+            for a, b in sorted(manual_edges):
+                draw.line((points[a], points[b]), fill="#ffad4d", width=2)
             draw.line([points[i] for i in hull + hull[:1]], fill="#3fe3e7", width=2)
             for i, (x, y) in enumerate(points):
                 color = "#3fe3e7" if i in hull else "#ffae42"
@@ -50,8 +78,8 @@ def render(config_path, baseline_dir, candidate_dir, output_dir):
             draw.text((column*width+20, 18), f"{name} | {label}", font=small, fill="white")
             draw.text((column*width+20, 53), f"{len(points)} vertices / {len(indices)//3} triangles", font=small, fill="white")
             draw.text((column*width+20, 85), f"{len(hull)} hull + {len(points)-len(hull)} interior", font=small, fill="#bcc8da")
-        draw.text((18, height-42), "Exact JSON topology overlay", font=small, fill="white")
-        draw.text((18, height-22), "Static only; deformation NOT verified", font=small, fill="white")
+        draw.text((18, height-42), "Cyan hull | orange manual | gray dashed automatic", font=small, fill="white")
+        draw.text((18, height-22), "Static only; topology acceptance reopened", font=small, fill="white")
         target = destination / f"gate32-{name}.png"
         if target.exists():
             raise FileExistsError(target)

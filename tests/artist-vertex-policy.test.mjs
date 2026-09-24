@@ -40,15 +40,15 @@ describe("Artist reference hard acceptance rule", () => {
   });
   const evaluate = (artistVertices, generatedVertices) =>
     checkArtistVertexCounts([{ id: "matched", artistVertices, generatedVertices }]);
-  it("accepts both exact 20% boundaries and rejects both outside boundaries", () => {
-    for (const count of [20, 25, 30]) expect(evaluate(25, count).status).toBe("PASSED");
-    for (const count of [19, 31]) expect(evaluate(25, count).status).toBe("REJECTED");
+  it("accepts both exact 5% boundaries and rejects both outside boundaries", () => {
+    for (const count of [19, 20, 21]) expect(evaluate(20, count).status).toBe("PASSED");
+    for (const count of [18, 22]) expect(evaluate(20, count).status).toBe("REJECTED");
   });
   it("uses whole vertices without rounding away excess error", () => {
-    expect(evaluate(24, 25).cases[0]).toMatchObject({ minimum: 20, maximum: 28 });
-    expect(evaluate(24, 19).status).toBe("REJECTED");
-    expect(evaluate(24, 29).status).toBe("REJECTED");
-    expect(evaluate(24, 28).status).toBe("PASSED");
+    expect(evaluate(24, 25).cases[0]).toMatchObject({ minimum: 23, maximum: 25 });
+    expect(evaluate(24, 22).status).toBe("REJECTED");
+    expect(evaluate(24, 26).status).toBe("REJECTED");
+    expect(evaluate(24, 23).status).toBe("PASSED");
   });
   it("rejects the current house despite the beard passing", () => {
     const result = checkGate32ArtistCounts({

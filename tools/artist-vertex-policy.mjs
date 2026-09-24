@@ -1,5 +1,5 @@
 /** Hard acceptance check, independent of Jev's probabilistic judgment.
- * The user confirmed a symmetric 20% limit on matched artist attachments.
+ * The user replaced the old 20% budget with a symmetric 5% limit.
  */
 export function checkArtistVertexCounts(cases) {
   if (!Array.isArray(cases) || cases.length === 0)
@@ -13,20 +13,20 @@ export function checkArtistVertexCounts(cases) {
       generatedVertices < 3
     )
       return { id, status: "BLOCKED", reason: "Missing or invalid vertex counts" };
-    // Integer comparison avoids floating-point rejection exactly at +/-20%.
-    const passed = Math.abs(generatedVertices - artistVertices) * 5 <= artistVertices;
+    // Integer comparison avoids floating-point rejection exactly at +/-5%.
+    const passed = Math.abs(generatedVertices - artistVertices) * 20 <= artistVertices;
     return {
       id,
       artistVertices,
       generatedVertices,
-      minimum: Math.ceil((artistVertices * 4) / 5),
-      maximum: Math.floor((artistVertices * 6) / 5),
+      minimum: Math.ceil((artistVertices * 19) / 20),
+      maximum: Math.floor((artistVertices * 21) / 20),
       signedDeviation: (generatedVertices - artistVertices) / artistVertices,
       status: passed ? "PASSED" : "REJECTED",
     };
   });
   return {
-    maxRelativeDeviation: 0.2,
+    maxRelativeDeviation: 0.05,
     status: checked.some((item) => item.status === "BLOCKED")
       ? "BLOCKED"
       : checked.some((item) => item.status === "REJECTED")

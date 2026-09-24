@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
 import { checkGate32ArtistCounts } from "./artist-vertex-policy.mjs";
+import { checkGate32TopologySummary } from "./artist-topology-policy.mjs";
 
 const reviewPath = process.argv[2];
 if (!reviewPath || process.argv.length !== 3) {
@@ -28,6 +29,18 @@ try {
         }),
       );
       process.exit(review.artistVertexPrecheck.status === "BLOCKED" ? 3 : 2);
+    }
+    review.artistTopologyPrecheck = checkGate32TopologySummary(review);
+    if (review.artistTopologyPrecheck.status !== "PASSED") {
+      await writeFile(reviewPath, `${JSON.stringify(review, null, 2)}\n`, "utf8");
+      console.log(
+        JSON.stringify({
+          source: "local-hard-rule",
+          jevCalled: false,
+          ...review.artistTopologyPrecheck,
+        }),
+      );
+      process.exit(review.artistTopologyPrecheck.status === "BLOCKED" ? 3 : 2);
     }
   }
   process.env.TYPESAFE_LOG_LEVEL ??= "warn";
@@ -88,7 +101,7 @@ try {
       ...(gate === 3.2
         ? {
             artist_topology_supported: noul(
-              "Does the evidence compare generated edge flow and boundary/interior distribution to the SAME original artist attachment, with vertex counts within +/-20%? Counts alone, artificial point padding, low polygon count, or rigid intent do not establish artist-equivalent topology. Are the in-scope topology claims supported with differences disclosed?",
+              "Does the evidence compare the SAME original artist attachment with vertex counts within +/-5%, every matched vertex within 5% of image diagonal, all cyan hull and solid orange manual edges preserved, and at least 80% of dashed automatic triangle edges? Manual lines must not be confused with dashed triangulation; counts alone or rigid intent are not sufficient.",
             ),
           }
         : {}),
@@ -144,6 +157,7 @@ try {
   const approved =
     (gate !== 3.2 ||
       (review.artistVertexPrecheck.status === "PASSED" &&
+        review.artistTopologyPrecheck.status === "PASSED" &&
         thresholds.artistTopologySupported >= 0.8)) &&
     thresholds.verdict === "APPROVED" &&
     thresholds.verdictProbability >= 0.8 &&
