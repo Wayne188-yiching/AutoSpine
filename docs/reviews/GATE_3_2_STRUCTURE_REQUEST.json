@@ -1,0 +1,77 @@
+{
+  "model": "jev-latest",
+  "state": {
+    "purpose": "design-advisory-not-gate-approval",
+    "authorization": "PREPARED_NOT_SUBMITTED. Await owner approval for this new derived-data payload and credit usage; earlier authorization covered a different request.",
+    "ownerGoal": "Complete all 164 current primary Gate 3.2 mesh cases, then formal Jev acceptance and source-only GitHub push. Only then continue Gate 4. No unseen-image blind test in this round.",
+    "fixedRequirements": [
+      "Absolute per-attachment vertex count difference <=5.",
+      "Missed original foreground within the same artist-used region <=2%; padding <=same artist attachment; zero reincorporation of excluded foreground.",
+      "Previously adjudicated hull/interior bottleneck position maximum <=5% PNG diagonal; unmatched categories checked.",
+      "Typed hull/manual/automatic recall 100%/100%/80%; same-type paths <=1px deviation with monotone projection and no mapped feature deletion.",
+      "100 deterministic runs for each accepted primary case, source preservation and screenshots; local test passes are not formal Gate approval.",
+      "Do not copy artist vertex coordinates, per-case normalized coordinate tables or artist edge indices into generation. Do not lower thresholds or select candidates by ground-truth comparison at runtime."
+    ],
+    "verifiedCurrentState": {
+      "primaryMeshes": 164,
+      "generated": 147,
+      "countPasses": 112,
+      "positionPasses": 23,
+      "coveragePasses": 62,
+      "completeStaticPasses": 17,
+      "blocked": 17,
+      "rejected": 130,
+      "portableTests": 127,
+      "formalJev": "NOT_SUBMITTED",
+      "repeatScope": "17 static-pass cases each 100 runs; remaining cases 2 runs. Not full-corpus 100-run acceptance."
+    },
+    "engineBoundary": "Deterministic generation receives selected alpha, vertex/hull counts and padding. It does not receive RGB pixels, author bones, animation deformation, expected XY or expected graph. Current interior points are paired horizontal slices. The explicit geometric constraint API is implemented and tested but no automatic semantic constraints are inferred.",
+    "additionalReferenceObservation": "Owner supplied another local tutorial folder. 10 Spine projects, 10 existing JSON exports, 300 PNGs. Two representative projects were freshly read-only exported with Spine 4.0.64 and unchanged source hashes. 11 of 13 meshes passed typed reference parsing; 2 were quarantined for edges absent from the triangle edge set. These remain supplemental and outside the 164-case denominator. In two curved strips, 24/18 and 27/21 total/hull counts both leave 6 interior vertices visibly arranged along the bend, with cross-strip and longitudinal authored links. Broad body and circular parts use different structures. This is a local static observation, not validated animation playback or a media upload.",
+    "experiment": {
+      "scope": "Isolated in-memory candidate generator; production files not changed.",
+      "rule": "For elongated parts with aspect ratio >2.2, derive one midpoint per connected alpha scanline, lightly smooth, sample the resulting curve at equal arc length. Reject multi-run scanlines instead of fabricating a single branch. Count is supplied, all XY come from alpha.",
+      "testedElongatedCases": 11,
+      "singleRunCases": 4,
+      "interiorMaximumBeforeAfterPercent": [
+        [19.6327, 5.791],
+        [19.7602, 14.7362],
+        [45.6731, 44.8525],
+        [13.8512, 10.6782]
+      ],
+      "additionalCompletePasses": 0,
+      "outlineExperiment": "Fixed-count arc-length contour resampling plus minimum outward offset constrained by pixel budgets did not yield a complete pass either. Some original hull errors persist. Offsets may not determine authored cap or joint landmarks.",
+      "inputConflictCheck": "Duplicate PNG/count/padding primary groups have identical artist meshes; no contradictory identical-input targets were found. Do not claim mathematical impossibility from this evidence."
+    },
+    "candidateNextSlice": "A small, explicitly selected structural family (e.g. unbranched strip versus broad patch) with geometry-derived cap/curvature landmarks, cross-sections and manual constraint generation; retain unknown/review status where family assumptions fail. Family labels are coarse intent, not a per-case answer graph. Use supplemental exemplars to derive the rule, synthetic regression fixtures to verify it, then all current primary cases. A failed experiment is not integrated merely because some error values improve.",
+    "privacy": "Derived counts, metrics and textual observations only. No raw PNG, video, Spine project, expected coordinate arrays, or credentials in this request. Jev cannot visually certify private art from this payload."
+  },
+  "questions": {
+    "next_development_slice": {
+      "type": "choice",
+      "instructions": "Choose the next evidence-backed development direction without treating the decision as Gate approval. The goal remains all 164 current cases; a small prototype is a development slice, not a reduced acceptance scope.",
+      "criteria": {
+        "STRUCTURAL_FAMILIES": "Prototype coarse explicit strip/patch intent with geometry-derived cap and curvature landmarks, then generate real same-type constraints. No expected coordinates or index graph as inputs. Record where richer intent is still needed.",
+        "ALPHA_ONLY_UNIVERSAL": "Continue a universal alpha-and-count generator without structural intent, attempting to infer all authored semantics from the silhouette alone.",
+        "RGB_FEATURE_RESEARCH": "First design a separate RGB feature-analysis boundary and obtain architecture/owner approval before adding it to Core; do not prematurely implement the later AI Planner Gate.",
+        "INSUFFICIENT_EVIDENCE": "Available derived evidence cannot select a responsible direction. Do not prescribe a design or relax acceptance; identify that further visual or semantic evidence must be obtained."
+      }
+    },
+    "integrate_current_medial_prototype": {
+      "type": "choice",
+      "instructions": "Should the current isolated midpoint prototype replace production paired slicing now? It improves some interior values but no case gains complete acceptance and manual constraints remain absent.",
+      "criteria": {
+        "KEEP_EXPERIMENTAL": "Keep outside production until the structural slice has full local geometric, typed-edge and regression evidence.",
+        "INTEGRATE_NOW": "Integrate the midpoint-only rule now despite no complete case improvement.",
+        "DISCARD_EVIDENCE": "Delete the negative experiment and return to unmeasured tuning."
+      }
+    },
+    "preserve_gate_failure": {
+      "type": "choice",
+      "instructions": "Confirm honest acceptance status under the unchanged requirements.",
+      "criteria": {
+        "REMAIN_IN_DEVELOPMENT": "17/164 is incomplete. No formal acceptance, GitHub push or Gate 4 progression until the specified complete gates pass.",
+        "APPROVE_PORTABLE_ONLY": "Treat 127 portable tests as sufficient for Gate 3.2 and push immediately."
+      }
+    }
+  }
+}

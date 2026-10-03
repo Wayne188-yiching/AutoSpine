@@ -2,7 +2,7 @@
 
 版本：0.1  
 狀態：Gate 0 知識基線；Gate 1 最小格式已以 Spine 4.0.64 驗證；Gate 3.2 人工網格品質依新版門檻重開；Gate 4 明確端點骨鏈獨立驗收
-最後整理：2026-09-24
+最後整理：2026-10-03
 
 ## 1. 文件用途
 
@@ -185,6 +185,8 @@ joint candidate = centroid(alpha(parent) ∩ alpha(child))
 - 背景、全局特效和陰影不得誤掛在局部變形骨下。
 
 Gate 4 的 `ChainRigTemplate` 僅處理已明確給定的 `start`、`end` 和 `boneCount`，不從圖像猜 joint 或 pivot。`RigSpec` 的根骨 `x/y` 是世界起點；子骨 `x/y` 是相對父骨的 setup pose 座標，`rotation` 是相對父骨的角度（度），`length` 是父骨局部 X 軸上的長度。每節等長、按 parent-first 排序；第一節指向終點，後續節點 local rotation 為 0。這是 AutoSpine 的確定性直鏈政策，不代表所有美術素材都應用等長骨骼；由人工或後續模組決定曲線、關節分布與 attachment 綁定。零距離、不合法點數或非有限座標必須回報 rig-stage 錯誤。
+
+`ENGINE_POLICY`（2026-10-03 精度修補）：有限端點不保證逐節 double 世界變換可表達所需位移。生成器保留原有等長與根座標契約，額外檢查每個 joint（含最後 tip）的鏈長正規化位移誤差 ≤`1e-10`；先除以鏈長再比較，以免極小絕對容差下溢，也不使用世界原點量級放寬容差。不可表達、世界累加非有限或任何關節超限時，回傳 `RIG_NUMERIC_PRECISION`（stage=rig、severity=3），建議呼叫者縮小座標或另行選擇靠近原點的輸入；不自動移動構圖或改骨長。這是 JavaScript Number 直鏈的數值輸入政策，不是 Spine 官方格式／匯入或動畫驗證。實作與測試見 [精度修補紀錄](research/GATE_4_PRECISION_IMPLEMENTATION.md)；新版經獨立數值稽核及本次授權的正式 Jev 審查核准，見 [完整驗收紀錄](research/GATE_4_PRECISION_ACCEPTANCE.md)。
 
 ## 7. Mesh
 
@@ -644,11 +646,19 @@ Jev 使用量：8,807 input tokens、248 output tokens。所有集中式開發�
 ### Gate 3.2 — 用途與靜態密度校準
 
 **2026-09-24 重新開啟**：以下核准均為舊規則的歷史紀錄。使用者改定逐附件頂點數 ±5%、每點配對距離 ≤同圖對角線 5%、外框／人工指定實線全保留、虛線剖分邊相符率 ≥80%。同圖鬍鬚與房屋雖分別是 24／24、25／25 點，但重新檢查都不合格，Gate 5 暫停。過去房屋內部點平均最近距離 2.82 px 會掩蓋個別頂點錯位，也沒有分辨實線與虛線；見 [新版拓樸重驗證](reviews/GATE_3_2_TOPOLOGY_REOPEN_20260924.json)。生效門檻及 Token 紀錄以集中開發流程為準。
-
 `OFFICIAL_VERIFIED`：Spine 的 `triangles` 定義真正的三角形連接；編輯器的灰色虛線是自動算出的內部邊，**仍是會影響變形的實際連接**。人工以 Create 工具指定的內部橘色實線則是剖分約束，需從開啟 nonessential export 的 `edges` 扣除外框後辨識；沒有該欄位時不能推論「沒有實線」。相同端點的一條虛線不能算作已保留人工實線。參考 [Spine Mesh 官方指南](https://esotericsoftware.com/spine-meshes#Edges) 與 [JSON 匯出格式](https://esotericsoftware.com/spine-json-format)。
+**最新人工留白決定**：使用者確認同附件人工外框的留白可作新增透明區域預算；不再要求此校準路徑全部 ≤2% 多覆。漏覆仍以原始、未清理的 PNG 前景驗證 ≤2%，逐附件點數 ±5 與位置／線型審核保留。一般無參考生成與 Tail 原基線不變；以下較早的 2% 決定保留為歷史紀錄。
+
+**人工範圍補充**：使用者已確認對共用圖像／局部裁切附件，只把原 PNG alpha >0 且落在人工外框內的像素列為有效前景。漏覆和留白皆以此未清理的有效前景為分母；人工排除的圖像數量必須揭露，生成器不能把它重新包入。此為人工參考限定流程，不能宣稱已學會獨立辨識使用區域。
+
+**次像素減點實測（2026-09-27）**：對已提供零留白預算、原簡化點數仍超標的參考附件，新增只依 alpha 的有界角點微調（每點距候選原位 ≤1.5 像素，且留在 PNG 範圍）。候選至多 32 點，並限制點數 × 圖片像素數 ≤1,000,000；大圖或複雜案例仍可能保留原失敗結果。所有接受候選仍須無自交、原輪廓距離受限、透明多覆 0、漏覆 ≤2%。本輪 7 個 pig 附件點數改善，細繩 `2_string` 為 300→9 點；不代表內部佈線、可編輯人工實線語意或姿勢變形已合格。無參考路徑與已有可接受點數的候選不進入此搜尋。詳見 [減點紀錄](reviews/GATE_3_2_R_SUBPIXEL.json)。
+
+**現況修正（2026-09-26）**：Gate 3.2 已依最新指示重開，採逐附件絕對 ±5 點、位置及人工／自動線型對照，主資料為 Yuuna／panda／pig，教學為輔。以下 ≤20% 與 [Jev 複審](reviews/GATE_3_2_RECHECK_5.json) 核准僅為歷史紀錄，不代表新範圍通過。生效規則以集中開發流程為準。
 
 2026-09-23，Jev `APPROVED` 0.94。同圖 AWP 鬍鬚／房屋生成頂點由 51／275 降至 25／11，Tail 保留 24 點與既有覆蓋；流程、用途設定、41 tests、100 次固定輸出及 Token 紀錄集中於 [開發流程](../AUTOSPINE_DEVELOPMENT_WORKFLOW.md)。人工網格可能故意包含透明 padding，不宜只靠貼像素程度或點數判斷優劣；使用者確認生成仍維持各 2% 漏覆／多覆門檻。`chain` 的五個截面候選點並非推定關節；`rigid` 不適用待變形部件，`unknown` 必須複查。所有輸出仍未驗證動態變形，頭部 deform 尚未解決；不能將本核准外推為人工同等佈線品質。
 
 ### Gate 4 — 明確端點骨鏈
 
 2026-09-24，Jev `APPROVED` 0.96。`ChainRigTemplate` 以外部給定的兩端點與骨數，產生 parent-first、等長、可重現的 `RigSpec` 直鏈；獨立正向運動學測試檢查每節世界位置及終點，69 個完整測試通過。這僅證明骨鏈數學與資料結構正確，**不代表**已從 AWP 或任何人物圖像推定符合人工標準的 pivot、骨骼數、權重或動畫變形。見 [Gate 4 Jev 驗收](reviews/GATE_4_REVIEW.json)。
+
+2026-10-03 精度修補，Jev 新版 `APPROVED` probability 0.98、Evidence Quality 3.99/4，全部原有門檻通過。GPT-6.1 Sol High 加入每個 joint／tip 的正規化精度防護，不改原有座標、等長及父子契約；19 項定向 rig／CLI 測試、13 項新增審核門檻測試與 4 個不同的獨立數值案例通過，未重跑未受影響的歷史通過項目。只核准明確端點的直線等長骨鏈及數值拒絕政策，不新增綁圖、權重、動畫或官方 Spine 播放證據。見 [新版 Jev 裁決](reviews/GATE_4_PRECISION_DECISION.json) 及 [本輪驗收頁](reviews/gate-4-precision/review.html)。Gate 3.2 仍暫緩未通過，Gate 5 未開始。

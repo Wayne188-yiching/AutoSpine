@@ -53,4 +53,28 @@ describe("Gate 4 rig-chain CLI", () => {
     expect(existsSync(output)).toBe(false);
     expect(run("rig-chain", input, output, "surplus").status).toBe(1);
   });
+
+  it("emits a precision error without writing output or changing input", () => {
+    const input = join(folder, "precision-chain.json");
+    const output = join(folder, "precision-rig.json");
+    const source = JSON.stringify({
+      id: "precision",
+      name: "Precision",
+      start: [1e16, 0],
+      end: [1e16 + 4, 0],
+      boneCount: 256,
+    });
+    writeFileSync(input, source);
+    const result = run("rig-chain", input, output);
+    expect(result.status).toBe(1);
+    const validation = JSON.parse(result.stderr);
+    expect(validation.status).toBe("error");
+    expect(validation.issues[0]).toMatchObject({
+      code: "RIG_NUMERIC_PRECISION",
+      stage: "rig",
+      severity: 3,
+    });
+    expect(existsSync(output)).toBe(false);
+    expect(readFileSync(input, "utf8")).toBe(source);
+  });
 });

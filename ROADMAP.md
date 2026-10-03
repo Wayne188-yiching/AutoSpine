@@ -12,8 +12,8 @@ The authoritative Gate rules and status live in [AUTOSPINE_DEVELOPMENT_WORKFLOW.
 
 - Gate 3 — Tail mesh generation
 - Gate 3.1 — Tail mesh density and triangle quality refinement
-- Gate 3.2 — AWP character-part and Symbol static mesh density refinement
-- Gate 4 — Deterministic chain rig
+- Gate 3.2 — Reopened, deferred by owner on 2026-10-03 at 23/164 complete static passes: Yuuna/panda/pig artist topology calibration (absolute +/-5 vertices, positions, manual edges; tutorials support the review)
+- Gate 4 — Approved on 2026-10-03 after deterministic chain-rig precision refinement; [latest acceptance](docs/reviews/gate-4-precision/review.html) and [scope / visual example](docs/reviews/gate-4-resume/review.html)
 - Gate 5 — Weight Solver v1
 - Gate 6 — Tail deformation metrics and regression
 
@@ -37,4 +37,4 @@ The authoritative Gate rules and status live in [AUTOSPINE_DEVELOPMENT_WORKFLOW.
 - Gate 16 — MCP adapter
 - Gate 17 — AutoSpine Skill
 
-No Gate begins until the preceding Gate has passed developer verification and Jev acceptance.
+Normally no Gate begins until the preceding Gate has passed developer verification and Jev acceptance. On 2026-10-03 the owner explicitly deferred Gate 3.2 and authorized Gate 4 work first. The owner later separately authorized pushing a source-only progress snapshot to GitHub despite Gate 3.2 being incomplete. Neither instruction approves Gate 3.2 or authorizes Gate 5.

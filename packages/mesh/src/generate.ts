@@ -2,16 +2,55 @@ import earcut from "earcut";
 import type { AssetPart, MeshSpec } from "@autospine/schemas";
 import { signedArea2, simplifyContour, traceContour, type Point } from "./contour.js";
 import { failMesh, MeshError, validateMeshSpec } from "./validation.js";
+import { generateStripMesh } from "./strip.js";
+import { fitRasterRegion, type RasterRegion } from "./raster-region.js";
 
 export interface MeshGenerationOptions {
+  /** Opt-in boundary-only count reduction under unchanged raster budgets. */
+  boundaryDecimation?: boolean;
+  /** Explicit selected foreground and original raster; never reference vertex coordinates. */
+  rasterRegion?: RasterRegion;
   /** Caller-supplied purpose, never inferred from the file name. */
   intent?: "rigid" | "chain" | "unknown";
   /** Counts and normalized cross-section profile from a matched artist attachment. */
   referenceTopology?: {
     vertices: number;
     hull: number;
+    /** Measured transparent area / foreground area of the SAME artist attachment. */
+    maxAddedFraction?: number;
+    /** Explicit coarse structural intent, never expected coordinates or connectivity. */
+    family?: "strip-spine" | "strip-ladder";
     bands?: { position: number; widthFraction: number }[];
   };
+}
+
+/** A four-corner reference may intentionally span holes or separate visible islands.
+ * Qualify from the unmodified raster and its explicit padding budget, not a file name
+ * or reference coordinates. Linear scanning is bounded independently of contour tracing.
+ */
+export function referenceRectangleFits(
+  alpha: Uint8Array,
+  width: number,
+  height: number,
+  reference: MeshGenerationOptions["referenceTopology"],
+): boolean {
+  if (
+    reference?.vertices !== 4 ||
+    reference.hull !== 4 ||
+    reference.maxAddedFraction === undefined ||
+    !Number.isFinite(reference.maxAddedFraction) ||
+    reference.maxAddedFraction < 0 ||
+    !Number.isSafeInteger(width) ||
+    !Number.isSafeInteger(height) ||
+    width < 1 ||
+    height < 1 ||
+    width * height > 16_777_216 ||
+    alpha.length !== width * height
+  )
+    return false;
+  let foreground = 0;
+  for (const value of alpha) if (value > 0) foreground++;
+  return foreground > 0 && (alpha.length - foreground) / foreground <= reference.maxAddedFraction;
 }
 
 /** Geometric validity is not an approval of artistic topology or animated deformation. */
@@ -29,7 +68,7 @@ export function generateMeshWithDiagnostics(
   ).filter((angle) => angle < Math.PI / 18).length;
   if (skinnyTriangles) warnings.push("SKINNY_TRIANGLES");
   const reference = options.referenceTopology;
-  if (reference && Math.abs(mesh.vertices.length - reference.vertices) * 5 > reference.vertices)
+  if (reference && Math.abs(mesh.vertices.length - reference.vertices) > 5)
     warnings.push("ARTIST_VERTEX_BUDGET_EXCEEDED");
   return {
     mesh,
@@ -184,6 +223,15 @@ export function generateMesh(
   if (!["rigid", "chain", "unknown"].includes(intent))
     failMesh("MESH_INTENT", "Mesh intent must be rigid, chain, or unknown");
   const reference = options.referenceTopology;
+  if (options.boundaryDecimation !== undefined && typeof options.boundaryDecimation !== "boolean")
+    failMesh("MESH_DECIMATION", "Boundary decimation must be boolean");
+  if (options.boundaryDecimation && (!options.rasterRegion || !reference))
+    failMesh("MESH_DECIMATION", "Boundary decimation requires raster region and reference counts");
+  if (options.rasterRegion && reference?.maxAddedFraction === undefined)
+    failMesh(
+      "RASTER_REGION",
+      "Region constraints require an explicit same-attachment padding budget",
+    );
   if (
     reference &&
     (!Number.isSafeInteger(reference.vertices) ||
@@ -191,6 +239,12 @@ export function generateMesh(
       reference.hull < 3 ||
       reference.vertices < reference.hull ||
       reference.vertices > 2560 ||
+      (reference.family !== undefined &&
+        (!["strip-spine", "strip-ladder"].includes(reference.family) ||
+          reference.bands !== undefined ||
+          reference.maxAddedFraction === undefined)) ||
+      (reference.maxAddedFraction !== undefined &&
+        (!Number.isFinite(reference.maxAddedFraction) || reference.maxAddedFraction < 0)) ||
       (reference.bands &&
         (reference.bands.length * 2 !== reference.vertices - reference.hull ||
           reference.bands.some(
@@ -217,13 +271,53 @@ export function generateMesh(
     part.bounds.height <= 0
   )
     failMesh("PART_BOUNDS", "Part display bounds must be finite and positive");
-  const exactOutline = traceContour(alpha, width, height);
+  const referenceRectangle = referenceRectangleFits(alpha, width, height, reference);
+  const exactOutline: Point[] = referenceRectangle
+    ? [
+        [0, 0],
+        [width, 0],
+        [width, height],
+        [0, height],
+      ]
+    : traceContour(alpha, width, height);
+  const fitRegion = (mesh: MeshSpec): MeshSpec =>
+    options.rasterRegion
+      ? fitRasterRegion(
+          mesh,
+          part.bounds,
+          width,
+          height,
+          options.rasterRegion,
+          reference!.maxAddedFraction!,
+        )
+      : mesh;
+  if (reference?.family)
+    return fitRegion(
+      generateStripMesh(
+        part,
+        alpha,
+        width,
+        height,
+        reference.vertices,
+        reference.hull,
+        reference.maxAddedFraction!,
+        reference.family,
+      ),
+    );
   const xs = exactOutline.map(([x]) => x);
   const ys = exactOutline.map(([, y]) => y);
   const spanX = Math.max(...xs) - Math.min(...xs);
   const spanY = Math.max(...ys) - Math.min(...ys);
   const lowPoly = width * height > 256;
-  const outline = simplifyContour(exactOutline, alpha, width, height, lowPoly, reference?.hull);
+  const outline = simplifyContour(
+    exactOutline,
+    alpha,
+    width,
+    height,
+    lowPoly,
+    reference?.hull,
+    reference?.maxAddedFraction,
+  );
   const points: Point[] = [...outline];
   const flat = outline.flatMap((point) => point);
   const raw = earcut(flat);
@@ -352,6 +446,12 @@ export function generateMesh(
   const maxArea = lowPoly ? foreground / 6 : 512;
   if (intent !== "rigid" && !reference) subdivideOversized(points, triangles, maxArea);
   improveTriangulation(points, triangles);
+  // Rectangle diagonals have equal angle quality. Use a fixed top-right/bottom-left
+  // tie-break for this qualified profile, independent of artist XY or per-case edges.
+  // Non-reference generation and non-rectangular profiles keep their existing behavior.
+  if (referenceRectangle && points.length === 4) {
+    triangles.splice(0, triangles.length, [0, 1, 3], [1, 2, 3]);
+  }
   if (intent !== "rigid" && !reference) subdivideOversized(points, triangles, maxArea);
   const ordered = triangles
     .map(canonicalTriangle)
@@ -372,5 +472,149 @@ export function generateMesh(
   };
   const validation = validateMeshSpec(mesh);
   if (validation.status === "error") throw new MeshError(validation);
-  return mesh;
+  let current = fitRegion(mesh);
+  // Preserve authored edges and interior topology. Bound both candidate count and
+  // per-candidate raster work; reaching a limit keeps the last valid fitted mesh.
+  if (
+    !options.boundaryDecimation ||
+    reference!.vertices !== reference!.hull ||
+    current.hull.length !== current.vertices.length ||
+    current.manualEdges?.length ||
+    current.vertices.length > 64 ||
+    width * height > 150_000 ||
+    current.hull.length ** 2 * height > 1_000_000
+  )
+    return current;
+  let attempts = 0;
+  // BEGIN post-stall midpoint fallback
+  let midpointAttempts = 0;
+  // END post-stall midpoint fallback
+  while (current.vertices.length > reference!.vertices && attempts < 128) {
+    const raster = current.hull.map((index): Point => [
+      ((current.vertices[index]![0] - part.bounds.x) * width) / part.bounds.width,
+      ((current.vertices[index]![1] - part.bounds.y) * height) / part.bounds.height,
+    ]);
+    const removals = raster
+      .map((point, index) => ({
+        index,
+        area: Math.abs(
+          cross(
+            raster[(index + raster.length - 1) % raster.length]!,
+            point,
+            raster[(index + 1) % raster.length]!,
+          ),
+        ),
+      }))
+      .sort((a, b) => a.area - b.area || a.index - b.index);
+    let accepted = false;
+    for (const { index } of removals) {
+      if (attempts++ >= 128) break;
+      const reduced = raster.filter((_, j) => j !== index);
+      const raw = earcut(reduced.flat());
+      if (raw.length !== (reduced.length - 2) * 3) continue;
+      const triangles: [number, number, number][] = [];
+      for (let j = 0; j < raw.length; j += 3) {
+        const a = raw[j]!,
+          b = raw[j + 1]!,
+          c = raw[j + 2]!;
+        triangles.push(cross(reduced[a]!, reduced[b]!, reduced[c]!) > 0 ? [a, b, c] : [a, c, b]);
+      }
+      improveTriangulation(reduced, triangles);
+      const retained = current.hull.filter((_, j) => j !== index);
+      const candidate: MeshSpec = {
+        ...current,
+        vertices: retained.map((j) => current.vertices[j]!),
+        uvs: retained.map((j) => current.uvs[j]!),
+        hull: retained.map((_, j) => j),
+        triangles: triangles
+          .map(canonicalTriangle)
+          .sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2])
+          .flat(),
+      };
+      if (validateMeshSpec(candidate).status !== "passed") continue;
+      try {
+        // Each fit verifies the actual returned display geometry against the same
+        // original/target rasters. The per-fit movement bound is not cumulative.
+        current = fitRegion(candidate);
+        accepted = true;
+        break;
+      } catch (error) {
+        if (
+          !(error instanceof MeshError) ||
+          error.validation.issues.some((issue) => issue.code !== "RASTER_REGION_BUDGET")
+        )
+          throw error;
+      }
+    }
+    // BEGIN post-stall midpoint fallback
+    // Only extend a stalled deletion search, never one stopped by its work limit.
+    // Existing results that reach their requested count never enter this branch.
+    if (!accepted && attempts < 128 && midpointAttempts < 64) {
+      const edges = raster
+        .map((point, index) => ({
+          index,
+          length2:
+            (point[0] - raster[(index + 1) % raster.length]![0]) ** 2 +
+            (point[1] - raster[(index + 1) % raster.length]![1]) ** 2,
+        }))
+        .sort((a, b) => a.length2 - b.length2 || a.index - b.index);
+      for (const { index } of edges) {
+        if (midpointAttempts >= 64) break;
+        midpointAttempts++;
+        const next = (index + 1) % raster.length;
+        const midpoint: Point = [
+          (raster[index]![0] + raster[next]![0]) / 2,
+          (raster[index]![1] + raster[next]![1]) / 2,
+        ];
+        const retained = current.hull.map((_, j) => j).filter((j) => j !== next);
+        const reduced = retained.map((j) => (j === index ? midpoint : raster[j]!));
+        const raw = earcut(reduced.flat());
+        if (raw.length !== (reduced.length - 2) * 3) continue;
+        const triangles: [number, number, number][] = [];
+        for (let j = 0; j < raw.length; j += 3) {
+          const a = raw[j]!,
+            b = raw[j + 1]!,
+            c = raw[j + 2]!;
+          triangles.push(cross(reduced[a]!, reduced[b]!, reduced[c]!) > 0 ? [a, b, c] : [a, c, b]);
+        }
+        improveTriangulation(reduced, triangles);
+        const candidate: MeshSpec = {
+          ...current,
+          vertices: retained.map((j) =>
+            j === index
+              ? [
+                  part.bounds.x + (midpoint[0] * part.bounds.width) / width,
+                  part.bounds.y + (midpoint[1] * part.bounds.height) / height,
+                ]
+              : current.vertices[current.hull[j]!]!,
+          ),
+          uvs: retained.map((j) =>
+            j === index
+              ? [midpoint[0] / width, midpoint[1] / height]
+              : current.uvs[current.hull[j]!]!,
+          ),
+          hull: retained.map((_, j) => j),
+          triangles: triangles
+            .map(canonicalTriangle)
+            .sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2])
+            .flat(),
+        };
+        if (validateMeshSpec(candidate).status !== "passed") continue;
+        try {
+          current = fitRegion(candidate);
+          accepted = true;
+          break;
+        } catch (error) {
+          if (
+            !(error instanceof MeshError) ||
+            error.validation.issues.some((issue) => issue.code !== "RASTER_REGION_BUDGET")
+          )
+            throw error;
+        }
+      }
+    }
+    // END post-stall midpoint fallback
+    if (!accepted) break;
+  }
+  return current;
 }

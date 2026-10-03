@@ -7,3 +7,6 @@ _season3_materials/
 _season3_materials2/
 $out/
 fixtures/spine/minimal/export/*.json
+docs/local-reviews/
+# Preserve exact submitted bytes referenced by the recorded Jev response hash.
+docs/reviews/GATE_3_2_DESIGN_REQUEST.json

@@ -44,6 +44,38 @@ function simplifyArc(points: Point[], start: number, end: number, tolerance2: nu
   ];
 }
 
+/** Keep both ends of a raster's clipping edges before simplifying a thin outline.
+ * A short cap at an image border is a real corner, even when RDP could erase it.
+ */
+function simplifyClippedOutline(
+  outline: Point[],
+  width: number,
+  height: number,
+  tolerance2: number,
+): Point[] | undefined {
+  const anchors = new Set<number>([0]);
+  for (let i = 0; i < outline.length; i++) {
+    const a = outline[i]!,
+      b = outline[(i + 1) % outline.length]!;
+    if (
+      (a[0] === b[0] && (a[0] === 0 || a[0] === width)) ||
+      (a[1] === b[1] && (a[1] === 0 || a[1] === height))
+    ) {
+      anchors.add(i);
+      anchors.add((i + 1) % outline.length);
+    }
+  }
+  if (anchors.size < 3) return undefined;
+  const stops = [...anchors].sort((a, b) => a - b);
+  stops.push(outline.length);
+  const ring = [...outline, outline[0]!];
+  return stops.slice(0, -1).flatMap((start, i) =>
+    simplifyArc(ring, start, stops[i + 1]!, tolerance2)
+      .slice(0, -1)
+      .map((j) => ring[j]!),
+  );
+}
+
 function segmentsCross(a: Point, b: Point, c: Point, d: Point): boolean {
   const cross = (p: Point, q: Point, r: Point): number =>
     (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
@@ -78,13 +110,12 @@ function isSimple(points: Point[]): boolean {
   return true;
 }
 
-function withinRasterBudget(
+export function rasterDifference(
   simplified: Point[],
   alpha: Uint8Array,
   width: number,
   height: number,
-  maxDifference: number,
-): boolean {
+): { foreground: number; missed: number; added: number } {
   let foreground = 0;
   let missed = 0;
   let added = 0;
@@ -111,7 +142,73 @@ function withinRasterBudget(
       if (!filled && inside) added++;
     }
   }
-  return missed / foreground <= maxDifference && added / foreground <= maxDifference;
+  return { foreground, missed, added };
+}
+
+function withinRasterBudget(
+  points: Point[],
+  alpha: Uint8Array,
+  width: number,
+  height: number,
+  maxDifference: number,
+  maxAddedFraction = maxDifference,
+): boolean {
+  const { foreground, missed, added } = rasterDifference(points, alpha, width, height);
+  return missed / foreground <= maxDifference && added / foreground <= maxAddedFraction;
+}
+
+/** A pixel staircase need not force integer-coordinate vertices. For strict zero-padding
+ * references, search a bounded subpixel neighbourhood using only the supplied raster.
+ * The objective guides the search; final topology and raster checks remain mandatory.
+ */
+function fitRasterCorners(
+  initial: Point[],
+  alpha: Uint8Array,
+  width: number,
+  height: number,
+  pinImageBorders = false,
+): Point[] {
+  let points = initial;
+  const score = (candidate: Point[]): number => {
+    const { foreground, missed, added } = rasterDifference(candidate, alpha, width, height);
+    return Math.max(0, missed - 0.02 * foreground) + added * 4 + (missed + added) * 0.001;
+  };
+  let value = score(points);
+  for (const step of [0.5, 0.25, 0.125, 0.0625]) {
+    for (let pass = 0; pass < 8; pass++) {
+      let changed = false;
+      for (let index = 0; index < points.length; index++) {
+        let best = points;
+        for (const dx of [-step, 0, step]) {
+          for (const dy of [-step, 0, step]) {
+            if (dx === 0 && dy === 0) continue;
+            const point: Point = [
+              pinImageBorders && (initial[index]![0] === 0 || initial[index]![0] === width)
+                ? initial[index]![0]
+                : Math.max(0, Math.min(width, points[index]![0] + dx)),
+              pinImageBorders && (initial[index]![1] === 0 || initial[index]![1] === height)
+                ? initial[index]![1]
+                : Math.max(0, Math.min(height, points[index]![1] + dy)),
+            ];
+            if (Math.hypot(point[0] - initial[index]![0], point[1] - initial[index]![1]) > 1.5)
+              continue;
+            const candidate = points.map((p, i) => (i === index ? point : p));
+            const next = score(candidate);
+            if (next < value && signedArea2(candidate) > 0 && isSimple(candidate)) {
+              best = candidate;
+              value = next;
+            }
+          }
+        }
+        if (best !== points) {
+          points = best;
+          changed = true;
+        }
+      }
+      if (!changed) break;
+    }
+  }
+  return points;
 }
 
 /** Simplify the closed outline without crossing edges or exceeding the raster-change budget. */
@@ -122,6 +219,7 @@ export function simplifyContour(
   height: number,
   lowPoly: boolean,
   referenceHull?: number,
+  maxAddedFraction?: number,
 ): Point[] {
   const tolerance = lowPoly
     ? Math.min(6, Math.max(1.5, Math.sqrt(width * height) / 50))
@@ -135,20 +233,54 @@ export function simplifyContour(
   }
   const ring = [...outline, outline[0]!];
   let closest: Point[] | undefined;
+  const rasterCandidates: Point[][] = [];
   for (let attempt = tolerance; attempt >= 0.5; attempt *= 0.75) {
     const indices = [
       ...simplifyArc(ring, 0, opposite, attempt * attempt).slice(0, -1),
       ...simplifyArc(ring, opposite, outline.length, attempt * attempt).slice(0, -1),
     ];
     const simplified = indices.map((index) => ring[index]!);
+    if (lowPoly && referenceHull !== undefined && maxAddedFraction === 0) {
+      const clipped = simplifyClippedOutline(outline, width, height, attempt * attempt);
+      if (
+        clipped &&
+        clipped.length <= Math.min(32, referenceHull + 5) &&
+        clipped.length * width * height <= 1_000_000 &&
+        signedArea2(clipped) > 0 &&
+        isSimple(clipped)
+      )
+        rasterCandidates.push(clipped);
+    }
+    // Bound the fallback's work. Existing acceptable results and non-reference paths
+    // never enter the search; large/complex references remain explicit failures.
+    if (
+      lowPoly &&
+      referenceHull !== undefined &&
+      maxAddedFraction === 0 &&
+      simplified.length >= 3 &&
+      simplified.length <= Math.min(32, referenceHull + 5) &&
+      simplified.length * width * height <= 1_000_000 &&
+      signedArea2(simplified) > 0 &&
+      isSimple(simplified)
+    )
+      rasterCandidates.push(simplified);
     if (
       simplified.length >= 3 &&
       signedArea2(simplified) > 0 &&
       isSimple(simplified) &&
-      withinRasterBudget(simplified, alpha, width, height, lowPoly ? 0.02 : 0.01)
+      withinRasterBudget(simplified, alpha, width, height, lowPoly ? 0.02 : 0.01, maxAddedFraction)
     ) {
       const candidate = lowPoly
-        ? reduceContour(simplified, outline, alpha, width, height, tolerance, referenceHull)
+        ? reduceContour(
+            simplified,
+            outline,
+            alpha,
+            width,
+            height,
+            tolerance,
+            referenceHull,
+            maxAddedFraction,
+          )
         : simplified;
       if (referenceHull === undefined || candidate.length === referenceHull) return candidate;
       if (
@@ -156,6 +288,41 @@ export function simplifyContour(
         Math.abs(candidate.length - referenceHull) < Math.abs(closest.length - referenceHull)
       )
         closest = candidate;
+    }
+  }
+  if (referenceHull !== undefined && (!closest || closest.length > referenceHull + 5)) {
+    for (const candidate of rasterCandidates.sort(
+      (a, b) => Math.abs(a.length - referenceHull) - Math.abs(b.length - referenceHull),
+    )) {
+      for (const pinImageBorders of [true, false]) {
+        const fitted = reduceContour(
+          fitRasterCorners(candidate, alpha, width, height, pinImageBorders),
+          outline,
+          alpha,
+          width,
+          height,
+          tolerance,
+          referenceHull,
+          0,
+        );
+        if (
+          signedArea2(fitted) > 0 &&
+          isSimple(fitted) &&
+          withinRasterBudget(fitted, alpha, width, height, 0.02, 0) &&
+          outline.every((point) =>
+            fitted.some(
+              (a, i) =>
+                distanceToSegment2(point, a, fitted[(i + 1) % fitted.length]!) <=
+                tolerance * tolerance,
+            ),
+          ) &&
+          (!closest ||
+            Math.abs(fitted.length - referenceHull) < Math.abs(closest.length - referenceHull))
+        )
+          closest = fitted;
+        if (closest?.length === referenceHull) break;
+      }
+      if (closest?.length === referenceHull) break;
     }
   }
   return closest ?? outline;
@@ -172,6 +339,7 @@ function reduceContour(
   height: number,
   tolerance: number,
   minimumVertices = 3,
+  maxAddedFraction?: number,
 ): Point[] {
   let points = initial;
   while (points.length > Math.max(3, minimumVertices)) {
@@ -199,7 +367,7 @@ function reduceContour(
         )
       )
         continue;
-      if (!withinRasterBudget(next, alpha, width, height, 0.02)) continue;
+      if (!withinRasterBudget(next, alpha, width, height, 0.02, maxAddedFraction)) continue;
       points = next;
       removed = true;
       break;

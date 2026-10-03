@@ -1,0 +1,76 @@
+{
+  "model": "jev-latest",
+  "state": {
+    "purpose": "design-advisory-not-gate-approval",
+    "currentScope": "Owner approved this exact derived-data advisory submission on 2026-09-30 and clarified that the 164-attachment measurements came from another computer. Treat all measurements below as HISTORICAL, not a current-machine test. Implementation verification may use only source Spine files and images actually present and freshly verified on this computer; do not infer complete corpus availability or acceptance from old results.",
+    "ownerInstruction": "Use Jev to decide between reasonable mesh approaches and Astra to change the existing code. Follow Karpathy guidelines: surgical changes, explicit assumptions, verify against artist evidence.",
+    "fixedRequirements": [
+      "Per-attachment absolute vertex difference <=5, not 5 percent.",
+      "Missed original alpha foreground within the SAME artist-used region <=2 percent.",
+      "Transparent padding <=same attachment artist padding, and no reincorporation of excluded foreground.",
+      "Primary corpus: 68 Yuuna, 42 panda, 54 pig meshes. Tutorial frames are supporting evidence.",
+      "Positions must stay near the matched artist mesh; distinguish solid authored constraints from automatic dashed triangles.",
+      "No changing source art, copying expected XY into the generator, fabricating evidence, or declaring Gate acceptance from this design decision."
+    ],
+    "observedCode": {
+      "generation": "All corpus cases currently use intent unknown; alpha mask plus numeric reference vertex/hull counts and padding. Interior points use evenly spaced horizontal cross-sections. Polygon earcut and angle-based flips have no manual constraint representation. No RGB feature extraction.",
+      "positionCheckerA": "Separate hull/interior Hungarian matching; every unmatched point contributes 100 percent diagonal error. Limits mean5/p95=10/max15 percent. Thus even legitimate +/-5 count changes always fail when either group count differs.",
+      "topologyCheckerB": "Imported GitHub checker uses bottleneck matching, max5 percent diagonal, nearest-vertex distances for unmatched points, hull and manual edge recall100 percent, automatic edge recall80 percent. It compares exact edges only.",
+      "reviewGap": "Full-corpus path uses A plus manual-edge presence in any triangle; fails to distinguish manual versus automatic candidate edges or check automatic recall. Two-attachment path uses B. They must become consistent."
+    },
+    "measurements": {
+      "meshes":164,"generated":147,"positionFailures":130,"casesWithUnmatched":95,"positionFailuresWithoutUnmatched":35,"coverageFailures":85,"casesWithManualEdges":21,"manualConnectivityFailures":20,"blocked":17,"oldStaticPass":16,
+      "stringExample":{"artistVertices":7,"generatedVertices":9,"countPass":true,"coveragePass":true,"matchedMeanFraction":0.01428,"matchedMaxFraction":0.09632,"oldPenaltyMeanFraction":0.23333}
+    },
+    "tutorialObservations": [
+      {"seconds":420,"observation":"Modification mode: hexagonal cube hull and centre, seven vertices; dashed triangulation."},
+      {"seconds":540,"observation":"Creation-mode cursor preview also dashed; context determines line meaning."},
+      {"seconds":760,"observation":"Three orange edges connect cube centre to alternating corners along visible face junctions; other internal edges dashed."}
+    ],
+    "mediaLimit": "Derived measurements and local frame observations only. Jev has not been sent private image/video/project media and cannot visually certify them.",
+    "proposedFirstSlice": "Unify actual full-corpus hard checks, then implement optional explicit structural constraints in the deterministic mesh engine, derived from observed features or supplied intent. Preserve earlier inputs. Validate edges geometrically and preserve them through triangulation. Feature extraction and quality calibration require separate measured work; do not pretend naming a part solves it.",
+    "mathematicalPrinciples": [
+      "Owner requests a foundation in topology, curve geometry, triangulation and linear algebra.",
+      "This is a triangular mesh: do not impose quad-grid valence4 as universal stability. Regular planar triangular lattice interior valence is6; other valences do not themselves mean numerical failure.",
+      "Delaunay improves angle quality for fixed point sets; it cannot guarantee equilateral elements, artistic feature alignment or deformation quality. Authored constraints must be retained during flips.",
+      "Use finite coordinates, valid indices, positive triangle area, manifold incidence, no crossing constraints and actual geometric errors as static checks. Skinning and deformation quality need posed tests in later Gates, not a claim of physical force equilibrium.",
+      "No curve-continuity requirement should be invented for a piecewise-linear triangle mesh."
+    ]
+  },
+  "questions": {
+    "position_policy": {
+      "type":"choice",
+      "instructions":"Which concrete position policy best implements the owner's +/-5 and nearby-position requirements, considering the two existing checkers? Choose a conservative viable policy for implementation; do not waive actual geometric displacement.",
+      "criteria": {
+        "GEOMETRIC_5_PERCENT":"Hull/interior one-to-one bottleneck matching, matched max <=5 percent PNG diagonal; unmatched hull points must stay <=5 percent from the counterpart hull, unmatched interior points <=5 percent from counterpart interior vertices; missing counterpart interior category fails. Keep count <=5 independently.",
+        "KEEP_FULL_DIAGONAL_PENALTY":"Keep unmatched full-diagonal penalty and mean5/p95=10/max15 thresholds; group counts must effectively match exactly.",
+        "MATCHED_ONLY":"Check matched points only; omit all unmatched points from geometric quality.",
+        "INSUFFICIENT_EVIDENCE":"None is adequately justified; record uncertainty and obtain additional constraints before changing policy."
+      }
+    },
+    "edge_policy": {
+      "type":"choice",
+      "instructions":"Choose an edge-comparison policy consistent with small permitted point-count changes AND authored versus automatic line semantics. All schemes still require independent valid meshes and matching position/count/coverage checks.",
+      "criteria": {
+        "BOUNDED_TYPED_PATHS":"A reference edge may map to a direct edge or a same-type collinear subdivision path. Every intermediate point stays within 1 pixel of that segment with monotone projection and no unmapped feature deletion. Hull and authored edges require100 percent recall; auto edges >=80 percent; never substitute dashed for solid.",
+        "EXACT_TYPED_EDGES":"Require direct mapped hull/authored edges100 percent and automatic edges>=80 percent; extra points that subdivide an edge can cause rejection.",
+        "CONNECTIVITY_ONLY":"Any connected candidate triangle edge counts for authored edges; no separate auto-edge test.",
+        "INSUFFICIENT_EVIDENCE":"No choice justified without more evidence."
+      }
+    },
+    "implementation_priority": {
+      "type":"choice",
+      "instructions":"Which bounded first implementation best addresses measured failures and the tutorial's structural-edge observations? This is prioritization, not production-quality approval.",
+      "criteria": {
+        "UNIFY_AND_CONSTRAIN":"Unify checks and add explicit feature points/authored-edge constraints with deterministic validation and constrained triangulation, then extract and test feature profiles from real artwork.",
+        "ALPHA_PARAMETER_SWEEP":"Continue tuning alpha simplification and horizontal sample spacing only.",
+        "COPY_ARTIST_ANSWER":"Copy all per-case artist XY and connectivity to obtain immediate matching outputs.",
+        "DEFER":"Insufficient evidence for even a bounded first implementation."
+      }
+    },
+    "preserve_gate_failure": {
+      "type":"noul",
+      "instructions":"Must Gate3.2 remain unapproved until every required attachment satisfies the unified exact checks plus repeatability and a fresh final Jev review, regardless of the design choices in this request?"
+    }
+  }
+}

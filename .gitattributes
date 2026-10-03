@@ -1,0 +1,6 @@
+# Preserve exact bytes for hash-bound acceptance evidence across checkouts.
+packages/rig/src/index.ts -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+docs/reviews/GATE_3_2_DESIGN_REQUEST.json -text
+docs/reviews/GATE_3_2_STRUCTURE_REQUEST.json -text
+docs/reviews/GATE_4_PRECISION_REQUEST.json -text
+docs/reviews/gate-4-resume/chain-rig.json -text

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "0.1",
+  "kind": "rig",
+  "id": "gate4-demo",
+  "name": "Generic Chain",
+  "type": "chain",
+  "bones": [
+    {
+      "id": "gate4-demo-bone-1",
+      "name": "Generic Chain 1",
+      "x": 10,
+      "y": 20,
+      "rotation": 38.659808254090095,
+      "length": 38.41874542459709
+    },
+    {
+      "id": "gate4-demo-bone-2",
+      "name": "Generic Chain 2",
+      "parentId": "gate4-demo-bone-1",
+      "x": 38.41874542459709,
+      "y": 0,
+      "rotation": 0,
+      "length": 38.41874542459709
+    },
+    {
+      "id": "gate4-demo-bone-3",
+      "name": "Generic Chain 3",
+      "parentId": "gate4-demo-bone-2",
+      "x": 38.41874542459709,
+      "y": 0,
+      "rotation": 0,
+      "length": 38.41874542459709
+    },
+    {
+      "id": "gate4-demo-bone-4",
+      "name": "Generic Chain 4",
+      "parentId": "gate4-demo-bone-3",
+      "x": 38.41874542459709,
+      "y": 0,
+      "rotation": 0,
+      "length": 38.41874542459709
+    },
+    {
+      "id": "gate4-demo-bone-5",
+      "name": "Generic Chain 5",
+      "parentId": "gate4-demo-bone-4",
+      "x": 38.41874542459709,
+      "y": 0,
+      "rotation": 0,
+      "length": 38.41874542459709
+    }
+  ]
+}

@@ -24,14 +24,16 @@
 1. AI Planning + Deterministic Execution。
 2. Core 在沒有 AI 的情況下也必須完整執行。
 3. Spine JSON 是 Adapter 輸出，不是內部 IR。
-4. 一次只開發一個 Gate；未通過 Jev 驗收不得進入下一 Gate。
+4. 一次只開發一個 Gate；未通過 Jev 驗收不得進入下一 Gate，除非使用者明確調整順序並保留未完成項目的紀錄。現行 Gate 4 順序例外見第 12 節（2026-10-03）。
 5. 每次只做達成當前 Gate 所需的最小改動。
 6. 不建立尚未被當前 Gate 使用的抽象、設定或擴充點。
 7. 不用 TODO、假 Solver、永遠通過的 Validator、硬編碼 Fixture 結果宣稱完成。
 8. 不確定的 Spine 格式、幾何或權重演算法先研究，明確區分 Known、Assumption、Experimental、Verified。
 9. 同一份 Input + Spec + Config + Seed 必須得到相同輸出。
 10. 幾何品質同時使用量化指標和視覺檢查，不以「看起來可以」作為唯一結論。
-11. 涉及人工 Mesh 對照的驗收，以原始同檔附件的人工佈線為標準：逐附件頂點數雙向誤差 ≤5%；同圖頂點經外框／內部一對一配對後，各點位移 ≤圖片對角線的 5%；外框與人工指定的實線 100% 保留，虛線代表的自動三角剖分邊至少 80% 相符。多出或少掉的點仍須靠近原網格，不能靠堆點過關。任何一項不及格都不能進 Jev；不得混淆實線與虛線，也不得以 Jev 整體分數覆蓋。
+11. 涉及人工 Mesh 對照的驗收，以原始同檔附件的人工佈線為標準：依最新需求逐附件頂點數絕對誤差不得超過 ±5 點（取代歷史 ±20%），超標即不及格；數量通過仍須檢查位置、邊流與內外點分布，分辨人工實線和自動三角化虛線，不得靠湊點數過關。Jev 整體分數不可覆蓋本機硬門檻。
+12. 使用者已確認「以同附件人工留白為準」：校準路徑的透明留白上限改為同附件人工外框多覆像素／原始前景像素；不加倍率，不挪用其他附件。原始前景漏覆仍 ≤2%，前處理不得掩蓋漏覆；±5、位置與線型檢查仍有效。無人工參考及既有 Tail 路徑維持原限制。舊版各 2% 的記錄只適用其歷史範圍。
+13. 使用者進一步確認漏覆範圍為「人工網格實際使用的前景」：第 12 條分母改採原始 alpha >0 與同附件人工外框的交集，未清理前作為有效前景。原圖、有效、人工排除的前景數量必須揭露；來源原圖不改。生成外框若重新納入人工排除的其他圖像，另判失敗，不能算透明留白。本輪明示為人工參考限定的生成，不是獨立語意辨識或泛化訓練證據。
 
 ## 3. 角色與責任
 
@@ -269,8 +271,8 @@ primary_blocker.choice == NONE
 | 2    | PNG Parts，再擴充 PSD 到 AssetSpec                  | Parser unit/integration tests；bounds 與 hierarchy fixtures | 解析結果可序列化、可驗證、順序穩定；不包含 AI Rigging                                                           | GPT-5.6 Sol High           |
 | 3    | Tail alpha 到可變形 MeshSpec                        | Contour、simplification、triangulation 測試；Mesh Validator | 無非法 index、零面積三角形、自交或非預期斷裂；固定輸入固定輸出                                                  | Astra 設計，Sol 實作       |
 | 3.1  | Tail Mesh 參考佈線與頂點預算                        | Spine 23 頂點參考、輪廓覆蓋率、內部中線、回歸測試           | 維持合法與確定性；長形素材輪廓漏覆／多覆各 ≤2%；尾巴頂點數接近人工參考                                          | Sol 實作，Jev 驗收         |
-| 3.2  | AWP 人物小部件與 Symbol 的靜態 Mesh 密度修正        | 同圖 `.spine` 網格對照、輪廓覆蓋、拓樸與固定輸出回歸        | 鬍鬚／房屋不再過密且不犧牲可接受輪廓；尾巴基線不退化；不宣稱頭部動態變形已通過                                  | 沿用 Gate 3 分工；Jev 驗收 |
-| 4    | Deterministic ChainRigTemplate                      | 骨長、位置、旋轉、parent 單元測試                           | start/end/boneCount 產出正確 chain；退化輸入有明確錯誤                                                          | GPT-5.6 Sol High           |
+| 3.2  | Yuuna／panda／pig 人工佈線校準                      | 原始 `.spine`、PNG、教學幀及完整附件實測                    | 頂點 ±5；同附件人工留白；原始前景漏覆 ≤2%；位置／線型與回歸；不核准動態變形                                     | 沿用 Gate 3 分工；Jev 驗收 |
+| 4    | Deterministic ChainRigTemplate                      | 骨長、位置、旋轉、parent 單元測試                           | start/end/boneCount 產出正確 chain；退化輸入有明確錯誤                                                          | GPT-6.1 Sol High（試跑）   |
 | 5    | Weight Solver v1                                    | Sum、NaN、negative、top-K、orphan、smoothing tests          | 每 vertex 有合法 influence；和為 1；最大 4；沒有假 Solver                                                       | Astra XHigh                |
 | 6    | Tail deformation 與量化評估                         | Root/middle/wave poses；inversion、stretch、tearing metrics | 指標門檻明確且通過；保存 baseline；具可檢視輸出                                                                 | Astra High/XHigh           |
 | 7    | Arm fixture 與 elbow deformation                    | 0/30/60/90/120 度 regression                                | 無不可接受 collapse、inversion 或不連續；指標和視覺證據一致                                                     | Astra High/XHigh           |
@@ -440,35 +442,83 @@ Question to solve:
 
 ## 12. Gate 執行紀錄
 
-| Gate | 狀態        | 開始       | Developer Verify | Jev Decision       | 備註                                                                        |
-| ---- | ----------- | ---------- | ---------------- | ------------------ | --------------------------------------------------------------------------- |
-| 0    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.88      | Jev 1.13；Evidence 3.94/4                                                   |
-| 1    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.97      | Spine 4.0.64；18 tests、100 runs、Runtime/CLI 通過；Jev 複審核准            |
-| 2    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95      | PNG Parts 與 8-bit RGB PSD → AssetSpec；25 tests；Jev 2,739 tokens          |
-| 3    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.98      | Tail alpha → MeshSpec；34 tests；實際 Tail.png 100 次一致；Jev 3,342 tokens |
-| 3.1  | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95      | 參考 23 頂點；實測 24 頂點／27 三角形；35 tests；Jev 5,290 tokens           |
-| 3.2  | REOPENED    | 2026-09-23 | 2026-09-24       | 舊版 APPROVED 0.87 | 新版位置／實線／虛線硬門檻未過；待返工；舊審查保留                          |
-| 4    | APPROVED    | 2026-09-23 | 2026-09-24       | APPROVED 0.96      | 骨鏈功能獨立核准；Gate 5 前仍須關閉 Gate 3.2 缺口                           |
-| 5    | NOT_STARTED | —          | —                | —                  | Gate 3.2 新版品質門檻未過，不得開始                                         |
-| 6    | NOT_STARTED | —          | —                | —                  | Tail MVP 驗收點                                                             |
-| 7    | NOT_STARTED | —          | —                | —                  | Arm MVP 驗收點                                                              |
-| 8    | NOT_STARTED | —          | —                | —                  | 依賴 Joint baseline                                                         |
-| 9    | NOT_STARTED | —          | —                | —                  | 依賴 Gate 8                                                                 |
-| 10   | NOT_STARTED | —          | —                | —                  | 依賴 Gate 9                                                                 |
-| 11   | NOT_STARTED | —          | —                | —                  | Engine MVP 驗收點                                                           |
-| 12   | NOT_STARTED | —          | —                | —                  | Tail + Arm 通過後才開始                                                     |
-| 13   | NOT_STARTED | —          | —                | —                  | 依賴 Gate 12                                                                |
-| 14   | NOT_STARTED | —          | —                | —                  | Core 成熟後才引入 AI                                                        |
-| 15   | NOT_STARTED | —          | —                | —                  | 依賴 Preview 與 AI Planner                                                  |
-| 16   | NOT_STARTED | —          | —                | —                  | MCP 僅作 Adapter                                                            |
-| 17   | NOT_STARTED | —          | —                | —                  | 最後建立 Skill                                                              |
+檢視入口：[Gate 完成狀態總覽](GATE_STATUS.html)；[Gate 3.2 完整圖像驗收報告（本機）](docs/local-reviews/gate-3.2-collapse-20/review.html)。本機報告資料夾排除於 Git 提交，包含 164 件逐附件對照與原始圖像；最新完整靜態通過為 23／164，正式 Jev 尚未送審。
+
+### 2026-10-03 現行工作順序：暫緩 Gate 3.2，先進 Gate 4
+
+使用者因 Gate 3.2 預期 Token 成本決定先進 Gate 4。即日起停止本輪 Gate 3.2 優化，保留 `REOPENED` 與 23／164 的未完成證據；不改驗收門檻、不將暫緩標為通過。此指示取代本文較早「Gate 3.2 通過後才進 Gate 4」的順序限制，僅適用 Gate 4，未授權提前開始 Gate 5，也未改變 GitHub 推送條件。
+
+Gate 4 已有獨立的直線骨鏈核准基線。首次恢復工作時先沿用其實作與未受影響的通過證據，交付可檢視的骨鏈範例，當時未追加付費 Jev 呼叫。後續依使用者要求完成精度修補，經本次明確授權的新版 Jev 正式驗收通過；未重跑未受影響的測試。[歷史骨鏈示範](docs/reviews/gate-4-resume/review.html)；[新版精度驗收](docs/reviews/gate-4-precision/review.html)。
+
+### 2026-10-03 最新指示：將目前進度推送 GitHub
+
+使用者於 Gate 4 精度驗收及骨架截圖補充完成後，明確要求「將目前進度推送到 Github」。
+此指示授權本次 source-only 進度快照，取代較早「等 Gate 3.2 完整通過後才推送」的本次發布限制；
+不是 Gate 3.2 驗收通過或 Gate 5 開工授權。保留 Gate 3.2 暫緩 23／164、Gate 4 新版 APPROVED 的真實狀態。
+
+目的地為既有私人 `Wayne188-yiching/AutoSpine` 的 `main`。提交前先讀取遠端、確認分支未分歧，
+以明確檔案清單整理程式、測試、技術紀錄、Jev 裁決及可攜 Gate 4 骨架 HTML。
+不納入原始 Spine／PNG／PSD／影片、私有對照圖、`docs/local-reviews/`、憑證或建置產物；
+沿用未受修改影響的通過證據，不為發布重跑整套測試或呼叫 Jev。提交及推送後核對遠端 commit 與檔案清單。
+
+| Gate | 狀態        | 開始       | Developer Verify | Jev Decision                       | 備註                                                                        |
+| ---- | ----------- | ---------- | ---------------- | ---------------------------------- | --------------------------------------------------------------------------- |
+| 0    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.88                      | Jev 1.13；Evidence 3.94/4                                                   |
+| 1    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.97                      | Spine 4.0.64；18 tests、100 runs、Runtime/CLI 通過；Jev 複審核准            |
+| 2    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95                      | PNG Parts 與 8-bit RGB PSD → AssetSpec；25 tests；Jev 2,739 tokens          |
+| 3    | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.98                      | Tail alpha → MeshSpec；34 tests；實際 Tail.png 100 次一致；Jev 3,342 tokens |
+| 3.1  | APPROVED    | 2026-09-23 | 2026-09-23       | APPROVED 0.95                      | 參考 23 頂點；實測 24 頂點／27 三角形；35 tests；Jev 5,290 tokens           |
+| 3.2  | REOPENED    | 2026-09-23 | 2026-10-03       | 新版未送審；舊版 APPROVED 0.87     | 依使用者決定暫緩；23／164 靜態通過，115 拒絕、26 阻塞                       |
+| 4    | APPROVED    | 2026-10-03 | 2026-10-03       | 新版 APPROVED 0.98；舊版 0.96 保留 | GPT-6.1 Sol High；精度修補、19 定向＋13 門檻測試、4 新稽核案例通過          |
+| 5    | NOT_STARTED | —          | —                | —                                  | Gate 3.2 新版品質門檻未過，不得開始                                         |
+| 6    | NOT_STARTED | —          | —                | —                                  | Tail MVP 驗收點                                                             |
+| 7    | NOT_STARTED | —          | —                | —                                  | Arm MVP 驗收點                                                              |
+| 8    | NOT_STARTED | —          | —                | —                                  | 依賴 Joint baseline                                                         |
+| 9    | NOT_STARTED | —          | —                | —                                  | 依賴 Gate 8                                                                 |
+| 10   | NOT_STARTED | —          | —                | —                                  | 依賴 Gate 9                                                                 |
+| 11   | NOT_STARTED | —          | —                | —                                  | Engine MVP 驗收點                                                           |
+| 12   | NOT_STARTED | —          | —                | —                                  | Tail + Arm 通過後才開始                                                     |
+| 13   | NOT_STARTED | —          | —                | —                                  | 依賴 Gate 12                                                                |
+| 14   | NOT_STARTED | —          | —                | —                                  | Core 成熟後才引入 AI                                                        |
+| 15   | NOT_STARTED | —          | —                | —                                  | 依賴 Preview 與 AI Planner                                                  |
+| 16   | NOT_STARTED | —          | —                | —                                  | MCP 僅作 Adapter                                                            |
+| 17   | NOT_STARTED | —          | —                | —                                  | 最後建立 Skill                                                              |
+
+本機 Gate 3.2 最近一次全量 region-15 審核（2026-10-01）：164 個案例中 138 個可生成；107 個頂點數 ±5 通過、24 個位置審核通過、138 個覆蓋通過、19 個全部靜態檢查通過；26 個阻塞、119 個拒絕。原 structure-11 的 18 個完整通過案例全部保留；目前 19 個完整通過案例各重跑 100 次，其餘各 2 次或生成受阻，不宣稱全語料 100 次驗收。程式完整檢查通過 156 項測試（18 個測試檔）。本輪以原圖與選用區域 alpha 分開約束，修正誤納人工排除前景；Astra 修正小數顯示座標造成的浮點誤覆，仍維持零誤納與 1.5 像素局部調整上限。粗搜尋亦使兩個原本未整體通過的案例改為區域預算阻塞，詳見 `docs/research/GATE_3_2_REGION_15.md`，沒有移除案例或放寬門檻。生成仍是人工參考限定，並非無參考辨識。獨立全語料前置審核拒絕，正式 Jev 未送審、GitHub 未推送。追加結構方案裁決用量 2,086 tokens（input 1,901、output 185），見 `docs/reviews/GATE_3_2_STRUCTURE_DECISION.json`；方案裁決不是驗收。完整報告與審核截圖留在 repo 外。新增教學素材僅輔助，不改變 164 個主案例分母。
 
 Token 用量回補：Gate 0 的 Jev 驗收為 2,972 tokens（input 2,702、output 270）；Gate 1 的兩次 Jev 審查共 4,574 tokens（input 4,034、output 540）；Gate 2 的 Jev 審查為 2,739 tokens（input 2,469、output 270）；Gate 3 的 Jev 審查為 3,342 tokens（input 3,072、output 270）；Gate 3.1 的兩次 Jev 審查共 5,290 tokens（input 4,750、output 540）。這些數字**只包含 Jev**，不等於各 Gate 的完整開發用量。Codex 主代理與 Gate 3 Astra 子代理的逐 Gate 精確用量未提供，故記為「無法取得」，不填 0、不推算總數。Gate 1～3.1 細目見 `docs/reviews/GATE_1_REVIEW.json`、`docs/reviews/GATE_2_REVIEW.json`、`docs/reviews/GATE_3_REVIEW.json` 與 `docs/reviews/GATE_3_1_REVIEW.json`。
 
-Gate 4 Token 用量：Jev 正式驗收一次，實測 input 2,318、output 270，合計 **2,588 tokens**，見 `docs/reviews/GATE_4_REVIEW.json`。Codex 主代理的逐 Gate input/output 精確用量無法取得；其他協作模型未使用，因此全 Gate 總計無法精確合計，不以 Jev 數字冒充總開發量。
+Gate 4 Token 用量：2026-09-24 歷史 Jev 驗收實測 input 2,318、output 270，合計 **2,588 tokens**，見 `docs/reviews/GATE_4_REVIEW.json`；2026-10-03 精度修補驗收另經本次授權呼叫一次，input **3,693**、output **270**，合計 **3,963 tokens**，見 `docs/reviews/GATE_4_PRECISION_DECISION.json`。兩次已記錄 Jev 用量合計 **6,551 tokens**，僅為審核成本；本輪 GPT-6.1 Sol High 開發代理與主代理精確用量無法取得，全 Gate 開發成本不能精確合計。歷史「未使用其他協作模型」只指 2026-09-24 那次實作，不代表本輪。
 
-### Gate 4 執行基線（Jev 已核准）
+### 2026-09-30 執行順序與舊 GitHub 推送條件（歷史；本次發布已由 2026-10-03 最新指示調整）
 
+使用者確認先完成現行 Gate 3.2 的有人工參考測試與正式 Jev 驗收，再整理本輪程式、測試與文件異動提交、推送 GitHub，然後才進行 Gate 4。單純程式回歸全過或 Jev 方案裁決完成，不觸發推送。無參考新圖盲測暫不加入本輪範圍。私人 Spine 原檔、圖像、影片、視覺證據與憑證不納入提交；保留其他工作區異動。
+
+2026-10-02 最新 decimate-18 審核：164 件中 138 件生成；114 件點數通過、25 件位置通過、138 件覆蓋通過、22 件完整靜態通過，26 件阻塞、116 件拒絕。原 region-15 的 19 件通過全數保留，新增 panda 兩個手部與 pig 右腳；22 件各有 100 次一致生成紀錄。程式完整檢查 161 tests／19 files 通過。獨立全量前置審核仍拒絕（391 條失敗原因，非附件數），正式 Jev 未送審、GitHub 未推送。原始素材與匯出雜湊不變。詳見 `docs/research/GATE_3_2_DECIMATE_18.md`；減點依幾何面積與像素預算，不使用人工座標、邊索引或比對分數挑答案。
+
+2026-10-03 最新增量 collapse-20：只重新生成 3 件受新增中點合併分支影響的失敗案例，其餘 161 件沿用已核對來源與隔離程式差異的證據；原 22 件通過沒有重跑。pig `1_arrow` 新增通過，13／13 點、位置誤差 2.8972%、漏覆 187／9353（1.9993585%，未放寬 2%）、人工排除區誤納 0，新增 100 次一致生成紀錄。合併證據為 23／164 完整靜態通過、26 阻塞、115 拒絕；獨立全量前置審核仍拒絕（389 條失敗原因）。本次只跑 1 個新測試與 1 個受影響的既有測試，皆通過；沿用歷史完整 161 項測試紀錄，不宣稱新版本重新跑過完整測試。詳見 `docs/research/GATE_3_2_COLLAPSE_20.md`，正式 Jev 未送審、GitHub 未推送。
+
+2026-10-02 使用者補充：測試通過的項目不要無差別重跑。後續沿用未受修改影響的通過證據，只重測失敗案例與實際受影響的回歸項目；保留各次證據的來源／版本，不把舊版結果冒充新版實測。文件修改只檢查文件，不觸發完整程式測試。此指示不降低完整 Gate 品質門檻。
+
+Gate 4 原定 GPT-5.6 Sol High，依 2026-10-03 使用者追加指示改用 **GPT-6.1 Sol High** 試跑，實際以指定模型的開發代理執行；不將主對話協調模型宣稱為已切換。必要時由 Astra 審查幾何設計，Jev 獨立驗收；其他 Gate 模型分工不變。依同日指示先進 Gate 4，不再等待 Gate 3.2 關閉。既有 Gate 4 是歷史核准基線，不宣稱它剛由本輪從零完成。綁圖、權重與動畫仍不屬於 Gate 4；模型試跑只檢查新案例，沿用未受影響的已通過測試。
+
+GPT-6.1 Sol High 實際試跑：新極端數值輸入 `start=[1e16,0]`、`end=[1e16+4,0]`、`boneCount=256` 被接受，局部每節長 `0.015625`、總長 4 正確；獨立 double 世界座標累加還原終點卻停在起點，端點誤差 4。此為極大座標／極短分段的可表達精度缺口，不代表一般美術尺度骨鏈範例失敗；應另處理有效輸入域／數值承諾，不修改骨長或世界起點來湊結果。本次只有新案例稽核與文件，沒有修改引擎、重跑已過測試、呼叫 Jev 或推送 GitHub。詳見 [模型試跑紀錄](docs/research/GATE_4_SOL61_TRIAL.md)。
+
+使用者隨後要求「把 Gate 4 優化到驗收通過」：本輪已開啟精度修補，以新版本的開發驗證及正式 Jev 審核為目標；歷史 APPROVED 0.96 不作為新版自動通過。先保存 [修補計畫與驗收頁](docs/reviews/gate-4-precision/review.html)，由指定 GPT-6.1 Sol High 開發代理實作最小數值檢查與定向回歸。只重測實際受影響案例；Gate 3.2、Gate 5 和 GitHub 推送條件不變。新增外部 Jev 資料包及額度使用須取得明確授權後才能送出。
+
+### Gate 4 精度修補（2026-10-03，新版 Jev 正式核准）
+
+- 狀態：`IN_DEVELOPMENT → DEV_VERIFIED → JEV_REVIEW → APPROVED`。本次送審前，使用者明確同意新資料包、目的地 `https://api.typesafe.ai/v1/systemone` 與 TypeSafe 額度使用；僅呼叫一次、未自動重試。
+- 最小修補：原有退化輸入檢查之後，新增每個世界 joint／tip 的鏈長正規化精度檢查 ≤`1e-10`。不使用大世界原點放寬門檻，不改骨長、起點或 ID／父子契約；不可表達時回報 `RIG_NUMERIC_PRECISION`（stage=rig、severity=3）。這是 JavaScript Number 工程政策，不是 Spine 官方標準。
+- 開發驗證：19 項定向 rig／CLI 測試通過，13 項新增審核門檻測試通過，build／typecheck／限定檔案 lint／format 通過。新成功輸出與新錯誤各與首次基準比較 100 次，完全一致。略過 13 個未受影響舊案例，其他 Gate 未變更通過證據沿用；未執行完整舊測試套件，未將歷史 69 tests 當成本輪實測。
+- 獨立稽核：以不同於單元測試的 4 個新案例，獨立矩陣還原世界變換並對照舊核准提交 `5feda8a`。坍縮與「終點正確、途中失真」均明確拒絕；大座標可精確表達及一般斜向成功，接受輸出與舊版逐位元組相同。
+- 正式 Jev：`jev-1.13.0`，2026-10-03 14:20（Asia/Taipei）；APPROVED probability **0.98**，六項 noul 為 **0.98／0.90／0.89／0.86／0.95／0.95**，Evidence Quality **3.99/4**，Primary Blocker **NONE**。全部原有硬門檻通過，沒有調低門檻。
+- 證據：[送審資料包](docs/reviews/GATE_4_PRECISION_REQUEST.json)、[原始裁決](docs/reviews/GATE_4_PRECISION_DECISION.json)、[獨立稽核數值](docs/reviews/gate-4-precision/independent-audit.json)、[實作紅／綠燈紀錄](docs/research/GATE_4_PRECISION_IMPLEMENTATION.md)、[完整驗收紀錄](docs/research/GATE_4_PRECISION_ACCEPTANCE.md) 及 [驗收頁](docs/reviews/gate-4-precision/review.html)。舊核准 JSON 原樣保留。
+- 本次核准僅為明確端點、直線等長骨鏈與數值拒絕政策。不代表圖片 joint／pivot 推定、綁圖、權重、動畫或 Spine 官方匯入／播放驗證。Gate 3.2 保留暫緩 23／164，Gate 5 未開始；未 staging、commit 或 push。
+
+### Gate 4 歷史執行基線（2026-09-24 Jev 已核准；下列恢復紀錄早於精度修補）
+
+- 2026-10-03 恢復工作：對照核准提交 `5feda8a`，Rig 套件、RigSpec、CLI 與骨鏈／套件邊界測試無差異；另以 TypeScript 的 ESM 編譯輸出對照現有 Rig 建置檔，排除示範使用不同來源的建置。未重跑原有通過測試、未追加 Jev 呼叫。現有 CLI 產生新範例 `(10,20) → (160,140)`、5 骨；獨立規格、父子順序、世界關節與終點檢查通過，關節最大誤差與終點誤差均為 0（此範例）。輸入、原始輸出與本輪紀錄見 [Gate 4 示範](docs/reviews/gate-4-resume/review.html)；不代表綁圖或動畫驗收。
 - 明確的 `start`、`end`、`boneCount` 輸入，產生 schema-valid `RigSpec` 直線等長骨鏈；根骨使用世界起點與朝向，子骨使用相對父骨的局部位移及零局部旋轉，parent-first 排序。Gate 4 不從圖片推測關節或自動綁定 Mesh，也不提前實作權重／動畫。
 - 獨立正向運動學測試覆蓋水平、向上、斜向與反向，逐節核對 world joint 與終點；11 種退化輸入回傳 rig-stage 結構化錯誤。CLI 不覆寫輸入或既有輸出；固定輸入 100 次序列化完全一致。
 - `npm run verify`：格式、lint、build/typecheck 與當時 69 tests／9 files 全過，包含先前 50 個測試。Jev `jev-1.13.0` 於 2026-09-24 核准，APPROVED probability 0.96、tests credible 0.86、evidence quality 3.95/4。後來 Gate 3.2 因使用者提高人工網格品質門檻而重開；Gate 4 骨鏈驗收紀錄保留，但 Gate 5 必須等 Gate 3.2 重新過關。
@@ -519,7 +569,7 @@ Gate 4 Token 用量：Jev 正式驗收一次，實測 input 2,318、output 270�
 - 房屋內部點的平均最近距離由最初等距佈線的 43.93 px 降至 2.82 px；鬍鬚與人工一樣只有外框點。局部邊線與三角形角度仍不同，鬍鬚有四個低於 10° 的三角形，需後續人工與動態驗證。這次只核准靜態拓樸，不核准動畫變形。
 - 三個私人素材各 100 次輸出完全一致；不附人工參考時，鬍鬚、房屋與尾巴完整 MeshSpec 序列化均與返工前保存版本完全相同。獨立網格驗證、可攜合成素材及 CLI 整合測試通過；`npm run verify`：格式、lint、型別與 **50 tests／7 files** 全過。
 - Jev 舊規則核准與所有未達門檻的複審原樣保留，最後一次於 [Gate 3.2 最終複審](docs/reviews/GATE_3_2_RECHECK_5.json) 決定 `APPROVED`：批准機率 0.87、人工佈線 0.85、測試可信 0.83、回歸安全 0.86、架構 0.92、證據品質 3.97/4、Primary blocker NONE。共六次正式 Jev 呼叫（含舊規則初審）：input **21,455**、output **1,715**、total **23,170** tokens。本次 Codex 主代理 input/output **無法取得**；其他協作模型**未使用**；整 Gate 無法精確合計。未通過本機前置檢查的測試沒有呼叫 Jev，也沒有計入 Jev 用量。
-- 當時 Gate 3.2 已達到進入 Gate 4 的條件並完成上傳；這是歷史紀錄，後續新增的位置／佈線門檻已使 Gate 3.2 重開。
+- 歷史版本曾達到 Gate 4 前置條件；最新指示已重開 Gate 3.2，以 Yuuna／panda／pig 為主、Tutorial 為輔。新證據未獲 Jev 核准前，不進 Gate 4。
 
 以下為首次開發計畫的歷史紀錄；其中一側 1.5 倍點數上限與後來的 ±20% 雙向上限均已失效，現行規則以上述 2026-09-24 新版門檻為準。
 
@@ -553,7 +603,7 @@ Gate 4 Token 用量：Jev 正式驗收一次，實測 input 2,318、output 270�
 
 ## 13. Gate 0 歷史範圍與下階段規則
 
-歷史上 Gate 0～4 曾各自核准；Gate 3.2 現因更嚴格的人工點位與連線門檻重開，Gate 5 暫停。下列內容是 Gate 0 的歷史範圍，不再限制後續已獲使用者授權的 Gate：
+歷史上 Gate 0～4 曾各自核准；Gate 3.2 因更嚴格的人工位置與連線門檻重開，目前依使用者決定暫緩，先處理 Gate 4；Gate 5 仍未開始。下列內容是 Gate 0 的歷史範圍，不改變第 12 節的現行順序：
 
 1. 建立 Repository 與 TypeScript workspace。
 2. 建立 lint、formatter、test、build scripts。

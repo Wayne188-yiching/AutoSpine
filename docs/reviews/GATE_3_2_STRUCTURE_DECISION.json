@@ -1,0 +1,42 @@
+{
+  "purpose": "design-advisory-not-gate-approval",
+  "requestSha256": "27ed0c2ab76d0f2d823a8aa05dcdfe7a2ca334e7f30d5d755e719764a4ff311e",
+  "recordedAt": "2026-09-30T00:39:59.753Z",
+  "model": "jev-1.13.0",
+  "answers": {
+    "next_development_slice": {
+      "type": "choice",
+      "choice": "STRUCTURAL_FAMILIES",
+      "confidence": 1,
+      "probabilities": {
+        "STRUCTURAL_FAMILIES": 1,
+        "RGB_FEATURE_RESEARCH": 0,
+        "ALPHA_ONLY_UNIVERSAL": 0,
+        "INSUFFICIENT_EVIDENCE": 0
+      }
+    },
+    "integrate_current_medial_prototype": {
+      "type": "choice",
+      "choice": "KEEP_EXPERIMENTAL",
+      "confidence": 1,
+      "probabilities": {
+        "INTEGRATE_NOW": 0,
+        "DISCARD_EVIDENCE": 0,
+        "KEEP_EXPERIMENTAL": 1
+      }
+    },
+    "preserve_gate_failure": {
+      "type": "choice",
+      "choice": "REMAIN_IN_DEVELOPMENT",
+      "confidence": 1,
+      "probabilities": {
+        "APPROVE_PORTABLE_ONLY": 0,
+        "REMAIN_IN_DEVELOPMENT": 1
+      }
+    }
+  },
+  "usage": {
+    "input_tokens": 1901,
+    "output_tokens": 185
+  }
+}

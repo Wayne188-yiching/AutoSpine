@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-03",
+  "gate": 4,
+  "ownerDecision": "Defer reopened Gate 3.2 at 23/164; work on Gate 4 first without approving Gate 3.2.",
+  "scope": "Existing straight equal-length ChainRigTemplate; numeric example and static visual review only.",
+  "approvedCommit": "5feda8a",
+  "unchangedComparedToApprovedCommit": [
+    "packages/rig/",
+    "schemas/src/rig-spec.ts",
+    "packages/cli/src/index.ts",
+    "tests/rig-chain.test.ts",
+    "tests/rig-cli.test.ts",
+    "tests/package-boundaries.test.ts"
+  ],
+  "builtRigMatchesSource": {
+    "status": "passed",
+    "method": "TypeScript ES2022/ESM transpilation compared to existing dist via comment-free syntax printing; no build files changed."
+  },
+  "reusedHistoricalEvidence": {
+    "path": "../GATE_4_REVIEW.json",
+    "date": "2026-09-24",
+    "jevDecision": "APPROVED",
+    "jevProbability": 0.96,
+    "totalTestsPassed": 69,
+    "exactSerializationRuns": 100,
+    "rerunThisRound": false
+  },
+  "newExample": {
+    "command": "node packages/cli/dist/index.js rig-chain docs/reviews/gate-4-resume/chain-input.json docs/reviews/gate-4-resume/chain-rig.json",
+    "input": "chain-input.json",
+    "output": "chain-rig.json",
+    "outputSha256": "efab38b77cdba35eb4dbee84c0e01e5511cbff9bf2144f4f56ff28ab6227cf19",
+    "boneCount": 5,
+    "schema": "passed",
+    "parentOrder": "passed",
+    "maxWorldJointError": 0,
+    "endpointError": 0,
+    "worldTip": [160, 140],
+    "independentCheck": "Read CLI output, check RigSpecSchema, accumulate parent-local transforms, compare joints to explicit start+i*(end-start)/N and final tip to end."
+  },
+  "additionalAgentsOrPaidJevCalls": false,
+  "engineChanges": false,
+  "githubPushed": false,
+  "limitations": [
+    "No artwork inference, curved/unequal chain, mesh binding, weights, animation or complete Spine scene export.",
+    "Gate 3.2 remains incomplete; Gate 5 is not started; previous GitHub publication condition is unchanged.",
+    "Historical test/approval evidence is reused, not claimed as a fresh full-suite run."
+  ]
+}

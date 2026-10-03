@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AutoSpine · Gate 4 數值精度修補驗收</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        background: #101722;
+        color: #e8eef7;
+        font-family: system-ui, sans-serif;
+      }
+      body {
+        max-width: 1080px;
+        margin: auto;
+        padding: 28px 24px 48px;
+        line-height: 1.6;
+      }
+      h1 {
+        font-size: 30px;
+        margin: 6px 0;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 0 0 10px;
+      }
+      p {
+        margin: 9px 0;
+      }
+      a {
+        color: #88d3ff;
+      }
+      .panel {
+        margin-top: 18px;
+        padding: 20px;
+        border: 1px solid #304056;
+        border-radius: 10px;
+        background: #192331;
+      }
+      .accepted {
+        border-color: #4b9d77;
+        background: #172a25;
+      }
+      .muted {
+        color: #a9b7ca;
+      }
+      .pass {
+        color: #8edcb4;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin: 16px 0 10px;
+      }
+      .metric {
+        padding: 12px 14px;
+        background: #101b24;
+        border-radius: 7px;
+      }
+      .metric strong {
+        display: block;
+        font-size: 26px;
+        color: #8edcb4;
+      }
+      .metric span {
+        font-size: 13px;
+        color: #a9b7ca;
+      }
+      .scroll {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+      th,
+      td {
+        padding: 9px 10px;
+        border-bottom: 1px solid #304056;
+        font-size: 14px;
+      }
+      code {
+        color: #b5d9ff;
+      }
+      .skeleton-frame {
+        width: 100%;
+        height: 1250px;
+        border: 1px solid #304056;
+        border-radius: 8px;
+        background: #101722;
+      }
+      @media (max-width: 680px) {
+        .metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        body {
+          padding: 20px 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="muted">AutoSpine · 2026-10-03 · 指定開發模型 GPT-6.1 Sol High</p>
+      <h1>Gate 4 · 數值精度修補驗收</h1>
+      <p>
+        <a href="../../../GATE_STATUS.html">所有 Gate 狀態</a> ·
+        <a href="../gate-4-resume/review.html">原有骨鏈示範</a>
+      </p>
+    </header>
+    <section class="panel accepted">
+      <h2 class="pass">APPROVED · 本機驗證與新版 Jev 正式驗收通過</h2>
+      <p>
+        2026-10-03 14:20（台灣時間），Jev
+        <code>jev-1.13.0</code> 核准本輪數值精度修補；原有全部核准門檻均通過，主要阻礙為
+        NONE。不是只沿用 2026-09-24 的舊核准。
+      </p>
+      <div class="metrics">
+        <div class="metric"><strong>0.98</strong><span>Jev APPROVED 機率</span></div>
+        <div class="metric"><strong>3.99 / 4</strong><span>證據品質</span></div>
+        <div class="metric"><strong>32 / 32</strong><span>定向程式與審核門檻測試</span></div>
+        <div class="metric"><strong>4 / 4</strong><span>新增獨立數值稽核案例</span></div>
+      </div>
+      <p>
+        <a href="../GATE_4_PRECISION_DECISION.json">Jev 原始裁決與門檻</a> ·
+        <a href="../GATE_4_PRECISION_REQUEST.json">實際送審資料包</a> ·
+        <a href="../../research/GATE_4_PRECISION_ACCEPTANCE.md">完整驗收紀錄</a>
+      </p>
+      <p class="muted">
+        Gate 3.2 仍暫緩於 23／164；Gate 5 尚未開始。GitHub 進度快照經使用者另行授權， 不代表 Gate
+        3.2 通過。核准範圍僅為明確端點、直線等長 RigSpec 骨鏈及數值拒絕政策。
+      </p>
+    </section>
+    <section class="panel" id="skeleton-evidence">
+      <h2>骨架視覺證據 · 5 根骨骼的既有實際輸出</h2>
+      <p>
+        補上可直接查看的骨架、關節與父子關係。沿用既有 CLI
+        範例輸出，不重跑已通過測試；尚未綁定角色原圖或權重。
+      </p>
+      <p>
+        <a href="../gate-4-resume/review.html?view=skeleton">單獨開啟骨架圖</a> ·
+        <a href="../../local-reviews/gate-4-skeleton.png">查看骨架截圖（本機）</a>
+      </p>
+      <iframe
+        class="skeleton-frame"
+        src="../gate-4-resume/review.html?view=skeleton"
+        title="Gate 4 實際 RigSpec 骨架、關節與父子關係"
+      ></iframe>
+    </section>
+    <section class="panel">
+      <h2>修補前後 · 獨立世界座標稽核</h2>
+      <p>
+        以獨立仿射矩陣父子變換，比較核准提交
+        <code>5feda8a</code>
+        與本輪引擎。下表案例不同於已通過的單元測試；誤差均除以整條鏈長，不以大世界座標放寬。
+      </p>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>新案例</th>
+              <th>修補前</th>
+              <th>修補後</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>起點 10¹⁶、長 8、128 骨</td>
+              <td>全鏈坍縮；位移 0、終點誤差 8</td>
+              <td class="pass">拒絕；RIG_NUMERIC_PRECISION</td>
+            </tr>
+            <tr>
+              <td>負的大原點、長 4、3 骨</td>
+              <td>終點正確，但關節誤差達鏈長 1／6</td>
+              <td class="pass">拒絕；第 1 關節已超限</td>
+            </tr>
+            <tr>
+              <td>起點 10¹⁶、長 1,024、128 骨</td>
+              <td>可精確表達；關節誤差 0</td>
+              <td class="pass">接受；輸出與舊版逐位元組相同</td>
+            </tr>
+            <tr>
+              <td>(−32, 24) → (160, −72)、6 骨</td>
+              <td>關節正規化誤差 1.57 × 10⁻¹⁶</td>
+              <td class="pass">接受；輸出與舊版逐位元組相同</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">
+        拒絕失真輸入是正確防護，不代表成功生成了該輸入的骨鏈。<a href="independent-audit.json"
+          >查看 4 個新案例的原始數值</a
+        >。
+      </p>
+    </section>
+    <section class="panel">
+      <h2>本輪開發證據與不重跑原則</h2>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>驗證</th>
+              <th>實際結果</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>精度、方向、CLI 定向測試</td>
+              <td class="pass">19 通過；13 個未受影響舊案例略過、沿用歷史證據</td>
+            </tr>
+            <tr>
+              <td>審核判定門檻新測試</td>
+              <td class="pass">13 通過；缺資料、低分或有阻礙不得假核准</td>
+            </tr>
+            <tr>
+              <td>決定性</td>
+              <td class="pass">新成功輸出與新錯誤，各與基準比較 100 次，完全一致</td>
+            </tr>
+            <tr>
+              <td>建置、型別、限定程式 lint／格式</td>
+              <td class="pass">通過；沒有執行完整舊測試套件</td>
+            </tr>
+            <tr>
+              <td>CLI 輸入／輸出保護</td>
+              <td class="pass">精度錯誤不產生輸出；輸入原文不變；不覆寫既有輸出</td>
+            </tr>
+            <tr>
+              <td>正式 Jev</td>
+              <td class="pass">獲本次明確授權後送審一次，APPROVED；沒有自動重試</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <a href="../../research/GATE_4_PRECISION_IMPLEMENTATION.md"
+          >GPT-6.1 Sol High 實作與紅／綠燈紀錄</a
+        >。舊 69 項測試僅為歷史基線，不冒稱本輪重跑。
+      </p>
+    </section>
+    <section class="panel">
+      <h2>精度政策與核准邊界</h2>
+      <p>
+        保留原座標、等長、角度與父子契約；只新增每個關節及最終 tip 的鏈長正規化誤差 ≤
+        <code>1e-10</code> 檢查。不可表達時回傳
+        <code>RIG_NUMERIC_PRECISION</code>（rig-stage、severity 3），不自動移動起點或改骨長湊結果。
+      </p>
+      <p>
+        這是 JavaScript Number 工程政策，不是 Spine
+        官方數值標準。不涵蓋圖片關節辨識、綁圖、權重、動畫、完整 Spine 場景匯入或播放。
+      </p>
+      <p class="muted">
+        Jev 本次用量：input 3,693 + output 270 = 3,963 tokens。開發／協調代理精確用量無法取得，不以
+        Jev 用量代替總開發成本。歷史 <a href="../GATE_4_REVIEW.json">2026-09-24 核准</a>原樣保留。
+      </p>
+    </section>
+  </body>
+</html>

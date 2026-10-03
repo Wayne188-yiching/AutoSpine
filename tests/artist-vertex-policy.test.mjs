@@ -10,6 +10,31 @@ import {
 } from "../tools/artist-vertex-policy.mjs";
 
 describe("Artist reference hard acceptance rule", () => {
+  it("blocks legacy passing counts without loading Jev", () => {
+    const folder = mkdtempSync(join(tmpdir(), "autospine-corpus-required-"));
+    try {
+      const path = join(folder, "review.json");
+      writeFileSync(
+        path,
+        JSON.stringify({
+          gate: 3.2,
+          metrics: {
+            beard: { artist: { vertices: 24 }, generated: { vertices: 24 } },
+            house: { artist: { vertices: 25 }, generated: { vertices: 25 } },
+          },
+        }),
+      );
+      const result = spawnSync(process.execPath, [resolve("tools/jev-gate-review.mjs"), path], {
+        encoding: "utf8",
+        env: { ...process.env, JEV_TEST_ROOT: join(folder, "missing") },
+      });
+      if (result.error) throw result.error;
+      expect(result.status, result.stderr).toBe(3);
+      expect(JSON.parse(result.stdout)).toMatchObject({ jevCalled: false, status: "BLOCKED" });
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
+  });
   it("stops the actual review runner before loading an SDK or calling Jev", () => {
     const folder = mkdtempSync(join(tmpdir(), "autospine-artist-policy-"));
     try {
@@ -40,15 +65,19 @@ describe("Artist reference hard acceptance rule", () => {
   });
   const evaluate = (artistVertices, generatedVertices) =>
     checkArtistVertexCounts([{ id: "matched", artistVertices, generatedVertices }]);
-  it("accepts both exact 5% boundaries and rejects both outside boundaries", () => {
-    for (const count of [19, 20, 21]) expect(evaluate(20, count).status).toBe("PASSED");
-    for (const count of [18, 22]) expect(evaluate(20, count).status).toBe("REJECTED");
+  it("enforces absolute +/-5 even when percentage rules would accept a larger error", () => {
+    for (const base of [25, 80, 200]) {
+      for (const delta of [-5, 0, 5]) expect(evaluate(base, base + delta).status).toBe("PASSED");
+      for (const delta of [-6, 6]) expect(evaluate(base, base + delta).status).toBe("REJECTED");
+    }
   });
   it("uses whole vertices without rounding away excess error", () => {
-    expect(evaluate(24, 25).cases[0]).toMatchObject({ minimum: 23, maximum: 25 });
-    expect(evaluate(24, 22).status).toBe("REJECTED");
-    expect(evaluate(24, 26).status).toBe("REJECTED");
-    expect(evaluate(24, 23).status).toBe("PASSED");
+    expect(evaluate(24, 25).cases[0]).toMatchObject({ minimum: 19, maximum: 29 });
+    expect(evaluate(24, 18).status).toBe("REJECTED");
+    expect(evaluate(24, 30).status).toBe("REJECTED");
+    expect(evaluate(24, 19).status).toBe("PASSED");
+    expect(evaluate(24, 29).status).toBe("PASSED");
+    expect(evaluate(4, 3).cases[0].minimum).toBe(3);
   });
   it("rejects the current house despite the beard passing", () => {
     const result = checkGate32ArtistCounts({

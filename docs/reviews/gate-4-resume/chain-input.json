@@ -1,0 +1,7 @@
+{
+  "id": "gate4-demo",
+  "name": "Generic Chain",
+  "start": [10, 20],
+  "end": [160, 140],
+  "boneCount": 5
+}

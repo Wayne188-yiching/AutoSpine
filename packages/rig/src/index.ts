@@ -41,7 +41,10 @@ function point(value: unknown): value is [number, number] {
   );
 }
 
-/** A straight, parent-local chain. The root starts at `start`; the final tip reaches `end`. */
+/**
+ * A straight, parent-local chain rooted at `start`.
+ * World joints and the final tip must be within 1e-10 of the total chain length.
+ */
 export function generateChainRig(input: unknown): RigSpec {
   if (input === null || typeof input !== "object" || Array.isArray(input))
     fail("RIG_INPUT", "Chain rig input must be an object");
@@ -83,6 +86,35 @@ export function generateChainRig(input: unknown): RigSpec {
       rotation: index === 0 ? rotation : 0,
       length: segmentLength,
     });
+  }
+
+  const radians = (rotation * Math.PI) / 180;
+  const stepX = Math.cos(radians) * segmentLength;
+  const stepY = Math.sin(radians) * segmentLength;
+  let worldX = start[0];
+  let worldY = start[1];
+  for (let joint = 0; joint <= boneCount; joint++) {
+    const fraction = joint / boneCount;
+    // Normalize before comparing: world-scale tolerance hides collapse, while
+    // multiplying a tiny length by the tolerance can underflow to zero.
+    const relativeError = Math.hypot(
+      (worldX - start[0]) / length - (dx / length) * fraction,
+      (worldY - start[1]) / length - (dy / length) * fraction,
+    );
+    if (
+      !Number.isFinite(worldX) ||
+      !Number.isFinite(worldY) ||
+      !Number.isFinite(relativeError) ||
+      relativeError > 1e-10
+    )
+      fail(
+        "RIG_NUMERIC_PRECISION",
+        `Joint ${joint} exceeds 1e-10 of chain length in world-coordinate transforms; reduce coordinate magnitudes or relocate endpoints nearer the origin`,
+      );
+    if (joint < boneCount) {
+      worldX += stepX;
+      worldY += stepY;
+    }
   }
   return { schemaVersion: "0.1", kind: "rig", id, name, type: "chain", bones };
 }

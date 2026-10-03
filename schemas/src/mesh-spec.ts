@@ -13,6 +13,10 @@ export const MeshSpecSchema = Type.Object(
     uvs: Type.Array(Vector2Schema, { minItems: 3 }),
     triangles: Type.Array(Type.Integer({ minimum: 0 }), { minItems: 3 }),
     hull: Type.Array(Type.Integer({ minimum: 0 }), { minItems: 3 }),
+    // Authored internal constraints; absent means this mesh specifies none.
+    manualEdges: Type.Optional(
+      Type.Array(Type.Tuple([Type.Integer({ minimum: 0 }), Type.Integer({ minimum: 0 })])),
+    ),
   },
   { $id: "MeshSpec-0.1", additionalProperties: false },
 );

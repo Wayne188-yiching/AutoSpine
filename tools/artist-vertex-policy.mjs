@@ -1,5 +1,5 @@
 /** Hard acceptance check, independent of Jev's probabilistic judgment.
- * The user replaced the old 20% budget with a symmetric 5% limit.
+ * Current policy: an absolute difference of at most five vertices per attachment.
  */
 export function checkArtistVertexCounts(cases) {
   if (!Array.isArray(cases) || cases.length === 0)
@@ -13,20 +13,20 @@ export function checkArtistVertexCounts(cases) {
       generatedVertices < 3
     )
       return { id, status: "BLOCKED", reason: "Missing or invalid vertex counts" };
-    // Integer comparison avoids floating-point rejection exactly at +/-5%.
-    const passed = Math.abs(generatedVertices - artistVertices) * 20 <= artistVertices;
+    const passed = Math.abs(generatedVertices - artistVertices) <= 5;
     return {
       id,
       artistVertices,
       generatedVertices,
-      minimum: Math.ceil((artistVertices * 19) / 20),
-      maximum: Math.floor((artistVertices * 21) / 20),
+      minimum: Math.max(3, artistVertices - 5),
+      maximum: artistVertices + 5,
+      signedVertexDifference: generatedVertices - artistVertices,
       signedDeviation: (generatedVertices - artistVertices) / artistVertices,
       status: passed ? "PASSED" : "REJECTED",
     };
   });
   return {
-    maxRelativeDeviation: 0.05,
+    maxAbsoluteDeviation: 5,
     status: checked.some((item) => item.status === "BLOCKED")
       ? "BLOCKED"
       : checked.some((item) => item.status === "REJECTED")

@@ -5,6 +5,8 @@ import process from "node:process";
 import { pathToFileURL } from "node:url";
 import { checkGate32ArtistCounts } from "./artist-vertex-policy.mjs";
 import { checkGate32TopologySummary } from "./artist-topology-policy.mjs";
+import { checkArtistCorpus } from "./artist-corpus-policy.mjs";
+import { createHash } from "node:crypto";
 
 const reviewPath = process.argv[2];
 if (!reviewPath || process.argv.length !== 3) {
@@ -18,7 +20,56 @@ try {
     throw new Error("Expected an unreviewed Gate 1, 2, 3, 3.1, 3.2, or 4 bundle");
   const gate = review.gate;
   if (gate === 3.2) {
-    review.artistVertexPrecheck = checkGate32ArtistCounts(review);
+    if (review.referenceReportPath) {
+      const bytes = await readFile(resolve(review.referenceReportPath));
+      if (createHash("sha256").update(bytes).digest("hex") !== review.referenceReportSha256)
+        throw new Error("Reference report hash mismatch; rebuild the review bundle");
+      const report = JSON.parse(bytes.toString("utf8"));
+      review.artistVertexPrecheck = checkArtistCorpus(report);
+      // Structured local observations only. Never upload source projects, PNGs or videos.
+      review.referenceEvidence = {
+        mediaAccess:
+          "Jev receives derived metrics and frame observations, not direct access to private media",
+        projects: report.projects,
+        attachments: report.cases
+          .filter((c) => c.sourceType === "mesh")
+          .map((c) => ({
+            id: c.id,
+            pngSha256: c.pngSha256,
+            count: c.count,
+            positions: c.positions?.groups,
+            edges: c.typedEdges,
+            coverage: c.coverage,
+            referenceRegion: c.referenceRegion,
+            error: c.error,
+            deterministicRuns: c.deterministicRuns,
+          })),
+        tutorialObservations: (report.tutorialEvidence ?? []).map(
+          ({ videoSha256, frameSha256, timeSeconds, observation, scope }) => ({
+            videoSha256,
+            frameSha256,
+            timeSeconds,
+            observation,
+            scope,
+          }),
+        ),
+        limitations: [
+          "UV-space only; not posed deformation approval",
+          "Typed hull/manual recall100% and automatic recall80%; same-type subdivision within1px; not official editor round-trip approval",
+          "Position policy chosen in the 2026-09-30 Jev design advisory; that advisory is not Gate acceptance",
+        ],
+      };
+    } else {
+      const counts = checkGate32ArtistCounts(review);
+      review.artistVertexPrecheck =
+        counts.status === "PASSED"
+          ? {
+              status: "BLOCKED",
+              reason:
+                "Gate 3.2 now requires the Yuuna/panda/pig corpus evidence, positions and edge classification",
+            }
+          : counts;
+    }
     if (review.artistVertexPrecheck.status !== "PASSED") {
       await writeFile(reviewPath, `${JSON.stringify(review, null, 2)}\n`, "utf8");
       console.log(
@@ -30,7 +81,14 @@ try {
       );
       process.exit(review.artistVertexPrecheck.status === "BLOCKED" ? 3 : 2);
     }
-    review.artistTopologyPrecheck = checkGate32TopologySummary(review);
+    review.artistTopologyPrecheck = review.referenceReportPath
+      ? {
+          status: review.artistVertexPrecheck.status,
+          source: "full primary artist corpus precheck",
+          checkedMeshes: review.artistVertexPrecheck.checkedMeshes,
+          failures: review.artistVertexPrecheck.failures,
+        }
+      : checkGate32TopologySummary(review);
     if (review.artistTopologyPrecheck.status !== "PASSED") {
       await writeFile(reviewPath, `${JSON.stringify(review, null, 2)}\n`, "utf8");
       console.log(
@@ -51,7 +109,7 @@ try {
     gate === 4
       ? "Gate 4 deterministic straight ChainRigTemplate from explicit start/end/boneCount into engine-neutral RigSpec, without inferred joints, attachment binding, weights, deformation, or Spine serialization"
       : gate === 3.2
-        ? "Gate 3.2 reference-calibrated static mesh density for beard and rigid house, explicit purpose diagnostics, without bones, weights, head-deform or production-art approval"
+        ? "Gate 3.2 Yuuna/panda/pig reference-conditioned static mesh calibration: artist-used foreground selection is disclosed, missed effective foreground <=2%, transparent padding <=same artist reference, excluded source content must not be reintroduced; absolute +/-5 vertices, per-group one-to-one positions and explicit manual versus automatic edges; tutorials support review only; no independent semantic segmentation, new bones, weights or deformation approval"
         : gate === 1
           ? "the minimal Gate 1 Spine 4.0.64 slice"
           : gate === 2
@@ -63,7 +121,7 @@ try {
     gate === 4
       ? "schema checks, independent parent-local forward-kinematics assertions for horizontal/vertical/diagonal/reversed chains, exact 100-run serialization, structured invalid-input errors, CLI safety, and the full prior-Gate regression suite"
       : gate === 3.2
-        ? "portable small-curved and broad rigid fixtures, CLI purpose diagnostics, matched private AWP beard/house metrics, Tail coverage preservation, independent topology validation, and 100-run determinism"
+        ? "all required Yuuna/panda/pig attachment metrics, source hashes, timestamped tutorial observations, manual/automatic line separation, portable negative tests, Tail regression and 100-run determinism"
         : gate === 1
           ? "golden, runtime, CLI round-trip, and negative tests"
           : gate === 2
@@ -75,7 +133,7 @@ try {
     gate === 4
       ? "chain geometry stay in a deterministic rig package depending only on schemas, CLI stay thin, and all earlier engine/IR boundaries remain unchanged"
       : gate === 3.2
-        ? "deterministic geometry stay in Mesh, optional intent leave IR schemas unchanged, private reference tooling stay dev-only, CLI stay thin, and other engines stay unchanged"
+        ? "deterministic geometry stay in Mesh, optional engine-neutral manualEdges additive to MeshSpec, private reference tooling stay dev-only, CLI stay thin, and other engines stay unchanged"
         : gate === 1
           ? "Spine-specific logic stay in the adapter and CLI stay thin"
           : gate === 2
@@ -85,6 +143,7 @@ try {
               : "geometry stay in the mesh package, CLI stay thin, and prior packages remain engine-neutral";
   const state = { ...review };
   delete state.jevAttempts;
+  delete state.referenceReportPath;
   const result = await new TypeSafeClient().systemOne({
     state,
     questions: {
@@ -101,7 +160,7 @@ try {
       ...(gate === 3.2
         ? {
             artist_topology_supported: noul(
-              "Does the evidence compare the SAME original artist attachment with vertex counts within +/-5%, every matched vertex within 5% of image diagonal, all cyan hull and solid orange manual edges preserved, and at least 80% of dashed automatic triangle edges? Manual lines must not be confused with dashed triangulation; counts alone or rigid intent are not sufficient.",
+              "Does evidence compare every required Yuuna/panda/pig attachment to the SAME original artist source with absolute vertex count difference <=5, one-to-one hull/interior position errors, and manual solid edges separated from automatic dashed triangulation? Are tutorial observations timestamped, and media access limits disclosed? Counts alone or copied expected coordinates do not establish a general mesh generator.",
             ),
           }
         : {}),
@@ -110,7 +169,7 @@ try {
         gate === 4
           ? "Do 100-run byte-identical chain RigSpec checks, plus fixed-order math and no random/external state, credibly support determinism?"
           : gate === 3.2
-            ? "Do 100-run byte-identical private beard, house, tail and portable regression checks credibly support determinism?"
+            ? "Do 100-run byte-identical checks of every required primary reference mesh and portable prior-Gate regression checks credibly support determinism?"
             : gate === 1
               ? "Does the 100-run exact serialization check support determinism?"
               : gate === 2

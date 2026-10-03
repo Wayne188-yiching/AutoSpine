@@ -10,6 +10,7 @@ import {
   generateMeshWithDiagnostics,
   MeshError,
   repairCornerPinches,
+  referenceRectangleFits,
   selectPrimaryComponent,
   traceContour,
   validateMeshSpec,
@@ -82,6 +83,350 @@ function minimumTriangleAngle(mesh: MeshSpec, index: number): number {
 }
 
 describe("Gate 3 deterministic mesh engine", () => {
+  it("uses a stable geometric diagonal tie-break for qualified four-corner references", () => {
+    for (const rows of [
+      ["####", "####"],
+      ["##", "##", "##", "##"],
+    ]) {
+      const { source, alpha } = part(rows);
+      const options = { referenceTopology: { vertices: 4, hull: 4, maxAddedFraction: 0 } };
+      const mesh = generateMesh(source, alpha, options);
+      expect(mesh.triangles).toEqual([0, 1, 3, 1, 2, 3]);
+      expect(mesh.vertices).toHaveLength(4);
+      expect(mesh.manualEdges).toBeUndefined(); // A deterministic diagonal is still automatic.
+      expect(validateMeshSpec(mesh).status).toBe("passed");
+      expect(
+        generateMesh({ ...source, name: "Unrelated", sourcePath: "other.png" }, alpha, options)
+          .triangles,
+      ).toEqual(mesh.triangles);
+      for (let i = 0; i < 100; i++) expect(generateMesh(source, alpha, options)).toEqual(mesh);
+    }
+  });
+  it("keeps an explicit four-corner reference intact across islands and holes without cleanup", () => {
+    const input = part(["##...", "#....", "...##", "...##"], {
+      x: -12,
+      y: 5,
+      width: 50,
+      height: 80,
+    });
+    const original = input.alpha.slice();
+    const referenceTopology = { vertices: 4, hull: 4, maxAddedFraction: 13 / 7 };
+    expect(referenceRectangleFits(input.alpha, 5, 4, referenceTopology)).toBe(true);
+    const mesh = generateMesh(input.source, input.alpha, { referenceTopology });
+    expect(mesh.vertices).toEqual([
+      [-12, 5],
+      [38, 5],
+      [38, 85],
+      [-12, 85],
+    ]);
+    expect(mesh.uvs).toEqual([
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, 1],
+    ]);
+    expect(mesh.triangles.length).toBe(6);
+    expect(validateMeshSpec(mesh).status).toBe("passed");
+    expect(input.alpha).toEqual(original);
+    for (let i = 0; i < 100; i++)
+      expect(generateMesh(input.source, input.alpha, { referenceTopology })).toEqual(mesh);
+    expect(() => generateMesh(input.source, input.alpha)).toThrow(MeshError);
+    expect(() =>
+      generateMesh(input.source, input.alpha, { referenceTopology: { vertices: 4, hull: 4 } }),
+    ).toThrow(MeshError);
+  });
+
+  it("does not borrow rectangle padding, clean alpha, or ignore reference structure", () => {
+    const input = part(["###", "#.#", "###"]);
+    for (const reference of [
+      { vertices: 4, hull: 4, maxAddedFraction: 0.1249 },
+      { vertices: 5, hull: 4, maxAddedFraction: 10 },
+      { vertices: 5, hull: 5, maxAddedFraction: 10 },
+      { vertices: 4, hull: 4, maxAddedFraction: NaN },
+      { vertices: 4, hull: 4, maxAddedFraction: Infinity },
+      { vertices: 4, hull: 4, maxAddedFraction: -1 },
+    ]) {
+      expect(referenceRectangleFits(input.alpha, 3, 3, reference)).toBe(false);
+      expect(() =>
+        generateMesh(input.source, input.alpha, { referenceTopology: reference }),
+      ).toThrow(MeshError);
+    }
+    expect(
+      referenceRectangleFits(input.alpha, 3, 3, { vertices: 4, hull: 4, maxAddedFraction: 0.125 }),
+    ).toBe(true);
+    expect(
+      referenceRectangleFits(new Uint8Array(9), 3, 3, {
+        vertices: 4,
+        hull: 4,
+        maxAddedFraction: 10,
+      }),
+    ).toBe(false);
+    expect(
+      referenceRectangleFits(input.alpha, 3, 4, { vertices: 4, hull: 4, maxAddedFraction: 10 }),
+    ).toBe(false);
+    expect(
+      referenceRectangleFits(input.alpha, 4097, 4097, {
+        vertices: 4,
+        hull: 4,
+        maxAddedFraction: 10,
+      }),
+    ).toBe(false);
+  });
+
+  it("handles a large qualified rectangle without expanding contour tracing limits", () => {
+    const width = 1800,
+      height = 1800;
+    const alpha = new Uint8Array(width * height).fill(255);
+    alpha[Math.floor(alpha.length / 2)] = 0;
+    const source: AssetPart = {
+      id: "large",
+      name: "Large",
+      sourcePath: "synthetic.png",
+      drawOrder: 0,
+      bounds: { x: 0, y: 0, width, height },
+      alphaMask: encodeAlphaMask(width, height, alpha),
+    };
+    const mesh = generateMesh(source, alpha, {
+      referenceTopology: { vertices: 4, hull: 4, maxAddedFraction: 1 / (alpha.length - 1) },
+    });
+    expect(mesh.vertices.length).toBe(4);
+    expect(validateMeshSpec(mesh).status).toBe("passed");
+    expect(alpha[Math.floor(alpha.length / 2)]).toBe(0);
+    expect(() => generateMesh(source, alpha)).toThrow(MeshError);
+    expect(() => traceContour(alpha, width, height)).toThrow(MeshError);
+  });
+
+  it.each(
+    [
+      [
+        [15.2, 1.5],
+        [19, 1],
+        [70, 95],
+        [66, 95.5],
+      ],
+      [
+        [12, 2],
+        [16, 2],
+        [68, 66],
+        [7, 98],
+        [5, 95],
+        [64, 65],
+      ],
+      [
+        [25, 0],
+        [28, 0],
+        [80, 67],
+        [0, 100],
+        [0, 97],
+        [76, 65],
+      ],
+      [
+        [10.25, 2.25],
+        [15.25, 2.25],
+        [69.25, 96.25],
+        [64.25, 96.25],
+      ],
+    ].map((polygon) => ({ polygon: polygon as [number, number][] })),
+  )(
+    "fits raster-only slanted boundaries without adding transparent pixels: $polygon",
+    ({ polygon }) => {
+      const width = 80,
+        height = 100;
+      const input = part(
+        Array.from({ length: height }, (_, y) =>
+          Array.from({ length: width }, (_, x) =>
+            insidePolygon(polygon, x + 0.5, y + 0.5) ? "#" : ".",
+          ).join(""),
+        ),
+      );
+      const original = input.alpha.slice();
+      const options = {
+        referenceTopology: { vertices: polygon.length, hull: polygon.length, maxAddedFraction: 0 },
+      };
+      // The engine receives only the raster and counts, never polygon coordinates.
+      const mesh = generateMesh(input.source, input.alpha, options);
+      expect(traceContour(input.alpha, width, height).length).toBeGreaterThan(100);
+      expect(Math.abs(mesh.vertices.length - polygon.length)).toBeLessThanOrEqual(5);
+      expect(mesh.vertices.some((p) => p.some((v) => !Number.isInteger(v)))).toBe(true);
+      expect(validateMeshSpec(mesh).status).toBe("passed");
+      expect(mesh.uvs.every((p) => p.every((v) => v >= 0 && v <= 1))).toBe(true);
+      const hull = mesh.hull.map((i) => mesh.vertices[i]!);
+      let missed = 0,
+        added = 0,
+        foreground = 0;
+      for (let y = 0; y < height; y++)
+        for (let x = 0; x < width; x++) {
+          const filled = input.alpha[y * width + x]! > 0;
+          const covered = insidePolygon(hull, x + 0.5, y + 0.5);
+          foreground += Number(filled);
+          missed += Number(filled && !covered);
+          added += Number(!filled && covered);
+        }
+      expect(added).toBe(0);
+      expect(missed / foreground).toBeLessThanOrEqual(0.02);
+      expect(input.alpha).toEqual(original);
+      for (let i = 0; i < 3; i++)
+        expect(generateMesh(input.source, input.alpha, options)).toEqual(mesh);
+    },
+  );
+
+  it("retains a dense valid fallback when subpixel fitting cannot satisfy the raster budget", () => {
+    const polygon: [number, number][] = [
+      [20.2, 3.2],
+      [23.4, 3.5],
+      [66.8, 58.7],
+      [67.1, 62.4],
+      [4.2, 93.6],
+      [3.6, 90.4],
+      [63, 59.8],
+    ];
+    const width = 72,
+      height = 96;
+    const input = part(
+      Array.from({ length: height }, (_, y) =>
+        Array.from({ length: width }, (_, x) =>
+          insidePolygon(polygon, x + 0.5, y + 0.5) ? "#" : ".",
+        ).join(""),
+      ),
+    );
+    const { mesh, diagnostics } = generateMeshWithDiagnostics(input.source, input.alpha, {
+      referenceTopology: { vertices: 7, hull: 7, maxAddedFraction: 0 },
+    });
+    expect(mesh.vertices.length).toBeGreaterThan(12);
+    expect(diagnostics.warnings).toContain("ARTIST_VERTEX_BUDGET_EXCEEDED");
+    expect(validateMeshSpec(mesh).status).toBe("passed");
+    const hull = mesh.hull.map((i) => mesh.vertices[i]!);
+    let missed = 0,
+      added = 0,
+      foreground = 0;
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < width; x++) {
+        const filled = input.alpha[y * width + x]! > 0;
+        const covered = insidePolygon(hull, x + 0.5, y + 0.5);
+        foreground += Number(filled);
+        missed += Number(filled && !covered);
+        added += Number(!filled && covered);
+      }
+    expect(added).toBe(0);
+    expect(missed / foreground).toBeLessThanOrEqual(0.02);
+  });
+
+  it("preserves short clipping caps on a raster-only bent ribbon", () => {
+    const polygon: [number, number][] = [
+      [31.4, 0],
+      [34.2, 0],
+      [80, 64.4],
+      [80, 67],
+      [0, 100],
+      [0, 97.8],
+      [76.7, 65.2],
+    ];
+    const width = 80,
+      height = 100;
+    const { source, alpha } = part(
+      Array.from({ length: height }, (_, y) =>
+        Array.from({ length: width }, (_, x) =>
+          insidePolygon(polygon, x + 0.5, y + 0.5) ? "#" : ".",
+        ).join(""),
+      ),
+    );
+    const original = alpha.slice();
+    const options = { referenceTopology: { vertices: 7, hull: 7, maxAddedFraction: 0 } };
+    const mesh = generateMesh(source, alpha, options);
+    expect(mesh.vertices).toHaveLength(7);
+    // Subpixel fitting may move a cap inward to respect the zero-padding budget.
+    // Require every geometric corner to survive, not exact image-border coordinates.
+    for (const [x, y] of polygon)
+      expect(
+        Math.min(...mesh.vertices.map(([mx, my]) => Math.hypot(mx - x, my - y))),
+      ).toBeLessThanOrEqual(1.5);
+    expect(mesh.manualEdges).toBeUndefined();
+    expect(validateMeshSpec(mesh).status).toBe("passed");
+    let foreground = 0,
+      missed = 0,
+      added = 0;
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < width; x++) {
+        const filled = alpha[y * width + x]! > 0;
+        const covered = insidePolygon(mesh.vertices, x + 0.5, y + 0.5);
+        foreground += Number(filled);
+        missed += Number(filled && !covered);
+        added += Number(!filled && covered);
+      }
+    expect(added).toBe(0);
+    expect(missed / foreground).toBeLessThanOrEqual(0.02);
+    expect(alpha).toEqual(original);
+    expect(
+      generateMesh({ ...source, name: "Different", sourcePath: "other.png" }, alpha, options)
+        .vertices,
+    ).toEqual(mesh.vertices);
+  });
+
+  it("uses artist padding without changing default budgets or the missed-foreground limit", () => {
+    const input = part(
+      Array.from({ length: 12 }, (_, y) =>
+        Array.from({ length: 32 }, (_, x) => (y === 0 && x >= 8 && x < 24 ? "." : "#")).join(""),
+      ),
+    );
+    const baseline = generateMesh(input.source, input.alpha, {
+      referenceTopology: { vertices: 4, hull: 4 },
+    });
+    const original = input.alpha.slice();
+    const options = { referenceTopology: { vertices: 4, hull: 4, maxAddedFraction: 16 / 368 } };
+    const mesh = generateMesh(input.source, input.alpha, options);
+    expect(mesh.hull.length).toBe(4);
+    expect(baseline.hull.length).toBeGreaterThan(mesh.hull.length);
+    let missed = 0,
+      added = 0,
+      foreground = 0;
+    const polygon = mesh.hull.map((i) => mesh.vertices[i]!);
+    for (let y = 0; y < 12; y++)
+      for (let x = 0; x < 32; x++) {
+        const filled = input.alpha[y * 32 + x]! > 0,
+          covered = insidePolygon(polygon, x + 0.5, y + 0.5);
+        foreground += Number(filled);
+        missed += Number(filled && !covered);
+        added += Number(!filled && covered);
+      }
+    expect(added / foreground).toBeGreaterThan(0.02);
+    expect(added / foreground).toBeLessThanOrEqual(options.referenceTopology.maxAddedFraction);
+    expect(missed / foreground).toBeLessThanOrEqual(0.02);
+    expect(input.alpha).toEqual(original);
+    for (let i = 0; i < 100; i++)
+      expect(generateMesh(input.source, input.alpha, options)).toEqual(mesh);
+    expect(
+      generateMesh(input.source, input.alpha, { referenceTopology: { vertices: 4, hull: 4 } }),
+    ).toEqual(baseline);
+  });
+
+  it("does not trade a thin foreground tip for a larger padding allowance", () => {
+    const input = part(
+      Array.from({ length: 32 }, (_, y) =>
+        Array.from({ length: 32 }, (_, x) =>
+          x < 12 || (y >= 14 && y < 18 && x < 30) ? "#" : ".",
+        ).join(""),
+      ),
+    );
+    const mesh = generateMesh(input.source, input.alpha, {
+      referenceTopology: { vertices: 4, hull: 4, maxAddedFraction: 10 },
+    });
+    const polygon = mesh.hull.map((i) => mesh.vertices[i]!);
+    let missed = 0,
+      foreground = 0;
+    for (let y = 0; y < 32; y++)
+      for (let x = 0; x < 32; x++)
+        if (input.alpha[y * 32 + x]) {
+          foreground++;
+          missed += Number(!insidePolygon(polygon, x + 0.5, y + 0.5));
+        }
+    expect(missed / foreground).toBeLessThanOrEqual(0.02);
+    for (const maxAddedFraction of [-1, NaN, Infinity])
+      expect(() =>
+        generateMesh(input.source, input.alpha, {
+          referenceTopology: { vertices: 4, hull: 4, maxAddedFraction },
+        }),
+      ).toThrow(MeshError);
+  });
   it("uses matched artist counts to preserve editable outer and interior structure", () => {
     const rows = Array.from({ length: 64 }, (_, y) => {
       const halfWidth = y < 16 ? Math.max(2, y * 2) : y > 50 ? 33 : 29;

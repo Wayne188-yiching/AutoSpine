@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AutoSpine · Gate 4 通用骨鏈</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, sans-serif;
+        background: #101722;
+        color: #e8eef7;
+      }
+      body {
+        max-width: 1000px;
+        margin: auto;
+        padding: 30px 24px 60px;
+        line-height: 1.7;
+      }
+      h1 {
+        margin: 8px 0;
+        font-size: 30px;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 0 0 12px;
+      }
+      a {
+        color: #88d3ff;
+      }
+      .muted {
+        color: #a9b7ca;
+      }
+      .panel {
+        padding: 20px 24px;
+        margin-top: 24px;
+        background: #192331;
+        border: 1px solid #304056;
+        border-radius: 10px;
+      }
+      .approved {
+        color: #8edcb4;
+      }
+      svg {
+        display: block;
+        width: 100%;
+        max-height: 350px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #304056;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      code {
+        color: #b5d9ff;
+      }
+      .skeleton-header {
+        display: none;
+      }
+      body[data-view="skeleton"] > header:not(.skeleton-header),
+      body[data-view="skeleton"] > section:not(#skeleton) {
+        display: none;
+      }
+      body[data-view="skeleton"] .skeleton-header {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="muted">AutoSpine · Gate 4 · 2026-10-03</p>
+      <h1>通用直線骨鏈</h1>
+      <p>先進 Gate 4；Gate 3.2 暫緩，仍為 23／164，沒有標記為通過。</p>
+      <p>
+        <a href="../../../GATE_STATUS.html">所有 Gate 完成狀態</a> ·
+        <a href="../GATE_4_REVIEW.json">既有 Jev 核准紀錄</a>
+      </p>
+    </header>
+    <section class="panel">
+      <h2 class="approved">既有基線已核准 · 恢復工作時的歷史示範</h2>
+      <p>
+        2026-09-24：Jev APPROVED（0.96）。當時 69 項測試／9 個測試檔通過，固定輸入 100
+        次一致。這些是歷史證據，不是本輪重新測試。
+      </p>
+      <p>
+        首次恢復工作時（精度修補前），Rig、RigSpec、CLI 與骨鏈測試對照核准提交
+        <code>5feda8a</code> 無差異。後續精度修補及新版核准另見
+        <a href="../gate-4-precision/review.html">Gate 4 最新驗收</a>；本頁範例保留原始結果。
+        骨鏈只依賴資料規格，不依賴 Gate 3.2 的網格優化。
+      </p>
+      <p>
+        目前開發模型：GPT-6.1 Sol High（2026-10-03
+        使用者指定試跑），由指定開發代理實際執行；複雜幾何設計再使用 Astra；Jev
+        為獨立審核。首次骨鏈示範由主代理整理，這份示範的原始檢查紀錄保持不變。
+      </p>
+    </section>
+    <section class="panel">
+      <h2>GPT-6.1 Sol High · 修補前的模型試跑紀錄</h2>
+      <p>
+        已由指定模型檢查一個新的極端數值案例：起點座標 10¹⁶，總長 4，分成 256 根骨骼。
+        局部骨長計算正確，但世界座標浮點累加會讓終點停在起點。該缺口已於後續精度修補解決，
+        不代表下方一般尺寸範例失敗。
+      </p>
+      <p>
+        首次模型試跑僅稽核新案例，未改引擎、未重跑已通過測試、未追加 Jev 呼叫。
+        隨後另完成引擎修補及使用者授權的新版 Jev 正式驗收。
+        <a href="../../research/GATE_4_SOL61_TRIAL.md">查看模型實測與可重現紀錄</a>。
+      </p>
+    </section>
+    <section class="panel">
+      <h2>首次恢復工作時的最小檢查</h2>
+      <p>
+        1. 保留核准程式與舊測試證據。2. 透過現有 CLI 生成新的數值範例。3.
+        檢查輸出規格、父子關係與世界座標終點，提供圖像核對。
+      </p>
+      <p>
+        只接受明確起點、終點、骨數；產生等長、由父至子的骨骼資料。不是 Tail
+        專用，可以作為其他長形部件的起始骨鏈。
+      </p>
+      <p class="muted">
+        不推測圖片關節，不建立彎曲／不等長骨鏈，不綁圖、不計算權重、不做動畫，也不是可以直接匯入
+        Spine 的完整場景。Gate 5 尚未開始；GitHub 推送條件未變。
+      </p>
+    </section>
+    <header class="skeleton-header">
+      <p class="muted">AutoSpine · Gate 4 · 骨架視覺證據</p>
+      <h1>5 根骨骼 · 實際輸出圖</h1>
+      <p>依既有 CLI 輸出的 RigSpec 還原，不是手繪骨架，也不是 Spine 編輯器截圖。</p>
+    </header>
+    <section class="panel" id="skeleton">
+      <h2>既有 CLI 範例 · 骨架與父子關係</h2>
+      <p>
+        起點 (10, 20) → 終點 (160, 140)，5 根骨骼。下圖依輸出 RigSpec
+        的父子局部變換還原世界座標；並非從圖片猜骨骼。
+      </p>
+      <p id="result" class="approved">
+        沿用已記錄範例：5 根骨骼、6 個關節；父子順序為 1 → 2 → 3 → 4 → 5。 歷史檢查的關節最大誤差
+        0、終點誤差 0；此次只重繪畫面，不重跑引擎測試。
+      </p>
+      <svg id="chain" viewBox="0 0 760 350" role="img" aria-label="5 根骨骼的父子骨鏈示意"></svg>
+      <p class="muted">
+        藍色尖形＝骨骼方向；圓點＝關節；綠色＝根起點；黃色＝最終骨尖。圖表顯示到小數第 3 位，原始
+        JSON 保留完整精度。
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>骨骼</th>
+              <th>父骨</th>
+              <th>局部位置</th>
+              <th>局部旋轉</th>
+              <th>骨長</th>
+              <th>世界起點</th>
+            </tr>
+          </thead>
+          <tbody id="bones"></tbody>
+        </table>
+      </div>
+      <p>
+        <a href="chain-input.json">範例輸入</a> · <a href="chain-rig.json">CLI 原始骨鏈輸出</a> ·
+        <a href="resume-evidence.json">本輪檢查紀錄</a>
+      </p>
+      <p class="muted">
+        只呈現明確端點的直線骨鏈；尚未綁定角色圖片、網格或權重，不是人物／尾巴的變形驗收。
+      </p>
+      <p><a href="../gate-4-precision/review.html">返回 Gate 4 最新驗收報告</a></p>
+    </section>
+    <script id="rig-data" type="application/json">
+      {
+        "schemaVersion": "0.1",
+        "kind": "rig",
+        "id": "gate4-demo",
+        "name": "Generic Chain",
+        "type": "chain",
+        "bones": [
+          {
+            "id": "gate4-demo-bone-1",
+            "name": "Generic Chain 1",
+            "x": 10,
+            "y": 20,
+            "rotation": 38.659808254090095,
+            "length": 38.41874542459709
+          },
+          {
+            "id": "gate4-demo-bone-2",
+            "name": "Generic Chain 2",
+            "parentId": "gate4-demo-bone-1",
+            "x": 38.41874542459709,
+            "y": 0,
+            "rotation": 0,
+            "length": 38.41874542459709
+          },
+          {
+            "id": "gate4-demo-bone-3",
+            "name": "Generic Chain 3",
+            "parentId": "gate4-demo-bone-2",
+            "x": 38.41874542459709,
+            "y": 0,
+            "rotation": 0,
+            "length": 38.41874542459709
+          },
+          {
+            "id": "gate4-demo-bone-4",
+            "name": "Generic Chain 4",
+            "parentId": "gate4-demo-bone-3",
+            "x": 38.41874542459709,
+            "y": 0,
+            "rotation": 0,
+            "length": 38.41874542459709
+          },
+          {
+            "id": "gate4-demo-bone-5",
+            "name": "Generic Chain 5",
+            "parentId": "gate4-demo-bone-4",
+            "x": 38.41874542459709,
+            "y": 0,
+            "rotation": 0,
+            "length": 38.41874542459709
+          }
+        ]
+      }
+    </script>
+    <script>
+      if (new URLSearchParams(window.location.search).get("view") === "skeleton")
+        document.body.dataset.view = "skeleton";
+      const rig = JSON.parse(document.getElementById("rig-data").textContent);
+      const diagram = document.getElementById("chain");
+      const rows = document.getElementById("bones");
+      const worlds = new Map();
+      const ns = "http://www.w3.org/2000/svg";
+      const format = (value) => Number(value.toFixed(3)).toString();
+      const svg = (tag, attributes, label) => {
+        const element = document.createElementNS(ns, tag);
+        for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, value);
+        if (label !== undefined) element.textContent = label;
+        diagram.appendChild(element);
+      };
+      const project = (point) => [210 + (point.x - 10) * 2, 300 - (point.y - 20) * 2];
+      svg("line", { x1: 50, y1: 320, x2: 710, y2: 320, stroke: "#304056" });
+      svg(
+        "text",
+        { x: 52, y: 30, fill: "#a9b7ca", "font-size": 14 },
+        "世界座標示意（X 向右、Y 向上；等比例顯示）",
+      );
+      for (const [index, bone] of rig.bones.entries()) {
+        const parent = worlds.get(bone.parentId);
+        const parentRadians = ((parent?.angle ?? 0) * Math.PI) / 180;
+        const joint = {
+          x: parent
+            ? parent.x + bone.x * Math.cos(parentRadians) - bone.y * Math.sin(parentRadians)
+            : bone.x,
+          y: parent
+            ? parent.y + bone.x * Math.sin(parentRadians) + bone.y * Math.cos(parentRadians)
+            : bone.y,
+          angle: (parent?.angle ?? 0) + bone.rotation,
+        };
+        worlds.set(bone.id, joint);
+        const radians = (joint.angle * Math.PI) / 180;
+        const tip = {
+          x: joint.x + bone.length * Math.cos(radians),
+          y: joint.y + bone.length * Math.sin(radians),
+        };
+        const [x1, y1] = project(joint);
+        const [x2, y2] = project(tip);
+        const screenLength = Math.hypot(x2 - x1, y2 - y1);
+        const normalX = (-(y2 - y1) / screenLength) * 9;
+        const normalY = ((x2 - x1) / screenLength) * 9;
+        const shoulderX = x1 + (x2 - x1) * 0.22;
+        const shoulderY = y1 + (y2 - y1) * 0.22;
+        svg("polygon", {
+          points: `${x1},${y1} ${shoulderX + normalX},${shoulderY + normalY} ${x2},${y2} ${shoulderX - normalX},${shoulderY - normalY}`,
+          fill: "#2d718f",
+          stroke: "#88d3ff",
+          "stroke-width": 2,
+          "data-bone-id": bone.id,
+        });
+        svg("circle", {
+          cx: x1,
+          cy: y1,
+          r: 7,
+          fill: "#101722",
+          stroke: index === 0 ? "#8edcb4" : "#88d3ff",
+          "stroke-width": 3,
+          "data-joint": index,
+        });
+        svg(
+          "text",
+          {
+            x: (x1 + x2) / 2,
+            y: (y1 + y2) / 2 - 16,
+            fill: "#e8eef7",
+            "text-anchor": "middle",
+            "font-size": 16,
+          },
+          `骨 ${index + 1}`,
+        );
+        const row = document.createElement("tr");
+        for (const value of [
+          index + 1,
+          parent ? index : "根骨",
+          `(${format(bone.x)}, ${format(bone.y)})`,
+          `${format(bone.rotation)}°`,
+          format(bone.length),
+          `(${format(joint.x)}, ${format(joint.y)})`,
+        ]) {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+        }
+        rows.appendChild(row);
+        if (index === 0)
+          svg("text", { x: x1, y: y1 + 30, fill: "#8edcb4", "font-size": 14 }, "起點 (10, 20)");
+        if (index === rig.bones.length - 1) {
+          svg("circle", { cx: x2, cy: y2, r: 7, fill: "#ffd58c", "data-joint": rig.bones.length });
+          svg(
+            "text",
+            { x: x2 + 12, y: y2 + 5, fill: "#ffd58c", "font-size": 14 },
+            `終點 (${format(tip.x)}, ${format(tip.y)})`,
+          );
+        }
+      }
+    </script>
+  </body>
+</html>

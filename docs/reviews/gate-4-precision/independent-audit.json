@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-03",
+  "status": "PASSED",
+  "engineSourceSha256": "c483ffac3430d29a0178c098cc1efd7de882bb8824aeb5129966eedd8f48aadd",
+  "comparisonCommit": "5feda8a",
+  "method": "Compile approved and current rig source in memory; independently compose 2x2 affine parent/local transforms. Four new numeric fixtures differ from the already-passing unit fixtures. No source files, build files or private artwork changed by this audit.",
+  "newCases": 4,
+  "passed": 4,
+  "cases": [
+    {
+      "id": "audit-collapse-128",
+      "start": [10000000000000000, 0],
+      "end": [10000000000000008, 0],
+      "bones": 128,
+      "before": { "maxNormalizedJointError": 1, "endpointError": 8, "observedDisplacement": [0, 0], "distinctWorldJoints": 1 },
+      "after": { "status": "rejected", "code": "RIG_NUMERIC_PRECISION", "stage": "rig", "severity": 3, "firstFailingJoint": 1 }
+    },
+    {
+      "id": "audit-intermediate-negative",
+      "start": [-9007199254740994, 0],
+      "end": [-9007199254740990, 0],
+      "bones": 3,
+      "before": { "maxNormalizedJointError": 0.16666666666666669, "endpointError": 0, "observedDisplacement": [4, 0], "distinctWorldJoints": 4 },
+      "after": { "status": "rejected", "code": "RIG_NUMERIC_PRECISION", "stage": "rig", "severity": 3, "firstFailingJoint": 1 }
+    },
+    {
+      "id": "audit-large-exact",
+      "start": [10000000000000000, 0],
+      "end": [10000000000001024, 0],
+      "bones": 128,
+      "before": { "maxNormalizedJointError": 0, "endpointError": 0, "observedDisplacement": [1024, 0], "distinctWorldJoints": 129 },
+      "after": { "status": "accepted", "maxNormalizedJointError": 0, "endpointError": 0, "sameSerializedOutputAsApproved": true }
+    },
+    {
+      "id": "audit-ordinary",
+      "start": [-32, 24],
+      "end": [160, -72],
+      "bones": 6,
+      "before": { "maxNormalizedJointError": 1.5700924586837752e-16, "endpointError": 1.4210854715202004e-14, "observedDisplacement": [192, -96.00000000000001], "distinctWorldJoints": 7 },
+      "after": { "status": "accepted", "maxNormalizedJointError": 1.5700924586837752e-16, "endpointError": 1.4210854715202004e-14, "sameSerializedOutputAsApproved": true }
+    }
+  ],
+  "notClaimed": ["A fresh full historical suite", "Spine editor import or playback", "Deformation quality", "Formal Jev acceptance"]
+}

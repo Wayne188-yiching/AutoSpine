@@ -5,6 +5,9 @@
 /$out/
 /_probe.wav
 
+# Local acceptance reports containing private artwork and artist mesh data
+/docs/local-reviews/
+
 # Dependencies and generated output
 node_modules/
 dist/

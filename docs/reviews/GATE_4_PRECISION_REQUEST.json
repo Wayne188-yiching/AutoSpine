@@ -1,0 +1,187 @@
+{
+  "model": "jev-latest",
+  "state": {
+    "purpose": "gate-4-precision-acceptance",
+    "gate": 4,
+    "statusAtSubmission": "DEV_VERIFIED",
+    "date": "2026-10-03",
+    "developmentModel": "GPT-6.1 Sol High",
+    "engineSourceSha256": "c483ffac3430d29a0178c098cc1efd7de882bb8824aeb5129966eedd8f48aadd",
+    "objective": "Accept the refined deterministic straight equal-length ChainRigTemplate with explicit numerical representability checks, retaining its existing engine-neutral RigSpec contract.",
+    "ownerOrder": "Owner explicitly deferred reopened Gate 3.2 at 23/164 and authorized Gate 4 first, then requested Gate 4 optimization through acceptance. This changes the work order only, not Gate 3.2 acceptance or Gate 5/publication authorization.",
+    "inScope": [
+      "Explicit start/end/boneCount generate a parent-first equal-length chain, root world position=start, root rotation=atan2(dy,dx) in degrees, child local X=length/N and zero local Y/rotation.",
+      "Check all reconstructed double world joints and the final tip; reject unrepresentable chains with structured RIG_NUMERIC_PRECISION, stage=rig, severity=3.",
+      "Targeted new tests, affected valid direction/CLI regressions, independent numeric evidence, preserved history and explicit local-versus-Jev distinction."
+    ],
+    "outOfScope": [
+      "Image/pivot inference, curved or unequal bones, artwork binding, weights, deformation, animations, complete multi-bone Spine scene export, Gate 3.2 optimization, Gate 5 or GitHub publication."
+    ],
+    "changedFiles": [
+      "packages/rig/src/index.ts",
+      "tests/rig-precision.test.ts",
+      "tests/rig-cli.test.ts",
+      "tools/jev-gate4-precision-review.mjs",
+      "tests/gate4-review-policy.test.mjs",
+      "Gate 4 scope, numeric policy and evidence documentation"
+    ],
+    "numericPolicy": {
+      "label": "ENGINE_POLICY, not an official Spine accuracy standard",
+      "maximumChainNormalizedJointError": 1e-10,
+      "formula": "hypot((wx-start.x)/L-(dx/L)*(joint/N), (wy-start.y)/L-(dy/L)*(joint/N)), L=hypot(dx,dy), joints 0..N including final tip",
+      "reason": "Chain-scale accuracy avoids accepting 100% displacement loss just because the absolute world origin is huge. Normalize before multiplying to avoid underflowing tiny absolute tolerances or ideal tiny displacements. Reject nonfinite world positions/error. No geometry correction, origin rebasing, world-origin-relative tolerance or arbitrary ban on large coordinates.",
+      "toleranceRationale": "1e-10 provides margin above the normal 256*EPSILON magnitude (~5.7e-14), while enforcing geometry much finer than chain length. This is an engineering choice, not a universal floating-point error theorem.",
+      "guardCode": "const radians = (rotation * Math.PI) / 180;\nconst stepX = Math.cos(radians) * segmentLength;\nconst stepY = Math.sin(radians) * segmentLength;\nlet worldX = start[0];\nlet worldY = start[1];\nfor (let joint = 0; joint <= boneCount; joint++) {\n  const fraction = joint / boneCount;\n  const relativeError = Math.hypot(\n    (worldX - start[0]) / length - (dx / length) * fraction,\n    (worldY - start[1]) / length - (dy / length) * fraction,\n  );\n  if (!Number.isFinite(worldX) || !Number.isFinite(worldY) || !Number.isFinite(relativeError) || relativeError > 1e-10)\n    fail(\"RIG_NUMERIC_PRECISION\", `Joint ${joint} exceeds 1e-10 of chain length in world-coordinate transforms; reduce coordinate magnitudes or relocate endpoints nearer the origin`);\n  if (joint < boneCount) { worldX += stepX; worldY += stepY; }\n}"
+    },
+    "preservedContracts": [
+      "Existing validation branches and precedence execute before the new guard, unchanged. Bone construction fields and serialization order remain unchanged. Maximum count remains 256.",
+      "No schema changes, new public APIs, numeric config, new dependencies or changes to assets/mesh/compiler/weights/animation. Rig still depends only on schemas. CLI production code unchanged; existing wx exclusive output creation follows generator success.",
+      "Historical GATE_4_REVIEW.json (2026-09-24 APPROVED 0.96, 69 tests and 100 serialization comparisons) is preserved and not represented as a fresh full-suite run."
+    ],
+    "localVerification": {
+      "status": "PASSED",
+      "redBeforeFix": {
+        "failed": 9,
+        "passed": 5,
+        "skipped": 2,
+        "scope": "New precision cases plus new CLI precision error, old engine accepted invalid chains."
+      },
+      "greenAfterFix": {
+        "passed": 19,
+        "skipped": 13,
+        "files": 3,
+        "details": "13 new precision tests +4 affected existing direction cases +1 affected existing CLI success +1 new CLI precision error."
+      },
+      "reviewPolicyTests": {
+        "passed": 13,
+        "newTestsOnly": true,
+        "details": "Unchanged >=0.8 approval probabilities/nouls, >=3.5 evidence quality, NONE blocker; rejects failed, missing, malformed and out-of-range values, preserves BLOCKED."
+      },
+      "build": "passed: tsc -b packages/rig packages/cli",
+      "typecheck": "passed: tsc -p tests/tsconfig.json --noEmit",
+      "lint": "passed: changed TypeScript engine/tests and new review tool/policy tests only",
+      "format": "passed: changed engine/tests only; documentation formatting is separately checked",
+      "determinism": "One baseline plus 100 exact serialization comparisons each for a new representable large-origin success and a new precision-rejection diagnostic. The old 13-bone 100-comparison fixture was not rerun.",
+      "freshTestCommand": "node node_modules/vitest/vitest.mjs run tests/rig-precision.test.ts tests/rig-chain.test.ts tests/rig-cli.test.ts --pool=threads -t 'Gate 4 numeric precision|constructs parent-local bones|writes the generated rig|precision error'",
+      "skippedReason": "12 old cases validate unchanged pre-guard invalid-input branches or old determinism; 1 old CLI case exercises unchanged zero-length rejection. Other Gate modules and tests are unaffected by the scoped numeric guard. Owner instructed reuse of unaffected passing evidence; no fresh full-suite claim."
+    },
+    "newPrecisionTestCoverage": [
+      "Reject complete collapse [1e16,0] -> [1e16+4,0],256; partial quantization, negative direction, diagonal collapse, subnormal scalar and diagonal quantization.",
+      "Reject intermediate distortion even when final tip is correct: [2**53-2,0] -> [2**53+2,0],3. First displacement is 1 rather than 4/3, final rounded endpoint is correct.",
+      "Accept exact large-origin [1e16,0] -> [1e16+512,0],256, tiny-origin short chain, exact subnormal chain, tiny diagonal and finite near-maximum chain. Verify complete RigSpec fields/input preservation and independent affine parent/local composition at every joint.",
+      "Subnormal tests explicitly demonstrate L*1e-10===0; normalized checks avoid falsely passing distorted tiny geometry.",
+      "CLI precision error exits1, emits structured rig error, creates no output and preserves input text. Existing affected valid CLI preserves input and no-overwrite behavior."
+    ],
+    "independentNewAudit": {
+      "method": "Coordinating agent read approved source at commit5feda8a and current source; compiled both in memory and accumulated full 2x2 affine parent/local matrices. Four distinct new fixtures, not repetition of passing unit fixtures.",
+      "passed": 4,
+      "cases": [
+        {
+          "case": "[1e16,0] -> [1e16+8,0],128",
+          "oldMaxNormalizedJointError": 1,
+          "oldEndpointError": 8,
+          "current": "RIG_NUMERIC_PRECISION at joint1"
+        },
+        {
+          "case": "[-(2**53+2),0] -> [-(2**53-2),0],3",
+          "oldMaxNormalizedJointError": 0.16666666666666669,
+          "oldEndpointError": 0,
+          "current": "RIG_NUMERIC_PRECISION at joint1"
+        },
+        {
+          "case": "[1e16,0] -> [1e16+1024,0],128",
+          "currentMaxNormalizedJointError": 0,
+          "currentEndpointError": 0,
+          "outputByteIdenticalToApproved": true
+        },
+        {
+          "case": "[-32,24] -> [160,-72],6",
+          "currentMaxNormalizedJointError": 1.5700924586837752e-16,
+          "currentEndpointError": 1.4210854715202004e-14,
+          "outputByteIdenticalToApproved": true
+        }
+      ]
+    },
+    "definitionOfDone": [
+      {
+        "criterion": "Explicit start/end/count yields correct parent-local chain or a clear numeric-domain error",
+        "evidence": "Fresh affected direction cases, full output contract checks for five valid extreme fixtures, independent affine audit, and per-joint precision rejection tests."
+      },
+      {
+        "criterion": "Invalid/unrepresentable input has clear rig-stage errors and safe CLI behavior",
+        "evidence": "New precision cases and CLI input/output preservation; earlier invalid-field precedence unchanged and documented."
+      },
+      {
+        "criterion": "Deterministic output with preserved earlier contracts",
+        "evidence": "New success and error 100-comparison checks, byte-identical current versus approved success outputs, unchanged schemas/import boundaries and scoped code diff; unaffected test evidence explicitly reused."
+      }
+    ],
+    "limitations": [
+      "Straight equal-length starter only; not artist pivot/bone-count recreation or a production-ready rig.",
+      "Numerical guard is specific to this JavaScript Number parent-local chain evaluation, not proof of all runtime precisions. It may reject extreme user coordinates; caller must explicitly choose a suitable coordinate system.",
+      "No fresh whole-repository test run, official Spine import/playback, posed deformation or human-art acceptance. Gate 3.2 stays deferred and incomplete.",
+      "Development-agent and coordinating-agent exact Token usage unavailable. New Jev response usage will be recorded, not represented as total development cost."
+    ],
+    "privacy": "Only original numeric engineering fixtures, public-language code excerpt, hashes, test counts, formulas and technical descriptions. No PNG, video, Spine project, private artist coordinates, private artwork or credentials."
+  },
+  "questions": {
+    "verdict": {
+      "type": "choice",
+      "instructions": "Should the narrow Gate 4 straight-chain precision refinement be accepted on this evidence, including the explicitly changed owner work order? Do not approve Gate 3.2, Gate 5, weights or production artwork.",
+      "criteria": {
+        "APPROVED": "All required Gate 4 criteria are credibly evidenced for the stated scope and numeric-domain policy.",
+        "REJECTED": "An in-scope implementation or evidence deficiency still needs correction.",
+        "BLOCKED": "External input or authorization is required to decide."
+      }
+    },
+    "scope_compliant": {
+      "type": "noul",
+      "instructions": "Is implementation limited to deterministic straight ChainRigTemplate, its numerical input guard, affected tests and acceptance tooling, without weights, binding, image inference, animation or other Gate development?"
+    },
+    "dod_satisfied": {
+      "type": "noul",
+      "instructions": "Does the evidence support each Gate 4 definition-of-done item under the disclosed JavaScript Number numerical-domain policy, checking every joint as well as tip and returning explicit errors for unrepresentable geometry?"
+    },
+    "tests_credible": {
+      "type": "noul",
+      "instructions": "Are the fresh red/green precision tests, four affected direction regressions, CLI safety, independent affine numeric audit and explicit reuse of unaffected historical evidence credible, with no claim of a fresh full-suite run?"
+    },
+    "deterministic_evidence": {
+      "type": "noul",
+      "instructions": "Do fresh baseline-plus100 exact comparisons of both new success output and new structured precision error, fixed-order math and no random/external state credibly support determinism?"
+    },
+    "regression_safe": {
+      "type": "noul",
+      "instructions": "Are earlier contracts preserved by unchanged bone-construction fields, schemas, package imports and CLI code, fresh affected success/CLI checks and byte-identical old/current valid outputs? Unchanged pre-guard errors and other modules deliberately reuse recorded evidence; Gate 3.2 is explicitly deferred rather than called approved."
+    },
+    "architecture_compliant": {
+      "type": "noul",
+      "instructions": "Does numerical chain geometry remain in Rig depending only on schemas, with no new public abstraction, API config, dependencies, Spine/AI coupling, or duplicated engine in the CLI? Jev remains dev-only judging, not geometry execution."
+    },
+    "evidence_quality": {
+      "type": "score",
+      "instructions": "Rate the sufficiency and traceability of the supplied numeric, test, regression and limitation evidence for this narrow refinement, not a production-rig or complete mesh Gate.",
+      "criteria": [
+        "No usable evidence",
+        "Weak evidence",
+        "Partial evidence",
+        "Good evidence",
+        "Strong independent evidence"
+      ]
+    },
+    "primary_blocker": {
+      "type": "choice",
+      "instructions": "What is the primary unresolved blocker for this narrow Gate 4 precision refinement, if any?",
+      "criteria": {
+        "NONE": "No blocker",
+        "SCOPE": "Out-of-scope work",
+        "CORRECTNESS": "Incorrect behavior",
+        "TESTS": "Insufficient tests",
+        "DETERMINISM": "Unstable output",
+        "REGRESSION": "Earlier contract regression",
+        "ARCHITECTURE": "Boundary violation",
+        "EXTERNAL_INPUT": "External input required"
+      }
+    }
+  }
+}

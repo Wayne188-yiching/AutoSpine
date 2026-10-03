@@ -8,6 +8,7 @@ import {
   checkGate32TopologySummary,
   compareArtistTopology,
 } from "../tools/artist-topology-policy.mjs";
+import { compareTypedEdges, compareVertexPositions } from "../tools/reference-topology.mjs";
 
 const square = {
   vertices: [
@@ -24,6 +25,53 @@ const compare = (artist, generated) =>
   compareArtistTopology({ id: "fixture", artist, generated, width: 100, height: 100 });
 
 describe("Matched Spine topology hard gate", () => {
+  it("accepts an extra hull point on the same straight boundary without a 100% penalty", () => {
+    const generated = {
+      ...square,
+      vertices: [...square.vertices, [50, 0]],
+      hull: [0, 4, 1, 2, 3],
+      triangles: [0, 4, 2, 4, 1, 2, 0, 2, 3],
+    };
+    const result = compare(square, generated);
+    expect(result.status).toBe("PASSED");
+    expect(result.positions.groups.hull).toMatchObject({ unmatched: 1, max: 0 });
+  });
+
+  it("checks unmatched interiors against interiors, never nearby hull vertices", () => {
+    const artist = { ...square, vertices: [...square.vertices, [50, 50]] };
+    const generated = { ...artist, vertices: [...artist.vertices, [0.1, 0.1]] };
+    expect(compareVertexPositions(artist, generated, 100, 100).passed).toBe(false);
+  });
+
+  it("accepts only same-type bounded subdivisions and never deletes a mapped feature", () => {
+    const artist = { ...square, manualEdges: [[0, 2]] };
+    const generated = {
+      ...square,
+      vertices: [...square.vertices, [50, 50]],
+      triangles: [0, 1, 4, 1, 2, 4, 2, 3, 4, 3, 0, 4],
+      manualEdges: [
+        [0, 4],
+        [4, 2],
+      ],
+    };
+    const pairs = [
+      [0, 0],
+      [1, 1],
+      [2, 2],
+      [3, 3],
+    ];
+    expect(compareTypedEdges(artist, generated, pairs).manual.status).toBe("PASSED");
+    expect(
+      compareTypedEdges(artist, { ...generated, manualEdges: [[0, 4]] }, pairs).manual.status,
+    ).toBe("REJECTED");
+    const bent = { ...generated, vertices: [...square.vertices, [50, 52]] };
+    expect(compareTypedEdges(artist, bent, pairs).manual.status).toBe("REJECTED");
+    expect(compareTypedEdges(artist, generated, [...pairs, [4, 4]]).manual.status).toBe("REJECTED");
+  });
+
+  it("blocks a fake manual-edge label not present in the candidate triangles", () => {
+    expect(compare(square, { ...square, manualEdges: [[1, 3]] }).status).toBe("BLOCKED");
+  });
   it("accepts identical points and both automatically triangulated and manual connections", () => {
     expect(compare(square, { ...square, manualEdges: undefined })).toMatchObject({
       status: "PASSED",
@@ -65,7 +113,7 @@ describe("Matched Spine topology hard gate", () => {
     expect(compare({ ...square, manualEdges: undefined }, square).status).toBe("BLOCKED");
   });
 
-  it("enforces topology metrics before loading Jev even when vertex counts pass", () => {
+  it("blocks legacy two-attachment evidence before loading Jev", () => {
     const folder = mkdtempSync(join(tmpdir(), "autospine-topology-policy-"));
     try {
       const path = join(folder, "review.json");
@@ -91,11 +139,11 @@ describe("Matched Spine topology hard gate", () => {
         env: { ...process.env, JEV_TEST_ROOT: join(folder, "no-sdk-installed") },
       });
       if (result.error) throw result.error;
-      expect(result.status, result.stderr).toBe(2);
-      expect(JSON.parse(result.stdout)).toMatchObject({ jevCalled: false, status: "REJECTED" });
+      expect(result.status, result.stderr).toBe(3);
+      expect(JSON.parse(result.stdout)).toMatchObject({ jevCalled: false, status: "BLOCKED" });
       const saved = JSON.parse(readFileSync(path, "utf8"));
-      expect(saved.artistVertexPrecheck.status).toBe("PASSED");
-      expect(saved.artistTopologyPrecheck.status).toBe("REJECTED");
+      expect(saved.artistVertexPrecheck.status).toBe("BLOCKED");
+      expect(saved.artistTopologyPrecheck).toBeUndefined();
       expect(saved.jevReview).toBeUndefined();
     } finally {
       rmSync(folder, { recursive: true, force: true });

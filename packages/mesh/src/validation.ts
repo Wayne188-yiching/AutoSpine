@@ -109,7 +109,12 @@ export function validateMeshSpec(value: unknown): ValidationReport {
       issues.push(issue(code, reason));
   };
   const vertices = mesh.vertices as Point[];
-  if (vertices.length > 4096 || mesh.triangles.length > 24_576 || mesh.hull.length > 2048)
+  if (
+    vertices.length > 4096 ||
+    mesh.triangles.length > 24_576 ||
+    mesh.hull.length > 2048 ||
+    (mesh.manualEdges?.length ?? 0) > 12_288
+  )
     return report([issue("MESH_COMPLEXITY", "Mesh exceeds Gate 3 validation limits")]);
   if (mesh.uvs.length !== vertices.length) add("UV_COUNT", "UV and vertex counts differ");
   if (
@@ -235,6 +240,19 @@ export function validateMeshSpec(value: unknown): ValidationReport {
   }
   if ([...hullEdges].some((key) => !edges.has(key)))
     add("BOUNDARY_MISMATCH", "Declared hull edge is missing from triangles");
+  const manualKeys = new Set<string>();
+  for (const [a, b] of mesh.manualEdges ?? []) {
+    const key = `${Math.min(a, b)}:${Math.max(a, b)}`;
+    if (a === b || a >= vertices.length || b >= vertices.length)
+      add("MANUAL_EDGE_INDEX", "Manual edge must join two existing distinct vertices");
+    else if (manualKeys.has(key))
+      add("MANUAL_EDGE_DUPLICATE", "Manual edge is declared more than once");
+    else if (hullEdges.has(key))
+      add("MANUAL_EDGE_BOUNDARY", "Hull edges must not be classified as internal manual edges");
+    else if (edges.get(key)?.length !== 2)
+      add("MANUAL_EDGE_MISSING", "Manual constraint must be an actual internal triangle edge");
+    manualKeys.add(key);
+  }
   if (adjacency.length) {
     const reached = new Set([0]);
     const queue = [0];

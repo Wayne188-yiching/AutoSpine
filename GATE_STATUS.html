@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AutoSpine · Gate 完成狀態</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, sans-serif;
+        background: #101722;
+        color: #e8eef7;
+      }
+      body {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 36px 24px 64px;
+        line-height: 1.65;
+      }
+      h1 {
+        margin: 8px 0;
+        font-size: 32px;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+      p {
+        margin: 10px 0;
+      }
+      a {
+        color: #88d3ff;
+      }
+      .muted {
+        color: #a9b7ca;
+      }
+      .current {
+        margin: 28px 0;
+        padding: 24px;
+        border: 1px solid #a88643;
+        border-radius: 12px;
+        background: #211e18;
+      }
+      .count {
+        font-size: 38px;
+        font-weight: 700;
+        color: #ffd58c;
+      }
+      nav {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+      nav a {
+        border: 1px solid #3c526c;
+        border-radius: 8px;
+        padding: 9px 16px;
+        text-decoration: none;
+        background: #1a283a;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid #304056;
+        border-radius: 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 15px;
+      }
+      th {
+        background: #1b293b;
+        color: #c9d6e7;
+      }
+      th,
+      td {
+        padding: 13px 14px;
+        border-bottom: 1px solid #29374b;
+      }
+      td:first-child {
+        white-space: nowrap;
+        font-weight: 700;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .approved {
+        color: #8edcb4;
+      }
+      .active {
+        color: #ffd58c;
+      }
+      .waiting {
+        color: #a9b7ca;
+      }
+      .highlight {
+        background: #252116;
+      }
+      .note {
+        margin-top: 24px;
+        padding: 18px 22px;
+        background: #192331;
+        border-radius: 10px;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 20px 14px;
+        }
+        h1 {
+          font-size: 26px;
+        }
+        th,
+        td {
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <p class="muted">AutoSpine · 更新日期：2026-10-03</p>
+      <h1>每個 Gate 的完成狀態</h1>
+      <p>
+        依 2026-10-03 的決定，暫緩 Gate 3.2，先進 Gate 4。Gate 0～3.1 已在原範圍核准；Gate 4
+        本輪通用直線骨鏈精度修補已取得新版 Jev 核准，不必等待 Gate 3.2 完成。
+      </p>
+      <nav aria-label="專案報告入口">
+        <a href="docs/reviews/gate-4-precision/review.html">Gate 4 最新驗收：已通過</a>
+        <a href="docs/reviews/gate-4-resume/review.html">開啟 Gate 4 骨鏈示範</a>
+        <a href="docs/local-reviews/gate-3.2-collapse-20/review.html">開啟 Gate 3.2 完整驗收報告</a>
+        <a href="AUTOSPINE_DEVELOPMENT_WORKFLOW.md#12-gate-執行紀錄">開發流程與驗收規則</a>
+        <a href="ROADMAP.md">開發路線圖</a>
+      </nav>
+    </header>
+    <section class="current" aria-labelledby="current-title">
+      <h2 id="current-title">目前工作：Gate 4 · 通用直線骨鏈</h2>
+      <p>
+        本輪由 GPT-6.1 Sol High 修補數值精度缺口；2026-10-03 Jev 正式核准新版： APPROVED 機率
+        0.98，證據品質 3.99／4，全部原有門檻通過。2026-09-24 核准原樣保留為歷史基線。
+      </p>
+      <p>
+        開發模型：GPT-6.1 Sol
+        High（依使用者指示試跑）。範圍只有明確起終點與骨數生成骨骼；不包含自動關節辨識、綁圖、權重或動畫。
+      </p>
+      <p><a href="docs/reviews/gate-4-resume/review.html">查看 Gate 4 的範圍與骨鏈結果</a></p>
+      <p><a href="docs/reviews/gate-4-precision/review.html">本輪精度修補與驗收報告</a></p>
+      <p>
+        GPT-6.1 Sol 試跑發現的極端數值精度缺口已修補：失真輸入明確拒絕，正常輸出保持原樣。 本輪 19
+        項定向測試、13 項審核門檻測試與 4 個新增獨立案例通過；未重跑完整舊測試套件。
+        <a href="docs/research/GATE_4_SOL61_TRIAL.md">查看實際模型試跑紀錄</a>。
+      </p>
+      <h2>Gate 3.2 · 暫緩，保留未完成紀錄</h2>
+      <div class="count">23 / 164</div>
+      <p>附件通過全部靜態檢查。115 件未通過，26 件生成受阻。</p>
+      <p>
+        最新報告：collapse-20。僅重新生成 3 件受影響附件，原有 22 件通過證據沿用；23 件均有 100
+        次一致性紀錄。
+      </p>
+      <p>獨立前置審核：未通過。Gate 3.2 正式 Jev：尚未送審。</p>
+      <p>
+        GitHub：本輪以 2026-10-03 使用者另行授權的進度快照提交，不代表 Gate 3.2
+        驗收通過。私人素材與本機截圖不納入提交。
+      </p>
+      <p><a href="docs/research/GATE_3_2_COLLAPSE_20.md">查看本輪數據與驗證紀錄</a></p>
+    </section>
+    <div class="table-wrap">
+      <table>
+        <caption style="text-align: left; padding: 16px">
+          Gate 0～17，包含 3.1 與 3.2；狀態依專案開發流程紀錄。
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Gate</th>
+            <th scope="col">交付內容</th>
+            <th scope="col">目前狀態</th>
+            <th scope="col">紀錄／下一步</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0</td>
+            <td>專案、工具鏈、架構與資料規格</td>
+            <td class="approved">已核准</td>
+            <td><a href="docs/reviews/GATE_0_REVIEW.json">Jev 驗收紀錄</a></td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>最小 Spine 4.0.64 編譯輸出</td>
+            <td class="approved">已核准</td>
+            <td><a href="docs/reviews/GATE_1_REVIEW.json">Jev 驗收紀錄</a></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>PNG Parts／PSD 素材解析</td>
+            <td class="approved">已核准</td>
+            <td><a href="docs/reviews/GATE_2_REVIEW.json">Jev 驗收紀錄</a></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>尾巴網格生成</td>
+            <td class="approved">原範圍已核准</td>
+            <td><a href="docs/reviews/GATE_3_REVIEW.json">Jev 驗收紀錄</a></td>
+          </tr>
+          <tr>
+            <td>3.1</td>
+            <td>尾巴佈線密度與頂點預算</td>
+            <td class="approved">原範圍已核准</td>
+            <td><a href="docs/reviews/GATE_3_1_REVIEW.json">Jev 驗收紀錄</a></td>
+          </tr>
+          <tr>
+            <td>3.2</td>
+            <td>Yuuna／panda／pig 人工佈線校準</td>
+            <td class="waiting">暫緩；尚未通過新版驗收</td>
+            <td>
+              <a href="docs/local-reviews/gate-3.2-collapse-20/review.html">23／164；完整報告</a>
+            </td>
+          </tr>
+          <tr class="highlight">
+            <td>4</td>
+            <td>通用直線骨鏈</td>
+            <td class="approved">新版已核准：APPROVED 0.98</td>
+            <td>
+              <a href="docs/reviews/gate-4-resume/review.html">骨鏈示範</a>；
+              <a href="docs/reviews/GATE_4_REVIEW.json">既有 Jev 紀錄</a>
+              ；<a href="docs/research/GATE_4_SOL61_TRIAL.md">GPT-6.1 Sol 試跑</a> ；<a
+                href="docs/reviews/gate-4-precision/review.html"
+                >新版驗收</a
+              >
+              ；<a href="docs/reviews/GATE_4_PRECISION_DECISION.json">本輪 Jev 裁決</a>
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>頂點骨骼權重求解</td>
+            <td class="waiting">尚未開始</td>
+            <td>等待 Gate 3.2 完成與 Gate 4 整合確認</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>尾巴變形量測與回歸</td>
+            <td class="waiting">尚未開始</td>
+            <td>Tail MVP 驗收</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>手臂與手肘變形驗證</td>
+            <td class="waiting">尚未開始</td>
+            <td>Arm MVP 驗收</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>程序化動畫預設</td>
+            <td class="waiting">尚未開始</td>
+            <td>等待關節驗證基線</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>獨立曲線引擎</td>
+            <td class="waiting">尚未開始</td>
+            <td>依賴 Gate 8</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>循環動畫檢查</td>
+            <td class="waiting">尚未開始</td>
+            <td>依賴 Gate 9</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>最小預覽</td>
+            <td class="waiting">尚未開始</td>
+            <td>Engine MVP 驗收</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>基礎人形骨架範本</td>
+            <td class="waiting">尚未開始</td>
+            <td>Tail 與 Arm 通過後開始</td>
+          </tr>
+          <tr>
+            <td>13</td>
+            <td>跨引擎約束</td>
+            <td class="waiting">尚未開始</td>
+            <td>依賴 Gate 12</td>
+          </tr>
+          <tr>
+            <td>14</td>
+            <td>AI 規劃到合法資料規格</td>
+            <td class="waiting">尚未開始</td>
+            <td>Core 成熟後開始</td>
+          </tr>
+          <tr>
+            <td>15</td>
+            <td>視覺審核到修正規格</td>
+            <td class="waiting">尚未開始</td>
+            <td>依賴預覽與 AI 規劃</td>
+          </tr>
+          <tr>
+            <td>16</td>
+            <td>MCP 操作介面</td>
+            <td class="waiting">尚未開始</td>
+            <td>串接既有核心功能</td>
+          </tr>
+          <tr>
+            <td>17</td>
+            <td>AutoSpine Skill</td>
+            <td class="waiting">尚未開始</td>
+            <td>最後建立操作知識與規則</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <aside class="note">
+      <p>
+        這個頁面是日期標示的狀態快照。詳細規則與最新執行紀錄保存在
+        <a href="AUTOSPINE_DEVELOPMENT_WORKFLOW.md#12-gate-執行紀錄">開發流程第 12 節</a
+        >，有新的結果時一併更新本頁。
+      </p>
+      <p class="muted">
+        完整圖像報告放在專案的 docs/local-reviews/，供這台電腦開啟；此資料夾排除於 Git
+        提交。其他電腦可從程式與文字紀錄查看狀態。
+      </p>
+    </aside>
+  </body>
+</html>

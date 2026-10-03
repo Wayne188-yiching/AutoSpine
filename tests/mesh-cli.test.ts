@@ -26,6 +26,7 @@ describe("Gate 3.2 mesh CLI", () => {
       JSON.stringify({
         vertices: 10,
         hull: 4,
+        maxAddedFraction: 0,
         bands: [
           { position: 0.25, widthFraction: 0.5 },
           { position: 0.5, widthFraction: 0.5 },
@@ -47,6 +48,7 @@ describe("Gate 3.2 mesh CLI", () => {
     expect(mesh.vertices).toHaveLength(10);
     expect(mesh.hull).toHaveLength(4);
     expect(result.stderr).toContain("referenceTopology");
+    expect(result.stderr).toContain('"maxAddedFraction":0');
     expect(readFileSync(source)).toEqual(original);
     const invalid = join(folder, "invalid-reference-profile.json");
     writeFileSync(invalid, JSON.stringify({ vertices: 2, hull: 4 }));
@@ -75,15 +77,16 @@ describe("Gate 3.2 mesh CLI", () => {
     expect(result.stderr).toContain("INTENT_UNKNOWN");
   });
 
-  it("rejects invalid, duplicate, misplaced, and surplus intent arguments", () => {
-    for (const args of [
+  it.each(
+    [
       ["mesh-png", source, join(folder, "bad.json"), "--intent=head"],
       ["mesh-png", source, join(folder, "bad.json"), "--intent=rigid", "--intent=chain"],
       ["parse-psd", source, join(folder, "bad.json"), "--intent=rigid"],
       ["parse-psd", source, join(folder, "bad.json"), "--reference-profile=unused.json"],
       ["mesh-png", source, join(folder, "bad.json"), "--reference-profile="],
       ["mesh-asset", source, join(folder, "bad.json"), "id", "0.005", "extra"],
-    ])
-      expect(run(...args).status).toBe(1);
+    ].map((args) => ({ args })),
+  )("rejects invalid CLI arguments: $args", ({ args }) => {
+    expect(run(...args).status).toBe(1);
   });
 });

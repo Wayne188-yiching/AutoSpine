@@ -1,0 +1,49 @@
+{
+  "purpose": "design-advisory-not-gate-approval",
+  "requestSha256": "e913528aed3fd9fa3e5e3cc1105190dad7f8a9d8bd9297da50d407f1e4ceb755",
+  "recordedAt": "2026-09-29T16:09:31.834Z",
+  "model": "jev-1.13.0",
+  "answers": {
+    "position_policy": {
+      "type": "choice",
+      "choice": "GEOMETRIC_5_PERCENT",
+      "confidence": 0.96,
+      "probabilities": {
+        "GEOMETRIC_5_PERCENT": 0.97,
+        "KEEP_FULL_DIAGONAL_PENALTY": 0.01,
+        "MATCHED_ONLY": 0,
+        "INSUFFICIENT_EVIDENCE": 0.02
+      }
+    },
+    "edge_policy": {
+      "type": "choice",
+      "choice": "BOUNDED_TYPED_PATHS",
+      "confidence": 0.98,
+      "probabilities": {
+        "BOUNDED_TYPED_PATHS": 0.98,
+        "EXACT_TYPED_EDGES": 0.02,
+        "CONNECTIVITY_ONLY": 0,
+        "INSUFFICIENT_EVIDENCE": 0
+      }
+    },
+    "implementation_priority": {
+      "type": "choice",
+      "choice": "UNIFY_AND_CONSTRAIN",
+      "confidence": 1,
+      "probabilities": {
+        "UNIFY_AND_CONSTRAIN": 1,
+        "ALPHA_PARAMETER_SWEEP": 0,
+        "COPY_ARTIST_ANSWER": 0,
+        "DEFER": 0
+      }
+    },
+    "preserve_gate_failure": {
+      "type": "noul",
+      "noul": 0.88
+    }
+  },
+  "usage": {
+    "input_tokens": 2135,
+    "output_tokens": 225
+  }
+}

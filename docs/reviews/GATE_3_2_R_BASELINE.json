@@ -1,0 +1,62 @@
+{
+  "gate": 3.2,
+  "revision": "artist-absolute-5-v2",
+  "status": "IN_DEVELOPMENT",
+  "phase": "Source-grounded baseline and review tooling; generator quality not accepted",
+  "developerVerification": {
+    "command": "npm run verify",
+    "status": "PASSED",
+    "testFiles": 9,
+    "tests": 67,
+    "note": "CLI negative cases split into individual tests; assertions unchanged. Third-party Spine runtime sourcemap warnings remain."
+  },
+  "referenceReportSha256": "7bd8c9bc7c661880556b39cfe963aa05e7a76a1fa5716e17a3d8bd46aa530aa0",
+  "privateEvidenceLocation": "External visualization folder / gate32r-evidence / baseline-02; not committed",
+  "freshSourceMeshes": { "yuuna": 68, "panda": 42, "pig": 54 },
+  "summary": {
+    "meshCases": 164,
+    "generated": 61,
+    "countWithinAbsoluteFive": 32,
+    "provisionalPositionsPassed": 0,
+    "allStaticChecksPassed": 0,
+    "generationBlocked": 103,
+    "generatedButRejected": 61
+  },
+  "generationBlockers": {
+    "DISCARD_BUDGET": 87,
+    "FILL_BUDGET": 8,
+    "CONTOUR_INVALID": 5,
+    "ALPHA_DIMENSIONS": 1,
+    "CORRECTION_BUDGET": 2
+  },
+  "tutorialEvidence": {
+    "lesson": 4,
+    "inspectedFrameSeconds": [420, 540, 760],
+    "fullVideoAndAudioReviewed": false
+  },
+  "browserCheck": {
+    "selectableCases": 164,
+    "pageErrors": 0,
+    "screenshots": ["F_Hair04", "Body", "Bow02"]
+  },
+  "deterministicRunsPerGeneratedMesh": 2,
+  "formal100RunAcceptanceCompleted": false,
+  "jev": {
+    "status": "NOT_SUBMITTED",
+    "localPrecheck": "REJECTED",
+    "localFailureReasons": 273,
+    "called": false,
+    "sdkAvailable": false,
+    "credentialAvailable": false,
+    "newApiCalls": 0,
+    "mediaAccess": "Only derived metrics and frame observations are prepared; private files were not uploaded"
+  },
+  "pendingOwnerDecision": "Artist padding versus legacy 2 percent added-area limit; Bow02 artist added-area ratio is 151/514, with no alpha cleanup changes",
+  "limitations": [
+    "Vertex position thresholds are provisional, not owner-approved",
+    "Unmatched vertex penalty currently rejects any hull/interior cardinality difference",
+    "Manual-edge recall checks connectivity, not editor semantic preservation",
+    "UV-space comparison is not posed deformation validation",
+    "No training or general artist-quality generator is claimed"
+  ]
+}
