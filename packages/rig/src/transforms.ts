@@ -70,12 +70,13 @@ export function orderBones(bones: RigSpec["bones"]): RigSpec["bones"] {
 export function evaluateRig(
   rig: RigSpec,
   rotations: Readonly<Record<string, number>> = {},
+  adjustments: BoneAdjustments = {},
 ): Map<string, Affine> {
   const frames = new Map<string, Affine>();
   for (const b of orderBones(rig.bones)) {
     const r = b.rotation + (rotations[b.id] ?? 0),
-      sx = b.scaleX ?? 1,
-      sy = b.scaleY ?? 1,
+      sx = (b.scaleX ?? 1) * (adjustments.scales?.[b.id]?.[0] ?? 1),
+      sy = (b.scaleY ?? 1) * (adjustments.scales?.[b.id]?.[1] ?? 1),
       shx = b.shearX ?? 0,
       shy = b.shearY ?? 0;
     if (![b.x, b.y, b.length, r, sx, sy, shx, shy].every(Number.isFinite) || b.length < 0)
@@ -87,8 +88,8 @@ export function evaluateRig(
       Math.sin(x) * sx,
       Math.cos(y) * sy,
       Math.sin(y) * sy,
-      b.x,
-      b.y,
+      b.x + (adjustments.translations?.[b.id]?.[0] ?? 0),
+      b.y + (adjustments.translations?.[b.id]?.[1] ?? 0),
     ];
     const world = b.parentId ? multiplyAffine(frames.get(b.parentId)!, local) : local;
     if (!world.every(Number.isFinite))
@@ -103,6 +104,10 @@ export interface WorldBoneFrame {
   parentId?: string;
   length: number;
   world: Affine;
+}
+export interface BoneAdjustments {
+  translations?: Readonly<Record<string, [number, number]>>;
+  scales?: Readonly<Record<string, [number, number]>>;
 }
 /** Shared IDs occur once; supplied frames are explicit known input, never inferred geometry. */
 export function rigFromWorldFrames(id: string, name: string, input: WorldBoneFrame[]): RigSpec {

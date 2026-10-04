@@ -7,7 +7,13 @@ import {
   type RigSpec,
   type WeightSpec,
 } from "@autospine/schemas";
-import { evaluateRig, failStage, inverseAffine, transformPoint } from "@autospine/rig";
+import {
+  evaluateRig,
+  failStage,
+  inverseAffine,
+  transformPoint,
+  type BoneAdjustments,
+} from "@autospine/rig";
 export * from "./deformation.js";
 
 function checkInput(mesh: MeshSpec, rig: RigSpec) {
@@ -204,10 +210,11 @@ export function skinVertices(
   rig: RigSpec,
   weights: WeightSpec,
   rotations: Readonly<Record<string, number>> = {},
+  adjustments: BoneAdjustments = {},
 ): [number, number][] {
   validateWeights(mesh, rig, weights);
   const bind = evaluateRig(rig),
-    posed = evaluateRig(rig, rotations),
+    posed = evaluateRig(rig, rotations, adjustments),
     local = new Map([...bind].map(([id, m]) => [id, inverseAffine(m)]));
   const output = mesh.vertices.map((): [number, number] => [0, 0]);
   for (const v of weights.vertices)

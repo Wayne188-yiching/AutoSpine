@@ -39,37 +39,48 @@ export function compileWeightedSpine40(input: WeightedSpineInput) {
     !imagesPath.endsWith("/")
   )
     failStage("spine", "SPINE_REFERENCE", "Input references or image path mismatch");
-  if (animation.motions.length || !animation.rotationTimelines?.length)
-    failStage("spine", "SPINE_ANIMATION", "Only baked rotation timelines supported");
   if (
-    animation.translationTimelines?.length ||
-    animation.scaleTimelines?.length ||
-    animation.deformTimelines?.length
+    animation.motions.length ||
+    !(
+      animation.rotationTimelines?.length ||
+      animation.translationTimelines?.length ||
+      animation.scaleTimelines?.length
+    )
   )
+    failStage("spine", "SPINE_ANIMATION", "Baked bone timelines required");
+  if (animation.deformTimelines?.length)
     failStage(
       "spine",
       "SPINE_ANIMATION_CHANNEL",
-      "Additional baked channels are not yet supported by this adapter",
+      "Mesh deform export is not supported by this adapter",
     );
   const bones = orderBones(rig.bones),
-    byId = new Map(bones.map((b, i) => [b.id, i])),
-    seen = new Set<string>();
-  for (const timeline of animation.rotationTimelines) {
-    if (
-      !byId.has(timeline.boneId) ||
-      seen.has(timeline.boneId) ||
-      timeline.keys[0]!.time !== 0 ||
-      timeline.keys.at(-1)!.time !== animation.duration ||
-      timeline.keys.some(
-        (k, i) => !Number.isFinite(k.degrees) || (i > 0 && k.time <= timeline.keys[i - 1]!.time),
+    byId = new Map(bones.map((b, i) => [b.id, i]));
+  for (const timelines of [
+    animation.rotationTimelines ?? [],
+    animation.translationTimelines ?? [],
+    animation.scaleTimelines ?? [],
+  ]) {
+    const seen = new Set<string>();
+    for (const timeline of timelines) {
+      if (
+        !byId.has(timeline.boneId) ||
+        seen.has(timeline.boneId) ||
+        timeline.keys[0]!.time !== 0 ||
+        timeline.keys.at(-1)!.time !== animation.duration ||
+        timeline.keys.some(
+          (k, i) =>
+            Object.values(k).some((v) => !Number.isFinite(v)) ||
+            (i > 0 && k.time <= timeline.keys[i - 1]!.time),
+        )
       )
-    )
-      failStage(
-        "spine",
-        "SPINE_TIMELINE",
-        "Unique referenced timelines must span duration with strictly increasing finite keys",
-      );
-    seen.add(timeline.boneId);
+        failStage(
+          "spine",
+          "SPINE_TIMELINE",
+          "Unique referenced timelines must span duration with strictly increasing finite keys",
+        );
+      seen.add(timeline.boneId);
+    }
   }
   const frames = evaluateRig(rig),
     inverse = new Map([...frames].map(([id, m]) => [id, inverseAffine(m)]));
@@ -128,10 +139,33 @@ export function compileWeightedSpine40(input: WeightedSpineInput) {
     animations: {
       [animation.name]: {
         bones: Object.fromEntries(
-          animation.rotationTimelines.map((t) => [
-            bones[byId.get(t.boneId)!]!.name,
-            { rotate: t.keys.map((k) => ({ time: k.time, value: -k.degrees })) },
-          ]),
+          [
+            ...new Set(
+              [
+                ...(animation.rotationTimelines ?? []),
+                ...(animation.translationTimelines ?? []),
+                ...(animation.scaleTimelines ?? []),
+              ].map((t) => t.boneId),
+            ),
+          ].map((id) => {
+            const rotate = animation.rotationTimelines?.find((t) => t.boneId === id),
+              translate = animation.translationTimelines?.find((t) => t.boneId === id),
+              scale = animation.scaleTimelines?.find((t) => t.boneId === id);
+            return [
+              bones[byId.get(id)!]!.name,
+              {
+                ...(rotate
+                  ? { rotate: rotate.keys.map((k) => ({ time: k.time, value: -k.degrees })) }
+                  : {}),
+                ...(translate
+                  ? { translate: translate.keys.map((k) => ({ time: k.time, x: k.x, y: -k.y })) }
+                  : {}),
+                ...(scale
+                  ? { scale: scale.keys.map((k) => ({ time: k.time, x: k.x, y: k.y })) }
+                  : {}),
+              },
+            ];
+          }),
         ),
       },
     },

@@ -1,4 +1,5 @@
-import { access, mkdir, mkdtemp, readFile, rename, stat, writeFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readFile, rename, stat, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { basename, dirname, isAbsolute, relative, resolve } from "node:path";
 import { Value } from "@sinclair/typebox/value";
 import { BuildJobSchema, type BuildManifest } from "@autospine/schemas";
@@ -10,7 +11,7 @@ import { previewHtml } from "./preview.js";
 
 async function assertAbsent(path: string) {
   try {
-    await access(path);
+    await lstat(path);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
     throw error;
@@ -88,7 +89,13 @@ export async function buildJobFile(jobPath: string): Promise<string> {
     rig: reference(result.rig.id),
     weights: reference(result.weights.id),
     animation: reference(result.animation.id),
-    outputs: [...Object.keys(files), "images/image.png", "preview.html", "manifest.json"],
+    outputs: [
+      ...Object.keys(files),
+      "images/image.png",
+      "preview.html",
+      "manifest.json",
+      "provenance.json",
+    ],
   };
   files["manifest.json"] = manifest;
   for (const [name, value] of Object.entries(files))
@@ -99,10 +106,31 @@ export async function buildJobFile(jobPath: string): Promise<string> {
   await writeFile(resolve(temporary, "images/image.png"), bytes, { flag: "wx" });
   await writeFile(
     resolve(temporary, "preview.html"),
-    previewHtml(result, bytes.toString("base64")),
+    previewHtml(result, bytes.toString("base64"), manifest.id),
     { flag: "wx" },
   );
   // Keep failed staging folders recoverable; never delete existing source or output.
+  const sha = (value: Buffer | string) => createHash("sha256").update(value).digest("hex");
+  const semanticJob = Object.fromEntries(
+    Object.entries(job).filter(([key]) => key !== "source" && key !== "output"),
+  );
+  const hashes: Record<string, string> = {};
+  for (const file of manifest.outputs.filter((f) => f !== "provenance.json"))
+    hashes[file] = sha(await readFile(resolve(temporary, file)));
+  await writeFile(
+    resolve(temporary, "provenance.json"),
+    JSON.stringify(
+      {
+        manifestId: manifest.id,
+        sourceSha256: sha(bytes),
+        semanticJobSha256: sha(JSON.stringify(semanticJob)),
+        hashes,
+      },
+      null,
+      2,
+    ) + "\n",
+    { flag: "wx" },
+  );
   await assertAbsent(output);
   await rename(temporary, output);
   return output;
