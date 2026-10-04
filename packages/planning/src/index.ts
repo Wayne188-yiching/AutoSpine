@@ -3,6 +3,7 @@ import { Value } from "@sinclair/typebox/value";
 import { AssetSpecSchema, BuildJobSchema, type AssetSpec, type BuildJob } from "@autospine/schemas";
 import { failStage } from "@autospine/rig";
 import { buildChainWave } from "@autospine/pipeline";
+export * from "./critic.js";
 
 export const PlannerProposalSchema = Type.Object(
   {

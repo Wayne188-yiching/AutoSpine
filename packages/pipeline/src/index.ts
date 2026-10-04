@@ -3,13 +3,22 @@ import { AssetSpecSchema, BuildJobSchema, type AssetSpec, type BuildJob } from "
 import { decodeAlphaMask } from "@autospine/assets";
 import { generateMeshWithDiagnostics, prepareAlphaForMesh } from "@autospine/mesh";
 import { evaluateRig, failStage, generateChainRig, transformPoint } from "@autospine/rig";
-import { skinVertices, solveDistanceWeights } from "@autospine/weights";
+import {
+  skinVertices,
+  solveDistanceWeights,
+  solveWeightsV1,
+  type WeightOptions,
+} from "@autospine/weights";
 import { generateWave, rotationsAt } from "@autospine/motion";
 
 type Point = [number, number];
 const area = (a: Point, b: Point, c: Point) =>
   (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
-export function buildChainWave(asset: AssetSpec, job: BuildJob) {
+export function buildChainWave(
+  asset: AssetSpec,
+  job: BuildJob,
+  options: { weights?: WeightOptions } = {},
+) {
   if (
     !Value.Check(BuildJobSchema, job) ||
     !Value.Check(AssetSpecSchema, asset) ||
@@ -51,7 +60,9 @@ export function buildChainWave(asset: AssetSpec, job: BuildJob) {
     end: job.chain.end,
     boneCount: job.chain.boneCount,
   });
-  const weights = solveDistanceWeights(mesh, rig),
+  const weights = options.weights
+      ? solveWeightsV1(mesh, rig, options.weights)
+      : solveDistanceWeights(mesh, rig),
     animation = generateWave(rig, job.wave);
   const frames = animation.rotationTimelines![0]!.keys.map((k) => {
     const rotations = rotationsAt(animation, k.time),
