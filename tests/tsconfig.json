@@ -14,7 +14,8 @@
     { "path": "../packages/constraints" },
     { "path": "../packages/weights" },
     { "path": "../packages/motion" },
-    { "path": "../packages/pipeline" }
+    { "path": "../packages/pipeline" },
+    { "path": "../packages/planning" }
   ],
   "include": ["**/*.ts"]
 }

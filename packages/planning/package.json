@@ -1,0 +1,20 @@
+{
+  "name": "@autospine/planning",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@autospine/schemas": "0.0.0",
+    "@autospine/rig": "0.0.0",
+    "@autospine/pipeline": "0.0.0",
+    "@sinclair/typebox": "^0.34.52"
+  }
+}

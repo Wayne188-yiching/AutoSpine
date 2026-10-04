@@ -23,7 +23,8 @@
       "@autospine/weights": ["./packages/weights/src/index.ts"],
       "@autospine/motion": ["./packages/motion/src/index.ts"],
       "@autospine/pipeline": ["./packages/pipeline/src/index.ts"],
-      "@autospine/constraints": ["./packages/constraints/src/index.ts"]
+      "@autospine/constraints": ["./packages/constraints/src/index.ts"],
+      "@autospine/planning": ["./packages/planning/src/index.ts"]
     }
   }
 }

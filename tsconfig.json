@@ -11,6 +11,7 @@
     { "path": "./packages/weights" },
     { "path": "./packages/motion" },
     { "path": "./packages/pipeline" },
+    { "path": "./packages/planning" },
     { "path": "./packages/cli" }
   ]
 }
