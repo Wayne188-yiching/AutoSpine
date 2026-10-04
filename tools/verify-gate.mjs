@@ -9,15 +9,20 @@ import process from "node:process";
 import console from "node:console";
 
 const [gate, destination, ...tests] = process.argv.slice(2);
+const fullSuite = tests.length === 1 && tests[0] === "--all";
 if (!/^\d+$/.test(gate ?? "") || !destination || !tests.length)
   throw new Error("Usage: verify-gate.mjs <gate> <new-report.json> <test-files...>");
-for (const test of tests) await readFile(test); // Never count a silently ignored filter as evidence.
+if (!fullSuite) for (const test of tests) await readFile(test); // Never count a silently ignored filter as evidence.
 const commands = [
   ["format", ["node_modules/prettier/bin/prettier.cjs", "--check", "."]],
   ["lint", ["node_modules/eslint/bin/eslint.js", "."]],
   ["types", ["node_modules/typescript/bin/tsc", "-b"]],
   ["test-types", ["node_modules/typescript/bin/tsc", "-p", "tests/tsconfig.json", "--noEmit"]],
-  ["tests", ["node_modules/vitest/vitest.mjs", "run", "--pool=threads", ...tests]],
+  [
+    "tests",
+    ["node_modules/vitest/vitest.mjs", "run", "--pool=threads", ...(fullSuite ? [] : tests)],
+  ],
+  ...(fullSuite ? [["node-tests", ["tools/run-node-tests.mjs"]]] : []),
 ];
 const checks = [];
 for (const [name, args] of commands) {
@@ -30,8 +35,16 @@ for (const [name, args] of commands) {
     passed: run.status === 0,
     outputHash: createHash("sha256").update(output).digest("hex"),
     ...(name === "tests"
-      ? { passedTests: Number(/Tests\s+(\d+) passed/.exec(output)?.[1] ?? 0) }
-      : {}),
+      ? {
+          passedTests: Number(/Tests\s+(\d+) passed/.exec(output)?.[1] ?? 0),
+          skippedTests: Number(/(\d+) skipped/.exec(output)?.[1] ?? 0),
+        }
+      : name === "node-tests"
+        ? {
+            passedTests: Number(/pass (\d+)/.exec(output)?.[1] ?? 0),
+            skippedTests: Number(/skipped (\d+)/.exec(output)?.[1] ?? 0),
+          }
+        : {}),
   });
   console.log(JSON.stringify(checks.at(-1)));
   if (run.status !== 0) {
@@ -51,13 +64,20 @@ const changes = spawnSync(
     "tests",
     "tools",
     "fixtures",
+    "skills",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    "tsconfig.base.json",
+    "vitest.config.ts",
+    "eslint.config.mjs",
   ],
   { encoding: "utf8" },
 );
 if (changes.status !== 0) throw new Error("Cannot enumerate source evidence");
 const sources = {};
 for (const file of [...new Set(changes.stdout.trim().split(/\r?\n/))]
-  .filter((f) => /\.(ts|mjs|json)$/.test(f))
+  .filter((f) => /\.(ts|mjs|json|md)$/.test(f))
   .sort())
   sources[file] = createHash("sha256")
     .update(await readFile(file))
@@ -73,7 +93,8 @@ const report = {
       ? "ENGINEERING_CHECKS_PASSED"
       : "FAILED",
   checks,
-  tests,
+  tests: fullSuite ? ["all local portable Vitest and Node tests"] : tests,
+  fullSuite,
   sources,
   jevCalled: false,
   artistQualityAccepted: false,

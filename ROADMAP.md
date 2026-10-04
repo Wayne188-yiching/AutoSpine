@@ -2,6 +2,10 @@
 
 The authoritative Gate rules and status live in [AUTOSPINE_DEVELOPMENT_WORKFLOW.md](AUTOSPINE_DEVELOPMENT_WORKFLOW.md). This file is only a compact milestone index.
 
+## Current priority — 2026-10-05 owner override
+
+Latest authority is sequential development through Gate 17 with assistant self-acceptance and one source-only GitHub checkpoint per completed Gate. Gates 5–17 engineering scopes are implemented and recorded under [the current status](docs/reviews/GATE_5_17_STATUS.json), with [explicit acceptance criteria](docs/GATE_5_17_AUTONOMOUS_PLAN.html). Gate 14 closes the Planner contract; Gate 15 closes the numeric Critic / correction contract, not live visual AI performance. See [continuation and limitations](docs/AUTONOMOUS_DEVELOPMENT.md). Historical artist failures are not relabelled as success.
+
 ## Foundation
 
 - Gate 0 — Repository, architecture, IR, tooling, ADRs, Gate 1 plan
@@ -37,4 +41,4 @@ The authoritative Gate rules and status live in [AUTOSPINE_DEVELOPMENT_WORKFLOW.
 - Gate 16 — MCP adapter
 - Gate 17 — AutoSpine Skill
 
-Normally no Gate begins until the preceding Gate has passed developer verification and Jev acceptance. On 2026-10-03 the owner explicitly deferred Gate 3.2 and authorized Gate 4 work first. The owner later separately authorized pushing a source-only progress snapshot to GitHub despite Gate 3.2 being incomplete. Neither instruction approves Gate 3.2 or authorizes Gate 5.
+Under the latest 2026-10-05 override, each engineering Gate is verified and self-reviewed before the next Gate, then published. Earlier mandatory Jev / fish-only constraints remain historical. Next product-quality work is a separately scoped artist/generalization phase: real multi-part input, anatomical decisions and live visual-model evaluation. Existing Gate 3.2 23/164 and Gate 4 PNG-only 0/23 remain incomplete, as does Yuuna Body artist comparison. No quota-triggered delayed continuation is installed.

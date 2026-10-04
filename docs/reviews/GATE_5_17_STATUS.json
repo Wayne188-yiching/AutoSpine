@@ -2,11 +2,114 @@
   "date": "2026-10-05",
   "authority": "owner Gate17/self-acceptance override",
   "acceptance": "assistant engineering self-review, not Jev or artist quality",
-  "completed": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
-  "nextGate": 17,
+  "phase": "engineering-framework-complete",
+  "completed": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+  "nextGate": null,
   "targetGate": 17,
   "privateCorpusRegenerated": false,
   "quotaWakeupInstalled": false,
+  "gates": [
+    {
+      "gate": 5,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "bounded normalized smoothed top-K weights and skinning",
+      "review": "docs/reviews/GATE_5_SELF_REVIEW.md",
+      "commit": "f50bf7b"
+    },
+    {
+      "gate": 6,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "synthetic Tail sampled deformation metrics and fault injection",
+      "review": "docs/reviews/GATE_6_SELF_REVIEW.md",
+      "commit": "ebac739"
+    },
+    {
+      "gate": 7,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "three-bone synthetic Arm across integer 0–120 degrees and three widths",
+      "review": "docs/reviews/GATE_7_SELF_REVIEW.md",
+      "commit": "8fc0403"
+    },
+    {
+      "gate": 8,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "ten deterministic numeric animation presets",
+      "review": "docs/reviews/GATE_8_SELF_REVIEW.md",
+      "commit": "eaba745"
+    },
+    {
+      "gate": 9,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "independent bounded scalar curves",
+      "review": "docs/reviews/GATE_9_SELF_REVIEW.md",
+      "commit": "9104410"
+    },
+    {
+      "gate": 10,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "four-channel positional loop closure, not velocity closure",
+      "review": "docs/reviews/GATE_10_SELF_REVIEW.md",
+      "commit": "f224be7"
+    },
+    {
+      "gate": 11,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "fixed-time IR preview, provenance and official Runtime preset mapping",
+      "review": "docs/reviews/GATE_11_SELF_REVIEW.md",
+      "commit": "109f5a6"
+    },
+    {
+      "gate": 12,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "explicit mechanical 18-bone humanoid template, not image anatomy",
+      "review": "docs/reviews/GATE_12_SELF_REVIEW.md",
+      "commit": "3725d15"
+    },
+    {
+      "gate": 13,
+      "status": "APPROVED_ENGINEERING",
+      "scope": "bounded IK, local absolute transform and polyline constraints",
+      "review": "docs/reviews/GATE_13_SELF_REVIEW.md",
+      "commit": "5ea71e9"
+    },
+    {
+      "gate": 14,
+      "status": "APPROVED_CONTRACT",
+      "scope": "validated Planner proposal port; live AI unverified",
+      "review": "docs/reviews/GATE_14_SELF_REVIEW.md",
+      "commit": "ebbba9a"
+    },
+    {
+      "gate": 15,
+      "status": "APPROVED_CONTRACT_AND_NUMERIC_CRITIC",
+      "scope": "fingerprint-bound quantified immutable correction; live vision unverified",
+      "review": "docs/reviews/GATE_15_SELF_REVIEW.md",
+      "commit": "af8a1ba"
+    },
+    {
+      "gate": 16,
+      "status": "APPROVED_ENGINEERING_ADAPTER",
+      "scope": "actual local legacy stdio MCP child process, not desktop registration",
+      "review": "docs/reviews/GATE_16_SELF_REVIEW.md",
+      "commit": "1552cfa"
+    },
+    {
+      "gate": 17,
+      "status": "APPROVED_PROJECT_SKILL_AND_ENGINEERING_FRAMEWORK",
+      "scope": "bundled operator Skill and reference decisions, not independent model evaluation",
+      "review": "docs/reviews/GATE_17_SELF_REVIEW.md",
+      "publication": "Gate 17 checkpoint; resolve exact hash from Git history"
+    }
+  ],
+  "verification": {
+    "localPassed": 539,
+    "publishedSnapshotPassed": 300,
+    "optionalEditorAuditSkipped": 1,
+    "liveAIModelEvaluated": false,
+    "artistQualityAccepted": false,
+    "desktopMcpRegistered": false,
+    "skillGloballyInstalled": false
+  },
   "limitations": [
     "Live external AI has not been evaluated",
     "Artist comparison gates remain incomplete",

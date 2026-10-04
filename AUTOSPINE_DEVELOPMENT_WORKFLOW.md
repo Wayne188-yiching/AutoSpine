@@ -10,7 +10,7 @@
 
 DoD 仍需實際實作、可重現測試和限制說明；自行驗收不是人工美術核准。既有 Gate 3.2／4 圖像品質未過紀錄保留。離線 Planner／Critic 契約測試不宣稱已使用外部視覺模型。詳見 [Gate 5–17 計畫](docs/GATE_5_17_AUTONOMOUS_PLAN.html)。不得上傳私人素材或混入無關 dirty 變更。額度讀取／330 分鐘續跑工具仍不可用，不假稱已設定。
 
-## 最新工作順序覆寫 — 2026-10-05（優先於下方歷史限制）
+## 歷史工作順序 — 2026-10-05 魚切片（已被上方 Gate 17 指示取代）
 
 使用者採用 Claude 的 [DEV_REVIEW_2026-10-05.html](docs/DEV_REVIEW_2026-10-05.html)，要求先完成整體工具架構，並授權無需逐步催促的自動開發、由 Jev 驗收及每一 Gate 完成後推送一次。先完成 PNG → blind mesh → 顯式骨链 → 距離權重 → wave → Spine 的魚測試切片；不是先到 Gate 17 才開始品質優化。
 
@@ -461,6 +461,20 @@ Question to solve:
 每個 Gate 的追蹤資訊優先更新本文件的「Gate 執行紀錄」。只有測試輸出或研究證據過大時才另外存檔並以連結引用。
 
 ## 12. Gate 執行紀錄
+
+### 2026-10-05 最新：Gate 5–17 工程架構完成，自行驗收
+
+依使用者最後指示逐 Gate 實作／驗證／自審，每個完成 Gate 單獨 source-only 提交推送。
+新增工程包括權重平滑、量化 Tail／Arm 變形、十種動畫、獨立曲線、四通道循環、provenance 預覽、
+18 骨機械人形、有限 IK／transform／path、Planner 契約、量化 Critic／安全重建、真正 stdio MCP 及專案 Skill。
+完整本機回歸 539 項通過；純發布暫存快照透過獨立離線安裝及 300 項測試通過，另 1 項可選編輯器重跑未執行。
+每 Gate 的範圍與限制見 [完成清單](docs/reviews/GATE_5_17_STATUS.json) 與 [最終自審](docs/reviews/GATE_17_SELF_REVIEW.md)。
+
+Gate 14／15 僅閉合提案／量化修正契約，不宣称已接入、訓練或驗證外部視覺 AI。
+MCP 已有真實子程序整合但未自動註冊桌面端；Skill 為專案包，未全域安裝或獨立代理評測。
+Gate 3.2 23／164、Gate 4 PNG-only 0／23 及 Yuuna Body 人工品質未過保留，不縮分母或放寬門檻。
+既有本機知識／Gate 4 視覺報告異動與私有素材未納入此次發布。
+沒有額度讀取／產品排程工具，5%→330 分鐘續跑機制未設定。下方舊順序及 Jev 要求均為其日期的歷史紀錄。
 
 檢視入口：[Gate 完成狀態總覽](GATE_STATUS.html)；[Gate 3.2 完整圖像驗收報告（本機）](docs/local-reviews/gate-3.2-collapse-20/review.html)。本機報告資料夾排除於 Git 提交，包含 164 件逐附件對照與原始圖像；最新完整靜態通過為 23／164，正式 Jev 尚未送審。
 

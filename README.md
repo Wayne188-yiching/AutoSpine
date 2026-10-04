@@ -4,7 +4,7 @@ Deterministic 2D mesh, rig and animation preparation, with editable Spine output
 
 ## Current development
 
-2026-10-05 latest owner instruction: develop sequentially through Gate 17 with assistant self-acceptance and a GitHub checkpoint after each completed engineering Gate. Gate 5 is self-accepted; further Gates are in progress. The chain-wave build connects PNG → blind mesh → explicit chain → distance weights → baked wave → weighted Spine 4.0 output and local preview. Historical artist calibration remains unchanged.
+2026-10-05 latest owner instruction: develop sequentially through Gate 17 with assistant self-acceptance and a GitHub checkpoint after each completed engineering Gate. Gates 5–17 now have implemented engineering scopes and recorded self-reviews. Planner / Critic acceptance covers validated contracts and numerical corrections, **not live visual AI**. The chain-wave file build connects PNG → blind mesh → explicit chain → distance weights → baked wave → weighted Spine 4.0 output and local preview. Engine APIs also expose bounded humanoid templates, constraints, smoothing and ten animation presets. Historical artist calibration remains unchanged.
 
 - [Gate status and acceptance](GATE_STATUS.html)
 - [Gate 5–17 plan and criteria](docs/GATE_5_17_AUTONOMOUS_PLAN.html)
@@ -56,6 +56,12 @@ npm run verify
 ```
 
 This checks formatting, lint, build/types, Vitest contracts and Node portable diagnostics. It does not regenerate the private 164/23-case artist corpus, run paid Jev calls or certify editor GUI playback. Real editor CLI import/re-export is separately recorded.
+
+## Agent tools
+
+Gate 16's [local legacy stdio MCP adapter](docs/MCP_ADAPTER.md) provides six tools for status, validated plans, scoped file builds, numeric review and immutable corrections. After building, a host can launch `node packages/mcp/dist/stdio.js` with `AUTOSPINE_WORKSPACE` set to its authorized working directory. No desktop client configuration is automatically modified.
+
+Gate 17's [AutoSpine project Skill](skills/autospine/SKILL.md) operates those existing tools or the CLI. It includes observable reference decision cases, not another geometry solver. It is bundled in this repository; global installation and automatic discovery are not claimed. File builds currently expose only explicit chain-wave; a template function is not image-based anatomical inference.
 
 ## Publication and boundaries
 

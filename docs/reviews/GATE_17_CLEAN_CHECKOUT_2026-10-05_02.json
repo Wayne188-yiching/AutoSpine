@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-05",
+  "purpose": "exact-staged-source-publication-verification",
+  "directory": "C:\\Wayne\\Codex\\AutoSpine\\docs\\local-reviews\\gate-17-clean-a96BBr",
+  "indexSha256": "47e97c5e865153d46716d0b44219948aed44a85ceba568a2c9f12743265f0800",
+  "indexUnchanged": true,
+  "result": "PASSED",
+  "checks": [
+    {
+      "name": "offline-install",
+      "exitCode": 0,
+      "passed": true,
+      "outputHash": "d6a70ebf3e20906dbc4a125a5f26300930f4d6e06944c561e6f3dc9ccc0eab05"
+    },
+    {
+      "name": "format",
+      "exitCode": 0,
+      "passed": true,
+      "outputHash": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "name": "lint",
+      "exitCode": 0,
+      "passed": true,
+      "outputHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "types",
+      "exitCode": 0,
+      "passed": true,
+      "outputHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "test-types",
+      "exitCode": 0,
+      "passed": true,
+      "outputHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "tests",
+      "exitCode": 0,
+      "passed": true,
+      "outputHash": "fe1ef3228fd0c331caca634d8050ce7c042921d2967cf6878b9fc7f4382cf6db",
+      "passedTests": 300,
+      "skippedTests": 1
+    },
+    {
+      "name": "node-tests",
+      "exitCode": 0,
+      "passed": true,
+      "outputHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "passedTests": 0,
+      "skippedTests": 0
+    }
+  ],
+  "privateArtworkCopied": false,
+  "dependenciesDownloaded": false,
+  "scope": "Index export, independent offline npm ci and full portable suite; no unpublished local diagnostics, live AI, artist corpus or editor GUI",
+  "sourceHashes": {
+    "package-lock.json": "435aad9d2ef96906471380f97360cf6171db59b927a34d16ce3f2b464b5e515d",
+    "packages/mcp/src/index.ts": "d88fa4951b486f10d3c0e17735fd0182a3835f15f416259acf955930c60bb8a8",
+    "packages/planning/src/planner.ts": "6f935b5492fe3d13b9a9c8a1b32f13ebfdd102b527e68c00aa3f1174794c69d8",
+    "skills/autospine/SKILL.md": "26d566922f83bff8fc68ff0c50b5e823b317d60b6e8b735c1c36f7a66f4fda62",
+    "tests/gate17-skill.test.ts": "1f4c7a3dead5958dc608fcede0fe5ef23676d8f43d05be5018443457345663b3"
+  }
+}

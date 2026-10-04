@@ -41,16 +41,38 @@ Each schema is versioned, runtime-validatable, statically typed, serializable, a
 
 ## Package responsibilities
 
-| Location          | Responsibility                                                              |
-| ----------------- | --------------------------------------------------------------------------- |
-| `schemas`         | Runtime schemas and TypeScript types for the IR                             |
-| `packages/core`   | Stable engine-neutral facade over the IR and future deterministic engines   |
-| `packages/assets` | Gate 2 PNG Parts and clean raster PSD parsers into AssetSpec                |
-| `packages/mesh`   | Gate 3 deterministic alpha contour, triangulation, and mesh validation      |
-| `packages/spine`  | Spine-specific adapter; Gate 1 minimal 4.0.64 compiler                      |
-| `packages/cli`    | Thin file-based commands that call the packages                             |
-| `tests`           | Cross-package contracts and runtime schema checks                           |
-| `fixtures`        | Small, reviewable inputs and golden outputs introduced by their owning Gate |
+2026-10-05: under the latest Gate 17 / self-acceptance authority, the deterministic tool architecture now includes weights/smoothing/skinning, deformation metrics, ten baked presets, curves, four-channel loop checks, a mechanical humanoid template and bounded neutral constraints. Planner and Critic are validated outer proposal contracts, with a numeric critic baseline; live visual AI has not been evaluated. MCP is an actual local legacy stdio adapter; the project Skill chooses tools without implementing engine math. See the [current engineering status](docs/reviews/GATE_5_17_STATUS.json) and [ADR-007](docs/adr/ADR-007-toolchain-and-affine-ir.md). Historical descriptions below retain their original Gate scope.
+
+```text
+schemas <- assets, mesh, rig
+schemas + rig <- weights, motion, constraints
+assets + mesh + rig + weights + motion <- pipeline
+schemas + mesh + rig + weights <- spine adapter
+pipeline + spine adapter <- CLI
+pipeline + schemas <- planning (Planner / numeric Critic)
+CLI + planning <- MCP <- Skill / host operator
+```
+
+`BuildJob`, `PlannerProposal` and `CorrectionSpec` are outer tool contracts, not additional engine IR entries. `buildChainWave` takes a single alpha-masked PNG part and explicit chain endpoints/count, not artist mesh or skeleton answers. Coordinates are x-right/y-down throughout the image pipeline; the weighted adapter flips y/rotation/shear once. Existing Gate 1 inputs retain their bone-local coordinate contract; the minimal adapter rejects nondefault affine/additional channel fields rather than silently dropping them. The weighted adapter maps rotation, translation and scale, with official Runtime checks; mesh deform export is explicitly unsupported. Constraints produce neutral baked poses, not full Spine constraint-mode parity. Complete engineering milestones do not certify arbitrary anatomical inference or artist-quality topology.
+
+| Location               | Responsibility                                                                |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| `schemas`              | Runtime schemas and TypeScript types for the IR                               |
+| `packages/core`        | Stable engine-neutral facade over the IR and future deterministic engines     |
+| `packages/assets`      | Gate 2 PNG Parts and clean raster PSD parsers into AssetSpec                  |
+| `packages/mesh`        | Gate 3 deterministic alpha contour, triangulation, and mesh validation        |
+| `packages/spine`       | Spine-specific adapter; Gate 1 minimal 4.0.64 compiler                        |
+| `packages/cli`         | Thin file-based commands that call the packages                               |
+| `packages/rig`         | Explicit chains, affine FK and an 18-bone mechanical humanoid template        |
+| `packages/weights`     | Bounded top-K normalized smoothing, CPU skinning and deformation measurements |
+| `packages/motion`      | Ten numeric presets, independent scalar curves, sampling and loop validation  |
+| `packages/constraints` | Bounded analytical IK, local transform copy and polyline path placement       |
+| `packages/pipeline`    | Pure explicit chain-wave build, without filesystem or Spine knowledge         |
+| `packages/planning`    | Strict Planner / Correction contracts and immutable quantified rebuilds       |
+| `packages/mcp`         | Scoped local legacy v1 JSON-RPC stdio tools calling existing implementations  |
+| `skills/autospine`     | Project operator guidance; not automatically globally installed               |
+| `tests`                | Cross-package contracts and runtime schema checks                             |
+| `fixtures`             | Small, reviewable inputs and golden outputs introduced by their owning Gate   |
 
 ## Dependency direction
 
@@ -61,7 +83,7 @@ schemas <- mesh
 schemas <- spine adapter
 assets + mesh + spine adapter <- CLI
 
-AI / MCP / Skill -> core (future Gates)
+Skill / host -> MCP / CLI / planning -> deterministic engine packages
 ```
 
 Future engine packages may depend on `schemas` and approved lower-level engine contracts. Circular dependencies and manager-style catch-all services are prohibited.

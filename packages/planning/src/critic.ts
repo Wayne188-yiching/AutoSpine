@@ -4,7 +4,7 @@ import { createHash } from "node:crypto";
 import { BuildJobSchema, type AssetSpec, type BuildJob } from "@autospine/schemas";
 import { failStage } from "@autospine/rig";
 import { buildChainWave } from "@autospine/pipeline";
-import { validatePlannerProposal, type PlannerProposal } from "./index.js";
+import { validatePlannerProposal, type PlannerProposal } from "./planner.js";
 
 const DefectSchema = Type.Union([
   Type.Literal("inversion"),

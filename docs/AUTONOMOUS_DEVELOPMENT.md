@@ -6,7 +6,15 @@ The latest instruction supersedes the older owner instructions below: develop se
 
 Continuation: inspect the actual checkout and the latest per-Gate self-review records; continue the first unfinished Gate through Gate 17. Never relabel offline contract tests as live vision evaluation or synthetic fixtures as Yuuna artist acceptance. Preserve unrelated modifications and private assets. Run only affected checks at each Gate and a final full portable regression. Publish completed Gate checkpoints only after genuine recorded self-review.
 
-## Owner instructions
+## Current checkpoint — Gate 17 engineering framework complete
+
+Gates 5–17 have implemented, sequentially self-reviewed engineering scopes, each with a source-only publication checkpoint. Authoritative current status: `reviews/GATE_5_17_STATUS.json`, readable overview: `../GATE_STATUS.html`, final acceptance: `reviews/GATE_17_SELF_REVIEW.md`. Local full portable suite: 539 passed; independent staged-source offline checkout: 300 passed. One optional real-editor rerun is skipped, with the prior unchanged-output round-trip retained. Private corpus evidence was not regenerated.
+
+The final bridge has six real local stdio tools and a bundled `../skills/autospine/SKILL.md`; no desktop registration or global installation. Planner is a strict provider contract, Critic is numeric, and file builds support explicit chain-wave only. Other deterministic engines expose ten presets, scalar curves, weights, 18-bone mechanical humanoid and bounded constraints programmatically. No live vision accuracy or arbitrary new-character anatomy is claimed.
+
+The requested framework target ends at Gate 17. Do not invent Gate 18 or automatically start a paid/live-vision or broader artist-quality phase. If interrupted before the final publication, verify the latest recorded checks and explicit staged allowlist, finish the Gate 17 source-only checkpoint and verify remote HEAD. If already published, report completion and retain the separately scoped quality backlog (Gate 3.2 23/164, Gate 4 PNG-only 0/23, Body incomplete). Existing knowledge and Gate 4 visual-review dirty changes remain untouched and unpublished.
+
+## Historical owner instructions — superseded by latest override
 
 - Follow `docs/DEV_REVIEW_2026-10-05.html`: first deliver a playable fish vertical slice, not all Gates 0–17 before any optimization.
 - Make normal implementation decisions without waiting for step-by-step replies. Use Karpathy guidelines, minimal engine-neutral changes and reproducible tests.
@@ -22,9 +30,9 @@ If a future session exposes the product scheduling tool, set a continuation **33
 
 Suggested continuation prompt:
 
-> Continue AutoSpine in C:\Wayne\Codex\AutoSpine. Read this checkpoint, TOOL_ARCHITECTURE_PLAN.html, ADR-007, GATE_STATUS.html and the actual dirty worktree. Finish and verify the PNG → blind mesh → explicit chain → distance weights → baked wave → weighted Spine 4.0 fish slice before humanoid/AI/MCP/Skill expansion. Do not mark historical Gate 3.2/4 artist comparisons passed. Do not reuse artist scoring answers as generator input. Run the production suite; preserve private corpus outputs without regeneration. Submit evidence to Jev only within the owner's authorized development acceptance scope, excluding private assets and credentials. Push an explicit source-only Gate commit only after verified Jev acceptance; preserve unrelated modifications. If reliable usage remaining is <=5%, checkpoint first and schedule a single continuation 330 minutes later with the product automation tool. If usage/scheduling tools or Jev credentials are unavailable, record the limitation instead of inventing success, and complete unaffected local work.
+> Continue AutoSpine in C:\Wayne\Codex\AutoSpine. Read the latest Gate 17 / self-acceptance override, GATE_STATUS.html, reviews/GATE_5_17_STATUS.json and the actual checkout. If a Gate 5–17 engineering milestone or final publication remains unfinished, finish only that authorized scope, with real tests and self-review, then source-only nonforce publication and remote HEAD verification. Preserve unrelated changes and private corpus evidence. If Gate 17 is already published, report framework completion; do not automatically broaden into a paid visual model or artist phase. Keep live AI unverified and historical art failures separate. If a real quota tool observes <=5% and a product scheduling tool is actually available, save a single continuation 330 minutes later; otherwise record that no wakeup exists.
 
-## Implementation checkpoint
+## Historical fish-only checkpoint — before Gate 5–17 completion
 
 Build compiles successfully. Added neutral affine rig transforms, distance-weight validation/skinning, baked wave timelines, the chain-wave pipeline, weighted Spine adapter and a no-overwrite `build job.json` command with self-contained animated IR mesh/bone preview. Latest production verification: `docs/reviews/TOOLCHAIN_LOCAL_VERIFICATION_2026-10-05_04.json`. Real Spine 4.0.64 project import and re-export passed; 51 runtime comparison times give maximum coordinate difference 0.01427px. Demo: `docs/local-reviews/toolchain-fish-02/build/preview.html`, directly inspected screenshot `../preview.png`. Official editor GUI playback, full Gate scope and art-quality acceptance remain unverified.
 

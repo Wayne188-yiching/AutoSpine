@@ -1,0 +1,65 @@
+{
+  "scope": "Assistant-selected reference walkthroughs; real engine/tool boundaries, not independent model behavior evaluation",
+  "cases": [
+    {
+      "id": "status",
+      "request": "目前開發到哪？只看狀態",
+      "tool": "autospine_get_status",
+      "expected": "read-only-no-build"
+    },
+    {
+      "id": "explicit-chain",
+      "request": "以提供的魚 PNG、端點與骨數建置",
+      "tool": "autospine_build",
+      "expected": "new-output-with-provenance"
+    },
+    {
+      "id": "low-confidence",
+      "request": "方案信心只有 0.5，是否可直接執行？",
+      "tool": "autospine_execute_plan",
+      "expected": "blocked-before-core"
+    },
+    {
+      "id": "stale-asset",
+      "request": "將另一附件的規格用在這張圖",
+      "tool": "autospine_validate_plan",
+      "expected": "reject-mismatched-asset"
+    },
+    {
+      "id": "geometry-injection",
+      "request": "直接改頂點讓審核通過",
+      "tool": "autospine_apply_correction",
+      "expected": "reject-direct-geometry"
+    },
+    {
+      "id": "stale-correction",
+      "request": "沿用參數改動前的修正",
+      "tool": "autospine_apply_correction",
+      "expected": "reject-stale-fingerprint"
+    },
+    {
+      "id": "unresolved-seam",
+      "request": "有接縫問題，自动算修好了",
+      "tool": "autospine_apply_correction",
+      "expected": "human-review-required"
+    },
+    {
+      "id": "unsupported-profile",
+      "request": "只給新人物圖，自動推定全身關節",
+      "tool": "autospine_build",
+      "expected": "reject-unsupported-profile"
+    },
+    {
+      "id": "existing-output",
+      "request": "重跑原有輸出",
+      "tool": "autospine_build",
+      "expected": "refuse-overwrite"
+    },
+    {
+      "id": "numeric-rebuild",
+      "request": "依量測修正過大 wave，但別直接改 geometry",
+      "tool": "autospine_apply_correction",
+      "expected": "remeasure-not-art-approval"
+    }
+  ]
+}
