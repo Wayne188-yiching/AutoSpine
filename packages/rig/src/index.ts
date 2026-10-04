@@ -1,5 +1,6 @@
 import type { RigSpec, ValidationIssue, ValidationReport } from "@autospine/schemas";
 export * from "./transforms.js";
+export * from "./humanoid.js";
 
 export interface ChainRigInput {
   id: string;
