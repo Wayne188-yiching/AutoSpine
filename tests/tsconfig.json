@@ -11,6 +11,7 @@
     { "path": "../packages/assets" },
     { "path": "../packages/mesh" },
     { "path": "../packages/rig" },
+    { "path": "../packages/constraints" },
     { "path": "../packages/weights" },
     { "path": "../packages/motion" },
     { "path": "../packages/pipeline" }
