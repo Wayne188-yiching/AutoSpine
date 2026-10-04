@@ -19,7 +19,10 @@
       "@autospine/spine": ["./packages/spine/src/index.ts"],
       "@autospine/assets": ["./packages/assets/src/index.ts"],
       "@autospine/mesh": ["./packages/mesh/src/index.ts"],
-      "@autospine/rig": ["./packages/rig/src/index.ts"]
+      "@autospine/rig": ["./packages/rig/src/index.ts"],
+      "@autospine/weights": ["./packages/weights/src/index.ts"],
+      "@autospine/motion": ["./packages/motion/src/index.ts"],
+      "@autospine/pipeline": ["./packages/pipeline/src/index.ts"]
     }
   }
 }

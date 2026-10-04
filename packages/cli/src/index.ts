@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, resolve } from "node:path";
+import { buildJobFile } from "./build.js";
 import {
   AssetParseError,
   decodeAlphaMask,
@@ -68,6 +69,10 @@ async function writeMesh(
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
+  if (args[0] === "build" && args.length === 2) {
+    console.log(await buildJobFile(args[1]!));
+    return;
+  }
   const intentFlags = args.filter((arg) => arg.startsWith("--intent="));
   const profileFlags = args.filter((arg) => arg.startsWith("--reference-profile="));
   const positional = args.filter(
@@ -173,6 +178,7 @@ async function main(): Promise<void> {
 
 main().catch((error: unknown) => {
   if (
+    (error instanceof Error && "validation" in error) ||
     error instanceof SpineCompileError ||
     error instanceof AssetParseError ||
     error instanceof MeshError ||

@@ -11,7 +11,9 @@
     { "path": "../spine" },
     { "path": "../assets" },
     { "path": "../mesh" },
-    { "path": "../rig" }
+    { "path": "../rig" },
+    { "path": "../pipeline" },
+    { "path": "../../schemas" }
   ],
   "include": ["src/**/*.ts"]
 }

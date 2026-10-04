@@ -7,5 +7,10 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "references": [{ "path": "../../schemas" }]
+  "references": [
+    { "path": "../../schemas" },
+    { "path": "../mesh" },
+    { "path": "../rig" },
+    { "path": "../weights" }
+  ]
 }

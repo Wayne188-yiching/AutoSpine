@@ -1,6 +1,7 @@
 export * from "./animation-spec.js";
 export * from "./asset-spec.js";
 export * from "./build-manifest.js";
+export * from "./build-job.js";
 export * from "./common.js";
 export * from "./constraint-spec.js";
 export * from "./mesh-spec.js";

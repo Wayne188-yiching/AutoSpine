@@ -4,7 +4,8 @@ import tseslint from "typescript-eslint";
 
 export default defineConfig(
   {
-    ignores: ["**/dist/**", "**/node_modules/**", "**/*.d.ts"],
+    // Generated private diagnostic/browser snippets are not production modules.
+    ignores: ["**/dist/**", "**/node_modules/**", "**/*.d.ts", "docs/local-reviews/**"],
   },
   {
     files: ["**/*.{js,mjs,ts}"],

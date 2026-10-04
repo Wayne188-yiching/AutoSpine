@@ -11,6 +11,10 @@ export const BoneSpecSchema = Type.Object(
     y: Type.Number(),
     rotation: Type.Number(),
     length: Type.Number({ minimum: 0 }),
+    scaleX: Type.Optional(Type.Number()),
+    scaleY: Type.Optional(Type.Number()),
+    shearX: Type.Optional(Type.Number()),
+    shearY: Type.Optional(Type.Number()),
   },
   { additionalProperties: false },
 );

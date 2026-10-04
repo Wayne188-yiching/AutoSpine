@@ -7,6 +7,9 @@
     { "path": "./packages/assets" },
     { "path": "./packages/mesh" },
     { "path": "./packages/rig" },
+    { "path": "./packages/weights" },
+    { "path": "./packages/motion" },
+    { "path": "./packages/pipeline" },
     { "path": "./packages/cli" }
   ]
 }

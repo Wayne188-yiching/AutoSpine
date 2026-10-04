@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AutoSpine Gate 5–17 自動開發計畫</title>
+  <style>
+    body {
+      font: 16px/1.65 system-ui;
+      margin: 40px auto;
+      padding: 0 24px;
+      max-width: 1050px;
+      background: #101827;
+      color: #e5edf8;
+    }
+    a {
+      color: #80caff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    td,
+    th {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #35445b;
+    }
+    small {
+      color: #aebdd0;
+    }
+  </style>
+  <h1>Gate 5 → Gate 17：整體工具架構</h1>
+  <p>
+    2026-10-05 最新使用者授權：無需逐步催促，開發至 Gate 17，由開發助手自行驗收，每個完成的 Gate
+    推送一次 GitHub。此授權取代先前 Jev 必要條件；未呼叫 Jev，不消耗其額度。
+  </p>
+  <p>
+    驗收分成工程功能、自動化整合與美術品質。以下為工程 Gate，不表示 Yuuna 人工佈線或 PNG-only
+    骨架品質通過；Gate 3.2 的 23/164 與 Gate 4 圖像推定失敗紀錄保留。
+  </p>
+  <table>
+    <tr>
+      <th>Gate</th>
+      <th>最小交付及自驗</th>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>
+        距離權重、拓樸平滑、prune/top-K ≤4、完整正規化及 orphan/非法值拒絕；保留既有雙權重相容路徑。
+      </td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>
+        尾鏈 root/middle/wave
+        固定測姿；倒面、面積、邊伸長、共享點接縫量化。工程基線：倒面0、面積比≥0.2、邊伸長≤2、接縫≤1e-8；預先固定，不隨結果放寬。
+      </td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>
+        三骨手臂，0/30/60/90/120°；同樣門檻、合成圖形可檢視證據，不能推論人物手肘已達藝術品質。
+      </td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>
+        十種動畫 preset、有限有界參數、seed 固定、可取樣的 translation/rotation/scale/deform。
+      </td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>獨立 linear/stepped/cubic-bezier/ease/overshoot 曲線；端點、單調曲線及越界拒絕。</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td>逐 target 比對首尾四通道、角度 wrap、可重現 LoopErrorScore 及錯誤定位。</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td>
+        固定 time/frame 的可重現預覽；manifest 對應、原始輸入 hash、實際瀏覽器圖像檢查，非大型 GUI。
+      </td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td>明示位置／比例的基本人形模板、無手指／複雜臉；階層、對稱及 Tail/Arm 回歸。</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td>
+        中立 IK、transform、polyline path 數值求解；不支援條件明確拒絕，禁止把 Spine 原始約束塞入
+        Core。
+      </td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td>
+        模型提案→嚴格 Schema→Core；使用本機可重現提案與注入介面，不擅自呼叫付費模型。無效提案零次
+        Core 執行。
+      </td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td>
+        量化／視覺審核提案→CorrectionSpec→驗證→確定性重建；已知缺陷集
+        precision/recall，不允許直接修改 geometry。模型視覺能力未接入時明示。
+      </td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td>真正 stdio MCP tools/list、tools/call 與錯誤映射；子程序整合，Adapter 不重寫引擎。</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td>專案 AutoSpine Skill：決策案例、工具使用／隱私／能力邊界；Core 不依賴 Skill。</td>
+    </tr>
+  </table>
+  <h2>發布與恢復</h2>
+  <p>
+    每 Gate 通過：受影響測試＋型別／格式／lint → 自審紀錄（範圍、限制、來源）→ 明確檔案清單提交 →
+    非強制推送 → 遠端 commit 核對。原圖、影片、人工 Spine、私有截圖與憑證不提交。
+  </p>
+  <p>
+    沒有帳戶剩餘額度工具或產品排程工具，無法設定「5% 時 330
+    分鐘後續跑」，不冒稱已建立。每次檢查點都可由下一輪依紀錄恢復。
+  </p>
+  <p>
+    <a href="../GATE_STATUS.html">所有 Gate 狀態</a> ·
+    <a href="AUTONOMOUS_DEVELOPMENT.md">續跑紀錄</a> ·
+    <a href="../AUTOSPINE_DEVELOPMENT_WORKFLOW.md">授權與歷史流程</a>
+  </p>
+</html>

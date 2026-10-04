@@ -119,15 +119,43 @@
     </style>
   </head>
   <body>
-    <header>
-      <p class="muted">AutoSpine · 更新日期：2026-10-03</p>
-      <h1>每個 Gate 的完成狀態</h1>
+    <section class="current">
+      <h2>最新：依序開發至 Gate 17，由助手自行驗收</h2>
       <p>
-        依 2026-10-03 的決定，暫緩 Gate 3.2，先進 Gate 4。Gate 0～3.1 已在原範圍核准；Gate 4
-        本輪通用直線骨鏈精度修補已取得新版 Jev 核准，不必等待 Gate 3.2 完成。
+        Gate 5 工程自驗通過；下一步 Gate 6。每 Gate 完成後推送 GitHub。以下較早
+        Jev／魚切片限制已由使用者最新指示取代，歷史美術品質結果仍保留。
+      </p>
+      <p>
+        <a href="docs/GATE_5_17_AUTONOMOUS_PLAN.html">Gate 5–17 驗收標準</a> ·
+        <a href="docs/reviews/GATE_5_17_STATUS.json">最新進度紀錄</a> ·
+        <a href="docs/reviews/GATE_5_SELF_REVIEW.md">Gate 5 自審</a>
+      </p>
+    </section>
+    <header>
+      <p class="muted">AutoSpine · 更新日期：2026-10-05</p>
+      <h1>每個 Gate 的完成狀態</h1>
+      <p class="count">工具鏈：455 項可攜測試通過</p>
+      <p>
+        合成魚已完成網格、5 骨、距離權重、wave、Spine CLI 匯入／重新導出與預覽。Jev
+        金鑰未載入，未送審、未新增 Gate 核准、未推送；5% 額度偵測與 330
+        分鐘後續跑排程尚未建立（工具不可用）。<a
+          href="docs/reviews/TOOLCHAIN_JEV_STATUS_2026-10-05.json"
+          >送審／排程現況</a
+        >。
+      </p>
+      <p>
+        依 2026-10-05 最新決定，先完成魚游動的端到端工具架構，再逐步擴充及優化，不是先做到 Gate 17
+        才檢查品質。舊 Gate 3.2／4 人工對照狀態保留；新 starter 功能不自動算 Gate 通過。
       </p>
       <nav aria-label="專案報告入口">
-        <a href="docs/reviews/gate-4-precision/review.html">Gate 4 最新驗收：已通過</a>
+        <a href="docs/TOOL_ARCHITECTURE_PLAN.html">目前：工具架構與實測結果</a>
+        <a href="docs/local-reviews/toolchain-fish-02/build/preview.html"
+          >合成魚：網格＋5 骨＋wave</a
+        >
+        <a href="docs/AUTONOMOUS_DEVELOPMENT.md">自動開發／續跑進度</a>
+        <a href="docs/reviews/gate-4-precision/review.html"
+          >Gate 4：新拆圖自動模式 0／23；舊半自動結果保留</a
+        >
         <a href="docs/reviews/gate-4-resume/review.html">開啟 Gate 4 骨鏈示範</a>
         <a href="docs/local-reviews/gate-3.2-collapse-20/review.html">開啟 Gate 3.2 完整驗收報告</a>
         <a href="AUTOSPINE_DEVELOPMENT_WORKFLOW.md#12-gate-執行紀錄">開發流程與驗收規則</a>
@@ -135,13 +163,132 @@
       </nav>
     </header>
     <section class="current" aria-labelledby="current-title">
-      <h2 id="current-title">目前工作：Gate 4 · 通用直線骨鏈</h2>
+      <h2 id="current-title">歷史品質參考：Gate 4 · 原 23 件附件（暫緩）</h2>
       <p>
-        本輪由 GPT-6.1 Sol High 修補數值精度缺口；2026-10-03 Jev 正式核准新版： APPROVED 機率
+        <strong>新增測試要求：人工拆好的 PNG → 自動建骨 → 與人工骨架對比。</strong>
+        已確認目標骨從 PNG 自動推定、保留已知底座。新模式輸入隔離及候選程序 25 項測試通過； 原 23
+        件有 12 件實際候選、11 件不確定，數值門檻 0／23 通過，停在此步改善。 既有 23／23
+        是已知端點／骨數與人工底座的半自動歷史結果，不能代替新模式驗收。
+        <a href="docs/research/GATE_4_ARTIST_SPLIT_INPUT_PLAN.html"
+          >查看拆圖測試規格與建骨模式選項</a
+        >。
+        <a href="docs/local-reviews/gate-4-png-target-07/review.html?view=summary"
+          >新模式逐件人工／自動候選比較</a
+        >
+        · <a href="docs/research/GATE_4_PNG_TARGET_BASELINE.md">第一輪結果與限制</a>。
+      </p>
+      <p>
+        <strong>2026-10-04 Jev 設計裁決：先做 RGB 物件／區域與用途辨識，再做幾何建骨。</strong>
+        B 方案選擇機率 0.99；先驗證隔離與歧義拒判。僅是改善方向，不是正式 Gate 核准； 新模式仍
+        0／23；後續已完成以下本機類別實驗，但骨骼用途與遮罩尚未解決。
+        <a href="docs/research/GATE_4_ARTIST_SPLIT_INPUT_PLAN.html#jev-design">下一個有限實驗</a> ·
+        <a href="docs/reviews/GATE_4_PNG_TARGET_DESIGN_DECISION.json">原始設計裁決</a>。
+      </p>
+      <p>
+        <strong>RGB 輸入隔離／歧義預檢這一步已通過：31／31 新定向測試。</strong>
+        20 張原 PNG 各分析一次：11 張單連通區、9
+        張多連通區；真實人工／組裝／評分檔全部拒絕越界讀取。
+        連通區不是物件或骨骼用途，全部用途仍未知；沒有新骨架，新模式仍 0／23。
+        <a href="docs/research/GATE_4_RGB_BOUNDARY_STEP.md">本步驗證與下一步</a> ·
+        <a href="docs/local-reviews/gate-4-rgb-boundary-08/review.html?view=summary"
+          >23 件 RGB 預檢與截圖</a
+        >。
+      </p>
+      <p>
+        <strong>本機 CLIP 類別實驗完成，技術檢查 22／22；本版不採用作自動建骨。</strong>
+        20 張 PNG 的 40 次提案：10 張黑白首選一致、10 張背景敏感；原 23 件為 10／13。
+        一致不是正確率，髮絲／細繩仍有錯誤提案；沒有目標遮罩、用途或新骨架，仍 0／23。
+        原圖只在本機、既有通過測試不重跑，套件＋模型約 547.5 MB，根專案依賴未改。
+        <a href="docs/research/GATE_4_LOCAL_CATEGORY_EXPERIMENT.md">結果與接續條件</a> ·
+        <a href="docs/local-reviews/gate-4-local-semantic-09/review.html?view=summary"
+          >23 件提案總表與截圖</a
+        >。
+      </p>
+      <p>
+        <strong>Yuuna Body：已實際生成網格與幾何骨架，並與人工對照；尚未通過。</strong>
+        PNG-only 網格為 31 頂點，人工 113（差 −82，未達 ±5）；生成 17 根幾何骨與 1 根結構根，
+        不等於人工 11 根影響骨的共享／控制結構。漏覆 1.80% 達標，但覆到 54 個人工排除前景像素；
+        頂點位置與實／虛線未通過。來源／人工姿勢最大差 28.06 px，骨架誤差驗收前提尚未滿足。
+        <a href="docs/local-reviews/gate-4-yuuna-body-generated-11/review.html"
+          >網格＋骨架實際比較與截圖</a
+        >
+        · <a href="docs/research/GATE_4_YUUNA_BODY_GENERATED_COMPARISON.md">本輪結果</a> ·
+        <a href="docs/local-reviews/gate-4-yuuna-body-10/closeup.html">保留：前輪拒判診斷</a>。 Body
+        仍是原 23 件之外的補充案例；原 0／23 不變。
+      </p>
+      <p>
+        <strong>Body 下一輪：配準數值候選已達 0.4997 px；尚未授權採用、尚未通過。</strong>
+        已核對 11 根影響骨中 10 根共享其他附件，僅 Chest3 為 Body 專用；需確認本案的純 PNG
+        或明示半自動輸入範圍，不能把共享底座冒稱生成成果。
+        <a href="docs/local-reviews/gate-4-yuuna-body-optimization-12/plan.html"
+          >Body 優化規格與待確認選擇</a
+        >
+        · <a href="docs/research/GATE_4_YUUNA_BODY_OPTIMIZATION_PREREQUISITES.md">本輪證據</a>。
+      </p>
+      <p>
+        <strong>半自動歷史：來源前檢 23／23；骨架本機數值 23／23，正式視覺／Jev 待審。</strong>
+        已核對 Yuuna 14、Panda 4、Pig 5；人工配置為 1 件多節骨鏈、14 件單骨掛接、8
+        件零長度控制骨掛接。 23 件都保留在驗收清單；共享骨不重複造骨，缺資料或不支援不自動排除。
+        <a href="docs/research/GATE_4_CARRYOVER_23_PLAN.html">查看 23 件逐附件清單與驗收規則</a>。
+      </p>
+      <p>
+        <strong
+          >半自動歷史：共享骨架本機數值已通過，視覺待審；新自動模式未通過，Gate 5 鎖定。</strong
+        >
+        本機工程門檻已獲同意：骨數／父子／共享一致、多節關節 ≤5%、單骨／控制 pivot ≤2%、
+        正長度骨長差 ≤10%、方向差 ≤5°，同姿勢並提供截圖。正式核准仍需視覺確認與 Jev。
+        原独立定位前檢就緒 7／23，後續明示已知輸入前檢已達 23／23。歷史診斷：22
+        件能用單一全圖變換解釋， F_Hair08 的 33.01 差主要是座標差，對齊後僅 0.0057
+        px；不是已證明的真實彎曲。 1_arrow 可見使用區域仍有 2.13 px
+        非仿射差。首輪原型缺共享掛接及控制骨能力，當輪尚未放行生成，不以 16
+        項新增前檢測試通過代替品質通過。Gate 5、綁圖、權重及動畫不開始。
+      </p>
+      <p>
+        <a href="docs/local-reviews/gate-4-carryover-23-preflight-01/review.html?view=summary"
+          >開啟 23 件前檢總表及逐件截圖</a
+        >
+        ·
+        <a href="docs/research/GATE_4_CARRYOVER_23_PREFLIGHT.md">2026-10-04 前檢結果與接續條件</a>。
+      </p>
+      <p>
+        先前四件是補充探索試驗，均不在上述 23 件內，不能代替正式承接驗收。
+        使用者已選圖片自動佈骨，人工中間關節只供評分，並確認改用本機定位完整的骨鏈試驗。 當輪
+        Plant01 位置差由直線幾何基準 15.07% 降到 9.47%，Plant02 為 15.68%；植物批 0／2 通過 5%
+        工程試驗。21 項受影響的新定位分支測試通過，不代替人工品質。 原 Yuuna 辮子姿勢不同、Panda
+        缺定位的未完成狀態保留，沒有縮減分母冒稱通過。 原已核准引擎未修改，未重跑舊測試；沒有追加
+        Jev 或 GitHub 推送。
+        <a href="docs/research/GATE_4_SAME_POSE_TRIAL.md">最新同姿勢試驗、限制與截圖</a>。
+      </p>
+      <p>
+        <strong
+          >來源步驟歷史：箭頭已知形狀及 5 件光效剪切另獲同意，來源姿勢與輸入隔離 23／23
+          就緒。</strong
+        >
+        新增 11 項形狀及 6 項剪切防誤用測試通過；本輪只核對受影響的 5 件光效，已就緒 18 件未重跑。
+        最大光效重建殘差 0.00251 px，容差仍 0.5 px。64 個階層節點、10 個控制 pivot 是已知输入圖，
+        當時不是完成骨架，品質測試／驗收當時仍 0／23。人工目標中間關節、骨長與權重未傳入。
+        <a href="docs/research/GATE_4_KNOWN_SHAPE_INPUT.md">已知輸入驗證與接續邊界</a> ·
+        <a href="docs/local-reviews/gate-4-known-input-preflight-05/review.html?view=summary"
+          >來源前檢歷史總表與截圖</a
+        >。
+      </p>
+      <p>
+        <strong>半自動歷史：原 23 件共享骨架本機數值通過，已有人工／實際生成截圖。</strong>
+        37 根上下文父骨另獲允許作人工提供底座，不算生成成果；實際共享圖共 64 節點，父子／共享一致。
+        只返工髮絲，其餘 22 件未重測。髮絲關節差 2.12%、骨長差 5.28%、方向差 4.56°，原門檻不變。
+        正式視覺與新增 Jev 尚未核准，不進 Gate 5、不推送。
+        <a href="docs/local-reviews/gate-4-shared-base-06/review.html?view=summary"
+          >開啟 23 件實際骨架比較總表</a
+        >
+        · <a href="docs/research/GATE_4_SHARED_BASE_23.md">本機通過證據與驗收邊界</a>。
+      </p>
+      <h2>歷史核准 · 通用直線骨鏈與精度防護</h2>
+      <p>
+        先前由 GPT-6.1 Sol High 修補數值精度缺口；2026-10-03 Jev 正式核准精度版： APPROVED 機率
         0.98，證據品質 3.99／4，全部原有門檻通過。2026-09-24 核准原樣保留為歷史基線。
       </p>
       <p>
-        開發模型：GPT-6.1 Sol
+        歷史直線開發模型：GPT-6.1 Sol
         High（依使用者指示試跑）。範圍只有明確起終點與骨數生成骨骼；不包含自動關節辨識、綁圖、權重或動畫。
       </p>
       <p><a href="docs/reviews/gate-4-resume/review.html">查看 Gate 4 的範圍與骨鏈結果</a></p>
@@ -219,8 +366,10 @@
           </tr>
           <tr class="highlight">
             <td>4</td>
-            <td>通用直線骨鏈</td>
-            <td class="approved">新版已核准：APPROVED 0.98</td>
+            <td>通用直線骨鏈；新增半自動共享骨架</td>
+            <td class="waiting">
+              新拆圖自動模式 0／23；半自動歷史 23／23 數值、視覺待審；直線歷史 APPROVED 0.98
+            </td>
             <td>
               <a href="docs/reviews/gate-4-resume/review.html">骨鏈示範</a>；
               <a href="docs/reviews/GATE_4_REVIEW.json">既有 Jev 紀錄</a>
@@ -228,20 +377,23 @@
                 href="docs/reviews/gate-4-precision/review.html"
                 >新版驗收</a
               >
-              ；<a href="docs/reviews/GATE_4_PRECISION_DECISION.json">本輪 Jev 裁決</a>
+              ；<a href="docs/reviews/GATE_4_PRECISION_DECISION.json">本輪 Jev 裁決</a> ；<a
+                href="docs/research/GATE_4_IMAGE_CHAIN_TRIAL.md"
+                >圖片候選 0／2，未通過</a
+              >
             </td>
           </tr>
           <tr>
             <td>5</td>
             <td>頂點骨骼權重求解</td>
-            <td class="waiting">尚未開始</td>
-            <td>等待 Gate 3.2 完成與 Gate 4 整合確認</td>
+            <td class="active">starter 已實作；未正式驗收</td>
+            <td>距離权重＋規範化＋skinning；完整 smoothing／Gate DoD 尚未通過 Jev</td>
           </tr>
           <tr>
             <td>6</td>
             <td>尾巴變形量測與回歸</td>
-            <td class="waiting">尚未開始</td>
-            <td>Tail MVP 驗收</td>
+            <td class="active">取樣診斷已實作；未正式驗收</td>
+            <td>合成魚 inversion／面積／stretch；沒有核定完整品質門檻或人體品質</td>
           </tr>
           <tr>
             <td>7</td>
@@ -252,8 +404,8 @@
           <tr>
             <td>8</td>
             <td>程序化動畫預設</td>
-            <td class="waiting">尚未開始</td>
-            <td>等待關節驗證基線</td>
+            <td class="active">wave 已實作；其餘未完成</td>
+            <td>確定性 baked rotation keys；不是全部十種 presets</td>
           </tr>
           <tr>
             <td>9</td>
@@ -264,14 +416,14 @@
           <tr>
             <td>10</td>
             <td>循環動畫檢查</td>
-            <td class="waiting">尚未開始</td>
-            <td>依賴 Gate 9</td>
+            <td class="active">wave 首尾檢查；完整 Gate 未完成</td>
+            <td>目前只驗 rotation 與取樣 mesh loop；不等於完整 transform／deform validator</td>
           </tr>
           <tr>
             <td>11</td>
             <td>最小預覽</td>
-            <td class="waiting">尚未開始</td>
-            <td>Engine MVP 驗收</td>
+            <td class="active">取樣 IR 預覽已實作；未正式驗收</td>
+            <td>本機 fish 動畫＋網格／骨鏈；不代替 Spine GUI 播放或完整 Engine MVP</td>
           </tr>
           <tr>
             <td>12</td>

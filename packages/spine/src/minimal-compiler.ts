@@ -84,6 +84,21 @@ export function validateMinimalSpineInput(input: MinimalSpineInput): ValidationR
   if (issues.length) return report(issues);
 
   const { asset, rig, animation, binding } = input;
+  if (
+    rig.bones.some(
+      (b) =>
+        (b.scaleX ?? 1) !== 1 ||
+        (b.scaleY ?? 1) !== 1 ||
+        (b.shearX ?? 0) !== 0 ||
+        (b.shearY ?? 0) !== 0,
+    )
+  )
+    issues.push(
+      issue(
+        "AFFINE_UNSUPPORTED",
+        "Gate 1 does not support scale or shear; use the weighted adapter",
+      ),
+    );
   if (asset.parts.length !== 1)
     issues.push(issue("PART_COUNT", "Gate 1 supports exactly one part"));
   if (rig.bones.length !== 2) issues.push(issue("BONE_COUNT", "Gate 1 supports exactly two bones"));
