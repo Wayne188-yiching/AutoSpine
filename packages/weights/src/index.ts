@@ -8,6 +8,7 @@ import {
   type WeightSpec,
 } from "@autospine/schemas";
 import { evaluateRig, failStage, inverseAffine, transformPoint } from "@autospine/rig";
+export * from "./deformation.js";
 
 function checkInput(mesh: MeshSpec, rig: RigSpec) {
   if (!Value.Check(MeshSpecSchema, mesh) || !Value.Check(RigSpecSchema, rig))
