@@ -44,8 +44,9 @@ const rig = generateChainRig({
 });
 const weights = solveWeightsV1(mesh, rig, {
   maxInfluences: 2,
-  smoothingPasses: 1,
-  candidateRadius: gate === "7" ? 6 : Number.MAX_VALUE,
+  smoothingPasses: gate === "7" ? 8 : 1,
+  smoothingStrength: gate === "7" ? 0.5 : 0.25,
+  candidateRadius: gate === "7" ? 0 : Number.MAX_VALUE,
 });
 const wave = generateWave(rig, { duration: 2, fps: 24, amplitudeDegrees: 8, phaseDegrees: 45 });
 const poses =
@@ -71,8 +72,9 @@ const summary = {
   fixture: "synthetic three-bone strip, not artist anatomy",
   parameters: {
     maxInfluences: 2,
-    smoothingPasses: 1,
-    candidateRadius: gate === "7" ? 6 : "unbounded",
+    smoothingPasses: gate === "7" ? 8 : 1,
+    smoothingStrength: gate === "7" ? 0.5 : 0.25,
+    candidateRadius: gate === "7" ? 0 : "unbounded",
   },
   passed: samples.every((s) => deformationPasses(s.metrics)),
   samples,
