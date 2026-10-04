@@ -137,6 +137,7 @@ export function generatePreset(rig: RigSpec, options: PresetOptions): AnimationS
 }
 export function validateAnimation(animation: AnimationSpec, rig: RigSpec): void {
   if (
+    !Value.Check(RigSpecSchema, rig) ||
     !Value.Check(AnimationSpecSchema, animation) ||
     animation.rigId !== rig.id ||
     animation.motions.length
