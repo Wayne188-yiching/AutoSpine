@@ -6,6 +6,12 @@
   "bin": {
     "autospine": "./dist/index.js"
   },
+  "exports": {
+    "./build": {
+      "types": "./dist/build.d.ts",
+      "import": "./dist/build.js"
+    }
+  },
   "scripts": {
     "build": "tsc -b",
     "clean": "tsc -b --clean"

@@ -1,0 +1,20 @@
+{
+  "name": "@autospine/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@autospine/cli": "0.0.0",
+    "@autospine/schemas": "0.0.0",
+    "@autospine/planning": "0.0.0",
+    "@sinclair/typebox": "^0.34.52"
+  }
+}
