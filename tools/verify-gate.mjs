@@ -4,13 +4,14 @@ import { readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { stripVTControlCharacters } from "node:util";
-import { format } from "prettier";
+import { format, resolveConfig } from "prettier";
 import process from "node:process";
 import console from "node:console";
 
 const [gate, destination, ...tests] = process.argv.slice(2);
 if (!/^\d+$/.test(gate ?? "") || !destination || !tests.length)
   throw new Error("Usage: verify-gate.mjs <gate> <new-report.json> <test-files...>");
+for (const test of tests) await readFile(test); // Never count a silently ignored filter as evidence.
 const commands = [
   ["format", ["node_modules/prettier/bin/prettier.cjs", "--check", "."]],
   ["lint", ["node_modules/eslint/bin/eslint.js", "."]],
@@ -83,7 +84,11 @@ const report = {
     "No account-quota reading or scheduled wakeup tool available",
   ],
 };
-await writeFile(resolve(destination), await format(JSON.stringify(report), { parser: "json" }), {
-  flag: "wx",
-});
+await writeFile(
+  resolve(destination),
+  await format(JSON.stringify(report), { ...(await resolveConfig(destination)), parser: "json" }),
+  {
+    flag: "wx",
+  },
+);
 if (report.result === "FAILED") process.exitCode = 1;

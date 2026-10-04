@@ -41,6 +41,16 @@ export function compileWeightedSpine40(input: WeightedSpineInput) {
     failStage("spine", "SPINE_REFERENCE", "Input references or image path mismatch");
   if (animation.motions.length || !animation.rotationTimelines?.length)
     failStage("spine", "SPINE_ANIMATION", "Only baked rotation timelines supported");
+  if (
+    animation.translationTimelines?.length ||
+    animation.scaleTimelines?.length ||
+    animation.deformTimelines?.length
+  )
+    failStage(
+      "spine",
+      "SPINE_ANIMATION_CHANNEL",
+      "Additional baked channels are not yet supported by this adapter",
+    );
   const bones = orderBones(rig.bones),
     byId = new Map(bones.map((b, i) => [b.id, i])),
     seen = new Set<string>();

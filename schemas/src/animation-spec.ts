@@ -50,6 +50,64 @@ export const AnimationSpecSchema = Type.Object(
     seed: Type.Optional(Type.Integer()),
     motions: Type.Array(MotionSpecSchema),
     rotationTimelines: Type.Optional(Type.Array(RotationTimelineSchema)),
+    translationTimelines: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            boneId: IdSchema,
+            keys: Type.Array(
+              Type.Object(
+                { time: Type.Number({ minimum: 0 }), x: Type.Number(), y: Type.Number() },
+                { additionalProperties: false },
+              ),
+              { minItems: 1 },
+            ),
+          },
+          { additionalProperties: false },
+        ),
+      ),
+    ),
+    scaleTimelines: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            boneId: IdSchema,
+            keys: Type.Array(
+              Type.Object(
+                {
+                  time: Type.Number({ minimum: 0 }),
+                  x: Type.Number({ exclusiveMinimum: 0 }),
+                  y: Type.Number({ exclusiveMinimum: 0 }),
+                },
+                { additionalProperties: false },
+              ),
+              { minItems: 1 },
+            ),
+          },
+          { additionalProperties: false },
+        ),
+      ),
+    ),
+    deformTimelines: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            meshId: IdSchema,
+            keys: Type.Array(
+              Type.Object(
+                {
+                  time: Type.Number({ minimum: 0 }),
+                  offsets: Type.Array(Type.Tuple([Type.Number(), Type.Number()]), { minItems: 1 }),
+                },
+                { additionalProperties: false },
+              ),
+              { minItems: 1 },
+            ),
+          },
+          { additionalProperties: false },
+        ),
+      ),
+    ),
   },
   { $id: "AnimationSpec-0.1", additionalProperties: false },
 );

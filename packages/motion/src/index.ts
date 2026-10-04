@@ -1,5 +1,6 @@
 import type { AnimationSpec, BuildJob, RigSpec } from "@autospine/schemas";
 import { failStage, orderBones } from "@autospine/rig";
+export * from "./presets.js";
 export function generateWave(rig: RigSpec, wave: BuildJob["wave"]): AnimationSpec {
   const { duration, fps, amplitudeDegrees, phaseDegrees } = wave;
   if (

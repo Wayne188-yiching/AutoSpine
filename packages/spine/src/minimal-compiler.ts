@@ -85,6 +85,17 @@ export function validateMinimalSpineInput(input: MinimalSpineInput): ValidationR
 
   const { asset, rig, animation, binding } = input;
   if (
+    animation.translationTimelines?.length ||
+    animation.scaleTimelines?.length ||
+    animation.deformTimelines?.length
+  )
+    issues.push(
+      issue(
+        "ANIMATION_CHANNEL_UNSUPPORTED",
+        "Legacy Gate 1 adapter does not support added baked channels",
+      ),
+    );
+  if (
     rig.bones.some(
       (b) =>
         (b.scaleX ?? 1) !== 1 ||
