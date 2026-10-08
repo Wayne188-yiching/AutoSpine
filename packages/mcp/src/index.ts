@@ -3,6 +3,7 @@ import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { Type, type TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
 import {
+  AnimationSpecSchema,
   AssetPartSchema,
   AssetSpecSchema,
   BuildJobSchema,
@@ -39,6 +40,11 @@ import {
   evidenceFromBuild,
   criticMetrics,
   rebuildFromCorrection,
+  KeyStatsSchema,
+  PerformanceProfileSchema,
+  PerformanceSampleSchema,
+  animationKeyStats,
+  reviewPerformance,
 } from "@autospine/planning";
 
 const strict = { additionalProperties: false };
@@ -147,6 +153,15 @@ const toolSchemas = {
     { rig: RigSpecSchema, a: Weighted, b: Weighted, pose: Type.Optional(Pose) },
     strict,
   ),
+  autospine_review_performance: Type.Object(
+    {
+      sample: PerformanceSampleSchema,
+      profile: Type.Union([Type.String({ minLength: 1, maxLength: 64 }), PerformanceProfileSchema]),
+      animation: Type.Optional(AnimationSpecSchema),
+      keyStats: Type.Optional(KeyStatsSchema),
+    },
+    strict,
+  ),
   autospine_get_status: Type.Object({}, strict),
   autospine_validate_plan: Type.Object(
     { asset: AssetSpecSchema, proposal: PlannerProposalSchema },
@@ -191,6 +206,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Linear two-bone gradient between two bone origins (eyelids, jaws, flaps); fold-free until full collapse (ADR-015).",
   autospine_measure_overlap:
     "Skin two weighted meshes in an optional pose and report overlap seam drift plus inversions per mesh; numeric QA, not artist approval.",
+  autospine_review_performance:
+    "Measure performance metrics from sampled probes (parallax, pupil, holds, saccade speed, delay-chain peaks, hand vs body, key density) and compare them with an artist-statistics profile; findings only, not artist approval.",
   autospine_get_status: "Read engineering status and explicit unverified capabilities; no writes.",
   autospine_validate_plan:
     "Validate an explicit chain proposal; low confidence is review-required.",
@@ -370,6 +387,13 @@ export class AutoSpineMcpServer {
             artistQualityAccepted: false,
           });
         }
+        case "autospine_review_performance": {
+          if (!Value.Check(toolSchemas.autospine_review_performance, args)) break;
+          if (args.animation && args.keyStats)
+            throw new Error("MCP_TOOL_ARGUMENTS: give animation or keyStats, not both");
+          const keyStats = args.animation ? animationKeyStats(args.animation) : args.keyStats;
+          return result(reviewPerformance(args.sample, args.profile, keyStats));
+        }
         case "autospine_get_status": {
           let status: unknown = { available: false };
           try {
@@ -395,6 +419,7 @@ export class AutoSpineMcpServer {
               weights: "dome-with-pins-transfer-joint-plane-chain-gradient",
               featureMesh: "silhouette-hull-and-hole-rings",
               overlapQA: "seam-drift-and-inversions",
+              performanceCritic: "probe-metrics-vs-artist-statistics-n1",
             },
           });
         }
