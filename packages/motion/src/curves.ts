@@ -1,3 +1,4 @@
+import type { KeyCurve } from "@autospine/schemas";
 import { failStage } from "@autospine/rig";
 
 export type Curve =
@@ -60,4 +61,9 @@ export function evaluateCurve(curve: Curve, u: number): number {
       return cubic((lo + hi) / 2, curve.y1, curve.y2);
     }
   }
+}
+/** Eased fraction of one IR key segment; the curve belongs to the segment's first key, omitted is linear. */
+export function keyFraction(curve: KeyCurve | undefined, u: number): number {
+  const t = Math.min(1, Math.max(0, u));
+  return curve ? evaluateCurve(curve, t) : t;
 }

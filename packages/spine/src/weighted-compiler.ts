@@ -11,6 +11,7 @@ import {
 import { evaluateRig, failStage, inverseAffine, orderBones, transformPoint } from "@autospine/rig";
 import { validateWeights } from "@autospine/weights";
 import { validateMeshSpec } from "@autospine/mesh";
+import { spineCurve } from "./curve.js";
 
 export interface WeightedSpineInput {
   asset: AssetSpec;
@@ -70,14 +71,15 @@ export function compileWeightedSpine40(input: WeightedSpineInput) {
         timeline.keys.at(-1)!.time !== animation.duration ||
         timeline.keys.some(
           (k, i) =>
-            Object.values(k).some((v) => !Number.isFinite(v)) ||
+            Object.entries(k).some(([field, v]) => field !== "curve" && !Number.isFinite(v)) ||
             (i > 0 && k.time <= timeline.keys[i - 1]!.time),
-        )
+        ) ||
+        timeline.keys.at(-1)!.curve !== undefined
       )
         failStage(
           "spine",
           "SPINE_TIMELINE",
-          "Unique referenced timelines must span duration with strictly increasing finite keys",
+          "Unique referenced timelines must span duration with strictly increasing finite keys and no final-key curve",
         );
       seen.add(timeline.boneId);
     }
@@ -155,13 +157,48 @@ export function compileWeightedSpine40(input: WeightedSpineInput) {
               bones[byId.get(id)!]!.name,
               {
                 ...(rotate
-                  ? { rotate: rotate.keys.map((k) => ({ time: k.time, value: -k.degrees })) }
+                  ? {
+                      rotate: rotate.keys.map((k, i, keys) => {
+                        const n = keys[i + 1] ?? k;
+                        return {
+                          time: k.time,
+                          value: -k.degrees,
+                          ...spineCurve(k.curve, k.time, n.time, [[-k.degrees, -n.degrees]]),
+                        };
+                      }),
+                    }
                   : {}),
                 ...(translate
-                  ? { translate: translate.keys.map((k) => ({ time: k.time, x: k.x, y: -k.y })) }
+                  ? {
+                      translate: translate.keys.map((k, i, keys) => {
+                        const n = keys[i + 1] ?? k;
+                        return {
+                          time: k.time,
+                          x: k.x,
+                          y: -k.y,
+                          ...spineCurve(k.curve, k.time, n.time, [
+                            [k.x, n.x],
+                            [-k.y, -n.y],
+                          ]),
+                        };
+                      }),
+                    }
                   : {}),
                 ...(scale
-                  ? { scale: scale.keys.map((k) => ({ time: k.time, x: k.x, y: k.y })) }
+                  ? {
+                      scale: scale.keys.map((k, i, keys) => {
+                        const n = keys[i + 1] ?? k;
+                        return {
+                          time: k.time,
+                          x: k.x,
+                          y: k.y,
+                          ...spineCurve(k.curve, k.time, n.time, [
+                            [k.x, n.x],
+                            [k.y, n.y],
+                          ]),
+                        };
+                      }),
+                    }
                   : {}),
               },
             ];

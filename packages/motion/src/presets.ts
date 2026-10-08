@@ -26,6 +26,8 @@ export interface PresetOptions {
   fps: number;
   amplitude: number;
   seed?: number;
+  /** Ordered part-local controls. Unrelated rig bones must not affect delay or amplitude. */
+  boneIds?: string[];
 }
 export function generatePreset(rig: RigSpec, options: PresetOptions): AnimationSpec {
   const { type, duration, fps, amplitude, seed = 0 } = options;
@@ -44,16 +46,30 @@ export function generatePreset(rig: RigSpec, options: PresetOptions): AnimationS
     !Number.isInteger(seed) ||
     seed < 0 ||
     seed > 0xffffffff ||
-    Object.keys(options).some((k) => !["type", "duration", "fps", "amplitude", "seed"].includes(k))
+    Object.keys(options).some(
+      (k) => !["type", "duration", "fps", "amplitude", "seed", "boneIds"].includes(k),
+    )
   )
     failStage(
       "animation",
       "PRESET_INPUT",
       "Valid bounded preset, rig and unsigned 32-bit seed required",
     );
-  const bones = orderBones(rig.bones),
+  const ordered = orderBones(rig.bones);
+  const selected = options.boneIds;
+  if (
+    selected &&
+    (!selected.length ||
+      selected.length > 256 ||
+      new Set(selected).size !== selected.length ||
+      selected.some((id) => !ordered.some((b) => b.id === id)))
+  )
+    failStage("animation", "PRESET_TARGETS", "Unique existing ordered controls required");
+  const bones = selected ? selected.map((id) => ordered.find((b) => b.id === id)!) : ordered,
     steps = Math.ceil(duration * fps);
-  const times = Array.from({ length: steps + 1 }, (_, i) => (duration * i) / steps);
+  const times = Array.from({ length: steps + 1 }, (_, i) =>
+    i === steps ? duration : (duration * i) / steps,
+  );
   const animation: AnimationSpec = {
     schemaVersion: "0.1",
     kind: "animation",
@@ -176,7 +192,7 @@ export function validateAnimation(animation: AnimationSpec, rig: RigSpec): void 
       failStage("animation", "ANIMATION_DEFORM", "Deform vertex count changed across keys");
   }
 }
-function checkKeys(keys: { time: number }[], duration: number) {
+function checkKeys(keys: { time: number; curve?: unknown }[], duration: number) {
   if (
     keys[0]!.time !== 0 ||
     keys.at(-1)!.time !== duration ||
@@ -186,5 +202,11 @@ function checkKeys(keys: { time: number }[], duration: number) {
       "animation",
       "ANIMATION_KEYS",
       "Strictly increasing keys must cover the full duration",
+    );
+  if (keys.at(-1)!.curve !== undefined)
+    failStage(
+      "animation",
+      "ANIMATION_CURVE",
+      "A curve shapes the segment to the next key; remove it from the final key",
     );
 }

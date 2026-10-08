@@ -15,6 +15,11 @@ import {
   type BoneAdjustments,
 } from "@autospine/rig";
 export * from "./deformation.js";
+export * from "./chain.js";
+export * from "./dome.js";
+export * from "./transfer.js";
+export * from "./overlap.js";
+export * from "./gradient.js";
 
 function checkInput(mesh: MeshSpec, rig: RigSpec) {
   if (!Value.Check(MeshSpecSchema, mesh) || !Value.Check(RigSpecSchema, rig))

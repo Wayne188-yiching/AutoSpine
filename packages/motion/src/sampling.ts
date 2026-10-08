@@ -1,6 +1,7 @@
-import type { AnimationSpec, RigSpec } from "@autospine/schemas";
+import type { AnimationSpec, KeyCurve, RigSpec } from "@autospine/schemas";
 import { failStage } from "@autospine/rig";
 import { validateAnimation } from "./presets.js";
+import { keyFraction } from "./curves.js";
 
 export interface AnimationPose {
   rotations: Record<string, number>;
@@ -8,12 +9,16 @@ export interface AnimationPose {
   scales: Record<string, [number, number]>;
   deforms: Record<string, [number, number][]>;
 }
-function segment<T extends { time: number }>(keys: T[], time: number): [T, T, number] {
+/** Bracketing keys and the eased fraction given by the first key's curve. */
+function segment<T extends { time: number; curve?: KeyCurve }>(
+  keys: T[],
+  time: number,
+): [T, T, number] {
   let i = 1;
   while (i < keys.length - 1 && keys[i]!.time < time) i++;
   const a = keys[i - 1] ?? keys[0]!,
     b = keys[i] ?? a;
-  return [a, b, b.time === a.time ? 0 : (time - a.time) / (b.time - a.time)];
+  return [a, b, b.time === a.time ? 0 : keyFraction(a.curve, (time - a.time) / (b.time - a.time))];
 }
 export function sampleAnimation(
   animation: AnimationSpec,

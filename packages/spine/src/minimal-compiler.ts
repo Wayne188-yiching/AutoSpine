@@ -161,6 +161,13 @@ export function validateMinimalSpineInput(input: MinimalSpineInput): ValidationR
     issues.push(
       issue("TIMELINE_KEYS", "Keys must start at 0, end at duration, and increase strictly"),
     );
+  if (timeline?.keys.some((key) => key.curve && key.curve.type !== "linear"))
+    issues.push(
+      issue(
+        "TIMELINE_CURVE",
+        "Gate 1 exports linear rotation keys only; use the weighted or character adapter for curves",
+      ),
+    );
   const part = asset.parts[0];
   if (part && (part.bounds.width <= 0 || part.bounds.height <= 0))
     issues.push(issue("REGION_SIZE", "Region width and height must be positive", part.id));

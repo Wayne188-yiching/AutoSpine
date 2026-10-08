@@ -7,6 +7,15 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo",
     "types": ["node"]
   },
-  "references": [{ "path": "../cli" }, { "path": "../planning" }, { "path": "../../schemas" }],
+  "references": [
+    { "path": "../cli" },
+    { "path": "../spine" },
+    { "path": "../planning" },
+    { "path": "../assets" },
+    { "path": "../mesh" },
+    { "path": "../motion" },
+    { "path": "../weights" },
+    { "path": "../../schemas" }
+  ],
   "include": ["src/**/*.ts"]
 }

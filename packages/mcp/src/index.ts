@@ -2,8 +2,34 @@ import { lstat, readFile, realpath } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import { Type, type TSchema } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
-import { AssetSpecSchema, BuildJobSchema } from "@autospine/schemas";
+import {
+  AssetPartSchema,
+  AssetSpecSchema,
+  BuildJobSchema,
+  IdSchema,
+  KeyposeSpecSchema,
+  MeshSpecSchema,
+  RigSpecSchema,
+  Vector2Schema,
+  WeightSpecSchema,
+} from "@autospine/schemas";
+import { decodeAlphaMask } from "@autospine/assets";
+import { generateFeatureMesh } from "@autospine/mesh";
+import { buildKeyposeAnimation } from "@autospine/motion";
+import {
+  domeFoldLimit,
+  domeValue,
+  measureDeformation,
+  measureDomeField,
+  measureOverlapDrift,
+  skinVertices,
+  solveChainWeights,
+  solveDomeWeights,
+  solveGradientWeights,
+  transferWeights,
+} from "@autospine/weights";
 import { buildJobFile } from "@autospine/cli/build";
+import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
 import {
   PlannerProposalSchema,
   ReviewEvidenceSchema,
@@ -16,7 +42,111 @@ import {
 } from "@autospine/planning";
 
 const strict = { additionalProperties: false };
+// Engine-tool argument shapes (ADR-010..016); all in memory, no filesystem access.
+const Affine = Type.Tuple([
+  Type.Number(),
+  Type.Number(),
+  Type.Number(),
+  Type.Number(),
+  Type.Number(),
+  Type.Number(),
+]);
+const DomeField = Type.Object(
+  { center: Vector2Schema, radii: Vector2Schema, peak: Type.Number(), counter: Type.Number() },
+  strict,
+);
+const DomePins = Type.Array(
+  Type.Object(
+    {
+      polygon: Type.Array(Vector2Schema, { minItems: 3, maxItems: 4096 }),
+      value: Type.Number(),
+      margin: Type.Number(),
+    },
+    strict,
+  ),
+  { maxItems: 64 },
+);
+const Weighted = Type.Object({ mesh: MeshSpecSchema, weights: WeightSpecSchema }, strict);
+const Pose = Type.Object(
+  {
+    rotations: Type.Optional(Type.Record(IdSchema, Type.Number())),
+    translations: Type.Optional(Type.Record(IdSchema, Vector2Schema)),
+    scales: Type.Optional(Type.Record(IdSchema, Vector2Schema)),
+  },
+  strict,
+);
 const toolSchemas = {
+  autospine_compile_character: Type.Object({ input: CharacterSpineInputSchema }, strict),
+  autospine_build_keypose_animation: Type.Object(
+    { rig: RigSpecSchema, spec: KeyposeSpecSchema },
+    strict,
+  ),
+  autospine_feature_mesh: Type.Object(
+    {
+      part: AssetPartSchema,
+      options: Type.Optional(
+        Type.Object(
+          {
+            minHoleFraction: Type.Optional(Type.Number()),
+            edgeLength: Type.Optional(Type.Number()),
+            spacing: Type.Optional(Type.Number()),
+          },
+          strict,
+        ),
+      ),
+    },
+    strict,
+  ),
+  autospine_measure_dome: Type.Object(
+    {
+      part: AssetPartSchema,
+      toWorld: Affine,
+      anchor: Type.Optional(Vector2Schema),
+      peak: Type.Optional(Type.Number()),
+      counter: Type.Optional(Type.Number()),
+    },
+    strict,
+  ),
+  autospine_dome_weights: Type.Object(
+    {
+      mesh: MeshSpecSchema,
+      rig: RigSpecSchema,
+      field: DomeField,
+      bones: Type.Object(
+        { base: IdSchema, control: IdSchema, counter: Type.Optional(IdSchema) },
+        strict,
+      ),
+      pins: Type.Optional(DomePins),
+      points: Type.Optional(Type.Array(Vector2Schema, { maxItems: 256 })),
+    },
+    strict,
+  ),
+  autospine_transfer_weights: Type.Object(
+    {
+      target: MeshSpecSchema,
+      rig: RigSpecSchema,
+      sources: Type.Array(Weighted, { minItems: 1, maxItems: 16 }),
+      maxInfluences: Type.Optional(Type.Integer({ minimum: 1, maximum: 4 })),
+    },
+    strict,
+  ),
+  autospine_chain_weights: Type.Object(
+    {
+      mesh: MeshSpecSchema,
+      rig: RigSpecSchema,
+      boneIds: Type.Array(IdSchema, { minItems: 1, maxItems: 64 }),
+      blendWidth: Type.Union([Type.Number(), Type.Array(Type.Number(), { maxItems: 63 })]),
+    },
+    strict,
+  ),
+  autospine_gradient_weights: Type.Object(
+    { mesh: MeshSpecSchema, rig: RigSpecSchema, from: IdSchema, to: IdSchema },
+    strict,
+  ),
+  autospine_measure_overlap: Type.Object(
+    { rig: RigSpecSchema, a: Weighted, b: Weighted, pose: Type.Optional(Pose) },
+    strict,
+  ),
   autospine_get_status: Type.Object({}, strict),
   autospine_validate_plan: Type.Object(
     { asset: AssetSpecSchema, proposal: PlannerProposalSchema },
@@ -43,6 +173,24 @@ const toolSchemas = {
   ),
 };
 const descriptions: Record<keyof typeof toolSchemas, string> = {
+  autospine_compile_character:
+    "Compile explicit multi-part engine IR, bone/attachment/rgba/deform timelines, convex clipping and native IK/Transform to Spine 4.0 JSON in memory; no automatic anatomy or artist approval.",
+  autospine_build_keypose_animation:
+    "Compile a pose table (beats) plus follow/saccade/settle/cycle timing rules into a sparse AnimationSpec with per-key curves (ADR-011); beat timing is the caller's input.",
+  autospine_feature_mesh:
+    "Mesh a part by its opaque silhouette with a locked vertex ring around every large enclosed hole (eye sockets, windows); returns MeshSpec in part-bounds space and ring indices (ADR-016).",
+  autospine_measure_dome:
+    "Measure a dome (parallax) field from a part's alpha: centre = centroid or anchor, radii = 2 x alpha std in world via a pixel-to-world affine; also returns the fold limit (ADR-012).",
+  autospine_dome_weights:
+    "Weight a world-space mesh to a dome field (control/counter/base bones), optionally pinning regions such as eye sockets to a follow mix; returns WeightSpec and dome values at requested points (ADR-012/016).",
+  autospine_transfer_weights:
+    "Closest-point barycentric weight transfer from weighted source meshes to a riding mesh such as a glow or outline (ADR-013).",
+  autospine_chain_weights:
+    "Joint-plane chain weights with one blend width per joint; share one chain between images that meet at a joint (ADR-014).",
+  autospine_gradient_weights:
+    "Linear two-bone gradient between two bone origins (eyelids, jaws, flaps); fold-free until full collapse (ADR-015).",
+  autospine_measure_overlap:
+    "Skin two weighted meshes in an optional pose and report overlap seam drift plus inversions per mesh; numeric QA, not artist approval.",
   autospine_get_status: "Read engineering status and explicit unverified capabilities; no writes.",
   autospine_validate_plan:
     "Validate an explicit chain proposal; low confidence is review-required.",
@@ -137,6 +285,91 @@ export class AutoSpineMcpServer {
       );
     try {
       switch (name) {
+        case "autospine_compile_character": {
+          if (!Value.Check(toolSchemas.autospine_compile_character, args)) break;
+          return result({
+            document: compileCharacterSpine40(args.input),
+            scope: "explicit-character-ir",
+            artistQualityAccepted: false,
+          });
+        }
+        case "autospine_build_keypose_animation": {
+          if (!Value.Check(toolSchemas.autospine_build_keypose_animation, args)) break;
+          const animation = buildKeyposeAnimation(args.rig, args.spec);
+          const keyCount = [
+            ...(animation.rotationTimelines ?? []),
+            ...(animation.translationTimelines ?? []),
+            ...(animation.scaleTimelines ?? []),
+          ].reduce((n, t) => n + t.keys.length, 0);
+          return result({ animation, keyCount, artistQualityAccepted: false });
+        }
+        case "autospine_feature_mesh": {
+          if (!Value.Check(toolSchemas.autospine_feature_mesh, args)) break;
+          if (!args.part.alphaMask)
+            throw new Error("MCP_PART_ALPHA: the part needs an rle8 alphaMask");
+          const built = generateFeatureMesh(
+            args.part,
+            decodeAlphaMask(args.part.alphaMask),
+            args.options ?? {},
+          );
+          return result({ ...built, space: "part-bounds" });
+        }
+        case "autospine_measure_dome": {
+          if (!Value.Check(toolSchemas.autospine_measure_dome, args)) break;
+          if (!args.part.alphaMask)
+            throw new Error("MCP_PART_ALPHA: the part needs an rle8 alphaMask");
+          const mask = args.part.alphaMask,
+            field = measureDomeField(decodeAlphaMask(mask), mask.width, mask.height, args.toWorld, {
+              ...(args.anchor ? { anchor: args.anchor } : {}),
+              ...(args.peak === undefined ? {} : { peak: args.peak }),
+              ...(args.counter === undefined ? {} : { counter: args.counter }),
+            });
+          return result({ field, foldLimit: domeFoldLimit(field) });
+        }
+        case "autospine_dome_weights": {
+          if (!Value.Check(toolSchemas.autospine_dome_weights, args)) break;
+          const pins = args.pins ?? [];
+          return result({
+            weights: solveDomeWeights(args.mesh, args.rig, args.field, args.bones, pins),
+            values: (args.points ?? []).map((p) => domeValue(args.field, p, pins)),
+          });
+        }
+        case "autospine_transfer_weights": {
+          if (!Value.Check(toolSchemas.autospine_transfer_weights, args)) break;
+          return result({
+            weights: transferWeights(args.target, args.rig, args.sources, args.maxInfluences ?? 4),
+          });
+        }
+        case "autospine_chain_weights": {
+          if (!Value.Check(toolSchemas.autospine_chain_weights, args)) break;
+          return result({
+            weights: solveChainWeights(args.mesh, args.rig, args.boneIds, args.blendWidth),
+          });
+        }
+        case "autospine_gradient_weights": {
+          if (!Value.Check(toolSchemas.autospine_gradient_weights, args)) break;
+          return result({
+            weights: solveGradientWeights(args.mesh, args.rig, args.from, args.to),
+          });
+        }
+        case "autospine_measure_overlap": {
+          if (!Value.Check(toolSchemas.autospine_measure_overlap, args)) break;
+          const pose = args.pose ?? {},
+            posed = [args.a, args.b].map((m) =>
+              skinVertices(m.mesh, args.rig, m.weights, pose.rotations ?? {}, {
+                ...(pose.translations ? { translations: pose.translations } : {}),
+                ...(pose.scales ? { scales: pose.scales } : {}),
+              }),
+            );
+          return result({
+            drift: measureOverlapDrift(
+              { mesh: args.a.mesh, posed: posed[0]! },
+              { mesh: args.b.mesh, posed: posed[1]! },
+            ),
+            deformation: [args.a, args.b].map((m, i) => measureDeformation(m.mesh, posed[i]!)),
+            artistQualityAccepted: false,
+          });
+        }
         case "autospine_get_status": {
           let status: unknown = { available: false };
           try {
@@ -150,11 +383,18 @@ export class AutoSpineMcpServer {
             status,
             capabilities: {
               profile: "chain-wave",
+              inMemoryCharacterCompilation:
+                "explicit-regions-weighted-meshes-convex-clipping-bone-attachment-rgba-deform-timelines-native-IK-Transform",
               explicitChainRequired: true,
               livePlannerVerified: false,
               liveVisionCriticVerified: false,
               artistQualityAccepted: false,
               filesystemBuild: "workspace-local-new-output-only",
+              keyCurves: "linear-stepped-bezier-per-key",
+              keyposeGrammar: "beats-follow-saccade-settle-cycle",
+              weights: "dome-with-pins-transfer-joint-plane-chain-gradient",
+              featureMesh: "silhouette-hull-and-hole-rings",
+              overlapQA: "seam-drift-and-inversions",
             },
           });
         }
@@ -267,7 +507,7 @@ export class AutoSpineMcpServer {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "autospine", version: "0.0.0" },
         instructions:
-          "Legacy MCP v1; explicit chain-wave only. No live visual AI or artist approval. Build requires host authorization and new workspace-local output.",
+          "Legacy MCP v1; chain-wave file build, explicit character IR compilation and in-memory engine tools (pose-table animation, feature meshes, dome/transfer/chain/gradient weights, overlap QA). No live visual AI or artist approval. Build requires host authorization and new workspace-local output.",
       });
     }
     if (req.method === "ping") return response({});

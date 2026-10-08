@@ -1,8 +1,10 @@
 import type { AnimationSpec, BuildJob, RigSpec } from "@autospine/schemas";
 import { failStage, orderBones } from "@autospine/rig";
+import { keyFraction } from "./curves.js";
 export * from "./presets.js";
 export * from "./curves.js";
 export * from "./sampling.js";
+export * from "./keyposes.js";
 export function generateWave(rig: RigSpec, wave: BuildJob["wave"]): AnimationSpec {
   const { duration, fps, amplitudeDegrees, phaseDegrees } = wave;
   if (
@@ -49,7 +51,7 @@ export function rotationsAt(animation: AnimationSpec, time: number): Record<stri
     while (i < keys.length - 1 && keys[i]!.time < t) i++;
     const a = keys[i - 1] ?? keys[0]!,
       b = keys[i] ?? a;
-    const fraction = b.time === a.time ? 0 : (t - a.time) / (b.time - a.time);
+    const fraction = b.time === a.time ? 0 : keyFraction(a.curve, (t - a.time) / (b.time - a.time));
     result[timeline.boneId] = a.degrees + (b.degrees - a.degrees) * fraction;
   }
   return result;

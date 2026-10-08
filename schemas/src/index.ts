@@ -4,6 +4,7 @@ export * from "./build-manifest.js";
 export * from "./build-job.js";
 export * from "./common.js";
 export * from "./constraint-spec.js";
+export * from "./keypose-spec.js";
 export * from "./mesh-spec.js";
 export * from "./registry.js";
 export * from "./rig-spec.js";
