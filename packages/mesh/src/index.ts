@@ -6,6 +6,7 @@ export {
 } from "./generate.js";
 export { MeshError, validateMeshSpec } from "./validation.js";
 export { constrainMeshEdges } from "./constraints.js";
+export { generateSurfaceMesh } from "./surface.js";
 export { fitRasterRegion, type RasterRegion } from "./raster-region.js";
 export {
   fillEnclosedHoles,

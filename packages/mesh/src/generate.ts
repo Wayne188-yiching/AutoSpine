@@ -12,6 +12,8 @@ export interface MeshGenerationOptions {
   rasterRegion?: RasterRegion;
   /** Caller-supplied purpose, never inferred from the file name. */
   intent?: "rigid" | "chain" | "unknown";
+  /** Image-space feature candidates supplied by the control plan, never scoring vertices. */
+  featurePoints?: Point[];
   /** Counts and normalized cross-section profile from a matched artist attachment. */
   referenceTopology?: {
     vertices: number;
@@ -263,6 +265,20 @@ export function generateMesh(
     failMesh("ALPHA_MISSING", "Part must include a Gate 2 alpha mask");
   const { width, height } = mask;
   if (
+    options.featurePoints &&
+    (options.featurePoints.length > 256 ||
+      options.featurePoints.some(
+        (p) =>
+          p.length !== 2 ||
+          p.some((v) => !Number.isFinite(v)) ||
+          p[0] < 0 ||
+          p[0] >= width ||
+          p[1] < 0 ||
+          p[1] >= height,
+      ))
+  )
+    failMesh("MESH_FEATURES", "Bounded finite in-image feature candidates required");
+  if (
     !Number.isFinite(part.bounds.x) ||
     !Number.isFinite(part.bounds.y) ||
     !Number.isFinite(part.bounds.width) ||
@@ -402,6 +418,7 @@ export function generateMesh(
     for (let y = spacing / 2; y < height; y += spacing)
       for (let x = spacing / 2; x < width; x += spacing) candidates.push([x, y]);
   }
+  candidates.unshift(...(options.featurePoints ?? []));
   for (const point of candidates) {
     if (points.length >= 2560) failMesh("MESH_COMPLEXITY", "Mesh exceeds vertex budget");
     if (

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { access, mkdtemp, readFile, readdir, symlink, writeFile } from "node:fs/promises";
+import { access, mkdtemp, readFile, readdir, realpath, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { AutoSpineMcpServer, guardJob, mcpTools } from "@autospine/mcp";
@@ -46,9 +46,13 @@ async function ready(workspace: string) {
 async function request(server: AutoSpineMcpServer, name: string, args: unknown = {}) {
   return (await server.receive(call(2, name, args))) as Reply;
 }
-function subprocess(workspace: string, input: string | Buffer) {
+function subprocess(workspace: string, input: string | Buffer, messageLimit = "1") {
   const child = spawnSync(process.execPath, [resolve("packages/mcp/dist/stdio.js")], {
-    env: { ...process.env, AUTOSPINE_WORKSPACE: workspace },
+    env: {
+      ...process.env,
+      AUTOSPINE_WORKSPACE: workspace,
+      AUTOSPINE_MCP_MAX_MESSAGE_MIB: messageLimit,
+    },
     input,
     encoding: "utf8",
     timeout: 30000,
@@ -82,7 +86,7 @@ describe("Gate16 actual legacy stdio MCP", () => {
     expect(replies[0]!.result!.protocolVersion).toBe("2025-11-25");
     expect(replies[1]!.result!.tools!.map((t) => t.name)).toEqual(mcpTools.map((t) => t.name));
     expect(replies[2]!.result!.isError).not.toBe(true);
-    expect(body(replies[3]!).output).toBe(resolve(f.directory, f.job.output));
+    expect(body(replies[3]!).output).toBe(await realpath(resolve(f.directory, f.job.output)));
     expect(body(replies[3]!).provenance).toHaveProperty("sourceSha256");
     expect(replies[4]!.result!.isError).toBe(true);
     expect(JSON.stringify(body(replies[4]!))).toContain("BUILD_OUTPUT_EXISTS");
@@ -167,6 +171,12 @@ describe("Gate16 actual legacy stdio MCP", () => {
     const replies = subprocess(process.cwd(), input);
     expect(replies.map((r) => r.error?.code ?? r.id)).toEqual([-32700, -32600, 1]);
     expect(subprocess(process.cwd(), JSON.stringify(init()))[0]!.error?.code).toBe(-32700);
+  });
+  it("accepts a host-selected bounded message limit and falls back for invalid limits", () => {
+    const large = JSON.stringify({ ...init(), padding: "x".repeat(1024 * 1024 + 8) }) + "\n";
+    expect(subprocess(process.cwd(), large, "2")[0]!.result?.protocolVersion).toBe("2025-11-25");
+    expect(subprocess(process.cwd(), large, "17")[0]!.error?.message).toMatch(/1 MiB/);
+    expect(subprocess(process.cwd(), large, "NaN")[0]!.error?.message).toMatch(/1 MiB/);
   });
   it("notifications never invoke filesystem mutation", async () => {
     const f = await workflowFixture(),
