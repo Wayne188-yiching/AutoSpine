@@ -6,6 +6,8 @@ export * from "./common.js";
 export * from "./constraint-spec.js";
 export * from "./keypose-spec.js";
 export * from "./mesh-spec.js";
+export * from "./motion-brief.js";
+export * from "./part-role.js";
 export * from "./registry.js";
 export * from "./rig-spec.js";
 export * from "./validation-report.js";

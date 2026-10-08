@@ -19,7 +19,9 @@ export * from "./chain.js";
 export * from "./dome.js";
 export * from "./transfer.js";
 export * from "./overlap.js";
+export * from "./role-plan.js";
 export * from "./gradient.js";
+export * from "./visibility.js";
 
 function checkInput(mesh: MeshSpec, rig: RigSpec) {
   if (!Value.Check(MeshSpecSchema, mesh) || !Value.Check(RigSpecSchema, rig))

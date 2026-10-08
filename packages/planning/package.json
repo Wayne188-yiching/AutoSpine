@@ -15,6 +15,7 @@
     "@autospine/schemas": "0.0.0",
     "@autospine/rig": "0.0.0",
     "@autospine/pipeline": "0.0.0",
+    "@autospine/weights": "0.0.0",
     "@sinclair/typebox": "^0.34.52"
   }
 }

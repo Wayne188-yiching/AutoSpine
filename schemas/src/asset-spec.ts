@@ -7,6 +7,7 @@ import {
   SchemaVersionSchema,
   Vector2Schema,
 } from "./common.js";
+import { PartRoleSchema, PartSideSchema } from "./part-role.js";
 
 export const AssetPartSchema = Type.Object(
   {
@@ -17,6 +18,14 @@ export const AssetPartSchema = Type.Object(
     bounds: BoundsSchema,
     pivotCandidate: Type.Optional(Vector2Schema),
     drawOrder: Type.Integer({ minimum: 0 }),
+    /**
+     * Caller-declared semantics. All three are optional: an asset parsed from PNG parts or a PSD
+     * carries none of them, and labelling is a separate, explicit step (`applyPartLabels`).
+     */
+    role: Type.Optional(PartRoleSchema),
+    side: Type.Optional(PartSideSchema),
+    /** Id of the part this one follows (glow/outline over its base); not a parent in the tree. */
+    rides: Type.Optional(IdSchema),
     visible: Type.Optional(Type.Boolean()),
     alphaMask: Type.Optional(
       Type.Object(

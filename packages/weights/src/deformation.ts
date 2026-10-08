@@ -13,11 +13,8 @@ export const engineeringDeformationLimits = Object.freeze({
   maxEdgeStretch: 2,
   maxSeamGap: 1e-8,
 });
-export function measureDeformation(
-  mesh: MeshSpec,
-  posed: [number, number][],
-  seams: [number, number][] = [],
-): DeformationMetrics {
+/** Shared guard so the inversion identities and the metrics reject the same inputs. */
+function checkPosedInput(mesh: MeshSpec, posed: [number, number][]): void {
   if (
     posed.length !== mesh.vertices.length ||
     posed.some((p) => p.length !== 2 || !p.every(Number.isFinite)) ||
@@ -28,13 +25,57 @@ export function measureDeformation(
       "DEFORMATION_INPUT",
       "Finite complete posed vertices and triangles required",
     );
+}
+const signedArea = (p: [number, number][]) =>
+  (p[1]![0] - p[0]![0]) * (p[2]![1] - p[0]![1]) - (p[1]![1] - p[0]![1]) * (p[2]![0] - p[0]![0]);
+export interface InversionScan {
+  /** Indices into `triangles / 3` whose posed winding flipped. */
+  inverted: number[];
+  /**
+   * Smallest |posed area / bind area| over all triangles. Unlike `DeformationMetrics.minAreaRatio`
+   * this measures collapse alone: a triangle that flips without shrinking scores 1, so a
+   * visibility-aware gate can judge inversion and collapse independently.
+   */
+  minAbsAreaRatio: number;
+}
+/**
+ * Triangle-level inversion scan. `measureDeformation` only reports how many triangles flipped;
+ * visibility scoring needs to know which ones so it can rasterize them.
+ */
+export function scanTriangleInversions(mesh: MeshSpec, posed: [number, number][]): InversionScan {
+  checkPosedInput(mesh, posed);
+  let minAbsAreaRatio = Infinity;
+  const inverted: number[] = [];
+  for (let i = 0; i < mesh.triangles.length; i += 3) {
+    const tri = mesh.triangles.slice(i, i + 3);
+    if (tri.some((j) => !Number.isInteger(j) || j < 0 || j >= posed.length))
+      failStage("weights", "DEFORMATION_INDEX", "Invalid triangle index");
+    const bind = signedArea(tri.map((j) => mesh.vertices[j]!)),
+      next = signedArea(tri.map((j) => posed[j]!));
+    if (!Number.isFinite(bind) || bind === 0 || !Number.isFinite(next))
+      failStage("weights", "DEFORMATION_AREA", "Nondegenerate finite bind area required");
+    if (next / bind <= 0) inverted.push(i / 3);
+    minAbsAreaRatio = Math.min(minAbsAreaRatio, Math.abs(next / bind));
+  }
+  if (!Number.isFinite(minAbsAreaRatio))
+    failStage("weights", "DEFORMATION_EMPTY", "Triangles required for deformation evaluation");
+  return { inverted, minAbsAreaRatio };
+}
+export function invertedTriangleIndices(mesh: MeshSpec, posed: [number, number][]): number[] {
+  return scanTriangleInversions(mesh, posed).inverted;
+}
+export function measureDeformation(
+  mesh: MeshSpec,
+  posed: [number, number][],
+  seams: [number, number][] = [],
+): DeformationMetrics {
+  checkPosedInput(mesh, posed);
   let inversionCount = 0,
     minAreaRatio = Infinity,
     maxEdgeStretch = 0,
     maxSeamGap = 0;
   const edges = new Set<string>();
-  const area = (p: [number, number][]) =>
-    (p[1]![0] - p[0]![0]) * (p[2]![1] - p[0]![1]) - (p[1]![1] - p[0]![1]) * (p[2]![0] - p[0]![0]);
+  const area = signedArea;
   for (let i = 0; i < mesh.triangles.length; i += 3) {
     const tri = mesh.triangles.slice(i, i + 3);
     if (tri.some((j) => !Number.isInteger(j) || j < 0 || j >= posed.length))

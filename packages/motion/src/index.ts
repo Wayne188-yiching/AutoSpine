@@ -4,6 +4,7 @@ import { keyFraction } from "./curves.js";
 export * from "./presets.js";
 export * from "./curves.js";
 export * from "./sampling.js";
+export * from "./beats.js";
 export * from "./keyposes.js";
 export function generateWave(rig: RigSpec, wave: BuildJob["wave"]): AnimationSpec {
   const { duration, fps, amplitudeDegrees, phaseDegrees } = wave;

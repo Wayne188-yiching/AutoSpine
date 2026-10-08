@@ -996,3 +996,27 @@ Next allowed action:
 [本輪結果與接續條件](docs/research/GATE_4_LOCAL_CATEGORY_EXPERIMENT.md)、[23 件類別提案與截圖](docs/local-reviews/gate-4-local-semantic-09/review.html?view=summary)、[公開彙總](docs/reviews/GATE_4_LOCAL_CATEGORY_RESULT.json)。原圖、每圖分數、套件／權重及四張新截圖只留本機；已檢視全部輸入縮圖與兩個重點案例，但不等於使用者視覺驗收。下一步需先解決區域定位與物件辨識品質，通過後才接建骨，不能按本批答案調骨數。
 
 Gate 0～17 每階段完成時，都要在最終回報與 Gate 紀錄附上該階段的 Token 用量。計算範圍從開始該 Gate 到 Jev 最終決定，包含返工與複審；不可只列最後一次呼叫。優先採用模型或工具提供的實際 input/output usage；若無逐 Gate 精確數據，明確寫「無法取得」，有可重現估算方法時才能另外標示「約」，不得把估算寫成實測。cached input 已包含在 input tokens、reasoning tokens 已包含在 output tokens，不重複加總；可見文字也不能反推完整 output 用量。見 [OpenAI 官方 Token 計數說明](https://developers.openai.com/api/docs/guides/token-counting)。
+
+### P2 · 驗收與流程（2026-10-08～09，`claude/p2-acceptance`）
+
+範圍：木乃伊貓優化提案「建議路線」P2 的 h／i／j，以及提案「仍待處理」所列的主要節拍時間缺口。本輪由兩條流程完成：Claude 主 session，以及一條在不知情下平行執行同一任務、於 2026-10-08 22:22 將結果寫入同一工作目錄的外部流程（覆蓋了主 session 當時未 commit 的 `visibility.ts` 草稿；已 commit 的內容不受影響）。寫入當下的工作樹原樣保存在 `refs/backup/p2-parallel-snapshot-1`。為避免兩套重複實作，i、Critic 整合、節拍規劃與部位標記採用外部流程的版本，經審查後一併提交。
+
+**h · Critic 表演指標（主 session，commit `2e91ffb`）**：`packages/planning/src/performance.ts`、`tests/performance-critic.test.ts`、MCP 唯讀工具 `autospine_review_performance`。`measurePerformance` 由取樣 probe 量測視差範圍 x／y、瞳孔範圍、hold 比例、瞳孔峰值／平均速度、延遲鏈各 probe 的峰值時間與過衝及相對 chain root 的峰值延遲、手相對身體範圍，以及「有動的 timeline」上的 key 密度。`reviewPerformance` 對照 `look-around`／`entrance` 兩個目標區間（木乃伊貓人工 idle2／`in` 的統計，30 fps，n＝1 角色；比例 ±0.15、峰值延遲 ±2 幀、其餘量值 ×÷1.5，未校準），只回傳方向性 findings。私有量測：以官方 spine-core 4.0 Runtime 在 15 fps 重算 idle2，數值與 PoC `metrics.py` 完全一致；30 fps 下人工 7／7、13／13（以自身為基準，屬合理性檢查非驗證），v17 0／7、4／13，引擎版 5／7、7／13（idle2 hold 0.85 偏高、瞳孔峰均比 27.5 偏高；`in` 尾巴延遲、手相對身體 0.237 偏低等）。不含任何人工 key、骨架或時間碼。
+
+**i · 翻折改看可見性（外部流程）**：`packages/weights/src/visibility.ts`、`tests/visibility-inversion.test.ts`。對每個翻折三角形以確定性光柵掃描計算其在姿勢中實際畫出的不透明、未被前方圖層遮擋的像素；容許量契約 `InversionTolerance` 可逐部位設定，`strictInversionTolerance` 等價舊的全域 0。`engineeringDeformationLimits`／`deformationPasses` 未改；另提供不帶號的 `minAbsAreaRatio` 與 `deformationPassesWithVisibility`。限制：單一部件輸入、遮擋圖層由呼叫方以 alpha 圖提供，未處理裁切遮罩；預設的逐部位容許量是起始政策，**尚未以人工檔實測**。主 session 曾以 15 fps 量到人工 `clap` 31 幀共 62 個翻折、帶貼圖面積 664、可見面積 0（使用已被覆蓋的多圖層草稿），其餘動畫未完成量測，不作為結論。
+
+**Critic 整合（外部流程）**：`packages/planning/src/critic.ts`、`tests/critic-performance.test.ts`。`ReviewEvidence` 新增可選 `visibility`／`performance` 證據；缺陷新增 `amplitude`／`timing`／`density`，動作新增有界的 `increase-wave`／`stagger-wave`／`sparsify-keys`。沒有新證據時行為與舊版逐欄位相同；無法自動解釋的表演拒絕只設 `requiresHumanReview`。這些動作只作用於 `chain-wave` 的 BuildJob 旋鈕。
+
+**缺口 · 主要節拍時間（外部流程，未關閉）**：`schemas/src/motion-brief.ts`、`packages/motion/src/beats.ts`、`tests/beat-planner.test.ts`。`planBeats` 由宣告式 MotionBrief（依序的 phase 種類＋可選節奏旋鈕）決定節拍幀號與 ease，`planLagChain` 推導 follow lag；檔內常數為結構比例，沒有取自人工動畫的時間碼。phase 結構仍由呼叫方提供。自我檢查只用測試內手寫的合成 baseline 與單一合成場景，`holdBias` 在該場景沒有鑑別力。**不能宣稱自動規劃時間表已達人工水準**；那需要在沒看過的角色上、對照真實人工基準量測（本機有 pig／panda／Yuuna 人工檔可作盲測對象，本輪未執行）。
+
+**j · 流程（外部流程，部分完成）**：`4e84949` 已把 a–g 的演算法接成 8 個 MCP 引擎工具。本輪補上部位標記：`schemas/src/part-role.ts`（17 個角色詞彙、`PartLabelMap`）、`AssetPart` 可選 `role`／`side`／`rides`、`packages/assets/src/part-labels.ts`、`packages/assets/src/riding-parts.ts`、`packages/weights/src/role-plan.ts`（`roleDefaults`／`resolveRolePlan`，參數為文件起始值，非品質門檻）。**尚無編排層消費 `roleDefaults`**：骨骼座標、控制骨與 constraint 方案、姿勢表數值仍在角色腳本；`build-engine.mjs` 仍無法縮成「部位標記＋姿勢表」。另 `roleDefaults` 與木乃伊貓建置腳本有不一致處（如掌、耳、尾、垂布的網格／權重選擇），接編排層時需以 overrides 或修正表格處理。
+
+**架構註記**：新增依賴邊 `assets → rig`、`planning → weights`（皆順向分層、無循環；planning 原先多宣告的 `motion` 未使用已移除），`package-lock.json` 已同步；`AssetPart` 新增可選欄位，屬非破壞性 schema 擴充。依第 9 節，依賴變更是否需要補 Strongest Model Review 由 Product Owner 裁示。
+
+**驗證**（直接於本工作目錄）：基準 48 檔 392 通過／1 跳過；完成後 `npm run build`、`vitest run --pool=threads --isolate=false` 53 檔 462 通過／1 跳過、`tsc -p tests/tsconfig.json --noEmit`、`prettier --check .`、`eslint .`、`node tools/run-node-tests.mjs` 全數通過。數值通過與 Critic 區間不等於美術驗收。
+
+**Jev**：NOT_SUBMITTED。未呼叫付費 API，未外傳原圖，未推送 GitHub。
+
+**Token usage**：無法取得（主 session 與外部流程皆未提供逐段 input／output usage；不以可見文字反推）。
+
+**Next allowed action**：由擁有者裁示是否併入主線與依賴變更是否補審。後續候選（需另行授權）：j 的編排層（以部位標記＋姿勢表重建木乃伊貓並與 `build-engine.mjs` 對照）、i 以人工檔實測容許量、缺口在未看過角色上的盲測。

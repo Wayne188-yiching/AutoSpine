@@ -7,6 +7,11 @@
     "outDir": "dist",
     "tsBuildInfoFile": "dist/.tsbuildinfo"
   },
-  "references": [{ "path": "../../schemas" }, { "path": "../rig" }, { "path": "../pipeline" }],
+  "references": [
+    { "path": "../../schemas" },
+    { "path": "../rig" },
+    { "path": "../weights" },
+    { "path": "../pipeline" }
+  ],
   "include": ["src/**/*.ts"]
 }

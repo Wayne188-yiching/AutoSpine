@@ -7,6 +7,6 @@
     "tsBuildInfoFile": "dist/.tsbuildinfo",
     "types": ["node"]
   },
-  "references": [{ "path": "../../schemas" }],
+  "references": [{ "path": "../../schemas" }, { "path": "../rig" }],
   "include": ["src/**/*.ts"]
 }

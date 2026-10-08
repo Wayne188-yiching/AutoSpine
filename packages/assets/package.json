@@ -19,6 +19,7 @@
     "clean": "tsc -b --clean"
   },
   "dependencies": {
+    "@autospine/rig": "0.0.0",
     "@autospine/schemas": "0.0.0",
     "@sinclair/typebox": "^0.34.52",
     "ag-psd": "^31.0.2",

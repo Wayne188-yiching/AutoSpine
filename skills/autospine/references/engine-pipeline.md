@@ -41,7 +41,9 @@
    - 每個控制只能有一個驅動來源。
    - 位移單位用量測的頭寬或眼皮高度。
    - 緩動名稱：linear、hold、ease、sine、out、in、drift。
-   - **主要節拍的時間點要由 brief、參考或使用者提供**；引擎不會自動決定。
+   - **主要節拍的時間點可由引擎規劃**：`planBeats`（`@autospine/motion`）吃一份 MotionBrief（總長、fps、loop、依序的 phase：anticipation／travel／settle／hold／look／return，可選 snappiness／holdBias，皆有預設），輸出 `KeyposeSpec.beats` 用的幀號與建議 ease；`beatsFromBrief` 直接組成 beats 片段，姿勢值仍由呼叫方給。時間配置原則與推導寫在 `packages/motion/src/beats.ts` 檔頭。
+   - 延遲鏈用 `planLagChain` 由部件層級深度推出 `follow` 的 lag 幀數；原則同檔。
+   - 若 brief、參考或使用者已指定時間點，仍以指定值為準；規劃器只在沒有指定時提供結構性預設。
 7. **編譯與往返**：`autospine_compile_character` 會原樣保留每個鍵的曲線；host 另存到新目錄，用官方同版本 CLI 匯入／匯出。
 
 ## 量測與參考值
@@ -61,7 +63,7 @@
 
 ## 目前限制
 
-- 主要節拍的時間配置仍需外部提供。
+- 自動節拍規劃（`planBeats`）只在合成角色、合成參考基準上自我檢查過（`tests/beat-planner.test.ts`）：`holdFraction`、`peakToMeanSpeed`、`lagChain` 落在合成基準帶內，snappiness 調壞會落到帶外。**這不等於自動時間規劃已達人工水準**；該宣稱需要在沒看過的角色上、對照真實人工基準量測。指標對 holdBias 在該合成場景沒有鑑別力。
 - 圓頂場為軸對齊橢圓，頭部大幅傾斜需要旋轉場（未實作）。
 - 同一通道不能疊加兩個動作，需拆成不同骨。
 - 不支援單鍵分通道緩動。
