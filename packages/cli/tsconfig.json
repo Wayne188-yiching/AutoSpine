@@ -8,6 +8,8 @@
     "types": ["node"]
   },
   "references": [
+    { "path": "../character" },
+    { "path": "../reference" },
     { "path": "../spine" },
     { "path": "../assets" },
     { "path": "../mesh" },

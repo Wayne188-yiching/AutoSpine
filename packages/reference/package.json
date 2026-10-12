@@ -1,0 +1,20 @@
+{
+  "name": "@autospine/reference",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@autospine/character": "0.0.0",
+    "@autospine/planning": "0.0.0",
+    "@autospine/schemas": "0.0.0",
+    "@esotericsoftware/spine-core": "4.0.31"
+  }
+}

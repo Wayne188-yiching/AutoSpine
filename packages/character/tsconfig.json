@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/.tsbuildinfo"
+  },
+  "references": [
+    { "path": "../../schemas" },
+    { "path": "../assets" },
+    { "path": "../mesh" },
+    { "path": "../motion" },
+    { "path": "../rig" },
+    { "path": "../spine" },
+    { "path": "../weights" }
+  ],
+  "include": ["src/**/*.ts"]
+}

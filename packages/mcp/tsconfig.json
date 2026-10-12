@@ -9,6 +9,7 @@
   },
   "references": [
     { "path": "../cli" },
+    { "path": "../character" },
     { "path": "../spine" },
     { "path": "../planning" },
     { "path": "../assets" },

@@ -7,6 +7,7 @@ import {
   AssetPartSchema,
   AssetSpecSchema,
   BuildJobSchema,
+  CharacterPlanSchema,
   IdSchema,
   KeyposeSpecSchema,
   MeshSpecSchema,
@@ -30,6 +31,13 @@ import {
   transferWeights,
 } from "@autospine/weights";
 import { buildJobFile } from "@autospine/cli/build";
+import {
+  buildCharacterFiles,
+  compareReferenceFiles,
+  lintPlanFile,
+  optimizeMotionFiles,
+} from "@autospine/cli/character";
+import { lintCharacterPlan } from "@autospine/character";
 import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
 import {
   PlannerProposalSchema,
@@ -81,6 +89,7 @@ const Pose = Type.Object(
   },
   strict,
 );
+const WorkspacePath = Type.String({ minLength: 1, maxLength: 4096 });
 const toolSchemas = {
   autospine_compile_character: Type.Object({ input: CharacterSpineInputSchema }, strict),
   autospine_build_keypose_animation: Type.Object(
@@ -186,6 +195,41 @@ const toolSchemas = {
     },
     strict,
   ),
+  // Character plans (ADR-017). The plan is checked against CharacterPlan-0.1 in the handler so
+  // that a malformed plan gets its schema errors back instead of a bare argument rejection.
+  autospine_lint_character_plan: Type.Object(
+    {
+      plan: Type.Unknown(),
+      partNames: Type.Optional(
+        Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 4096 }),
+      ),
+    },
+    strict,
+  ),
+  autospine_build_character: Type.Object(
+    { planPath: WorkspacePath, outputDir: WorkspacePath, paramsPath: Type.Optional(WorkspacePath) },
+    strict,
+  ),
+  autospine_compare_reference: Type.Object(
+    {
+      planPath: WorkspacePath,
+      buildDir: WorkspacePath,
+      artistPath: WorkspacePath,
+      outputDir: WorkspacePath,
+    },
+    strict,
+  ),
+  autospine_optimize_motion: Type.Object(
+    {
+      planPath: WorkspacePath,
+      artistPath: WorkspacePath,
+      stateDir: WorkspacePath,
+      budgetSeconds: Type.Optional(Type.Integer({ minimum: 5, maximum: 600 })),
+      margin: Type.Optional(Type.Integer({ minimum: 1, maximum: 10 })),
+      seed: Type.Optional(Type.Integer({ minimum: 0, maximum: 2 ** 31 - 1 })),
+    },
+    strict,
+  ),
 };
 const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_compile_character:
@@ -218,15 +262,30 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_review_metrics: "Propose a bounded numeric correction, not a visual AI approval.",
   autospine_apply_correction:
     "Rebuild in memory from a fingerprint-bound correction and remeasure.",
+  autospine_lint_character_plan:
+    "Check a character plan (CharacterPlan-0.1, ADR-017) in memory: schema errors, then joints, bones, meshes, constraints, motion controls, parameter references and expressions; with partNames also every named part and that each image has a mesh or region bone. Run after every plan edit.",
+  autospine_build_character:
+    "Build a workspace-local character plan (images-only layout + images) into a NEW workspace-local directory: Spine 4.0 JSON, IR, keypose specs, build record and copied images. The plan is linted first; no artist approval.",
+  autospine_compare_reference:
+    "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
+  autospine_optimize_motion:
+    "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
 };
+/** Tools that write into the workspace (new directories, or the optimizer's own state directory). */
+const writingTools = new Set<string>([
+  "autospine_build",
+  "autospine_build_character",
+  "autospine_compare_reference",
+  "autospine_optimize_motion",
+]);
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
   description: descriptions[name as keyof typeof toolSchemas],
   inputSchema,
   annotations: {
-    readOnlyHint: name !== "autospine_build",
+    readOnlyHint: !writingTools.has(name),
     destructiveHint: false,
-    idempotentHint: name !== "autospine_build",
+    idempotentHint: !writingTools.has(name),
     openWorldHint: false,
   },
 }));
@@ -272,6 +331,71 @@ export async function guardJob(rootPath: string, jobPath: string): Promise<strin
     }
   }
   return file;
+}
+/** An existing regular file inside the workspace (no symlink), at most `maxBytes`. */
+export async function guardFile(root: string, path: string, maxBytes: number): Promise<string> {
+  const file = resolve(root, path);
+  policy(contains(root, file));
+  policy(contains(root, await realpath(file)));
+  const entry = await lstat(file);
+  policy(entry.isFile() && !entry.isSymbolicLink() && entry.size <= maxBytes);
+  return file;
+}
+/** An existing directory inside the workspace. */
+async function guardDirectory(root: string, path: string): Promise<string> {
+  const dir = resolve(root, path);
+  policy(contains(root, dir));
+  policy(contains(root, await realpath(dir)));
+  policy((await lstat(dir)).isDirectory());
+  return dir;
+}
+/** An output directory inside the workspace whose nearest existing ancestor is inside too. */
+export async function guardOutput(root: string, path: string, mustBeNew: boolean): Promise<string> {
+  const output = resolve(root, path);
+  policy(contains(root, output) && output !== root);
+  let parent = output;
+  for (;;) {
+    try {
+      policy(contains(root, await realpath(parent)));
+      if (parent === output) {
+        if (mustBeNew) throw new Error("MCP_OUTPUT_EXISTS: choose a new output directory");
+        policy((await lstat(output)).isDirectory());
+      }
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      const next = dirname(parent);
+      policy(next !== parent && contains(root, next));
+      parent = next;
+    }
+  }
+  return output;
+}
+/** A plan file plus the images-only layout and image folder it names, all inside the workspace. */
+export async function guardPlan(
+  rootPath: string,
+  planPath: string,
+): Promise<{ root: string; plan: string }> {
+  const root = await realpath(resolve(rootPath));
+  const plan = await guardFile(root, planPath, 4 * 1024 * 1024);
+  const parsed: unknown = JSON.parse(await readFile(plan, "utf8"));
+  if (!Value.Check(CharacterPlanSchema, parsed))
+    throw new Error("MCP_PLAN_SCHEMA: not a CharacterPlan-0.1; run autospine_lint_character_plan");
+  await guardFile(root, resolve(dirname(plan), parsed.source.imagesOnly), 64 * 1024 * 1024);
+  await guardDirectory(root, resolve(dirname(plan), parsed.source.images));
+  return { root, plan };
+}
+/** Character CLI failures that are safe and useful to report (no absolute paths). */
+function characterFailure(error: unknown): never {
+  const message = (error as Error).message ?? "";
+  const code = message.match(/^CLI_([A-Z_]+):/)?.[1];
+  if (code === "OUTPUT_EXISTS") throw new Error("MCP_OUTPUT_EXISTS: choose a new output directory");
+  if (code === "PNG_SIZE" || code === "PNG")
+    throw new Error("MCP_PLAN_IMAGES: an image is missing, unreadable or not the layout's size");
+  if (code === "PLAN_QA" || code === "PLAN_SEARCH")
+    throw new Error(`MCP_${code}: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
+  // Engine failures carry a validation report (stage, code, reason) that safeFailure passes on.
+  throw error;
 }
 const result = (value: unknown, isError = false) => ({
   content: [{ type: "text", text: JSON.stringify(value) }],
@@ -420,6 +544,9 @@ export class AutoSpineMcpServer {
               featureMesh: "silhouette-hull-and-hole-rings",
               overlapQA: "seam-drift-and-inversions",
               performanceCritic: "probe-metrics-vs-artist-statistics-n1",
+              characterPlan: "plan-file-driven-images-only-rebuild-CharacterPlan-0.1",
+              referenceCompare: "official-spine-core-4.0.31-runtime-pre-registered-criteria",
+              motionOptimizer: "resumable-cyclic-coordinate-pattern-search",
             },
           });
         }
@@ -457,6 +584,66 @@ export class AutoSpineMcpServer {
             correction: criticMetrics(args.evidence, args.amplitudeDegrees),
             scope: "numeric-baseline-not-visual-AI",
           });
+        }
+        case "autospine_lint_character_plan": {
+          if (!Value.Check(toolSchemas.autospine_lint_character_plan, args)) break;
+          if (!Value.Check(CharacterPlanSchema, args.plan))
+            return result(
+              {
+                valid: false,
+                schemaErrors: [...Value.Errors(CharacterPlanSchema, args.plan)]
+                  .slice(0, 20)
+                  .map((e) => `${e.path || "/"}: ${e.message}`),
+              },
+              true,
+            );
+          const lint = lintCharacterPlan(args.plan, args.partNames);
+          return result({ valid: !lint.errors.length, ...lint }, lint.errors.length > 0);
+        }
+        case "autospine_build_character": {
+          if (!Value.Check(toolSchemas.autospine_build_character, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const params = args.paramsPath
+            ? await guardFile(root, args.paramsPath, 1024 * 1024)
+            : undefined;
+          const output = await guardOutput(root, args.outputDir, true);
+          const lint = await lintPlanFile(plan).catch(characterFailure);
+          if (lint.errors.length) return result({ valid: false, ...lint }, true);
+          const built = await buildCharacterFiles(plan, output, params).catch(characterFailure);
+          return result({
+            ...built,
+            output: relative(root, built.output),
+            warnings: lint.warnings,
+            artistQualityAccepted: false,
+          });
+        }
+        case "autospine_compare_reference": {
+          if (!Value.Check(toolSchemas.autospine_compare_reference, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const build = await guardDirectory(root, args.buildDir);
+          const artist = await guardFile(root, args.artistPath, 256 * 1024 * 1024);
+          const output = await guardOutput(root, args.outputDir, true);
+          const check = await compareReferenceFiles(plan, build, artist, output).catch(
+            characterFailure,
+          );
+          return result({
+            ...check,
+            output: relative(root, output),
+            scope: "pre-registered-numeric-acceptance-not-artist-approval",
+            artistQualityAccepted: false,
+          });
+        }
+        case "autospine_optimize_motion": {
+          if (!Value.Check(toolSchemas.autospine_optimize_motion, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const artist = await guardFile(root, args.artistPath, 256 * 1024 * 1024);
+          const state = await guardOutput(root, args.stateDir, false);
+          const run = await optimizeMotionFiles(plan, artist, state, {
+            budgetSeconds: args.budgetSeconds ?? 120,
+            ...(args.margin === undefined ? {} : { margin: args.margin }),
+            ...(args.seed === undefined ? {} : { seed: args.seed }),
+          }).catch(characterFailure);
+          return result({ ...run, stateDir: relative(root, state), artistQualityAccepted: false });
         }
         case "autospine_apply_correction": {
           if (!Value.Check(toolSchemas.autospine_apply_correction, args)) break;
@@ -532,7 +719,7 @@ export class AutoSpineMcpServer {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "autospine", version: "0.0.0" },
         instructions:
-          "Legacy MCP v1; chain-wave file build, explicit character IR compilation and in-memory engine tools (pose-table animation, feature meshes, dome/transfer/chain/gradient weights, overlap QA). No live visual AI or artist approval. Build requires host authorization and new workspace-local output.",
+          "Legacy MCP v1; chain-wave file build, explicit character IR compilation, in-memory engine tools (pose-table animation, feature meshes, dome/transfer/chain/gradient weights, overlap QA) and character plans (lint, build, compare with an artist baseline, motion optimisation). No live visual AI or artist approval. File tools require host authorization and workspace-local paths; builds and comparisons write new directories only.",
       });
     }
     if (req.method === "ping") return response({});

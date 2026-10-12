@@ -1,0 +1,288 @@
+import type { CharacterPlan, JointRef, JointRule } from "@autospine/schemas";
+import { num } from "./joints.js";
+
+export interface PlanLint {
+  /** Problems that make the build fail or silently wrong. */
+  errors: string[];
+  /** Legal but suspicious (unused parameters, start values outside the search range). */
+  warnings: string[];
+  /** Every bone the plan creates, in order (chain bones expanded). */
+  bones: string[];
+  params: { referenced: string[]; unused: string[] };
+}
+
+const isParamString = (v: unknown): v is string =>
+  typeof v === "string" && (v.startsWith("$") || v.startsWith("-$") || v.startsWith("="));
+
+/**
+ * Cross-reference check of a schema-valid plan, before any pixels are read: joints, bones,
+ * parents, meshes, constraints, motion controls, parameter references and expressions. With
+ * `partNames` (slot names and `slot#attachment` keys of the images-only layout) it also checks
+ * every part the plan names. Cheap enough to run after every edit of a plan.
+ */
+export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<string>): PlanLint {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+  const parts = partNames ? new Set(partNames) : undefined;
+  const part = (name: string, where: string) => {
+    if (parts && !parts.has(name))
+      errors.push(`${where}: no part ${name} in the images-only layout`);
+  };
+
+  // Joints: references, inline rules, cycles.
+  const jointIds = new Set(Object.keys(plan.joints));
+  const deps = new Map<string, Set<string>>();
+  const visitRef = (ref: JointRef, where: string, into?: Set<string>) => {
+    if (typeof ref === "string") {
+      if (!jointIds.has(ref)) errors.push(`${where}: unknown joint ${ref}`);
+      into?.add(ref);
+    } else visitRule(ref, where, into);
+  };
+  const visitRule = (rule: JointRule, where: string, into?: Set<string>) => {
+    switch (rule.rule) {
+      case "centroid":
+      case "center":
+      case "end":
+        part(rule.part, where);
+        break;
+      case "overlap":
+        rule.parts.forEach((p) => part(p, where));
+        break;
+      case "axisEnd":
+        part(rule.part, where);
+        if ((rule.pick === "near" || rule.pick === "far") && rule.ref === undefined)
+          errors.push(`${where}: pick ${rule.pick} needs a ref`);
+        if (rule.ref !== undefined) visitRef(rule.ref, where, into);
+        break;
+      case "lerp":
+        visitRef(rule.a, where, into);
+        visitRef(rule.b, where, into);
+        break;
+      case "project":
+        visitRef(rule.point, where, into);
+        visitRef(rule.a, where, into);
+        visitRef(rule.b, where, into);
+        break;
+      case "narrowest":
+        part(rule.part, where);
+        visitRef(rule.a, where, into);
+        visitRef(rule.b, where, into);
+        if (rule.range[0] >= rule.range[1]) errors.push(`${where}: narrowest range must increase`);
+        break;
+      case "domeCenter":
+        if (!plan.face) errors.push(`${where}: domeCenter needs a face block`);
+        break;
+      case "point":
+        break;
+    }
+  };
+  for (const [id, rule] of Object.entries(plan.joints)) {
+    const d = new Set<string>();
+    visitRule(rule, `joints.${id}`, d);
+    deps.set(id, d);
+  }
+  const state = new Map<string, 1 | 2>();
+  const cycle = (id: string, path: string[]): boolean => {
+    if (state.get(id) === 2) return false;
+    if (state.get(id) === 1) {
+      errors.push(`joints: cycle ${[...path.slice(path.indexOf(id)), id].join(" -> ")}`);
+      return true;
+    }
+    state.set(id, 1);
+    for (const d of deps.get(id) ?? []) if (deps.has(d) && cycle(d, [...path, id])) return true;
+    state.set(id, 2);
+    return false;
+  };
+  for (const id of deps.keys()) if (cycle(id, [])) break;
+
+  // Bones in plan order; parents must come first.
+  const bones: string[] = [];
+  const boneSet = new Set<string>();
+  const chains = new Map<string, string[]>();
+  const addBone = (id: string, parent: string | undefined, where: string) => {
+    if (boneSet.has(id)) errors.push(`${where}: bone ${id} is planned twice`);
+    if (parent !== undefined && !boneSet.has(parent))
+      errors.push(`${where}: parent ${parent} must be planned before ${id}`);
+    bones.push(id);
+    boneSet.add(id);
+  };
+  plan.bones.forEach((entry, i) => {
+    if ("chain" in entry) {
+      const c = entry.chain,
+        where = `bones[${i}] chain ${c.part}`;
+      part(c.part, where);
+      if (chains.has(c.part)) errors.push(`${where}: part has two chains`);
+      const prefix = c.prefix ?? c.part.replace(/[^A-Za-z0-9_]/g, "_");
+      const ids = Array.from({ length: c.bones }, (_, k) => `${prefix}_${k + 1}`);
+      ids.forEach((id, k) => addBone(id, k ? ids[k - 1] : c.parent, where));
+      chains.set(c.part, ids);
+      return;
+    }
+    const where = `bones[${i}] ${entry.id}`;
+    addBone(entry.id, entry.parent, where);
+    visitRef(entry.at, where);
+    if (entry.to !== undefined) visitRef(entry.to, where);
+    if (entry.to !== undefined && entry.angle !== undefined)
+      warnings.push(`${where}: angle is ignored when to is given`);
+  });
+  const bone = (id: string, where: string) => {
+    if (!boneSet.has(id)) errors.push(`${where}: unknown bone ${id}`);
+  };
+
+  if (plan.face) {
+    const f = plan.face;
+    part(f.head, "face.head");
+    visitRef(f.anchor, "face.anchor");
+    for (const b of [f.base, f.control, ...(f.counter ? [f.counter] : []), ...f.followers])
+      bone(b, "face");
+  }
+
+  // Meshes: a transfer may only read meshes planned before it.
+  const meshed = new Set<string>();
+  (plan.meshes ?? []).forEach((m, i) => {
+    const where = `meshes[${i}] ${m.part}`;
+    part(m.part, where);
+    if (meshed.has(m.part)) errors.push(`${where}: part is meshed twice`);
+    const w = m.weights;
+    switch (w.type) {
+      case "chain":
+        if (!w.bones === !w.chain)
+          errors.push(`${where}: chain weights need exactly one of bones or chain`);
+        w.bones?.forEach((b) => bone(b, where));
+        if (w.chain && !chains.has(w.chain))
+          errors.push(`${where}: no bone chain on part ${w.chain}`);
+        break;
+      case "gradient":
+        bone(w.from, where);
+        bone(w.to, where);
+        break;
+      case "dome":
+        if (!plan.face) errors.push(`${where}: dome weights need a face block`);
+        break;
+      case "transfer":
+        for (const s of w.sources)
+          if (!meshed.has(s)) errors.push(`${where}: transfer source ${s} must be meshed earlier`);
+        for (const p of w.proxies ?? []) {
+          part(p.part, where);
+          bone(p.bone, where);
+        }
+        break;
+      case "rigid":
+        bone(w.bone, where);
+        break;
+    }
+    meshed.add(m.part);
+  });
+  for (const [p, b] of Object.entries(plan.regions ?? {})) {
+    part(p, `regions.${p}`);
+    bone(b, `regions.${p}`);
+  }
+  // Every placed image needs a mesh (by key or slot) or a region bone (by slot).
+  if (parts)
+    for (const key of parts) {
+      const slot = key.split("#")[0]!;
+      if (!meshed.has(key) && !meshed.has(slot) && !plan.regions?.[slot])
+        errors.push(`layout: ${key} has no mesh and no region bone; add it to meshes or regions`);
+    }
+  for (const ik of plan.constraints?.ik ?? []) {
+    ik.bones.forEach((b) => bone(b, `ik ${ik.name}`));
+    bone(ik.target, `ik ${ik.name}`);
+  }
+  for (const t of plan.constraints?.transform ?? []) {
+    t.bones.forEach((b) => bone(b, `transform ${t.name}`));
+    bone(t.target, `transform ${t.name}`);
+  }
+
+  // Motion: controls, animations, parameters.
+  const m = plan.motion;
+  const anims = new Set(m.animations.map((a) => a.name));
+  for (const a of m.animations)
+    if (a.frames % m.cycle !== 0)
+      warnings.push(
+        `motion.animations ${a.name}: ${a.frames} frames is not a whole number of ${m.cycle}-frame cycles`,
+      );
+  const controlIds = new Set<string>();
+  const control = (c: { id: string; bone: string }, where: string) => {
+    bone(c.bone, where);
+    if (controlIds.has(c.id)) errors.push(`${where}: control id ${c.id} is used twice`);
+    controlIds.add(c.id);
+  };
+  control(m.main, "motion.main");
+  m.beats?.forEach((c, i) => control(c, `motion.beats[${i}]`));
+  m.sink?.forEach((s, i) => {
+    const where = `motion.sink[${i}]`;
+    if (s.kind === "legs")
+      for (const l of s.legs) {
+        [l.thigh, l.calf, l.foot].forEach((b) => bone(b, where));
+        for (const id of [`th${l.side}`, `ft${l.side}`]) {
+          if (controlIds.has(id)) errors.push(`${where}: control id ${id} is used twice`);
+          controlIds.add(id);
+        }
+      }
+    else control(s, where);
+  });
+  m.follow?.forEach((c, i) => control(c, `motion.follow[${i}]`));
+  m.waves?.forEach((w, i) => {
+    const ids = chains.get(w.chain);
+    if (!ids) errors.push(`motion.waves[${i}]: no bone chain on part ${w.chain}`);
+    // Each chain bone gets its own rotate control, named after the bone.
+    for (const b of ids ?? []) control({ id: `${b}_r`, bone: b }, `motion.waves[${i}]`);
+  });
+  m.cycles?.forEach((c, i) => {
+    control(c, `motion.cycles[${i}]`);
+    const set = [c.peak, c.phase, c.phaseFraction].filter((x) => x !== undefined).length;
+    if (set > 1) errors.push(`motion.cycles[${i}]: give at most one of peak, phase, phaseFraction`);
+  });
+  m.keyed?.forEach((c, i) => {
+    control(c, `motion.keyed[${i}]`);
+    for (const a of Object.keys(c.keys))
+      if (!anims.has(a)) errors.push(`motion.keyed[${i}]: unknown animation ${a}`);
+  });
+  const referenced = new Set<string>();
+  const walk = (v: unknown, path: string) => {
+    if (isParamString(v)) {
+      for (const name of v.match(/\$[A-Za-z_][A-Za-z0-9_]*/g) ?? []) referenced.add(name.slice(1));
+      try {
+        num(v, m.params, path);
+      } catch (e) {
+        errors.push((e as Error).message.replace(/^[A-Z_]+: /, ""));
+      }
+    } else if (Array.isArray(v)) v.forEach((x, i) => walk(x, `${path}[${i}]`));
+    else if (v && typeof v === "object")
+      for (const [k, x] of Object.entries(v))
+        if (path !== "motion" || (k !== "params" && k !== "search")) walk(x, `${path}.${k}`);
+  };
+  walk(m, "motion");
+  for (const [k, r] of Object.entries(m.search ?? {})) {
+    const v = m.params[k];
+    if (v === undefined) errors.push(`motion.search.${k}: not a parameter`);
+    else if (!r.cyclic && (v < r.min || v > r.max))
+      warnings.push(`motion.search.${k}: start ${v} outside [${r.min}, ${r.max}]`);
+    if (r.min > r.max) errors.push(`motion.search.${k}: min > max`);
+    if (!referenced.has(k)) warnings.push(`motion.search.${k}: searched but never referenced`);
+  }
+  const unused = Object.keys(m.params).filter((k) => !referenced.has(k));
+  for (const k of unused) warnings.push(`motion.params.${k}: never referenced`);
+
+  // QA.
+  const qa = plan.qa;
+  for (const [a, b] of qa?.seams ?? []) {
+    for (const p of [a, b]) if (!meshed.has(p)) errors.push(`qa.seams: ${p} is not meshed`);
+  }
+  for (const a of Object.keys(qa?.at ?? {}))
+    if (!anims.has(a)) errors.push(`qa.at: unknown animation ${a}`);
+  const pr = qa?.probes;
+  if (pr) {
+    for (const k of ["face", "eyes", "pupils"] as const) if (pr[k]) part(pr[k], `qa.probes.${k}`);
+    pr.chain?.forEach(([, p]) => part(p, "qa.probes.chain"));
+    if (pr.hand) part(pr.hand[1], "qa.probes.hand");
+  }
+  for (const re of qa?.deformExclude ?? []) {
+    try {
+      new RegExp(re);
+    } catch {
+      errors.push(`qa.deformExclude: invalid regular expression ${re}`);
+    }
+  }
+  return { errors, warnings, bones, params: { referenced: [...referenced].sort(), unused } };
+}

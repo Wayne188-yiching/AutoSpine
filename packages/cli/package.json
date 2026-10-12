@@ -10,6 +10,10 @@
     "./build": {
       "types": "./dist/build.d.ts",
       "import": "./dist/build.js"
+    },
+    "./character": {
+      "types": "./dist/character.d.ts",
+      "import": "./dist/character.js"
     }
   },
   "scripts": {
@@ -18,11 +22,14 @@
   },
   "dependencies": {
     "@autospine/assets": "0.0.0",
+    "@autospine/character": "0.0.0",
     "@autospine/mesh": "0.0.0",
-    "@autospine/rig": "0.0.0",
-    "@autospine/spine": "0.0.0",
     "@autospine/pipeline": "0.0.0",
+    "@autospine/reference": "0.0.0",
+    "@autospine/rig": "0.0.0",
     "@autospine/schemas": "0.0.0",
-    "@sinclair/typebox": "^0.34.52"
+    "@autospine/spine": "0.0.0",
+    "@sinclair/typebox": "^0.34.52",
+    "pngjs": "^7.0.0"
   }
 }

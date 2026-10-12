@@ -3,6 +3,13 @@ import { readFile, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, resolve } from "node:path";
 import { buildJobFile } from "./build.js";
 import {
+  buildCharacterFiles,
+  compareReferenceFiles,
+  lintPlanFile,
+  optimizeMotionFiles,
+  stripImages,
+} from "./character.js";
+import {
   AssetParseError,
   decodeAlphaMask,
   parsePngParts,
@@ -67,12 +74,95 @@ async function writeMesh(
     );
 }
 
+const characterUsage = `Character commands (ADR-017):
+  autospine strip-images <artist.json> <images-dir> <images-only.json>
+  autospine lint-plan <plan.json>
+  autospine build-character <plan.json> <new-output-dir> [--params=params.json]
+  autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
+  autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]`;
+async function characterCommand(args: string[]): Promise<boolean> {
+  const flags = new Map(
+    args
+      .filter((a) => a.startsWith("--"))
+      .map((a) => [a.slice(2).split("=")[0]!, a.split("=").slice(1).join("=")]),
+  );
+  const p = args.filter((a) => !a.startsWith("--"));
+  const numberFlag = (k: string) => {
+    if (!flags.has(k)) return undefined;
+    const v = Number(flags.get(k));
+    if (!Number.isFinite(v)) throw new Error(`--${k} needs a number\n${characterUsage}`);
+    return v;
+  };
+  const known = (...k: string[]) => {
+    for (const f of flags.keys())
+      if (!k.includes(f)) throw new Error(`Unknown flag --${f}\n${characterUsage}`);
+  };
+  switch (p[0]) {
+    case "strip-images":
+      if (p.length !== 4) throw new Error(characterUsage);
+      known();
+      console.log(JSON.stringify(await stripImages(p[1]!, p[2]!, p[3]!)));
+      return true;
+    case "lint-plan": {
+      if (p.length !== 2) throw new Error(characterUsage);
+      known();
+      const lint = await lintPlanFile(p[1]!);
+      console.log(JSON.stringify(lint, null, 1));
+      if (lint.errors.length) process.exitCode = 2;
+      return true;
+    }
+    case "build-character":
+      if (p.length !== 3) throw new Error(characterUsage);
+      known("params");
+      console.log(
+        JSON.stringify(await buildCharacterFiles(p[1]!, p[2]!, flags.get("params") || undefined)),
+      );
+      return true;
+    case "compare-reference": {
+      if (p.length !== 5) throw new Error(characterUsage);
+      known();
+      const check = await compareReferenceFiles(p[1]!, p[2]!, p[3]!, p[4]!);
+      for (const r of check.rows)
+        console.log(`${r.ok ? "PASS" : "FAIL"} ${r.id}  ${JSON.stringify(r.value)}`);
+      console.log(check.pass ? "ALL AUTOMATABLE CRITERIA PASS" : "NOT PASSED");
+      if (!check.pass) process.exitCode = 2;
+      return true;
+    }
+    case "optimize-motion": {
+      if (p.length !== 4) throw new Error(characterUsage);
+      known("budget", "margin", "seed", "trajectory-weight", "deform-weight", "band-shrink");
+      const opts = {
+        budgetSeconds: numberFlag("budget"),
+        margin: numberFlag("margin"),
+        seed: numberFlag("seed"),
+        trajectoryWeight: numberFlag("trajectory-weight"),
+        deformWeight: numberFlag("deform-weight"),
+        bandShrink: numberFlag("band-shrink"),
+      };
+      const result = await optimizeMotionFiles(
+        p[1]!,
+        p[2]!,
+        p[3]!,
+        Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined)),
+      );
+      console.log(JSON.stringify(result));
+      // 0 passed, 3 paused (rerun to continue), 4 converged without passing.
+      if (result.status === "paused") process.exitCode = 3;
+      if (result.status === "stopped") process.exitCode = 4;
+      return true;
+    }
+    default:
+      return false;
+  }
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   if (args[0] === "build" && args.length === 2) {
     console.log(await buildJobFile(args[1]!));
     return;
   }
+  if (await characterCommand(args)) return;
   const intentFlags = args.filter((arg) => arg.startsWith("--intent="));
   const profileFlags = args.filter((arg) => arg.startsWith("--reference-profile="));
   const positional = args.filter(
@@ -173,7 +263,7 @@ async function main(): Promise<void> {
     await writeMesh(part, destination, extra, meshOptions);
     return;
   }
-  throw new Error(usage);
+  throw new Error(`${usage}\n${characterUsage}`);
 }
 
 main().catch((error: unknown) => {

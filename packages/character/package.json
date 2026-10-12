@@ -1,0 +1,23 @@
+{
+  "name": "@autospine/character",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@autospine/assets": "0.0.0",
+    "@autospine/mesh": "0.0.0",
+    "@autospine/motion": "0.0.0",
+    "@autospine/rig": "0.0.0",
+    "@autospine/schemas": "0.0.0",
+    "@autospine/spine": "0.0.0",
+    "@autospine/weights": "0.0.0"
+  }
+}
