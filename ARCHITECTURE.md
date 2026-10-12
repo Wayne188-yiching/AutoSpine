@@ -50,8 +50,13 @@ assets + mesh + rig + weights + motion <- pipeline
 schemas + mesh + rig + weights <- spine adapter
 pipeline + spine adapter <- CLI
 pipeline + schemas <- planning (Planner / numeric Critic)
-CLI + planning + assets + mesh + motion + weights <- MCP <- Skill / host operator
+assets + mesh + rig + weights + motion + spine adapter <- character (plan orchestration, ADR-017)
+character + planning + official spine-core 4.0.31 <- reference (artist-baseline acceptance)
+character + reference <- CLI character commands
+CLI + character + planning + assets + mesh + motion + weights <- MCP <- Skill / host operator
 ```
+
+2026-10-12 (ADR-017): a character is an images-only layout plus a `CharacterPlan` file. `@autospine/character` is pure orchestration over the engines, with no filesystem or runtime. `@autospine/reference` owns the pinned official runtime, the artist-baseline comparison, the pre-registered acceptance check and the motion-parameter search. See the [plan reference and runbook](docs/CHARACTER_PLAN.md).
 
 `BuildJob`, `PlannerProposal` and `CorrectionSpec` are outer tool contracts, not additional engine IR entries. `buildChainWave` takes a single alpha-masked PNG part and explicit chain endpoints/count, not artist mesh or skeleton answers. Coordinates are x-right/y-down throughout the image pipeline; the weighted adapter flips y/rotation/shear once. Existing Gate 1 inputs retain their bone-local coordinate contract; the minimal adapter rejects nondefault affine/additional channel fields rather than silently dropping them. The weighted adapter maps rotation, translation and scale, including per-key linear/stepped/Bezier curves ([ADR-010](docs/adr/ADR-010-key-interpolation-curves.md)), with official Runtime checks; mesh deform export is explicitly unsupported. Constraints produce neutral baked poses, not full Spine constraint-mode parity. Complete engineering milestones do not certify arbitrary anatomical inference or artist-quality topology.
 
@@ -69,6 +74,8 @@ CLI + planning + assets + mesh + motion + weights <- MCP <- Skill / host operato
 | `packages/constraints` | Bounded analytical IK, local transform copy and polyline path placement      |
 | `packages/pipeline`    | Pure explicit chain-wave build, without filesystem or Spine knowledge        |
 | `packages/planning`    | Strict Planner / Correction contracts and immutable quantified rebuilds      |
+| `packages/character`   | Character plans to engine IR and Spine JSON; plan lint (ADR-017), no I/O     |
+| `packages/reference`   | Official 4.0.31 runtime: strip, compare, acceptance, motion search (ADR-017) |
 | `packages/mcp`         | Scoped local legacy v1 JSON-RPC stdio tools calling existing implementations |
 | `skills/autospine`     | Project operator guidance; not automatically globally installed              |
 | `tests`                | Cross-package contracts and runtime schema checks                            |

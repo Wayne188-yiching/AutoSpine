@@ -11,6 +11,8 @@
     { "path": "./packages/weights" },
     { "path": "./packages/motion" },
     { "path": "./packages/pipeline" },
+    { "path": "./packages/character" },
+    { "path": "./packages/reference" },
     { "path": "./packages/planning" },
     { "path": "./packages/cli" },
     { "path": "./packages/mcp" }
