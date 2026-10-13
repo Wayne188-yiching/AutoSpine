@@ -15,7 +15,9 @@ import {
   planBeats,
   planLagChain,
   planLagChainFromPlan,
+  reviewMotionBrief,
   sampleAnimation,
+  suggestLoopCycles,
   type BeatPlan,
 } from "@autospine/motion";
 import {
@@ -218,6 +220,52 @@ describe("beat planner structure", () => {
       code(() => planBeats(brief({ phases: [{ kind: "hold", minFrames: 10, maxFrames: 4 }] }))),
     ).toBe("BEAT_PHASE");
     expect(code(() => beatsFromBrief(brief(), {}))).toBe("BEAT_POSES");
+  });
+});
+
+describe("cycles and the measured loop length", () => {
+  const breath = (patch: Partial<MotionBrief> = {}) =>
+    brief({ frames: 120, loop: true, phases: [{ kind: "travel" }, { kind: "return" }], ...patch });
+  it("repeats the phase list inside the budget and keeps the authored ids on cycle one", () => {
+    const plan = planBeats(breath({ cycles: 2 }));
+    expect(framesOf(plan)).toEqual([0, 30, 60, 90]);
+    expect(plan.phases.map((p) => [p.id, p.baseId, p.cycle])).toEqual([
+      ["travel-0", "travel-0", 1],
+      ["return-1", "return-1", 1],
+      ["travel-0@2", "travel-0", 2],
+      ["return-1@2", "return-1", 2],
+    ]);
+    // A pose map keyed by the authored ids fills every cycle.
+    const beats = beatsFromPlan(plan, { "travel-0": { body: 0 }, "return-1": { body: 1 } });
+    expect(beats.map((b) => b.poses.body)).toEqual([0, 1, 0, 1]);
+    expect(framesOf(planBeats(breath()))).toEqual([0, 60]);
+  });
+  it("repeats one-shot actions too, ending on the closing beat", () => {
+    const shake = planBeats(
+      brief({ frames: 18, phases: [{ kind: "travel" }, { kind: "return" }], cycles: 3 }),
+    );
+    expect(shake.beats).toHaveLength(7);
+    expect(shake.beats.at(-1)!.id).toBe("end");
+    expect(code(() => planBeats(breath({ cycles: 0 })))).toBe("BEAT_BRIEF");
+  });
+  it("suggests cycles from the measured 2 s idle cycle", () => {
+    expect([0.5, 1, 2.4, 4, 6].map(suggestLoopCycles)).toEqual([1, 1, 1, 2, 3]);
+    expect(code(() => suggestLoopCycles(0))).toBe("BEAT_DURATION");
+  });
+  it("warns when a loop cycle falls outside the measured 1.0-2.4 s range", () => {
+    const long = reviewMotionBrief(breath());
+    expect(long.warnings.map((w) => [w.code, w.suggestedCycles])).toEqual([
+      ["BRIEF_LOOP_PERIOD", 2],
+    ]);
+    expect(reviewMotionBrief(breath({ cycles: 2 })).warnings).toEqual([]);
+    expect(reviewMotionBrief(breath({ frames: 72 })).warnings).toEqual([]);
+    expect(reviewMotionBrief(breath({ frames: 30 })).warnings).toEqual([]);
+    expect(reviewMotionBrief(breath({ frames: 30, cycles: 3 })).warnings[0]!.suggestedCycles).toBe(
+      1,
+    );
+    // A still loop and a one-shot are not checked.
+    expect(reviewMotionBrief(breath({ phases: [{ kind: "hold" }] })).warnings).toEqual([]);
+    expect(reviewMotionBrief(brief({ frames: 300 })).warnings).toEqual([]);
   });
 });
 

@@ -61,6 +61,16 @@ import { failStage } from "@autospine/rig";
  * - `holdBias` moves time between the read phases and `settle`, i.e. between showing the pose and
  *   showing the physics of arriving at it.
  *
+ * ## Cycles
+ *
+ * `MotionBrief.cycles` repeats the phase list inside the budget. Repeated phases keep their
+ * shares, so N cycles split the length evenly. The first cycle keeps the authored phase ids and
+ * later ones get `@2`, `@3`, ...; every planned phase and beat also carries its `baseId`, so a pose
+ * map keyed by the authored ids fills all cycles.
+ *
+ * How many cycles a loop should have is a measured default, not a derived one:
+ * `LOOP_CYCLE_SECONDS` (see "Constants") and `reviewMotionBrief`.
+ *
  * ## Loops
  *
  * A loop's `travel` and `return` arrive with the symmetric `sine` ease: in a cycle every arrival is
@@ -85,6 +95,11 @@ import { failStage } from "@autospine/rig";
  * pig median 1 (n 59) and mummy cat median 3.3 (n 20; tails about 4, ears 0-2). Lag comes from the
  * inertia of the part itself, so it does not grow with the length of the action; 2 frames at
  * 30 fps sits between the two medians.
+ *
+ * The idle cycle length is measured too. In four blind tests (2026-10-13) hand-made idle loops
+ * turned around once per 1.0-2.4 s cycle: pig 2.4 s, panda 1.0 and 1.17 s, Yuuna 2.0 s in all four
+ * of its loops (two breaths in 4 s), mummy cat body 1.0 s. A brief that assumed one cycle per 4 s
+ * loop missed the artist turnarounds; `LOOP_CYCLE_SECONDS` = 2 s is the median.
  */
 const fail: (code: string, reason: string) => never = (code, reason) =>
   failStage("animation", code, reason);
@@ -95,6 +110,10 @@ const OCTAVE = 2;
 const READABLE_FRAMES = 2;
 /** Follow lag per hierarchy level; measured, see "Constants" (2 frames at 30 fps). */
 const LAG_SECONDS_PER_LEVEL = 2 / 30;
+/** Median cycle length of hand-made idle loops; measured, see "Constants". */
+export const LOOP_CYCLE_SECONDS = 2;
+/** Range of idle cycle lengths seen in hand-made loops (seconds). */
+export const LOOP_CYCLE_RANGE_SECONDS: readonly [number, number] = [1, 2.4];
 /** Share of one readable unit U per phase kind; see the file header for the derivation. */
 const LADDER: Record<MotionPhaseKind, number> = {
   anticipation: 1 / 2,
@@ -132,6 +151,10 @@ export const END_BEAT_ID = "end";
 
 export interface PlannedPhase {
   id: string;
+  /** Authored phase id (without the `@n` cycle suffix). */
+  baseId: string;
+  /** 1-based cycle this phase belongs to. */
+  cycle: number;
   kind: MotionPhaseKind;
   /** Effective share after the kind ladder, any brief override and the rhythm knobs. */
   weight: number;
@@ -143,6 +166,8 @@ export interface PlannedPhase {
 export interface PlannedBeat {
   /** The phase this beat opens, or `END_BEAT_ID` for the closing boundary of a one-shot. */
   id: string;
+  /** Authored id of the phase this beat opens (absent on the closing beat). */
+  baseId?: string;
   frame: number;
   /** Phase ending at this beat; absent only on the opening beat of a one-shot. */
   endsPhase?: string;
@@ -250,10 +275,15 @@ export function planBeats(brief: MotionBrief): BeatPlan {
     snappiness = brief.rhythm?.snappiness ?? NEUTRAL,
     holdBias = brief.rhythm?.holdBias ?? NEUTRAL;
   const ids = new Set<string>();
-  const phases = brief.phases.map((phase, index) => {
-    const id = phase.id ?? `${phase.kind}-${index}`;
-    if (id === END_BEAT_ID)
+  const cycles = brief.cycles ?? 1;
+  const authored = Array.from({ length: cycles }, (_, cycle) =>
+    brief.phases.map((phase, index) => ({ phase, index, cycle: cycle + 1 })),
+  ).flat();
+  const phases = authored.map(({ phase, index, cycle }) => {
+    const baseId = phase.id ?? `${phase.kind}-${index}`;
+    if (baseId === END_BEAT_ID)
       fail("BEAT_PHASE", `Phase id "${END_BEAT_ID}" is reserved for the closing beat`);
+    const id = cycle === 1 ? baseId : `${baseId}@${cycle}`;
     if (ids.has(id)) fail("BEAT_PHASE", `Duplicate phase id ${id}`);
     ids.add(id);
     // An explicit minFrames may go below the readability floor; one frame stays mandatory so the
@@ -265,6 +295,8 @@ export function planBeats(brief: MotionBrief): BeatPlan {
     const ladder = brief.loop && phase.kind === "return" ? LADDER.travel : LADDER[phase.kind];
     return {
       id,
+      baseId,
+      cycle,
       kind: phase.kind,
       ease: phase.ease,
       weight: (phase.weight ?? ladder) * rhythmFactor(phase.kind, snappiness, holdBias),
@@ -285,6 +317,8 @@ export function planBeats(brief: MotionBrief): BeatPlan {
   );
   const planned: PlannedPhase[] = phases.map((p, i) => ({
     id: p.id,
+    baseId: p.baseId,
+    cycle: p.cycle,
     kind: p.kind,
     weight: p.weight,
     startFrame: bounds[i]!,
@@ -310,6 +344,7 @@ export function planBeats(brief: MotionBrief): BeatPlan {
       starts = i < count ? i : -1;
     beats.push({
       id: starts >= 0 ? phases[starts]!.id : END_BEAT_ID,
+      ...(starts >= 0 ? { baseId: phases[starts]!.baseId } : {}),
       frame: bounds[i]!,
       ...(ends >= 0 ? { endsPhase: phases[ends]!.id, ease: easeOf(ends) } : {}),
       ...(starts >= 0 ? { startsPhase: phases[starts]!.id } : {}),
@@ -348,7 +383,10 @@ export function beatsFromPlan(plan: BeatPlan, poses: PoseSource): KeyposeBeat[] 
   if (typeof poses !== "function" && (poses === null || typeof poses !== "object"))
     fail("BEAT_POSES", "A pose map or pose function is required");
   return plan.beats.map((beat, index) => {
-    const value = typeof poses === "function" ? poses(beat, index) : poses[beat.id];
+    const value =
+      typeof poses === "function"
+        ? poses(beat, index)
+        : (poses[beat.id] ?? (beat.baseId !== undefined ? poses[beat.baseId] : undefined));
     if (value === undefined || typeof value !== "object")
       fail("BEAT_POSES", `No poses supplied for beat ${beat.id}`);
     return {
@@ -357,6 +395,44 @@ export function beatsFromPlan(plan: BeatPlan, poses: PoseSource): KeyposeBeat[] 
       poses: value,
     };
   });
+}
+/** Measured default cycle count for a loop of this length (at least one). */
+export function suggestLoopCycles(seconds: number): number {
+  if (!Number.isFinite(seconds) || seconds <= 0)
+    fail("BEAT_DURATION", "A positive finite length in seconds is required");
+  return Math.max(1, Math.round(seconds / LOOP_CYCLE_SECONDS));
+}
+export interface BriefWarning {
+  code: "BRIEF_LOOP_PERIOD";
+  message: string;
+  /** Value for `MotionBrief.cycles` that lands the cycle length near the measured median. */
+  suggestedCycles: number;
+}
+/**
+ * Structural checks a brief writer cannot see in the planner output. Today: a loop whose cycle
+ * length falls outside the measured range of hand-made idles (`LOOP_CYCLE_RANGE_SECONDS`). One
+ * cycle is one `travel` phase per repetition; a loop without travel (a still `hold`) is not checked.
+ * Warnings are advice from five hand-made characters, not a rule of the format.
+ */
+export function reviewMotionBrief(brief: MotionBrief): { warnings: BriefWarning[] } {
+  const plan = planBeats(brief),
+    warnings: BriefWarning[] = [];
+  const travels = brief.phases.filter((p) => p.kind === "travel").length;
+  if (brief.loop && travels > 0) {
+    const seconds = plan.frames / plan.fps,
+      cycles = brief.cycles ?? 1,
+      period = seconds / (cycles * travels);
+    const [low, high] = LOOP_CYCLE_RANGE_SECONDS;
+    if (period < low - 1e-9 || period > high + 1e-9) {
+      const suggestedCycles = Math.max(1, Math.round(suggestLoopCycles(seconds) / travels));
+      warnings.push({
+        code: "BRIEF_LOOP_PERIOD",
+        message: `Each cycle lasts ${period.toFixed(2)} s; hand-made idle cycles measured ${low}-${high} s. Try cycles: ${suggestedCycles}.`,
+        suggestedCycles,
+      });
+    }
+  }
+  return { warnings };
 }
 /** Convenience: plan and fill in one call. */
 export function beatsFromBrief(brief: MotionBrief, poses: PoseSource): KeyposeBeat[] {
