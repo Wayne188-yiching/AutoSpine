@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { PNG } from "pngjs";
@@ -163,7 +163,9 @@ export async function stripImages(artistPath: string, imagesDir: string, outPath
   if (await exists(outPath)) throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists`);
   const artist = JSON.parse(await readFile(artistPath, "utf8")) as unknown;
   const result = stripToImagesOnly(artist, (path) => {
-    const b = readFileSync(resolve(imagesDir, path + ".png"));
+    const file = resolve(imagesDir, path + ".png");
+    if (!existsSync(file)) return undefined;
+    const b = readFileSync(file);
     if (b.readUInt32BE(12) !== 0x49484452) throw new Error(`CLI_PNG: ${path}.png is not a PNG`);
     return [b.readUInt32BE(16), b.readUInt32BE(20)];
   });

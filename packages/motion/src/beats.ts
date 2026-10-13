@@ -31,7 +31,9 @@ import { failStage } from "@autospine/rig";
  * - `settle` = 1/2 U: the mirror of anticipation - the overshoot that absorbs the travel is the
  *   same kind of event as the counter-move that launched it, so it is priced the same.
  * - `return` = 1 U: half of `travel`, because a return retraces a path the viewer has already
- *   read and therefore needs no second reading.
+ *   read and therefore needs no second reading. In a loop it is priced like `travel` instead: the
+ *   return is half of the cycle and has to arrive back at the start pose at the speed it left, so
+ *   a shorter return makes the cycle lopsided (an even bob read as a slow rise and a drop).
  *
  * Shares, not seconds: each phase gets `frames * weight / sum(weights)`, so the same brief reads
  * the same at any fps and any length. `MotionPhase.weight` replaces a kind's share when the caller
@@ -61,17 +63,28 @@ import { failStage } from "@autospine/rig";
  *
  * ## Loops
  *
+ * A loop's `travel` and `return` arrive with the symmetric `sine` ease: in a cycle every arrival is
+ * also the departure of the mirrored move, so a decelerating-only accent would skew it.
+ *
  * Phase boundaries are the beats. A one-shot of P phases emits P+1 beats, the last at `frames`.
  * A loop's last boundary *is* frame 0 seen again, so a loop emits P beats in [0, frames) and the
  * opening beat carries the arrival ease of the final phase - the wrap segment. Nothing is emitted
  * twice, and because every phase keeps at least one frame after quantization the beats stay
  * strictly increasing inside the half-open range.
  *
- * ## No borrowed constants
+ * ## Constants
  *
- * Every number in this file is a dimensionless ratio argued above (1/2, 1, 2 on the ladder; one
- * octave for the knobs; two frames for readability; 1/4 of a travel for a lag chain). None of them
- * is a timecode or amplitude copied from a hand-animated reference.
+ * Every phase number in this file is a dimensionless ratio argued above (1/2, 1, 2 on the ladder;
+ * one octave for the knobs; two frames for readability). None of them is a timecode or amplitude
+ * copied from a hand-animated reference.
+ *
+ * One constant is measured instead: the follow lag per hierarchy level, `LAG_SECONDS_PER_LEVEL`.
+ * The earlier derived rule (the chain drags 1/4 of the travel) failed a blind test on a hand-made
+ * character (2026-10-13): it predicted 8-25 frames on a 162-frame action where the artist used a
+ * median of 1 frame per level. Measured per-level lags on two hand-made characters at 30 fps were
+ * pig median 1 (n 59) and mummy cat median 3.3 (n 20; tails about 4, ears 0-2). Lag comes from the
+ * inertia of the part itself, so it does not grow with the length of the action; 2 frames at
+ * 30 fps sits between the two medians.
  */
 const fail: (code: string, reason: string) => never = (code, reason) =>
   failStage("animation", code, reason);
@@ -80,6 +93,8 @@ const fail: (code: string, reason: string) => never = (code, reason) =>
 const OCTAVE = 2;
 /** Two consecutive sampled frames is the least evidence that a phase happened at all. */
 const READABLE_FRAMES = 2;
+/** Follow lag per hierarchy level; measured, see "Constants" (2 frames at 30 fps). */
+const LAG_SECONDS_PER_LEVEL = 2 / 30;
 /** Share of one readable unit U per phase kind; see the file header for the derivation. */
 const LADDER: Record<MotionPhaseKind, number> = {
   anticipation: 1 / 2,
@@ -246,11 +261,13 @@ export function planBeats(brief: MotionBrief): BeatPlan {
     const min = phase.minFrames ?? READABLE_FRAMES,
       max = phase.maxFrames ?? frames;
     if (max < min) fail("BEAT_PHASE", `Phase ${id} has maxFrames below its minimum`);
+    // A loop's return is half of the cycle, so it costs what the travel costs.
+    const ladder = brief.loop && phase.kind === "return" ? LADDER.travel : LADDER[phase.kind];
     return {
       id,
       kind: phase.kind,
       ease: phase.ease,
-      weight: (phase.weight ?? LADDER[phase.kind]) * rhythmFactor(phase.kind, snappiness, holdBias),
+      weight: (phase.weight ?? ladder) * rhythmFactor(phase.kind, snappiness, holdBias),
       min,
       max,
     };
@@ -277,8 +294,13 @@ export function planBeats(brief: MotionBrief): BeatPlan {
   const easeOf = (i: number): KeyposeEase => {
     const phase = phases[i]!;
     if (phase.ease !== undefined) return phase.ease;
-    // Low snappiness means an even sweep, so the travel loses its deceleration accent.
-    if ((phase.kind === "travel" || phase.kind === "return") && snappiness < NEUTRAL) return "sine";
+    // Low snappiness means an even sweep, and a loop mirrors every move, so neither has a
+    // deceleration accent.
+    if (
+      (phase.kind === "travel" || phase.kind === "return") &&
+      (snappiness < NEUTRAL || brief.loop)
+    )
+      return "sine";
     return ARRIVAL[phase.kind];
   };
   const count = phases.length;
@@ -359,30 +381,28 @@ export interface PlannedLag {
   lag: number;
 }
 export interface LagChainOptions {
-  /** The move the chain is dragging behind; use `travelFrames(plan)`. */
-  travelFrames: number;
+  /** Frame rate the lags are counted on; defaults to 30. */
+  fps?: number;
   snappiness?: number;
 }
 /**
- * Lag frames for a `follow` chain, derived from the same ladder as the phase shares.
+ * Lag frames for a `follow` chain: each hierarchy level trails its root by a fixed time.
  *
- * - Lag is a fraction of the *travel*, not of the whole animation: follow-through reads relative to
- *   the move that caused it, so the same chain works in a 1 s and a 4 s version of the brief.
- * - The whole chain's drag is capped at `anticipation / travel` = 1/4 of the travel. Beyond that
- *   the tip arrives after the main action has been read, and the drag reads as a second action
- *   rather than as overlap. Taking the cap from the ladder keeps one source of truth.
- * - Levels are spaced evenly: the chain is a uniform propagation, not a per-part style choice.
- * - The frame grid wins over the cap: one frame per level is the least lag that is still visible,
- *   so a very short travel gives `lag = depth` even though that exceeds the 1/4 cap. A zero lag
- *   would mean no overlap at all, which is the failure this helper exists to prevent.
+ * - Lag is a time per level (`LAG_SECONDS_PER_LEVEL`), not a fraction of the action. Follow-through
+ *   comes from the inertia of the part, so a 1 s and a 5 s version of the same action drag the
+ *   same amount (see "Constants" for the measurement that replaced the earlier 1/4-of-travel rule).
+ * - Levels are spaced evenly and lags are cumulative from the chain root, as `follow` rules on the
+ *   root expect.
+ * - The frame grid wins: one frame per level is the least lag that is still visible, so a low fps or
+ *   a high snappiness never collapses a level to zero overlap.
  * - `snappiness` shortens the drag by the same octave factor it uses on the phase shares.
  */
-export function planLagChain(parts: LagChainPart[], options: LagChainOptions): PlannedLag[] {
+export function planLagChain(parts: LagChainPart[], options: LagChainOptions = {}): PlannedLag[] {
   if (!Array.isArray(parts) || parts.length === 0)
     fail("BEAT_CHAIN", "At least one chain part required");
-  if (!Number.isFinite(options?.travelFrames) || options.travelFrames < 0)
-    fail("BEAT_CHAIN", "Non-negative finite travelFrames required");
-  const snappiness = options.snappiness ?? NEUTRAL;
+  const fps = options?.fps ?? 30;
+  if (!Number.isFinite(fps) || fps < 1 || fps > 240) fail("BEAT_CHAIN", "fps must lie in 1..240");
+  const snappiness = options?.snappiness ?? NEUTRAL;
   if (!Number.isFinite(snappiness) || snappiness < 0 || snappiness > 1)
     fail("BEAT_CHAIN", "snappiness must lie in [0, 1]");
   const byId = new Map<string, LagChainPart>();
@@ -412,23 +432,14 @@ export function planLagChain(parts: LagChainPart[], options: LagChainOptions): P
     return depth;
   };
   const depths = parts.map(depthOf),
-    base = Math.min(...depths),
-    span = Math.max(...depths) - base;
-  const drag =
-    (options.travelFrames * (LADDER.anticipation / LADDER.travel)) / octaveFactor(snappiness);
+    base = Math.min(...depths);
+  const perLevel = (LAG_SECONDS_PER_LEVEL * fps) / octaveFactor(snappiness);
   return parts.map((part, i) => {
     const depth = depths[i]! - base;
-    return {
-      id: part.id,
-      depth,
-      lag: depth === 0 ? 0 : Math.max(depth, Math.round((depth * drag) / span)),
-    };
+    return { id: part.id, depth, lag: Math.max(depth, Math.round(depth * perLevel)) };
   });
 }
-/** Convenience: read the travel length and rhythm straight off a plan. */
+/** Convenience: read the frame rate and rhythm straight off a plan. */
 export function planLagChainFromPlan(plan: BeatPlan, parts: LagChainPart[]): PlannedLag[] {
-  return planLagChain(parts, {
-    travelFrames: travelFrames(plan),
-    snappiness: plan.rhythm.snappiness,
-  });
+  return planLagChain(parts, { fps: plan.fps, snappiness: plan.rhythm.snappiness });
 }

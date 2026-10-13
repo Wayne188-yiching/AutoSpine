@@ -92,6 +92,42 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     }
   });
 
+  it("keeps every skin, drops non-image attachments and places missing images by stored size", () => {
+    const artist = {
+      skeleton: { spine: "4.0.64" },
+      bones: [{ name: "root" }, { name: "b", parent: "root", x: 10, y: 20 }],
+      slots: [
+        { name: "S", bone: "b", attachment: "S" },
+        { name: "C", bone: "b", attachment: "clip" },
+      ],
+      skins: [
+        {
+          name: "default",
+          attachments: {
+            S: { S: { x: 5, width: 20, height: 10 } },
+            C: {
+              clip: { type: "clipping", end: "S", vertexCount: 3, vertices: [0, 0, 9, 0, 0, 9] },
+            },
+          },
+        },
+        { name: "alt", attachments: { S: { gone: { x: -5, width: 8, height: 4 } } } },
+      ],
+    };
+    const strip = stripToImagesOnly(artist, (path) => (path === "gone" ? undefined : [20, 10]));
+    expect(strip.report.summary).toMatchObject({
+      skins: 2,
+      attachments: 2,
+      droppedNonImage: ["default/C/clip:clipping"],
+      missingImages: ["alt/S/gone:gone"],
+    });
+    const skins = (strip.document as { skins: { name: string; attachments: object }[] }).skins;
+    expect(skins.map((s) => s.name)).toEqual(["default", "alt"]);
+    expect(skins[1]!.attachments).toEqual({ S: { gone: { x: 5, y: 20, width: 8, height: 4 } } });
+    expect(stripToImagesOnly(artist, () => undefined).report.summary.droppedNonImage).toEqual([
+      "default/C/clip:clipping",
+    ]);
+  });
+
   it("passes every automatable criterion when a build is compared with itself", () => {
     const reference = prepareReference(built.document, fixtureImagesOnly(), {
       probes,
