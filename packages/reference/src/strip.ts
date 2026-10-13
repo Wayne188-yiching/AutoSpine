@@ -1,6 +1,7 @@
 import { loadSkeleton } from "./runtime.js";
 
 export interface StripReportRow {
+  skin: string;
   slot: string;
   attachment: string;
   sourceType: string;
@@ -26,6 +27,11 @@ export interface StripResult {
       over2px: string[];
       quadMeshForShear: string[];
       maxAbsShearCosine: number;
+      skins: number;
+      /** Clipping, bounding-box, point and path attachments: not images, so not kept. */
+      droppedNonImage: string[];
+      /** Image file not found: placed from the attachment's stored size; the path stays as authored. */
+      missingImages: string[];
     };
   };
 }
@@ -86,8 +92,16 @@ function fitAffine(src: V2[], dst: V2[]) {
  * colour, blend), with each attachment placed where its image sits in the setup pose. A mesh's
  * placement is the least-squares affine of its UVs onto its setup world vertices; a placement that
  * shears becomes a bare 4-corner quad mesh. Bones, meshes, weights, constraints and animations go.
+ * Every skin is kept under its own name (placed with that skin active, so skin bones count); linked
+ * meshes are placed from their runtime vertices and UVs. Attachments that are not images (clipping,
+ * bounding box, point, path) are dropped and listed in the report. When an image file is missing
+ * (`imageSize` returns undefined), the attachment's own stored width/height places it and the report
+ * lists it; without either it is dropped as `missing-image`.
  */
-export function stripToImagesOnly(artist: unknown, imageSize: (path: string) => V2): StripResult {
+export function stripToImagesOnly(
+  artist: unknown,
+  imageSize: (path: string) => V2 | undefined,
+): StripResult {
   const sk = loadSkeleton(artist);
   const raw = sk.raw as Json;
   const skeleton = (raw.skeleton ?? {}) as Json;
@@ -105,10 +119,12 @@ export function stripToImagesOnly(artist: unknown, imageSize: (path: string) => 
     },
     bones: [{ name: "root" }],
     slots: [],
-    skins: [{ name: "default", attachments: {} }],
+    skins: [],
     animations: {},
   };
   const rows: StripReportRow[] = [];
+  const dropped: string[] = [],
+    missingImages: string[] = [];
   for (const s of raw.slots as Json[]) {
     const slotOut: Json = { name: s.name, bone: "root" };
     for (const k of ["color", "dark", "attachment", "blend"])
@@ -116,16 +132,36 @@ export function stripToImagesOnly(artist: unknown, imageSize: (path: string) => 
     (out.slots as Json[]).push(slotOut);
   }
   for (const skinRaw of raw.skins as Json[]) {
-    if (skinRaw.name !== "default")
-      throw new Error("REFERENCE_SKIN: only the default skin is supported");
+    const skinName = skinRaw.name as string;
+    const skin = sk.data.findSkin(skinName);
+    if (!skin) throw new Error(`REFERENCE_SKIN: skin ${skinName} did not load`);
+    sk.skeleton.setSkin(skin);
+    sk.skeleton.setToSetupPose();
+    sk.skeleton.updateWorldTransform();
+    const skinOut = { name: skinName, attachments: {} as Record<string, Record<string, Json>> };
+    out.skins.push(skinOut);
     for (const [slotName, atts] of Object.entries(
       skinRaw.attachments as Record<string, Record<string, Json>>,
     )) {
       const slot = sk.skeleton.findSlot(slotName)!;
       for (const [attName, a] of Object.entries(atts)) {
         const type = (a.type as string | undefined) ?? "region";
+        if (["clipping", "boundingbox", "point", "path"].includes(type)) {
+          dropped.push(`${skinName}/${slotName}/${attName}:${type}`);
+          continue;
+        }
         const path = (a.path as string | undefined) ?? attName;
-        const [w, h] = imageSize(path);
+        const found = imageSize(path),
+          stored: V2 | undefined =
+            typeof a.width === "number" && typeof a.height === "number"
+              ? [a.width, a.height]
+              : undefined;
+        if (!found && !stored) {
+          dropped.push(`${skinName}/${slotName}/${attName}:missing-image`);
+          continue;
+        }
+        if (!found) missingImages.push(`${skinName}/${slotName}/${attName}:${path}`);
+        const [w, h] = (found ?? stored)!;
         let fit: ReturnType<typeof fitAffine>,
           residualMax = 0,
           residualRms = 0,
@@ -164,15 +200,19 @@ export function stripToImagesOnly(artist: unknown, imageSize: (path: string) => 
             src,
             src.map((p) => world(local(p[0], p[1]))),
           );
-        } else if (type === "mesh") {
-          const att = sk.data.defaultSkin.getAttachment(
+        } else if (type === "mesh" || type === "linkedmesh") {
+          const att = skin.getAttachment(
             (slot as unknown as { data: { index: number } }).data.index,
             attName,
-          )!;
+          ) as unknown as {
+            worldVerticesLength: number;
+            regionUVs: ArrayLike<number>;
+            computeWorldVertices: (...args: unknown[]) => void;
+          };
           const n = att.worldVerticesLength / 2;
           const wv = new Array(att.worldVerticesLength).fill(0);
           att.computeWorldVertices(slot, 0, att.worldVerticesLength, wv, 0, 2);
-          const uv = a.uvs as number[];
+          const uv = att.regionUVs;
           const src: V2[] = [],
             dst: V2[] = [];
           for (let i = 0; i < n; i++) {
@@ -242,8 +282,9 @@ export function stripToImagesOnly(artist: unknown, imageSize: (path: string) => 
         }
         if (a.path !== undefined) region.path = a.path;
         if (a.color !== undefined) region.color = a.color;
-        (out.skins[0]!.attachments[slotName] ??= {})[attName] = region;
+        (skinOut.attachments[slotName] ??= {})[attName] = region;
         rows.push({
+          skin: skinName,
           slot: slotName,
           attachment: attName,
           sourceType: type,
@@ -274,6 +315,9 @@ export function stripToImagesOnly(artist: unknown, imageSize: (path: string) => 
           .map((r) => `${r.attachment}:${r.fitResidualMaxPx}`),
         quadMeshForShear: rows.filter((r) => r.outputType === "quad-mesh").map((r) => r.attachment),
         maxAbsShearCosine: Math.max(0, ...rows.map((r) => Math.abs(r.shearCosine))),
+        skins: out.skins.length,
+        droppedNonImage: dropped,
+        missingImages,
       },
     },
   };

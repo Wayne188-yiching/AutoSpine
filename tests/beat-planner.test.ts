@@ -16,7 +16,6 @@ import {
   planLagChain,
   planLagChainFromPlan,
   sampleAnimation,
-  travelFrames,
   type BeatPlan,
 } from "@autospine/motion";
 import {
@@ -141,6 +140,18 @@ describe("beat planner structure", () => {
     expect(plan.phases.at(-1)!.endFrame).toBe(FRAMES);
   });
 
+  it("mirrors a loop: return costs what travel costs and both arrive with sine", () => {
+    const plan = planBeats(
+      brief({ frames: 72, loop: true, phases: [{ kind: "travel" }, { kind: "return" }] }),
+    );
+    expect(framesOf(plan)).toEqual([0, 36]);
+    expect(plan.beats.map((b) => b.ease)).toEqual(["sine", "sine"]);
+    // A one-shot keeps the retrace discount and the decelerating travel accent.
+    const once = planBeats(brief({ frames: 72, phases: [{ kind: "travel" }, { kind: "return" }] }));
+    expect(framesOf(once)).toEqual([0, 48, 72]);
+    expect(once.beats[1]!.ease).toBe("out");
+  });
+
   it("keeps beats strictly increasing and quantized even at the frame grid limit", () => {
     const plan = planBeats(
       brief({ frames: 5, phases: brief().phases.map((p) => ({ ...p, minFrames: 1 })) }),
@@ -212,43 +223,35 @@ describe("beat planner structure", () => {
 
 describe("delay chain planning", () => {
   const chain = [{ id: "body" }, { id: "head", parentId: "body" }, { id: "ear", parentId: "head" }];
-  it("drags each level by an even fraction of the travel, capped by the ladder", () => {
+  it("drags each level by a fixed time, two frames at 30 fps, cumulative from the root", () => {
     const plan = planBeats(brief());
     const lags = planLagChainFromPlan(plan, chain);
     expect(lags.map((l) => l.depth)).toEqual([0, 1, 2]);
-    expect(lags[0]!.lag).toBe(0);
-    expect(lags[1]!.lag).toBeLessThan(lags[2]!.lag);
-    // Whole-chain drag stays near anticipation/travel = 1/4 of the travel (rounding aside).
-    expect(lags[2]!.lag).toBeLessThanOrEqual(Math.ceil(travelFrames(plan) / 4));
-    expect(planLagChain(chain, { travelFrames: travelFrames(plan) })).toEqual(lags);
+    expect(lags.map((l) => l.lag)).toEqual([0, 2, 4]);
+    expect(planLagChain(chain, { fps: plan.fps })).toEqual(lags);
+    expect(planLagChain(chain).map((l) => l.lag)).toEqual([0, 2, 4]);
   });
-  it("scales the drag with travel length and with snappiness", () => {
-    const long = planLagChain(chain, { travelFrames: 120 }).map((l) => l.lag);
-    const short = planLagChain(chain, { travelFrames: 30 }).map((l) => l.lag);
-    const snappy = planLagChain(chain, { travelFrames: 120, snappiness: 1 }).map((l) => l.lag);
-    expect(long).toEqual([0, 15, 30]);
-    expect(short[2]).toBeLessThan(long[2]!);
-    expect(snappy[2]).toBeLessThan(long[2]!);
+  it("does not grow with the length of the action, only with fps and snappiness", () => {
+    const short = planLagChainFromPlan(planBeats(brief({ frames: 30 })), chain).map((l) => l.lag);
+    const long = planLagChainFromPlan(planBeats(brief({ frames: 300 })), chain).map((l) => l.lag);
+    expect(long).toEqual(short);
+    expect(planLagChain(chain, { fps: 60 }).map((l) => l.lag)).toEqual([0, 4, 8]);
+    const snappy = planLagChain(chain, { snappiness: 1 }).map((l) => l.lag);
+    const lazy = planLagChain(chain, { snappiness: 0 }).map((l) => l.lag);
+    expect(snappy[2]).toBeLessThan(4);
+    expect(lazy[2]).toBeGreaterThan(4);
   });
-  it("keeps one frame per level when the travel is too short to drag", () => {
-    expect(planLagChain(chain, { travelFrames: 1 }).map((l) => l.lag)).toEqual([0, 1, 2]);
-    expect(planLagChain([{ id: "a", depth: 0 }], { travelFrames: 30 })).toEqual([
-      { id: "a", depth: 0, lag: 0 },
-    ]);
+  it("keeps one frame per level on a coarse grid or a snappy rhythm", () => {
+    expect(planLagChain(chain, { fps: 6 }).map((l) => l.lag)).toEqual([0, 1, 2]);
+    expect(planLagChain([{ id: "a", depth: 0 }])).toEqual([{ id: "a", depth: 0, lag: 0 }]);
   });
   it("rejects malformed chains", () => {
-    expect(code(() => planLagChain([], { travelFrames: 10 }))).toBe("BEAT_CHAIN");
-    expect(code(() => planLagChain([{ id: "a" }, { id: "a" }], { travelFrames: 10 }))).toBe(
-      "BEAT_CHAIN",
-    );
-    expect(code(() => planLagChain([{ id: "a", parentId: "b" }], { travelFrames: 10 }))).toBe(
-      "BEAT_CHAIN",
-    );
-    expect(
-      code(() => planLagChain([{ id: "a", depth: 0 }, { id: "b" }], { travelFrames: 10 })),
-    ).toBe("BEAT_CHAIN");
-    expect(code(() => planLagChain(chain, { travelFrames: -1 }))).toBe("BEAT_CHAIN");
-    expect(code(() => planLagChain(chain, { travelFrames: 10, snappiness: 2 }))).toBe("BEAT_CHAIN");
+    expect(code(() => planLagChain([]))).toBe("BEAT_CHAIN");
+    expect(code(() => planLagChain([{ id: "a" }, { id: "a" }]))).toBe("BEAT_CHAIN");
+    expect(code(() => planLagChain([{ id: "a", parentId: "b" }]))).toBe("BEAT_CHAIN");
+    expect(code(() => planLagChain([{ id: "a", depth: 0 }, { id: "b" }]))).toBe("BEAT_CHAIN");
+    expect(code(() => planLagChain(chain, { fps: 0 }))).toBe("BEAT_CHAIN");
+    expect(code(() => planLagChain(chain, { snappiness: 2 }))).toBe("BEAT_CHAIN");
   });
 });
 
@@ -356,7 +359,9 @@ describe("self-check against a synthetic performance profile", () => {
     { frame: 40, ease: "out", poses: poses["hold-3"] },
     { frame: 60, ease: "hold", poses: poses.end },
   ];
-  const referenceAnimation = animate(referenceBeats, [0, 5, 10]);
+  // Follow lags of 2 frames per level: the invented 5/10 of the first version matched the retired
+  // 1/4-of-travel rule, which measured hand-made characters contradict (median 1 and 3.3 per level).
+  const referenceAnimation = animate(referenceBeats, [0, 2, 4]);
   const reference = reviewPerformance(
     sampledProbes(referenceAnimation),
     {
@@ -418,10 +423,18 @@ describe("self-check against a synthetic performance profile", () => {
     expect(statusOf(report, "parallaxHoldFraction")).toBe("low");
   });
 
-  it("falls outside the targets when snappiness snaps the delay chain shut", () => {
+  it("falls outside the targets when snappiness compresses the rhythm", () => {
     const report = review({ snappiness: 1 });
     expect(report.within).toBeLessThan(report.total);
-    expect(statusOf(report, "peakDelay:ear")).toBe("low");
+    // The chain itself shortens by one frame on a four-frame drag (-25%), which the loose +-35%
+    // band cannot see: with a per-level lag the ear delay no longer separates snappiness.
+    expect(
+      planLagChain(
+        CHAIN.map((id, depth) => ({ id, depth })),
+        { snappiness: 1 },
+      )[2]!.lag,
+    ).toBe(3);
+    expect(statusOf(report, "peakDelay:ear")).toBe("within");
   });
 
   it("records what this check does NOT separate", () => {

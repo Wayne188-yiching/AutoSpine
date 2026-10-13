@@ -46,7 +46,11 @@ interface SpineAnimation {
 export interface SpineSkeletonData {
   animations: SpineAnimation[];
   findAnimation(name: string): SpineAnimation | null;
-  defaultSkin: { getAttachment(slotIndex: number, name: string): SpineAttachment | null };
+  defaultSkin: SpineSkin;
+  findSkin(name: string): SpineSkin | null;
+}
+export interface SpineSkin {
+  getAttachment(slotIndex: number, name: string): SpineAttachment | null;
 }
 export interface SpineSkeleton {
   data: SpineSkeletonData;
@@ -56,6 +60,7 @@ export interface SpineSkeleton {
   updateWorldTransform(): void;
   findSlot(name: string): SpineSlot | null;
   findBone(name: string): SpineBone | null;
+  setSkin(skin: SpineSkin): void;
 }
 interface SpineModule {
   TextureRegion: new () => Record<string, unknown>;
