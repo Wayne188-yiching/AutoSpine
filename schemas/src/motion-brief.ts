@@ -68,6 +68,11 @@ export const MotionBriefSchema = Type.Object(
     frames: Type.Optional(Type.Integer({ minimum: 1, maximum: 3600 })),
     loop: Type.Boolean(),
     phases: Type.Array(MotionPhaseSchema, { minItems: 1, maxItems: 64 }),
+    /**
+     * Repeats the phase list this many times inside the budget, e.g. two breaths in a 4 s idle
+     * loop or three jolts in a shake. Defaults to 1. `suggestLoopCycles` gives a measured default.
+     */
+    cycles: Type.Optional(Type.Integer({ minimum: 1, maximum: 32 })),
     rhythm: Type.Optional(MotionRhythmSchema),
   },
   { $id: "MotionBrief-0.1", ...strict },
