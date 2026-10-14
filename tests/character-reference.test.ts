@@ -143,6 +143,30 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     expect(result.performance.IDLE!.review.within).toBe(result.performance.IDLE!.review.total);
   });
 
+  it("correlates a slot that is hidden on frame 0 from its first visible frame", () => {
+    // YoLu_03 (2026-10-14): an artist slot without an attachment on frame 0 crashed the compare.
+    const artist = JSON.parse(JSON.stringify(built.document)) as {
+      slots: { name: string; attachment?: string }[];
+      animations: Record<string, { slots?: Record<string, object> }>;
+    };
+    const hair = artist.slots.find((s) => s.name === "Hair")!;
+    const idle = artist.animations.IDLE!;
+    idle.slots = {
+      ...idle.slots,
+      Hair: { attachment: [{ name: null }, { time: 0.2, name: hair.attachment }] },
+    };
+    const reference = prepareReference(artist, fixtureImagesOnly(), { probes });
+    const { result } = compareToReference(reference, built.document, fixtureImagesOnly(), {
+      probes,
+    });
+    const rows = (
+      result.motion.IDLE as { rows: { slot: string; displacementCorrelation: number | null }[] }
+    ).rows;
+    expect(rows.find((r) => r.slot === "Hair")!.displacementCorrelation).toEqual(
+      expect.any(Number),
+    );
+  });
+
   it("scores motion that departs from the baseline worse, and searches back towards it", () => {
     const reference = prepareReference(built.document, fixtureImagesOnly(), { probes });
     const rigging = rigCharacter(plan, fixtureLayout());

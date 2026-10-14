@@ -274,8 +274,8 @@ const SearchRangeSchema = Type.Object(
 );
 
 /**
- * Motion blocks. One main cycle (anticipation, sink, hold, rise) of `cycle` frames is repeated
- * `frames / cycle` times; everything else is posed on its beats, derived from its depth, or timed
+ * Motion blocks. One main cycle of `cycle` frames is repeated `frames / cycle` times: a `settle`
+ * cycle (anticipation, sink, hold, rise) or a symmetric `breath` (rest, one extreme, rest); everything else is posed on its beats, derived from its depth, or timed
  * by follow/cycle rules. Numbers may reference `params`, which the optimizer searches.
  */
 export const MotionPlanSchema = Type.Object(
@@ -289,7 +289,7 @@ export const MotionPlanSchema = Type.Object(
         {
           name: NameSchema,
           frames: Type.Integer({ minimum: 4, maximum: 3600 }),
-          /** Anticipation scale per cycle (cycle 1 first); default 1. */
+          /** Anticipation scale per cycle (cycle 1 first; a breath scales its depth); default 1. */
           cycleScale: Type.Optional(Type.Array(PlanNumberSchema, { maxItems: 64 })),
         },
         strict,
@@ -299,12 +299,18 @@ export const MotionPlanSchema = Type.Object(
     main: Type.Object(
       {
         ...control,
+        /**
+         * `settle` (default): rest, anticipation lift at `up`, sink at `down`, hold, rest; needs
+         * `up`, `hold` and `rise`. `breath`: rest at the cycle start, the `depth` extreme at `down`
+         * (usually half the cycle), sine both ways; the setup pose is one end of the breath.
+         */
+        shape: Type.Optional(Type.Union([Type.Literal("settle"), Type.Literal("breath")])),
         /** Frames inside the cycle. */
-        up: PlanNumberSchema,
+        up: Type.Optional(PlanNumberSchema),
         down: PlanNumberSchema,
-        hold: PlanNumberSchema,
+        hold: Type.Optional(PlanNumberSchema),
         /** Anticipation lift and sink depth, px (positive = down at the sink). */
-        rise: PlanNumberSchema,
+        rise: Type.Optional(PlanNumberSchema),
         depth: PlanNumberSchema,
         /** Extra depth reached at the end of the hold; default 1. */
         holdDepth: Type.Optional(PlanNumberSchema),
@@ -386,10 +392,24 @@ export const MotionPlanSchema = Type.Object(
         { maxItems: 64 },
       ),
     ),
-    /** Overlap: rotate with the main control's vertical offset, delayed by lag frames. */
+    /**
+     * Overlap: rotate with the main control's vertical offset, delayed by lag frames. Give `gain`
+     * (degrees per px), or `travel` with `to`: the `to` bone then moves `travel` times the main's
+     * vertical travel relative to `bone` (a rotate control; gain = travel x 180/pi / distance from
+     * `bone` to `to`). A positive travel moves it with the main when it sits beside the pivot.
+     */
     follow: Type.Optional(
       Type.Array(
-        Type.Object({ ...control, gain: PlanNumberSchema, lag: PlanNumberSchema }, strict),
+        Type.Object(
+          {
+            ...control,
+            gain: Type.Optional(PlanNumberSchema),
+            travel: Type.Optional(PlanNumberSchema),
+            to: Type.Optional(IdSchema),
+            lag: PlanNumberSchema,
+          },
+          strict,
+        ),
         { maxItems: 128 },
       ),
     ),
@@ -430,13 +450,19 @@ export const MotionPlanSchema = Type.Object(
         { maxItems: 128 },
       ),
     ),
-    /** Explicit keys per animation (props, light sweeps); merged into the main beats by frame. */
+    /**
+     * Explicit keys per animation (props, light sweeps); merged into the main beats by frame.
+     * With `move`, each key is a saccade (eye looks): hold the previous value until `frame`, arrive
+     * at `value` `move` frames later with the key's ease; a loop that ends away from `rest` gets a
+     * closing move back to it.
+     */
     keyed: Type.Optional(
       Type.Array(
         Type.Object(
           {
             ...control,
             rest: PlanValueSchema,
+            move: Type.Optional(PlanNumberSchema),
             keys: Type.Record(
               NameSchema,
               Type.Array(

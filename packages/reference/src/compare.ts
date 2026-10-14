@@ -586,8 +586,11 @@ export function compareToReference(
         mg = T.gen.tr[slot] ? slotMotion(T.gen.tr[slot]!) : { visible: false };
       let corr: number | null = null;
       if (ma.visible && mg.visible && ma.moves && mg.moves) {
-        const disp = (s: SlotTrack) =>
-          s.c.map((c) => (c ? Math.hypot(c[0] - s.c[0]![0], c[1] - s.c[0]![1]) : 0));
+        // Displacement from the first visible frame: a slot may be hidden on frame 0.
+        const disp = (s: SlotTrack) => {
+          const ref = s.c.find((c) => c);
+          return s.c.map((c) => (c && ref ? Math.hypot(c[0] - ref[0], c[1] - ref[1]) : 0));
+        };
         corr = pearson(disp(T.art.tr[slot]!), disp(T.gen.tr[slot]!));
       }
       rows.push({

@@ -89,22 +89,37 @@ export function buildMotionSpecs(
   });
 
   const main = motion.main;
+  const breath = main.shape === "breath";
   const depth = n(main.depth, "main.depth"),
-    rise = n(main.rise, "main.rise"),
-    tUp = Math.round(n(main.up, "main.up")),
-    tDown = Math.round(n(main.down, "main.down")),
-    hold = Math.round(n(main.hold, "main.hold")),
+    tDown = Math.round(n(main.down, "main.down"));
+  let rise = 0,
+    tUp = 0,
+    hold = 0,
+    holdDepth = 1;
+  if (breath) {
+    if (!(0 < tDown && tDown < C))
+      failStage("animation", "PLAN_MOTION_TIMING", `A breath needs 0 < down < ${C}`);
+  } else {
+    if (main.up === undefined || main.hold === undefined || main.rise === undefined)
+      failStage("animation", "PLAN_MOTION_TIMING", "A settle main cycle needs up, hold and rise");
+    rise = n(main.rise, "main.rise");
+    tUp = Math.round(n(main.up, "main.up"));
+    hold = Math.round(n(main.hold, "main.hold"));
     holdDepth = main.holdDepth === undefined ? 1 : n(main.holdDepth, "main.holdDepth");
-  if (!(0 < tUp && tUp < tDown && tDown + Math.max(0, hold) < C))
-    failStage(
-      "animation",
-      "PLAN_MOTION_TIMING",
-      `Main beats need 0 < up < down and down + hold < ${C}`,
-    );
-  const eases = { up: "out", down: "sine", hold: "drift", rest: "ease", ...main.eases } as Record<
-    "up" | "down" | "hold" | "rest",
-    KeyposeEase
-  >;
+    if (!(0 < tUp && tUp < tDown && tDown + Math.max(0, hold) < C))
+      failStage(
+        "animation",
+        "PLAN_MOTION_TIMING",
+        `Main beats need 0 < up < down and down + hold < ${C}`,
+      );
+  }
+  const eases = {
+    up: "out",
+    down: "sine",
+    hold: "drift",
+    rest: breath ? "sine" : "ease",
+    ...main.eases,
+  } as Record<"up" | "down" | "hold" | "rest", KeyposeEase>;
 
   // Values derived from the main depth y at each beat.
   const sinkValues = (y: number): Record<string, Value> => {
@@ -119,7 +134,12 @@ export function buildMotionSpecs(
           out[`ft${leg.side}`] = [+(1 / sc).toFixed(5), 1];
         }
       else if (s.kind === "face") {
-        const fy = y >= 0 ? (n(s.y, "face.y") * y) / depth : (s.upRatio ?? 2 / 3) * y;
+        // A breath slides the face with the body either way; a settle lifts it by upRatio.
+        const fy = breath
+          ? (n(s.y, "face.y") * y) / Math.abs(depth)
+          : y >= 0
+            ? (n(s.y, "face.y") * y) / depth
+            : (s.upRatio ?? 2 / 3) * y;
         out[s.id] = [r3(n(s.x, "face.x") * fy), r3(fy)];
       } else out[s.id] = [+(1 - (n(s.amount, `${s.id}.amount`) * y) / depth).toFixed(4), 1];
     }
@@ -136,6 +156,73 @@ export function buildMotionSpecs(
     else if (s.kind === "face") sinkControls.push(control(s));
     else sinkControls.push(control({ id: s.id, bone: s.bone, channel: "scale" }));
   }
+
+  /**
+   * Degrees per px of the main's vertical offset. `travel` is the `to` bone's arc per px of the
+   * main, signed so that a positive travel moves it with the main (down as the body sinks) when it
+   * sits beside the pivot; a `to` straight below or above the pivot swings clockwise.
+   */
+  const followGain = (f: NonNullable<MotionPlan["follow"]>[number]) => {
+    if ((f.gain === undefined) === (f.travel === undefined))
+      failStage("animation", "PLAN_MOTION_FOLLOW", `${f.id}: give exactly one of gain and travel`);
+    if (f.gain !== undefined) return n(f.gain, `${f.id}.gain`);
+    if (f.to === undefined || f.channel !== "rotate")
+      failStage("animation", "PLAN_MOTION_FOLLOW", `${f.id}: travel needs a rotate control and to`);
+    const a = ctx.world.get(bone(f.bone))!.o,
+      b = ctx.world.get(bone(f.to))!.o,
+      reach = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    if (!(reach > 1e-6))
+      failStage(
+        "animation",
+        "PLAN_MOTION_FOLLOW",
+        `${f.id}: ${f.to} sits on the origin of ${f.bone}`,
+      );
+    // A clockwise turn (IR, y down) moves `to` by (-dy, dx): downwards when it is right of the pivot.
+    const side = b[0] - a[0] < -1e-6 ? -1 : 1;
+    return (side * n(f.travel!, `${f.id}.travel`) * 180) / Math.PI / reach;
+  };
+  /**
+   * Saccade keys: hold the previous value until each key's frame, arrive `move` frames later with
+   * the key's ease; a loop that ends away from rest closes with one more move back to it.
+   */
+  const looks = (
+    k: NonNullable<MotionPlan["keyed"]>[number],
+    raw: NonNullable<MotionPlan["keyed"]>[number]["keys"][string],
+    frames: number,
+  ) => {
+    const move = Math.round(n(k.move!, `${k.id}.move`)),
+      restValue = v2(k.rest, `${k.id}.rest`),
+      same = (a: Value, b: Value) => JSON.stringify(a) === JSON.stringify(b),
+      out: { frame: number; value: Value; ease: KeyposeEase }[] = [];
+    if (move < 1) failStage("animation", "PLAN_MOTION_TIMING", `${k.id}: move must be >= 1 frame`);
+    let prev = restValue,
+      free = 0;
+    for (const key of [...raw].sort((a, b) => a.frame - b.frame)) {
+      if (key.frame < free)
+        failStage(
+          "animation",
+          "PLAN_MOTION_TIMING",
+          `${k.id}: the look at ${key.frame} starts before the previous one arrives (${free})`,
+        );
+      if (!out.length || key.frame > free)
+        out.push({ frame: key.frame, value: prev, ease: "linear" });
+      prev = v2(key.value, `${k.id}.key`);
+      free = key.frame + move;
+      out.push({ frame: free, value: prev, ease: key.ease });
+    }
+    const end = same(prev, restValue) ? free : frames - move;
+    if (end < free || free >= frames)
+      failStage(
+        "animation",
+        "PLAN_MOTION_TIMING",
+        `${k.id}: looks need ${move} free frames before the loop ends at ${frames}`,
+      );
+    if (end > free) out.push({ frame: end, value: prev, ease: "linear" });
+    // The key on frame 0 shapes the segment that closes the loop: make the way back a saccade too.
+    if (out[0]!.frame === 0) out[0]!.ease = "out";
+    else out.unshift({ frame: 0, value: restValue, ease: "out" });
+    return out;
+  };
 
   const specs: KeyposeSpec[] = [];
   for (const anim of motion.animations) {
@@ -165,7 +252,7 @@ export function buildMotionSpecs(
         for (const b of extra) {
           const raw = b[key];
           if (raw === undefined) continue;
-          if (key === "up" && b.scaleUp) {
+          if (b.scaleUp && key === (breath ? "down" : "up")) {
             const v = val(raw, params, `${b.id}.up`);
             poses[b.id] = Array.isArray(v) ? [r3(v[0] * s), r3(v[1] * s)] : r3(v * s);
           } else poses[b.id] = v2(raw, `${b.id}.${key}`);
@@ -173,6 +260,11 @@ export function buildMotionSpecs(
         return poses;
       };
       beats.push({ frame: o, ease: eases.rest, poses: { ...rest } });
+      if (breath) {
+        // Symmetric breath: rest, the extreme at `down`, back to rest at the next cycle.
+        beats.push({ frame: o + tDown, ease: eases.down, poses: at("down", depth * s) });
+        continue;
+      }
       beats.push({ frame: o + tUp, ease: eases.up, poses: at("up", -rise * s) });
       beats.push({ frame: o + tDown, ease: eases.down, poses: at("down", depth) });
       if (hold >= 1)
@@ -184,11 +276,19 @@ export function buildMotionSpecs(
     }
     // ---- explicit keys merged by frame; the rest value goes on frame 0
     for (const k of motion.keyed ?? []) {
-      const keys = k.keys[anim.name];
-      if (!keys) continue;
+      const raw = k.keys[anim.name];
+      if (!raw) continue;
       controls.push(control(k));
+      const keys =
+        k.move === undefined
+          ? raw.map((key) => ({
+              frame: key.frame,
+              value: v2(key.value, `${k.id}.key`),
+              ease: key.ease,
+            }))
+          : looks(k, raw, frames);
       for (const key of keys) {
-        const entry = { value: v2(key.value, `${k.id}.key`), ease: key.ease };
+        const entry = { value: key.value, ease: key.ease };
         const beat = beats.find((b) => b.frame === key.frame);
         if (beat) beat.poses[k.id] = entry;
         else beats.push({ frame: key.frame, poses: { [k.id]: entry } });
@@ -197,7 +297,7 @@ export function buildMotionSpecs(
       if (beats[0]!.poses[k.id] === undefined) beats[0]!.poses[k.id] = v2(k.rest, `${k.id}.rest`);
     }
     beats.sort((a, b) => a.frame - b.frame);
-    // ---- overlap: follow the main control's vertical offset
+    // ---- overlap: follow the main control's vertical offset (gain, or travel of the `to` bone)
     const follow = (id: string, gain: number, lag: number) =>
       rules.push({
         rule: "follow",
@@ -209,7 +309,7 @@ export function buildMotionSpecs(
       });
     for (const f of motion.follow ?? []) {
       controls.push(control(f));
-      follow(f.id, n(f.gain, `${f.id}.gain`), n(f.lag, `${f.id}.lag`));
+      follow(f.id, followGain(f), n(f.lag, `${f.id}.lag`));
     }
     // ---- secondary cycles
     for (const cy of motion.cycles ?? []) {
