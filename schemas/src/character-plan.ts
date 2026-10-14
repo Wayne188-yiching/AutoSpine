@@ -573,8 +573,8 @@ export const MotionPlanSchema = Type.Object(
     /**
      * Attachment swaps inside an animation (ADR-027): blinks, mouth shapes, flash frames. Per
      * animation, `{ frame, attachment }` keys (an attachment of the slot, or null to hide). Before
-     * the first key the slot keeps its part-set or setup attachment; a swapped slot is not also
-     * held by that animation's `show` / `hide`.
+     * the first key the slot keeps its part-set or setup attachment, and the loop closes on the
+     * frame-0 attachment; a swapped slot is not also held by that animation's `show` / `hide`.
      */
     swaps: Type.Optional(
       Type.Array(
