@@ -6,7 +6,7 @@ import {
   targetBand,
   type PerformanceProfile,
 } from "@autospine/planning";
-import { drawList, loadSkeleton, pose, type LoadedSkeleton } from "./runtime.js";
+import { drawList, loadSkeleton, pose, type DrawItem, type LoadedSkeleton } from "./runtime.js";
 import { flatten, render, sheet, type Texture } from "./render.js";
 
 type Json = Record<string, unknown>;
@@ -346,7 +346,11 @@ export interface DeformationSummary {
   maxCharacterStretch: { slot: string; value: number } | null;
   topStretch: [string, number][];
 }
-/** Triangle inversions (and those over 25% alpha) and edge stretch against the setup pose. */
+/**
+ * Triangle inversions (and those over 25% alpha) and edge stretch against the setup pose. An
+ * attachment the animation swaps in (a sequence image, an eyelid) is measured against its own
+ * geometry on the setup bones, not against the slot's setup attachment.
+ */
 export function deformationQA(
   sk: LoadedSkeleton,
   animation: string,
@@ -361,13 +365,29 @@ export function deformationQA(
     (v[2 * b + 1]! - v[2 * a + 1]!) * (v[2 * c]! - v[2 * a]!);
   const D = sk.data.findAnimation(animation)!.duration,
     N = Math.round(D * fps);
+  const rest = new Map<string, DrawItem | null>();
+  const restOf = (d: DrawItem): DrawItem | null => {
+    const key = d.slot + "\u0000" + d.attachment;
+    if (!rest.has(key)) {
+      const s0 = setup.get(d.slot);
+      if (s0 && s0.attachment === d.attachment) rest.set(key, s0);
+      else {
+        // The frame's draw list is already built; the next frame poses the skeleton again.
+        pose(sk, null, 0);
+        sk.skeleton.setAttachment(d.slot, d.attachment);
+        sk.skeleton.findSlot(d.slot)!.color.a = 1;
+        rest.set(key, drawList(sk).find((x) => x.slot === d.slot) ?? null);
+      }
+    }
+    return rest.get(key)!;
+  };
   const inv: Record<string, number> = {},
     visible: Record<string, number> = {},
     stretch: Record<string, number> = {};
   for (let f = 0; f <= N; f++) {
     pose(sk, animation, Math.min(D, f / fps));
     for (const d of drawList(sk)) {
-      const s0 = setup.get(d.slot);
+      const s0 = restOf(d);
       if (!s0 || d.tris.length < 6 || s0.verts.length !== d.verts.length) continue;
       const tex = alpha?.(d.path);
       let n = 0,

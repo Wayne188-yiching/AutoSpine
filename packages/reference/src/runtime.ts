@@ -66,6 +66,7 @@ export interface SpineSkeleton {
   findSlot(name: string): SpineSlot | null;
   findBone(name: string): SpineBone | null;
   setSkin(skin: SpineSkin): void;
+  setAttachment(slotName: string, attachmentName: string): void;
 }
 interface SpineModule {
   TextureRegion: new () => Record<string, unknown>;
