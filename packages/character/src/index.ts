@@ -9,5 +9,6 @@ export {
   type PlannedAttachments,
 } from "./attachments.js";
 export { buildMotionSpecs, motionContext, motionParams, type MotionContext } from "./motion.js";
+export { buildColorTimelines, type ColorTimeline } from "./colors.js";
 export * from "./build.js";
 export * from "./lint.js";

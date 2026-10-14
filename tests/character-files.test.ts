@@ -27,7 +27,7 @@ describe("character plan files: CLI (ADR-017)", () => {
 
     const out = join(ws, "build");
     const built = await buildCharacterFiles(plan, out);
-    expect(built).toMatchObject({ bones: 19, slots: 7, seams: 4, bend: {} });
+    expect(built).toMatchObject({ bones: 20, slots: 7, seams: 4, bend: {} });
     expect(built.setupDeviationPx).toBeLessThanOrEqual(0.01);
     expect((await readdir(out)).sort()).toEqual(
       [
@@ -162,7 +162,7 @@ describe("character plan files: MCP tools (ADR-017)", () => {
     expect(built.error).toBe(false);
     expect(built.body).toMatchObject({
       output: join("out", "build", "fixture_character.json"),
-      bones: 19,
+      bones: 20,
       artistQualityAccepted: false,
     });
     expect(

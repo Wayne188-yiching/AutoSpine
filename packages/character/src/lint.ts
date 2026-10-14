@@ -24,6 +24,8 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
   const errors: string[] = [];
   const warnings: string[] = [];
   const parts = partNames ? new Set(partNames) : undefined;
+  // Slot names are the part names without a `#attachment` suffix.
+  const slotNames = parts ? new Set([...parts].map((p) => p.split("#")[0]!)) : undefined;
   const part = (name: string, where: string) => {
     if (parts && !parts.has(name))
       errors.push(`${where}: no part ${name} in the images-only layout`);
@@ -133,7 +135,19 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     const f = plan.face;
     part(f.head, "face.head");
     visitRef(f.anchor, "face.anchor");
-    for (const b of [f.base, f.control, ...(f.counter ? [f.counter] : []), ...f.followers])
+    const layerBones = (f.layers ?? []).map((l) => l.bone);
+    for (const b of layerBones)
+      if (f.followers.includes(b) || b === f.control || b === f.base || b === f.counter)
+        errors.push(`face.layers: ${b} is already a face bone or follower`);
+    if (new Set(layerBones).size !== layerBones.length)
+      errors.push("face.layers: a bone is listed twice");
+    for (const b of [
+      f.base,
+      f.control,
+      ...(f.counter ? [f.counter] : []),
+      ...f.followers,
+      ...layerBones,
+    ])
       bone(b, "face");
   }
 
@@ -237,6 +251,34 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     control(c, `motion.keyed[${i}]`);
     for (const a of Object.keys(c.keys))
       if (!anims.has(a)) errors.push(`motion.keyed[${i}]: unknown animation ${a}`);
+  });
+  // Colour blocks address slots, not bones; one block per slot.
+  const coloured = new Map<string, string>();
+  const colourSlot = (slot: string, id: string, where: string) => {
+    if (slotNames && !slotNames.has(slot)) errors.push(`${where}: unknown slot ${slot}`);
+    const prev = coloured.get(slot);
+    if (prev && prev !== id) errors.push(`${where}: slot ${slot} is already coloured by ${prev}`);
+    coloured.set(slot, id);
+  };
+  m.pulses?.forEach((p, i) => {
+    const where = `motion.pulses[${i}]`;
+    if (controlIds.has(p.id)) errors.push(`${where}: control id ${p.id} is used twice`);
+    controlIds.add(p.id);
+    p.slots.forEach((s) => colourSlot(s, p.id, where));
+    if (typeof p.period === "number")
+      for (const a of m.animations)
+        if (a.frames % p.period !== 0)
+          errors.push(
+            `${where}: period ${p.period} does not divide ${a.name} (${a.frames} frames)`,
+          );
+  });
+  m.colors?.forEach((c, i) => {
+    const where = `motion.colors[${i}]`;
+    if (controlIds.has(c.id)) errors.push(`${where}: control id ${c.id} is used twice`);
+    controlIds.add(c.id);
+    c.slots.forEach((s) => colourSlot(s, c.id, where));
+    for (const a of Object.keys(c.keys))
+      if (!anims.has(a)) errors.push(`${where}: unknown animation ${a}`);
   });
   const referenced = new Set<string>();
   const walk = (v: unknown, path: string) => {

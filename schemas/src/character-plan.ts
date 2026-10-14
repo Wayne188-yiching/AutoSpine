@@ -209,6 +209,18 @@ export const FacePlanSchema = Type.Object(
     followers: Type.Array(IdSchema, { minItems: 1, maxItems: 64 }),
     /** Ring pin margin as a fraction of the head's opaque width; default 0.12. */
     pinMargin: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
+    /**
+     * 2.5D depth layers outside the face plate: each bone follows the control with mix = depth x
+     * the measured dome peak (clamped to -1..1). depth 1 sits on the face surface at its centre,
+     * above 1 in front of it (bangs, a hat brim), 0 rides the head rigidly, below 0 sits behind it
+     * and moves against the turn (back hair, a ponytail root, the far ear).
+     */
+    layers: Type.Optional(
+      Type.Array(
+        Type.Object({ bone: IdSchema, depth: Type.Number({ minimum: -2, maximum: 2 }) }, strict),
+        { maxItems: 64 },
+      ),
+    ),
   },
   strict,
 );
@@ -443,6 +455,64 @@ export const MotionPlanSchema = Type.Object(
           strict,
         ),
         { maxItems: 128 },
+      ),
+    ),
+    /**
+     * Slot transparency pulses (lights, glows): alpha oscillates between `low` and `high` times the
+     * setup alpha, peaking at `peak`; each further slot peaks `stagger` frames later (a chase). The
+     * period ("animation", "cycle" or frames) must divide every animation so the loop stays seamless.
+     */
+    pulses: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            id: IdSchema,
+            slots: Type.Array(PartNameSchema, { minItems: 1, maxItems: 64 }),
+            low: PlanNumberSchema,
+            high: PlanNumberSchema,
+            period: Type.Union([
+              PlanNumberSchema,
+              Type.Literal("animation"),
+              Type.Literal("cycle"),
+            ]),
+            peak: Type.Optional(PlanNumberSchema),
+            stagger: Type.Optional(PlanNumberSchema),
+          },
+          strict,
+        ),
+        { maxItems: 64 },
+      ),
+    ),
+    /**
+     * Explicit slot colour keys per animation (flashes, fades, tints). `alpha` multiplies the setup
+     * alpha, `color` replaces the RGB; a key's ease shapes the segment arriving at it. Frame 0
+     * defaults to the setup colour and the loop closes on the first key.
+     */
+    colors: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            id: IdSchema,
+            slots: Type.Array(PartNameSchema, { minItems: 1, maxItems: 64 }),
+            keys: Type.Record(
+              NameSchema,
+              Type.Array(
+                Type.Object(
+                  {
+                    frame: Type.Integer({ minimum: 0, maximum: 3600 }),
+                    alpha: Type.Optional(PlanNumberSchema),
+                    color: Type.Optional(Type.String({ pattern: "^[0-9a-fA-F]{6}$" })),
+                    ease: Type.Optional(KeyposeEaseSchema),
+                  },
+                  strict,
+                ),
+                { minItems: 1, maxItems: 256 },
+              ),
+            ),
+          },
+          strict,
+        ),
+        { maxItems: 64 },
       ),
     ),
   },

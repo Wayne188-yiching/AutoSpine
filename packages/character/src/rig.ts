@@ -21,6 +21,60 @@ export interface PlannedRig {
   evidence: Record<string, unknown>;
 }
 
+const wrap = (deg: number) => {
+  let r = deg;
+  while (r > 180) r -= 360;
+  while (r <= -180) r += 360;
+  return r;
+};
+/**
+ * Face followers and 2.5D layers copy the control's local translation through local, relative
+ * Transform constraints. Local values are only comparable between bones whose parents share an
+ * orientation: a follower hung on an upright head would move 90 degrees off the control. Each
+ * follower or layer whose parent is rotated against the control's parent gets an aligned carrier
+ * bone (`<id>_frame`) at its own origin; the follower keeps its world setup and now translates in
+ * the control's frame.
+ */
+function alignFaceFollowers(
+  face: NonNullable<CharacterPlan["face"]>,
+  bones: Bone[],
+  world: Map<string, WorldFrame>,
+  evidence: Record<string, unknown>,
+) {
+  const control = bones.find((b) => b.id === face.control);
+  if (!control) return; // reported by lint and by the constraint builder
+  const ref = control.parentId ? world.get(control.parentId)!.a : 0;
+  const carriers: string[] = [];
+  for (const id of [...face.followers, ...(face.layers ?? []).map((l) => l.bone)]) {
+    const bone = bones.find((b) => b.id === id);
+    if (!bone) continue;
+    const parent = bone.parentId ? world.get(bone.parentId)! : { o: [0, 0] as Vec, a: 0 };
+    if (Math.abs(wrap(ref - parent.a)) < 1e-6) continue;
+    const carrierId = `${id}_frame`;
+    if (world.has(carrierId))
+      failStage("rig", "PLAN_BONE_DUPLICATE", `Bone ${carrierId} is reserved for a face carrier`);
+    const frame = world.get(id)!,
+      pr = (parent.a * Math.PI) / 180,
+      d: Vec = [frame.o[0] - parent.o[0], frame.o[1] - parent.o[1]];
+    bones.splice(bones.indexOf(bone), 0, {
+      id: carrierId,
+      name: carrierId,
+      ...(bone.parentId ? { parentId: bone.parentId } : {}),
+      x: +(d[0] * Math.cos(pr) + d[1] * Math.sin(pr)).toFixed(3),
+      y: +(-d[0] * Math.sin(pr) + d[1] * Math.cos(pr)).toFixed(3),
+      rotation: +wrap(ref - parent.a).toFixed(4),
+      length: 0,
+    });
+    world.set(carrierId, { o: frame.o, a: ref });
+    bone.parentId = carrierId;
+    bone.x = 0;
+    bone.y = 0;
+    bone.rotation = +wrap(frame.a - ref).toFixed(4);
+    carriers.push(carrierId);
+  }
+  if (carriers.length) evidence.faceCarriers = carriers;
+}
+
 /**
  * Places the plan's bones. Each bone is stored relative to its parent's planned world frame
  * (origin and angle), so the setup pose reproduces the planned joints exactly.
@@ -106,7 +160,10 @@ export function planRig(plan: CharacterPlan, index: PartIndex): PlannedRig {
       add(entry.id, entry.parent, at, angle, entry.length ?? 0);
     }
   }
-  if (plan.face) measureDome();
+  if (plan.face) {
+    measureDome();
+    alignFaceFollowers(plan.face, bones, world, evidence);
+  }
   const joints = solver.solveAll();
   Object.assign(evidence, solver.evidence);
   const rig: RigSpec = {

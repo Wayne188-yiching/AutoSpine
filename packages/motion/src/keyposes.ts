@@ -47,6 +47,8 @@ function curveOf(ease: KeyposeEase | undefined): KeyCurve | undefined {
   if (typeof ease === "string") return NAMED[ease];
   return ease.type === "linear" ? undefined : ease;
 }
+/** The key curve a named (or explicit) ease stands for; `undefined` means linear. */
+export const easeCurve = (ease: KeyposeEase | undefined): KeyCurve | undefined => curveOf(ease);
 const withCurve = (key: Key, curve: KeyCurve | undefined): Key =>
   curve ? { frame: key.frame, value: key.value, curve } : { frame: key.frame, value: key.value };
 

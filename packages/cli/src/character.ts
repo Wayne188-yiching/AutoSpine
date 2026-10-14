@@ -201,7 +201,7 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
   for (const ik of built.rigging.ik) {
     if (worst <= 2) break;
     const flipped = { ...bend, [ik.name]: !ik.bendPositive };
-    const doc = compileCharacter(built.rigging, built.animations, flipped),
+    const doc = compileCharacter(built.rigging, built.animations, flipped, built.colorTimelines),
       w = deviation(doc);
     if (w < worst) [bend, document, worst] = [flipped, doc, w];
   }
