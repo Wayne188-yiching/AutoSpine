@@ -157,6 +157,24 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     expect(checkAcceptance(result, built.seams).pass).toBe(true);
   });
 
+  it("drops probes the artist never shows instead of failing (missing metrics)", () => {
+    // Gingerbread (2026-10-14): the artist idle hid every setup part and showed another set.
+    const artist = JSON.parse(JSON.stringify(built.document)) as {
+      animations: Record<string, { slots?: Record<string, object> }>;
+    };
+    const idle = artist.animations.IDLE!;
+    idle.slots = { ...idle.slots, Hair: { attachment: [{ name: null }] } };
+    const reference = prepareReference(artist, fixtureImagesOnly(), { probes, loop: true });
+    const keys = Object.keys(reference.profiles.IDLE!.targets);
+    expect(keys.filter((k) => /^(range|lag):|^handVsBodyRange$/.test(k))).toEqual([]);
+    expect(keys).toContain("parallaxRangeX");
+    const { result } = compareToReference(reference, built.document, fixtureImagesOnly(), {
+      probes,
+      loop: true,
+    });
+    expect(result.performance.IDLE!.review.total).toBe(keys.length);
+  });
+
   it("correlates a slot that is hidden on frame 0 from its first visible frame", () => {
     // YoLu_03 (2026-10-14): an artist slot without an attachment on frame 0 crashed the compare.
     const artist = JSON.parse(JSON.stringify(built.document)) as {

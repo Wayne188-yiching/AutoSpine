@@ -387,15 +387,22 @@ export function performanceSample(t: Tracks, probes: Probes, fps: number, unit: 
   for (const [k, slot] of Object.entries(parts)) {
     const tr = t.tr[slot];
     if (!tr) throw new Error(`REFERENCE_PROBE: probe ${k} uses unknown part ${slot}`);
-    const first = tr.c.find(Boolean)!;
-    sample[k] = tr.c.map((c) => c ?? first);
+    // A part never shown in this animation is no probe: its metrics are missing, not invented.
+    const first = tr.c.find(Boolean);
+    if (first) sample[k] = tr.c.map((c) => c ?? first);
   }
   return { fps, unit, yDown: false, probes: sample };
 }
-export const probeOptions = (probes: Probes) => ({
-  ...(probes.chain ? { chain: probes.chain.map(([n]) => n) } : {}),
-  ...(probes.hand && probes.chain ? { hand: probes.hand[0] } : {}),
-});
+/** Chain and hand options for the probes a sample actually has (all chain probes, or none). */
+export const probeOptions = (probes: Probes, present?: Record<string, unknown>) => {
+  const has = (n: string) => !present || n in present;
+  const chain = probes.chain?.map(([n]) => n);
+  const full = chain !== undefined && chain.every(has);
+  return {
+    ...(full ? { chain } : {}),
+    ...(full && probes.hand && has(probes.hand[0]) ? { hand: probes.hand[0] } : {}),
+  };
+};
 
 /** The artist side, measured once: tracks, structure, per-slot motion and performance profiles. */
 export interface PreparedReference {
@@ -424,7 +431,16 @@ export interface ReferenceOptions {
 /** Head width of the images-only setup: the unit of every performance metric. */
 export function headUnit(imagesOnly: LoadedSkeleton, part: string): number {
   pose(imagesOnly, null, 0);
+  // A head hidden in setup (another pose set, ADR-021) is measured on its own attachment.
+  const slot = imagesOnly.skeleton.findSlot(part);
+  if (slot && !slot.getAttachment()) {
+    const entry = imagesOnly.data.defaultSkin
+      .getAttachments()
+      .find((e) => e.slotIndex === slot.data.index);
+    if (entry) slot.setAttachment(entry.attachment);
+  }
   const d = drawList(imagesOnly).find((x) => x.slot === part);
+  pose(imagesOnly, null, 0);
   if (!d) throw new Error(`REFERENCE_UNIT: no ${part} in the images-only setup`);
   const xs = d.verts.filter((_, i) => i % 2 === 0);
   return Math.max(...xs) - Math.min(...xs);
@@ -462,9 +478,10 @@ export function prepareReference(
     ref.tracks[a] = t;
     ref.motion[a] = Object.fromEntries(Object.entries(t.tr).map(([s, tr]) => [s, slotMotion(tr)]));
     const ks = structure.animations[a]!;
+    const sample = performanceSample(t, options.probes, fps, unit);
     const metrics = measurePerformance(
-      performanceSample(t, options.probes, fps, unit),
-      { ...probeOptions(options.probes), ...(options.loop ? { loop: true } : {}) },
+      sample,
+      { ...probeOptions(options.probes, sample.probes), ...(options.loop ? { loop: true } : {}) },
       {
         keys: Math.max(1, ks.movingKeys),
         timelines: Math.max(1, ks.movingBoneTimelines),
@@ -479,7 +496,7 @@ export function prepareReference(
       ),
       fps,
       source: `${options.name ? `${options.name} ` : ""}artist ${a} (official 4.0 runtime, ${fps} fps, head widths), n=1`,
-      ...probeOptions(options.probes),
+      ...probeOptions(options.probes, sample.probes),
       ...(options.loop ? { loop: true } : {}),
       targets: Object.fromEntries(
         Object.entries(metrics).map(([k, v]) => [k, targetBand(k, v, fps)]),

@@ -66,6 +66,24 @@ Update after the YoLu_03 blind test (2026-10-14, `docs/local-reviews/yolu-e2e-bl
   - Hands resting on something are pinned by IK to that thing's bone (`root`, `head`).
   - The sink default stays (by character: Yuuna and YoLu sink, BaShouEnn and mummy cat rise).
 
+Update after the gingerbread blind test, round 2 (2026-10-14, after ADR-021 made its pose set plannable):
+
+- **Pre-registered checks.** Neither was met. The blind plan scored D1 3/10 against the control's 4/10, while D2 was 1.0 against 0.071.
+- **What held.**
+  - One symmetric breath per 50-frame loop: aligned beat F1 was 1.0.
+  - Head and hat lag.
+  - Head range.
+- **What missed.**
+  - Face slide of 0.06 hw: vertical parallax was 2.7× the artist's.
+  - The artist holds the face 90 % of the time.
+  - Body range, judged at the rule's lower end (0.1 hw) for a big-headed character: it came out 0.0956 against a band from 0.0957.
+  - Hand travel: the artist's raised hand moves 0.0026 hw against the body.
+- **Defaults changed.**
+  - Face slide about 0.03 hw.
+  - Breath depth at the median, 0.14 hw, with no shading for big heads.
+  - Free-hand travel stays 0.4, noted as unpredictable from images.
+  - Next: plan a target parallax and let the engine derive the slide from the dome weights, and hold the face between breaths.
+
 Consequences:
 
 - Idle plans can state the shape artists use, and looks and hand range are data. Existing plans are unchanged: settle stays the default, and `gain` still works.

@@ -96,6 +96,15 @@ describe("character plan (ADR-017)", () => {
     has("control id hair_2_r is used twice");
   });
 
+  it("keys regions by slot, including slots hidden in setup", () => {
+    // Gingerbread (2026-10-14): a slot without a setup attachment has only `slot#attachment` parts.
+    const plan = fixturePlan();
+    plan.regions = { ...plan.regions, Prop: "root", Ghost: "root" };
+    const lint = lintCharacterPlan(plan, [...fixtureLayout().parts.keys(), "Prop#cane"]);
+    expect(lint.errors.filter((e) => e.includes("Prop"))).toEqual([]);
+    expect(lint.errors).toContain("regions.Ghost: no slot Ghost in the images-only layout");
+  });
+
   it("solves joints from part pixels and builds the bones from them", () => {
     const plan = fixturePlan();
     const rigged = planRig(plan, new PartIndex(fixtureLayout().parts));

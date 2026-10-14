@@ -26,8 +26,10 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
   const parts = partNames ? new Set(partNames) : undefined;
   // Slot names are the part names without a `#attachment` suffix.
   const slotNames = parts ? new Set([...parts].map((p) => p.split("#")[0]!)) : undefined;
+  // A slot hidden in setup is named by its slot when it has exactly one `slot#attachment` part.
+  const hidden = (name: string) => [...(parts ?? [])].filter((p) => p.startsWith(name + "#"));
   const part = (name: string, where: string) => {
-    if (parts && !parts.has(name))
+    if (parts && !parts.has(name) && hidden(name).length !== 1)
       errors.push(`${where}: no part ${name} in the images-only layout`);
   };
 
@@ -187,8 +189,10 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     }
     meshed.add(m.part);
   });
+  // Regions are keyed by slot: a slot hidden in setup has only `slot#attachment` parts.
   for (const [p, b] of Object.entries(plan.regions ?? {})) {
-    part(p, `regions.${p}`);
+    if (slotNames && !slotNames.has(p))
+      errors.push(`regions.${p}: no slot ${p} in the images-only layout`);
     bone(b, `regions.${p}`);
   }
   // Every placed image needs a mesh (by key or slot) or a region bone (by slot).
@@ -210,6 +214,26 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
   // Motion: controls, animations, parameters.
   const m = plan.motion;
   const anims = new Set(m.animations.map((a) => a.name));
+  // Part sets (ADR-021): shown parts must resolve to one attachment; a slot is listed once.
+  for (const a of m.animations) {
+    const where = `motion.animations ${a.name}`;
+    const listed = new Set<string>();
+    const once = (slot: string) => {
+      if (listed.has(slot)) errors.push(`${where}: slot ${slot} is listed twice in show/hide`);
+      listed.add(slot);
+    };
+    for (const entry of a.show ?? []) {
+      const slot = entry.split("#")[0]!;
+      once(slot);
+      if (parts && !parts.has(entry) && !parts.has(slot) && hidden(slot).length !== 1)
+        errors.push(`${where}: show ${entry} needs one attachment; name it as slot#attachment`);
+    }
+    for (const slot of a.hide ?? []) {
+      once(slot);
+      if (slotNames && !slotNames.has(slot))
+        errors.push(`${where}: hide names unknown slot ${slot}`);
+    }
+  }
   for (const a of m.animations)
     if (a.frames % m.cycle !== 0)
       warnings.push(

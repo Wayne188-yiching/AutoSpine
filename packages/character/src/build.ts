@@ -9,6 +9,7 @@ import { planRig, type PlannedRig } from "./rig.js";
 import { planAttachments, type MeshAsset } from "./attachments.js";
 import { buildMotionSpecs, motionContext, motionParams, type MotionContext } from "./motion.js";
 import { buildColorTimelines, type ColorTimeline } from "./colors.js";
+import { buildAttachmentTimelines } from "./visibility.js";
 
 type Slot = CharacterSpineInput["slots"][number];
 type Ik = NonNullable<CharacterSpineInput["ik"]>[number];
@@ -256,6 +257,11 @@ export function compileCharacter(
     slots: rigging.slots,
     animations,
     colorTimelines,
+    attachmentTimelines: buildAttachmentTimelines(
+      rigging.plan.motion,
+      rigging.slots,
+      new Map(animations.map((a) => [a.name, a.duration])),
+    ),
     ik: rigging.ik.map((c) => (c.name in bend ? { ...c, bendPositive: bend[c.name]! } : c)),
     transform: rigging.transform,
   }) as unknown as SpineDocument;

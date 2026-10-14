@@ -37,6 +37,7 @@ export interface SpineSlot {
   color: SpineColor;
   bone: SpineBone;
   getAttachment(): SpineAttachment | null;
+  setAttachment(attachment: SpineAttachment | null): void;
 }
 interface SpineAnimation {
   name: string;
@@ -51,6 +52,7 @@ export interface SpineSkeletonData {
 }
 export interface SpineSkin {
   getAttachment(slotIndex: number, name: string): SpineAttachment | null;
+  getAttachments(): { slotIndex: number; name: string; attachment: SpineAttachment }[];
 }
 export interface SpineSkeleton {
   data: SpineSkeletonData;
