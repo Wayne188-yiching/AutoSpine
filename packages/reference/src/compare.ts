@@ -495,6 +495,8 @@ export function headUnit(imagesOnly: LoadedSkeleton, part: string): number {
     const entry = skin?.getAttachments().find((e) => e.slotIndex === slot.data.index);
     if (entry) slot.setAttachment(entry.attachment);
   }
+  // A head that setup keeps transparent (another pose set) is measured all the same.
+  if (slot) slot.color.a = 1;
   const d = drawList(imagesOnly).find((x) => x.slot === part);
   pose(imagesOnly, null, 0);
   if (!d) throw new Error(`REFERENCE_UNIT: no ${part} in the images-only setup`);

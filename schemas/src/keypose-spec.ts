@@ -105,7 +105,7 @@ export const KeyposeRuleSchema = Type.Union([
       control: IdSchema,
       center: Type.Optional(KeyposeValueSchema),
       amplitude: KeyposeValueSchema,
-      period: Type.Integer({ minimum: 4, maximum: 3600, multipleOf: 2 }),
+      period: Type.Integer({ minimum: 4, maximum: 3600 }),
       phase: Type.Optional(lag),
     },
     strict,

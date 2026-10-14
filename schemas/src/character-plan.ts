@@ -305,7 +305,7 @@ const SearchRangeSchema = Type.Object(
  */
 export const MotionPlanSchema = Type.Object(
   {
-    cycle: Type.Integer({ minimum: 4, maximum: 3600, multipleOf: 2 }),
+    cycle: Type.Integer({ minimum: 4, maximum: 3600 }),
     fps: Type.Optional(Type.Integer({ minimum: 1, maximum: 60 })),
     params: Type.Record(Type.String({ pattern: "^[A-Za-z_][A-Za-z0-9_]*$" }), Type.Number()),
     search: Type.Optional(Type.Record(Type.String(), SearchRangeSchema)),

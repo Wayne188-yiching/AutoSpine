@@ -26,9 +26,21 @@ function tint(setup: string, alpha: number | undefined, rgb: string | undefined)
  */
 export function buildColorTimelines(
   motion: MotionPlan,
-  setupColors: ReadonlyMap<string, string>,
+  rawSetupColors: ReadonlyMap<string, string>,
   params: Params,
 ): ColorTimeline[] {
+  // A slot an animation shows but setup keeps transparent (another pose set faded out, ADR-021)
+  // is shown opaque: pulses and colours scale from full alpha, and a hold makes it visible.
+  const shownSlots = new Set(
+    motion.animations.flatMap((a) => (a.show ?? []).map((e) => e.split("#")[0]!)),
+  );
+  const transparent = (c: string) => parseInt(c.slice(6, 8), 16) <= 5;
+  const setupColors = new Map(
+    [...rawSetupColors].map(([slot, c]) => [
+      slot,
+      shownSlots.has(slot) && transparent(c) ? c.slice(0, 6) + "ff" : c,
+    ]),
+  );
   const fps = motion.fps ?? 30,
     n = (v: Parameters<typeof num>[0], where: string) => num(v, params, where);
   const owner = new Map<string, string>();
@@ -115,6 +127,22 @@ export function buildColorTimelines(
         });
         out.push({ animationName: anim.name, slotName: slot, keys });
       }
+    }
+    // Shown slots that setup keeps transparent, with no colour motion of their own: held opaque.
+    for (const entry of anim.show ?? []) {
+      const slot = entry.split("#")[0]!,
+        raw = rawSetupColors.get(slot);
+      if (!raw || !transparent(raw)) continue;
+      if (out.some((t) => t.animationName === anim.name && t.slotName === slot)) continue;
+      const color = setupColors.get(slot)!.toLowerCase();
+      out.push({
+        animationName: anim.name,
+        slotName: slot,
+        keys: [
+          { time: 0, color },
+          { time: frames / fps, color },
+        ],
+      });
     }
   }
   return out;
