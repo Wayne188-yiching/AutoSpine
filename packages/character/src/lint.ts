@@ -222,6 +222,18 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     controlIds.add(c.id);
   };
   control(m.main, "motion.main");
+  if (m.main.shape === "breath") {
+    const ignored = (["up", "hold", "rise", "holdDepth"] as const).filter(
+      (k) => m.main[k] !== undefined,
+    );
+    if (ignored.length) warnings.push(`motion.main: a breath ignores ${ignored.join(", ")}`);
+    m.beats?.forEach((b, i) => {
+      if (b.up !== undefined || b.hold !== undefined)
+        warnings.push(`motion.beats[${i}]: a breath keys only rest and down`);
+    });
+  } else
+    for (const k of ["up", "hold", "rise"] as const)
+      if (m.main[k] === undefined) errors.push(`motion.main: a settle cycle needs ${k}`);
   m.beats?.forEach((c, i) => control(c, `motion.beats[${i}]`));
   m.sink?.forEach((s, i) => {
     const where = `motion.sink[${i}]`;
@@ -235,7 +247,15 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
       }
     else control(s, where);
   });
-  m.follow?.forEach((c, i) => control(c, `motion.follow[${i}]`));
+  m.follow?.forEach((c, i) => {
+    const where = `motion.follow[${i}]`;
+    control(c, where);
+    if ((c.gain === undefined) === (c.travel === undefined))
+      errors.push(`${where}: give exactly one of gain and travel`);
+    if (c.travel !== undefined && (c.to === undefined || c.channel !== "rotate"))
+      errors.push(`${where}: travel needs a rotate control and to`);
+    if (c.to !== undefined) bone(c.to, where);
+  });
   m.waves?.forEach((w, i) => {
     const ids = chains.get(w.chain);
     if (!ids) errors.push(`motion.waves[${i}]: no bone chain on part ${w.chain}`);
@@ -248,9 +268,34 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     if (set > 1) errors.push(`motion.cycles[${i}]: give at most one of peak, phase, phaseFraction`);
   });
   m.keyed?.forEach((c, i) => {
-    control(c, `motion.keyed[${i}]`);
-    for (const a of Object.keys(c.keys))
-      if (!anims.has(a)) errors.push(`motion.keyed[${i}]: unknown animation ${a}`);
+    const where = `motion.keyed[${i}]`;
+    control(c, where);
+    let move: number | undefined;
+    if (c.move !== undefined)
+      try {
+        move = Math.round(num(c.move, m.params, `${where}.move`));
+        if (move < 1) errors.push(`${where}: move must be >= 1 frame`);
+      } catch {
+        // reported by the parameter walk below
+      }
+    for (const [a, keys] of Object.entries(c.keys)) {
+      const anim = m.animations.find((x) => x.name === a);
+      if (!anim) {
+        errors.push(`${where}: unknown animation ${a}`);
+        continue;
+      }
+      if (move === undefined || move < 1) continue;
+      // Saccades: each look starts after the previous one arrives and leaves room to close.
+      const frames = keys.map((k) => k.frame).sort((x, y) => x - y);
+      frames.forEach((f, j) => {
+        if (j > 0 && f < frames[j - 1]! + move!)
+          errors.push(`${where}: ${a} look at ${f} starts before the previous one arrives`);
+      });
+      if (frames.length && frames.at(-1)! + 2 * move > anim.frames)
+        errors.push(
+          `${where}: ${a} needs ${2 * move} frames after the last look to close the loop`,
+        );
+    }
   });
   // Colour blocks address slots, not bones; one block per slot.
   const coloured = new Map<string, string>();
