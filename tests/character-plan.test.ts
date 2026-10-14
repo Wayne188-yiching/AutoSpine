@@ -193,7 +193,8 @@ describe("character plan (ADR-017)", () => {
       transform: { name: string }[];
       animations: Record<string, unknown>;
     };
-    expect(doc.bones).toHaveLength(19);
+    // 19 planned bones plus the eyes follower's aligned carrier (eyes_frame).
+    expect(doc.bones).toHaveLength(20);
     expect(doc.slots.map((s) => s.name)).toEqual([
       "Hair",
       "Leg_L",

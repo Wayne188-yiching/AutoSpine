@@ -107,8 +107,8 @@ export function makeObjective(
     (v[2 * b]! - v[2 * a]!) * (v[2 * c + 1]! - v[2 * a + 1]!) -
     (v[2 * b + 1]! - v[2 * a + 1]!) * (v[2 * c]! - v[2 * a]!);
   return (params: Params): Evaluation => {
-    const { animations } = animateCharacter(rigging, params);
-    const doc = compileCharacter(rigging, animations, options.bend);
+    const { animations, colorTimelines } = animateCharacter(rigging, params);
+    const doc = compileCharacter(rigging, animations, options.bend, colorTimelines);
     const sk = loadSkeleton(doc);
     const out: Evaluation = {
       penalty: 0,

@@ -8,6 +8,7 @@ import { PartIndex, type Params } from "./joints.js";
 import { planRig, type PlannedRig } from "./rig.js";
 import { planAttachments, type MeshAsset } from "./attachments.js";
 import { buildMotionSpecs, motionContext, motionParams, type MotionContext } from "./motion.js";
+import { buildColorTimelines, type ColorTimeline } from "./colors.js";
 
 type Slot = CharacterSpineInput["slots"][number];
 type Ik = NonNullable<CharacterSpineInput["ik"]>[number];
@@ -180,6 +181,16 @@ export function rigCharacter(plan: CharacterPlan, layout: CharacterLayout): Char
         );
       follow("Face_" + id, id, m);
     }
+    for (const layer of face.layers ?? []) {
+      const m = built.faceMix[layer.bone];
+      if (m === undefined)
+        failStage(
+          "weights",
+          "PLAN_FACE",
+          `Face layer ${layer.bone} needs a dome-weighted head mesh`,
+        );
+      follow("Layer_" + layer.bone, layer.bone, m);
+    }
   }
   return {
     plan,
@@ -210,18 +221,22 @@ export function setupBend(rig: RigSpec, boneIds: string[]): boolean {
 export interface CharacterAnimations {
   specs: KeyposeSpec[];
   animations: AnimationSpec[];
+  /** Slot colour and transparency keys from the plan's `pulses` and `colors`. */
+  colorTimelines: ColorTimeline[];
 }
 /** Motion only, for a parameter point: the optimizer's inner step. */
 export function animateCharacter(
   rigging: CharacterRigging,
   params: Params = {},
 ): CharacterAnimations {
-  const specs = buildMotionSpecs(
-    rigging.plan.motion,
-    rigging.motion,
-    motionParams(rigging.plan.motion, params),
-  );
-  return { specs, animations: specs.map((s) => buildKeyposeAnimation(rigging.rigged.rig, s)) };
+  const resolved = motionParams(rigging.plan.motion, params);
+  const specs = buildMotionSpecs(rigging.plan.motion, rigging.motion, resolved);
+  const setupColors = new Map(rigging.slots.map((s) => [s.name, s.color ?? "ffffffff"]));
+  return {
+    specs,
+    animations: specs.map((s) => buildKeyposeAnimation(rigging.rigged.rig, s)),
+    colorTimelines: buildColorTimelines(rigging.plan.motion, setupColors, resolved),
+  };
 }
 
 export type SpineDocument = Record<string, unknown> & {
@@ -233,13 +248,14 @@ export function compileCharacter(
   rigging: CharacterRigging,
   animations: AnimationSpec[],
   bend: Record<string, boolean> = {},
+  colorTimelines: ColorTimeline[] = [],
 ): SpineDocument {
   const doc = compileCharacterSpine40({
     rig: rigging.rigged.rig,
     imagesPath: rigging.imagesPath,
     slots: rigging.slots,
     animations,
-    colorTimelines: [],
+    colorTimelines,
     ik: rigging.ik.map((c) => (c.name in bend ? { ...c, bendPositive: bend[c.name]! } : c)),
     transform: rigging.transform,
   }) as unknown as SpineDocument;
@@ -318,6 +334,7 @@ export interface CharacterBuild {
   rigging: CharacterRigging;
   specs: KeyposeSpec[];
   animations: AnimationSpec[];
+  colorTimelines: ColorTimeline[];
   document: SpineDocument;
   seams: SeamCheck[];
 }
@@ -328,12 +345,13 @@ export function buildCharacter(
   options: { params?: Params; bend?: Record<string, boolean> } = {},
 ): CharacterBuild {
   const rigging = rigCharacter(plan, layout);
-  const { specs, animations } = animateCharacter(rigging, options.params);
+  const { specs, animations, colorTimelines } = animateCharacter(rigging, options.params);
   return {
     rigging,
     specs,
     animations,
-    document: compileCharacter(rigging, animations, options.bend),
+    colorTimelines,
+    document: compileCharacter(rigging, animations, options.bend, colorTimelines),
     seams: measureSeams(rigging, animations),
   };
 }

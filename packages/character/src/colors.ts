@@ -1,0 +1,121 @@
+import type { CharacterSpineInput } from "@autospine/spine";
+import type { KeyposeEase, MotionPlan } from "@autospine/schemas";
+import { easeCurve } from "@autospine/motion";
+import { failStage } from "@autospine/rig";
+import { num, type Params } from "./joints.js";
+
+export type ColorTimeline = NonNullable<CharacterSpineInput["colorTimelines"]>[number];
+type ColorKey = ColorTimeline["keys"][number];
+
+const fail = (code: string, reason: string): never => failStage("animation", code, reason);
+const hex2 = (v: number) =>
+  Math.round(Math.min(255, Math.max(0, v)))
+    .toString(16)
+    .padStart(2, "0");
+/** Setup colour with its alpha multiplied by `alpha` (0..1) and, if given, its RGB replaced. */
+function tint(setup: string, alpha: number | undefined, rgb: string | undefined): string {
+  const base = (rgb ?? setup.slice(0, 6)).toLowerCase(),
+    a = parseInt(setup.slice(6, 8), 16);
+  return base + hex2(alpha === undefined ? a : a * alpha);
+}
+
+/**
+ * Slot colour motion: `pulses` (alpha oscillating between two multipliers of the setup alpha, a
+ * sine keyed at its extremes) and `colors` (explicit RGB / alpha keys). Every plan animation is a
+ * loop, so a pulse period must divide the animation and keyed colours close on their first value.
+ */
+export function buildColorTimelines(
+  motion: MotionPlan,
+  setupColors: ReadonlyMap<string, string>,
+  params: Params,
+): ColorTimeline[] {
+  const fps = motion.fps ?? 30,
+    n = (v: Parameters<typeof num>[0], where: string) => num(v, params, where);
+  const owner = new Map<string, string>();
+  const claim = (slot: string, id: string) => {
+    if (!setupColors.has(slot)) fail("PLAN_MOTION_SLOT", `${id}: unknown slot ${slot}`);
+    const prev = owner.get(slot);
+    if (prev && prev !== id)
+      fail("PLAN_MOTION_CONTROL", `Slot ${slot} is coloured by ${prev} and ${id}`);
+    owner.set(slot, id);
+  };
+  for (const p of motion.pulses ?? []) p.slots.forEach((s) => claim(s, p.id));
+  for (const c of motion.colors ?? []) c.slots.forEach((s) => claim(s, c.id));
+  const out: ColorTimeline[] = [];
+  for (const anim of motion.animations) {
+    const frames = anim.frames;
+    for (const p of motion.pulses ?? []) {
+      const period =
+        p.period === "animation"
+          ? frames
+          : p.period === "cycle"
+            ? motion.cycle
+            : Math.round(n(p.period, `${p.id}.period`));
+      if (!(period >= 2) || frames % period !== 0)
+        fail(
+          "PLAN_MOTION_CYCLE",
+          `${p.id}: period ${period} must divide ${anim.name} (${frames} frames)`,
+        );
+      const low = n(p.low, `${p.id}.low`),
+        high = n(p.high, `${p.id}.high`);
+      if (!(low >= 0 && high <= 1 && low <= high))
+        fail("PLAN_MOTION_VALUE", `${p.id}: need 0 <= low <= high <= 1`);
+      p.slots.forEach((slot, i) => {
+        const peak = n(p.peak ?? 0, `${p.id}.peak`) + i * n(p.stagger ?? 0, `${p.id}.stagger`);
+        const at = (t: number) =>
+          low + (high - low) * (0.5 + 0.5 * Math.cos((2 * Math.PI * (t - peak)) / period));
+        // Extremes every half period; the loop ends on the value it starts with.
+        const frameSet = new Set<number>([0, frames]);
+        const first = ((peak % (period / 2)) + period / 2) % (period / 2);
+        for (let t = first; t < frames; t += period / 2) frameSet.add(Math.round(t));
+        const times = [...frameSet].filter((t) => t >= 0 && t <= frames).sort((a, b) => a - b);
+        const setup = setupColors.get(slot)!;
+        const keys: ColorKey[] = times.map((t, k) => {
+          const next = times[k + 1];
+          // Sine between two extremes; a partial edge segment stays linear.
+          const extreme = (x: number) =>
+            Math.abs(Math.sin((2 * Math.PI * (x - peak)) / period)) < 1e-6;
+          const curve =
+            next !== undefined && extreme(t) && extreme(next) ? easeCurve("sine") : undefined;
+          return {
+            time: t / fps,
+            color: tint(setup, at(t), undefined),
+            ...(curve ? { curve } : {}),
+          };
+        });
+        out.push({ animationName: anim.name, slotName: slot, keys });
+      });
+    }
+    for (const c of motion.colors ?? []) {
+      const list = c.keys[anim.name];
+      if (!list) continue;
+      for (const slot of c.slots) {
+        const setup = setupColors.get(slot)!;
+        const keyed = [...list]
+          .map((k) => ({
+            frame: k.frame,
+            ease: k.ease as KeyposeEase | undefined,
+            color: tint(
+              setup,
+              k.alpha === undefined ? undefined : n(k.alpha, `${c.id}.alpha`),
+              k.color,
+            ),
+          }))
+          .sort((a, b) => a.frame - b.frame);
+        if (keyed.some((k) => k.frame > frames))
+          fail("PLAN_MOTION_TIMING", `${c.id}: a key lies after ${anim.name} ends`);
+        if (keyed[0]!.frame !== 0)
+          keyed.unshift({ frame: 0, ease: undefined, color: setup.toLowerCase() });
+        if (keyed.at(-1)!.frame !== frames)
+          keyed.push({ frame: frames, ease: undefined, color: keyed[0]!.color });
+        // A key's ease shapes the segment arriving at it (KeyposeBeat convention).
+        const keys: ColorKey[] = keyed.map((k, i) => {
+          const curve = keyed[i + 1] ? easeCurve(keyed[i + 1]!.ease ?? "ease") : undefined;
+          return { time: k.frame / fps, color: k.color, ...(curve ? { curve } : {}) };
+        });
+        out.push({ animationName: anim.name, slotName: slot, keys });
+      }
+    }
+  }
+  return out;
+}

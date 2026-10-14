@@ -240,6 +240,16 @@ export function planAttachments(
             failStage("rig", "PLAN_FACE_FOLLOWER", `Face follower ${id} is not a planned bone`);
           faceMix[id] = +domeValue(dome.field, frame.o, pins).toFixed(4);
         }
+        // 2.5D depth layers: the mix scales with depth against the measured dome peak.
+        for (const layer of face.layers ?? []) {
+          if (!rigged.world.has(layer.bone))
+            failStage("rig", "PLAN_FACE_LAYER", `Face layer ${layer.bone} is not a planned bone`);
+          if (layer.bone in faceMix)
+            failStage("rig", "PLAN_FACE_LAYER", `Face layer ${layer.bone} is also a follower`);
+          faceMix[layer.bone] = +Math.max(-1, Math.min(1, layer.depth * dome.field.peak)).toFixed(
+            4,
+          );
+        }
         evidence.faceRings = rings.length;
         evidence.facePins = pins.map((p) => ({
           value: p.value,

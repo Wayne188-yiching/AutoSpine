@@ -90,6 +90,15 @@ Bones are created in order, and a parent must come earlier.
 
 `face: { head, anchor, base, control, counter?, counterMix?, followers, pinMargin? }` measures a dome on the head image around `anchor`. The `control` bone moves the face surface. `counter` follows with `counterMix` (default −0.3). Each follower bone (eyes, brows, mouth) gets a local relative Transform whose mix is the dome value at its origin. Pins hold rings around eye holes to their follower's mix over `pinMargin` × head width (default 0.12). See ADR-012/016.
 
+`face.layers: [{ bone, depth }]` adds 2.5D depth outside the face plate (ADR-018). Each bone follows the control with mix = depth × the dome peak, clamped to −1..1:
+
+- depth 1 is the face surface;
+- above 1 is in front (bangs, a hat brim);
+- 0 rides the head;
+- below 0 is behind and moves against the turn (back hair, a ponytail root).
+
+Give bangs or back hair their own bone so they can be a layer. A follower or layer whose parent is rotated against the control's parent gets an aligned carrier bone `<id>_frame`, so it moves in the control's direction.
+
 ### Meshes and regions
 
 `meshes[]: { part, mesh, weights }`, processed in order:
@@ -120,16 +129,18 @@ Bones are created in order, and a parent must come earlier.
 
 All numbers can be `$param`, `-$param` or `=expression` (`=2*$lag`, `=($a+$b)/2`). `params` are the start values. `search` gives `{min, max, step, integer?, cyclic?}` for the parameters the optimizer may move; `cyclic` wraps modulo the cycle.
 
-| Block                   | Shape                                                                      | Produces                                                                                                                                                                     |
-| ----------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cycle`, `animations[]` | `{ name, frames, cycleScale? }`                                            | `frames / cycle` repeats of the main cycle; `cycleScale[k]` scales cycle k's anticipation                                                                                    |
-| `main`                  | `{ id, bone, channel, up, down, hold, rise, depth, holdDepth?, eases? }`   | Rest at 0, lift `rise` px at frame `up`, sink `depth` px at `down`, `depth + holdDepth` (default 1) at `down + hold`. Requires 0 < up < down and down + hold < cycle         |
-| `beats[]`               | `{ id, bone, channel, rest, up?, down?, hold?, scaleUp? }`                 | Values keyed on the main beats                                                                                                                                               |
-| `sink[]`                | `legs` / `face` / `squash`                                                 | Derived from depth: thighs shorten and feet counter-scale (planted feet); the face slides `y` px at full depth with `x` as a ratio of it; a strand root shortens by `amount` |
-| `follow[]`              | `{ id, bone, channel, gain, lag }`                                         | Rotation following the main vertical offset, `lag` frames later                                                                                                              |
-| `waves[]`               | `{ chain, amp, rootGain, peak, growth, step, rootLag?, rootGainScale? }`   | The chain root follows (lag 3 by default). Bone k swings `amp·(1 + growth·k)` per cycle, peaking `step` frames later per bone. Control ids are `<bone>_r`                    |
-| `cycles[]`              | `{ id, bone, channel, amplitude, period, peak \| phase \| phaseFraction }` | Sine on any channel; `period: "animation"` = one per animation                                                                                                               |
-| `keyed[]`               | `{ id, bone, channel, rest, keys: { anim: [{frame, value, ease}] } }`      | Explicit keys merged with the beats: props, light sweeps                                                                                                                     |
+| Block                   | Shape                                                                      | Produces                                                                                                                                                                         |
+| ----------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cycle`, `animations[]` | `{ name, frames, cycleScale? }`                                            | `frames / cycle` repeats of the main cycle; `cycleScale[k]` scales cycle k's anticipation                                                                                        |
+| `main`                  | `{ id, bone, channel, up, down, hold, rise, depth, holdDepth?, eases? }`   | Rest at 0, lift `rise` px at frame `up`, sink `depth` px at `down`, `depth + holdDepth` (default 1) at `down + hold`. Requires 0 < up < down and down + hold < cycle             |
+| `beats[]`               | `{ id, bone, channel, rest, up?, down?, hold?, scaleUp? }`                 | Values keyed on the main beats                                                                                                                                                   |
+| `sink[]`                | `legs` / `face` / `squash`                                                 | Derived from depth: thighs shorten and feet counter-scale (planted feet); the face slides `y` px at full depth with `x` as a ratio of it; a strand root shortens by `amount`     |
+| `follow[]`              | `{ id, bone, channel, gain, lag }`                                         | Rotation following the main vertical offset, `lag` frames later                                                                                                                  |
+| `waves[]`               | `{ chain, amp, rootGain, peak, growth, step, rootLag?, rootGainScale? }`   | The chain root follows (lag 3 by default). Bone k swings `amp·(1 + growth·k)` per cycle, peaking `step` frames later per bone. Control ids are `<bone>_r`                        |
+| `cycles[]`              | `{ id, bone, channel, amplitude, period, peak \| phase \| phaseFraction }` | Sine on any channel; `period: "animation"` = one per animation                                                                                                                   |
+| `keyed[]`               | `{ id, bone, channel, rest, keys: { anim: [{frame, value, ease}] } }`      | Explicit keys merged with the beats: props, light sweeps                                                                                                                         |
+| `pulses[]`              | `{ id, slots, low, high, period, peak?, stagger? }`                        | Slot alpha between `low` and `high` × setup alpha (sine at the extremes); `stagger` frames per further slot. `period` (frames, `cycle`, `animation`) must divide every animation |
+| `colors[]`              | `{ id, slots, keys: { anim: [{frame, alpha?, color?, ease?}] } }`          | Explicit slot colour keys: `alpha` × setup alpha, `color` replaces RGB; frame 0 defaults to setup and the loop closes on it                                                      |
 
 Eases: `linear`, `hold`, `ease`, `sine`, `out`, `in`, `drift`, or a curve. Every control id must be unique.
 
@@ -150,4 +161,5 @@ Eases: `linear`, `hold`, `ease`, `sine`, `out`, `in`, `drift`, or a curve. Every
 - **Main timing.** The main beats must fit inside the cycle. Every animation's `frames` should be a whole number of cycles, otherwise the loop seam (A4) breaks.
 - **FX in deformation QA.** Glows and shadows stretch by design, so list them in `deformExclude`; otherwise B3 compares them with the artist's character stretch.
 - **Optimizer margin.** The optimizer searches inside bands shrunk by 5 %, so its own critic count is lower than the official one. Use `--band-shrink=0` to read the official count.
+- **Lights and glows.** Scene light layers that breathe or flicker need `pulses` or `colors`; bone motion alone leaves them static and costs motion recall (C2).
 - **Benchmark tuning.** Parameters tuned against an artist version describe that version. They are a starting point for a similar character, not a blind result.
