@@ -277,11 +277,13 @@ export async function compareReferenceFiles(
   const record = JSON.parse(await readFile(join(buildDir, "build-record.json"), "utf8")) as {
     seams: { maxDrift: number }[];
   };
+  // Character plan animations always loop (ADR-020: phase-invariant chain metrics).
   const options = {
     probes,
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
+    loop: true,
   };
   const reference = prepareReference(artist, imagesOnly, options);
   const { result, sheets } = compareToReference(reference, generated, imagesOnly, {
@@ -336,6 +338,7 @@ export async function optimizeMotionFiles(
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
+    loop: true,
   });
   const rigging = rigCharacter(plan, layout);
   const evaluate = makeObjective(rigging, reference, {

@@ -143,6 +143,20 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     expect(result.performance.IDLE!.review.within).toBe(result.performance.IDLE!.review.total);
   });
 
+  it("profiles loops with phase-invariant chain metrics (ADR-020)", () => {
+    const reference = prepareReference(built.document, fixtureImagesOnly(), { probes, loop: true });
+    const profile = reference.profiles.IDLE!;
+    expect(profile.loop).toBe(true);
+    const keys = Object.keys(profile.targets);
+    expect(keys.filter((k) => /^(peakTime|peakDelay|overshoot):/.test(k))).toEqual([]);
+    expect(keys).toEqual(expect.arrayContaining(["range:body", "lag:head", "lag:hair"]));
+    const { result } = compareToReference(reference, built.document, fixtureImagesOnly(), {
+      probes,
+      loop: true,
+    });
+    expect(checkAcceptance(result, built.seams).pass).toBe(true);
+  });
+
   it("correlates a slot that is hidden on frame 0 from its first visible frame", () => {
     // YoLu_03 (2026-10-14): an artist slot without an attachment on frame 0 crashed the compare.
     const artist = JSON.parse(JSON.stringify(built.document)) as {
