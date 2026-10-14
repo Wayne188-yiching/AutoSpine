@@ -22,6 +22,10 @@ describe("pose sets faded out in setup, odd cycles (2026-10 batch)", () => {
     expect(visible(plan)).toBe(false);
     plan.motion.animations[0]!.show = ["Eyes"];
     expect(visible(plan)).toBe(true);
+    // A slot swapped in during the animation (a shine sequence) is opaque too.
+    plan.motion.animations[0]!.show = [];
+    plan.motion.swaps = [{ slot: "Eyes", keys: { IDLE: [{ frame: 10, attachment: "Eyes" }] } }];
+    expect(visible(plan)).toBe(true);
   });
 
   it("measures the head unit on a head that setup keeps transparent", () => {
