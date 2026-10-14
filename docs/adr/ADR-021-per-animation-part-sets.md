@@ -41,4 +41,10 @@ Evidence:
   - Automated acceptance went from 5/11 to 9/11: motion recall 0.875, precision 1.0 and seam drift 9.19 px pass (B1 0), and D2 is 1.0.
   - C2, C3 and B3 were known from round 1 and do not count as blind. D1 3/10 against the control's 4/10, so the ADR-019 defaults still miss (face slide, parallax holds, hand range; see `RESULTS-2.md`).
 
+Follow-up (in sample, 2026-10-14):
+
+- **The cane.** Round 2 had pinned the left hand and left the cane on the ground. The artist moves the hand and the cane with the body: −22.2 px against the collar's −22.5 px, turning only 1.6°.
+- **The rule.** A prop the character holds rides on the hand bone, and only a hand resting on scenery is pinned.
+- **Result.** Applied in sample (`plan2b`), motion recall went from 0.875 to 1.0, with D2 at 1.0 and B2 at 9.19 px; D1 is unchanged at 3/10.
+
 Consequences: characters that keep several poses in one skeleton can be planned per animation. A blind brief now includes each animation's part set. Changing attachments within an animation (blinks, mouth shapes) is still not expressible. Rollback: drop `show`/`hide` and the slot-name fallback; plans must then use `slot#attachment` keys and setup parts only.

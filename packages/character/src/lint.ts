@@ -269,7 +269,11 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
           controlIds.add(id);
         }
       }
-    else control(s, where);
+    else {
+      control(s, where);
+      if (s.kind === "face" && (s.y === undefined) === (s.parallax === undefined))
+        errors.push(`${where}: give exactly one of y and parallax`);
+    }
   });
   m.follow?.forEach((c, i) => {
     const where = `motion.follow[${i}]`;
