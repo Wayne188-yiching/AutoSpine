@@ -186,13 +186,19 @@ export function endCentroid(pts: Vec[], dir: Vec, band: number): Vec {
  * Medial polyline of a strand: n+1 joints from its top (or bottom) end. Interior joints take the
  * pixel run closest to the straight line in each slice, so a curved strand stays on its own pixels.
  */
-export function strandJoints(pts: Vec[], n: number, from: "top" | "bottom"): Vec[] {
+export function strandJoints(pts: Vec[], n: number, from: "top" | "bottom", near?: Vec): Vec[] {
   const pr = principal(pts);
   const vertical = Math.abs(pr.axis[1]) >= Math.abs(pr.axis[0]);
   const dir: Vec = vertical ? [0, 1] : [1, 0];
   const neg: Vec = [-dir[0], -dir[1]];
-  const a = endCentroid(pts, from === "top" ? neg : dir, 6),
+  let a = endCentroid(pts, from === "top" ? neg : dir, 6),
     b = endCentroid(pts, from === "top" ? dir : neg, 6);
+  // `near`: start at whichever end is closer to that point (a bough grows from its trunk).
+  if (
+    near &&
+    Math.hypot(b[0] - near[0], b[1] - near[1]) < Math.hypot(a[0] - near[0], a[1] - near[1])
+  )
+    [a, b] = [b, a];
   const joints: Vec[] = [];
   const key = vertical ? 1 : 0,
     other = 1 - key;

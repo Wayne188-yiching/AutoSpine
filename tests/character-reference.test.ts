@@ -5,6 +5,7 @@ import {
   checkAcceptance,
   compareToReference,
   drawList,
+  headUnit,
   initialSearchState,
   loadSkeleton,
   makeObjective,
@@ -128,6 +129,29 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     ]);
   });
 
+  it("picks a skin entry's image by its name, not by its placeholder key", () => {
+    // GoldTree (2026-10-14): 216 of 217 entries draw `name` (a recoloured image), not the key.
+    const artist = {
+      skeleton: { spine: "4.0.64" },
+      bones: [{ name: "root" }],
+      slots: [{ name: "Leaf", bone: "root", attachment: "leaf" }],
+      skins: [
+        {
+          name: "bule",
+          attachments: { Leaf: { leaf: { name: "leaf_blue", x: 3, width: 20, height: 10 } } },
+        },
+      ],
+    };
+    const asked: string[] = [];
+    const strip = stripToImagesOnly(artist, (path) => (asked.push(path), [20, 10]));
+    expect(asked).toEqual(["leaf_blue"]);
+    const skin = (strip.document as { skins: { attachments: Record<string, object> }[] }).skins[0]!;
+    expect(skin.attachments.Leaf).toEqual({
+      leaf: { x: 3, y: 0, width: 20, height: 10, path: "leaf_blue" },
+    });
+    expect(readImagesOnlyLayout(strip.document).attachments[0]!.path).toBe("leaf_blue");
+  });
+
   it("passes every automatable criterion when a build is compared with itself", () => {
     const reference = prepareReference(built.document, fixtureImagesOnly(), {
       probes,
@@ -141,6 +165,16 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     expect(check.rows.filter((r) => !r.ok)).toEqual([]);
     expect(check.pass).toBe(true);
     expect(result.performance.IDLE!.review.within).toBe(result.performance.IDLE!.review.total);
+  });
+
+  it("shows a file's only skin when it has no default skin", () => {
+    // GoldTree (2026-10-14): the artist export holds one skin named "bule" and no default skin.
+    const named = fixtureImagesOnly() as ReturnType<typeof fixtureImagesOnly>;
+    named.skins[0]!.name = "bule";
+    const sk = loadSkeleton(named);
+    pose(sk, null, 0);
+    expect(drawList(sk).map((d) => d.slot)).toContain("Head");
+    expect(headUnit(loadSkeleton(named), "Head")).toBeCloseTo(80, 3);
   });
 
   it("profiles loops with phase-invariant chain metrics (ADR-020)", () => {

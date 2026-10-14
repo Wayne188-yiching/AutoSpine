@@ -102,6 +102,8 @@ export function solveDistanceWeights(mesh: MeshSpec, rig: RigSpec): WeightSpec {
 }
 
 export interface WeightOptions {
+  /** Only these bones may influence the mesh (default: every positive-length bone). */
+  bones?: readonly string[];
   maxInfluences?: number;
   smoothingPasses?: number;
   smoothingStrength?: number;
@@ -141,7 +143,11 @@ export function solveWeightsV1(
       "Finite bounded weight options and input sizes required",
     );
   const frames = evaluateRig(rig);
-  const bones = rig.bones.filter((b) => b.length > 0);
+  if (options.bones?.some((id) => !rig.bones.some((b) => b.id === id)))
+    failStage("weights", "WEIGHT_NO_BONES", "Listed weight bones must exist in the rig");
+  const bones = rig.bones.filter(
+    (b) => b.length > 0 && (!options.bones || options.bones.includes(b.id)),
+  );
   if (!bones.length) failStage("weights", "WEIGHT_NO_BONES", "At least one deform bone required");
   const adjacency = mesh.vertices.map(() => new Set<number>());
   if (mesh.triangles.length % 3)

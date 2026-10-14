@@ -120,6 +120,7 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
       const ids = Array.from({ length: c.bones }, (_, k) => `${prefix}_${k + 1}`);
       ids.forEach((id, k) => addBone(id, k ? ids[k - 1] : c.parent, where));
       chains.set(c.part, ids);
+      if (c.near !== undefined) visitRef(c.near, where);
       return;
     }
     const where = `bones[${i}] ${entry.id}`;
@@ -185,6 +186,9 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
         break;
       case "rigid":
         bone(w.bone, where);
+        break;
+      case "nearest":
+        w.bones.forEach((b) => bone(b, where));
         break;
     }
     meshed.add(m.part);

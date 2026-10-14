@@ -42,7 +42,13 @@ Work on copies. Never write into original artwork folders or an open Spine proje
 
    It prints one PASS/FAIL line per criterion and exits 2 if any fails. Plan animations are loops, so the D1 critic uses phase-invariant chain metrics (ADR-020): `range:<probe>` and `lag:<probe>` replace peak time, overshoot and peak delay, and where the loop starts does not matter. `acceptance-results.json` has every measurement. In `compare-<animation>.png`, the top row is the artist version and the bottom row the build, at the same times.
 
-6. **Tune motion** [`autospine_optimize_motion`] when D1/D2 fail. Run it in chunks:
+6. **Review video** [`autospine_review_video`]: one MP4 per plan, every animation first with the mesh wireframe, then with the bones, then the plain motion; artist | build when an artist file is given. Needs ffmpeg.
+
+   ```text
+   node packages/cli/dist/index.js review-video work/plan.json work/build-1 [artist.json] work/review.mp4
+   ```
+
+7. **Tune motion** [`autospine_optimize_motion`] when D1/D2 fail. Run it in chunks:
 
    ```text
    node packages/cli/dist/index.js optimize-motion work/plan.json artist.json work/opt --budget=150
@@ -56,7 +62,7 @@ Work on copies. Never write into original artwork folders or an open Spine proje
 
    Then build and compare again. The search only moves parameters listed in `motion.search`. Results tuned against the artist version are **benchmark-tuned**, not blind; say so when reporting.
 
-7. **Hand off**: import into the Spine editor (A5) and get an artist's review (E). Numeric acceptance is not artistic approval.
+8. **Hand off**: import into the Spine editor (A5) and get an artist's review (E). Numeric acceptance is not artistic approval.
 
 ## Plan reference
 
@@ -84,7 +90,7 @@ Work on copies. Never write into original artwork folders or an open Spine proje
 Bones are created in order, and a parent must come earlier.
 
 - `{ id, parent?, at, to?, angle?, length? }`: a bone at joint `at` pointing to `to`, or at a fixed world `angle` (degrees, clockwise on screen; `-90` points up; `"art"` uses the plan's `artAngle`). `length` defaults to the distance to `to`.
-- `{ chain: { part, bones, parent, from?, prefix? } }`: `bones` bones along the medial line of a strand image, from its `top` (default) or `bottom`, named `${prefix}_1…n`. `prefix` defaults to the part name. Use it for hair, tails, ribbons and sleeves.
+- `{ chain: { part, bones, parent, from?, near?, prefix? } }`: `bones` bones along the medial line of a strand image, from its `top` (default) or `bottom` (on a horizontal strand: left or right), or from the end nearest joint `near` (ADR-023), named `${prefix}_1…n`. `prefix` defaults to the part name. Use it for hair, tails, ribbons, sleeves, boughs and hanging ornaments.
 
 ### Face
 
@@ -117,6 +123,7 @@ Give bangs or back hair their own bone so they can be a layer. A follower or lay
 | `dome`         | —                                                       | Face dome with pins (needs `face`)                                                                          |
 | `transfer`     | `sources[]`, `proxies?[{part, bone}]`, `maxInfluences?` | Copy from meshes planned **earlier** (ADR-013): glows, outlines, shadows; proxies stand in for region parts |
 | `rigid`        | `bone`                                                  | Whole mesh on one bone                                                                                      |
+| `nearest`      | `bones[]`, `maxInfluences?`, `smoothing?`               | Inverse distance to the listed bones' segments, smoothed (ADR-023): leaf clusters and other blobs           |
 
 `regions: { slot: bone }` puts region images rigidly on a bone. A sheared placement on a region slot becomes a rigid quad automatically. Every image needs a mesh (by key or slot) or a region bone, and lint reports any that has neither.
 
@@ -163,6 +170,7 @@ Eases: `linear`, `hold`, `ease`, `sine`, `out`, `in`, `drift`, or a curve. Every
 - **Optimizer margin.** The optimizer searches inside bands shrunk by 5 %, so its own critic count is lower than the official one. Use `--band-shrink=0` to read the official count.
 - **Idle shape.** Artist idles are symmetric breaths (10 of 11 seen idles, including the YoLu blind test): use `shape: "breath"` with `down` at half the cycle. The settle template's anticipation and hold put the beats in the wrong place for an idle. Artists may start a loop mid-breath; that phase cannot be read from the images.
 - **Planted hands and held props.** A hand resting on scenery or on the body (a bar, a table, the floor, the forehead) barely moves with the body: pin it with an IK constraint whose target bone hangs on that thing's bone (`root`, `head`). A prop the character holds (a cane, a cup, a fan) is part of the hand: hang it on the hand bone so it rides with the hand, and treat the hand as free unless the prop also rests on scenery (a glass on a bar). Give a free hand `travel` about 0.4 (the range across characters is wide).
+- **Props.** Rigid regions can pass the numbers but not the review video. Give trunks and boughs chains (`chain.near` the trunk top for boughs), leaf clusters an inner-end root plus four short control bones with `nearest` weights, hanging ornaments chains parented to their bough, and glows transfer weights (ADR-023).
 - **Pose sets.** Check which slots each animation shows before planning: an animation may hide the setup pose and show a set that is hidden in setup. Rig that set (a hidden slot with one attachment can be named by its slot) and switch it with `show` / `hide`. Planning the setup set for such an animation leaves recall at 0.
 - **Face slide.** Plan the face by `parallax` (head widths), not `y` px: the same slide gives 0.33–0.6 of it in eye parallax depending on the dome, and px rules overshot 1.8–2.7× on unseen characters. Start at the artists' median, 0.03 with `x` 0.2. Add `move` only when the face should hold between breaths (3 of 12 seen idles).
 - **Saccades.** Only 4 of 11 seen idles saccade; add `keyed` looks with `move` only when the brief asks for them.

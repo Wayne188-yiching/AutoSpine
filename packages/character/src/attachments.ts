@@ -19,6 +19,7 @@ import {
   solveChainWeights,
   solveDomeWeights,
   solveGradientWeights,
+  solveWeightsV1,
   transferWeights,
   type DomePin,
 } from "@autospine/weights";
@@ -63,6 +64,8 @@ export function assetFor(p: CharacterPart, id: string, alpha: Uint8Array = p.alp
 }
 /** Image-local mesh to world mesh: vertices through the placement, uvs normalised to the image. */
 function toWorldMesh(m: Mesh2D, p: CharacterPart, id: string): MeshSpec {
+  // A mirrored placement (negative determinant, e.g. a flipped bough) reverses the winding.
+  const mirrored = p.affine[0] * p.affine[3] - p.affine[1] * p.affine[2] < 0;
   return {
     schemaVersion: "0.1",
     kind: "mesh",
@@ -75,8 +78,10 @@ function toWorldMesh(m: Mesh2D, p: CharacterPart, id: string): MeshSpec {
     uvs: m.vertices.map(
       ([x, y]) => [+(x / p.width).toFixed(6), +(y / p.height).toFixed(6)] as [number, number],
     ),
-    triangles: m.triangles,
-    hull: m.hull,
+    triangles: mirrored
+      ? m.triangles.map((_, i, t) => t[i - (i % 3) + [0, 2, 1][i % 3]!]!)
+      : m.triangles,
+    hull: mirrored ? [...m.hull].reverse() : m.hull,
     ...(m.manualEdges ? { manualEdges: m.manualEdges } : {}),
   } as MeshSpec;
 }
@@ -190,6 +195,13 @@ export function planAttachments(
         break;
       case "rigid":
         weights = rigidWeights(built.mesh, rig, w.bone);
+        break;
+      case "nearest":
+        weights = solveWeightsV1(built.mesh, rig, {
+          bones: w.bones,
+          maxInfluences: w.maxInfluences ?? 4,
+          smoothingPasses: w.smoothing ?? 2,
+        });
         break;
       case "transfer": {
         const sources = w.sources.map((name) => {

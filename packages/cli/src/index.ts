@@ -7,6 +7,7 @@ import {
   compareReferenceFiles,
   lintPlanFile,
   optimizeMotionFiles,
+  reviewVideoFiles,
   stripImages,
 } from "./character.js";
 import {
@@ -79,7 +80,8 @@ const characterUsage = `Character commands (ADR-017):
   autospine lint-plan <plan.json>
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
   autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
-  autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]`;
+  autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]
+  autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
     args
@@ -149,6 +151,27 @@ async function characterCommand(args: string[]): Promise<boolean> {
       // 0 passed, 3 paused (rerun to continue), 4 converged without passing.
       if (result.status === "paused") process.exitCode = 3;
       if (result.status === "stopped") process.exitCode = 4;
+      return true;
+    }
+    case "review-video": {
+      if (p.length !== 4 && p.length !== 5) throw new Error(characterUsage);
+      known("loops", "height", "font");
+      const opts = {
+        loops: numberFlag("loops"),
+        height: numberFlag("height"),
+        font: flags.get("font"),
+      };
+      console.log(
+        JSON.stringify(
+          await reviewVideoFiles(
+            p[1]!,
+            p[2]!,
+            p.length === 5 ? p[3]! : undefined,
+            p.at(-1)!,
+            Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined)),
+          ),
+        ),
+      );
       return true;
     }
     default:

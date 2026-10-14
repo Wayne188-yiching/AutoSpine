@@ -133,7 +133,12 @@ export function planRig(plan: CharacterPlan, index: PartIndex): PlannedRig {
       const c = entry.chain,
         n = c.bones,
         prefix = c.prefix ?? c.part.replace(/[^A-Za-z0-9_]/g, "_");
-      const js = strandJoints(index.opaque(c.part), n, c.from ?? "top");
+      const js = strandJoints(
+        index.opaque(c.part),
+        n,
+        c.from ?? "top",
+        c.near === undefined ? undefined : solver.get(c.near),
+      );
       evidence[`${c.part}:strand`] = js.map((j) => j.map((v) => Math.round(v * 10) / 10));
       const ids: string[] = [];
       for (let k = 0; k < n; k++) {

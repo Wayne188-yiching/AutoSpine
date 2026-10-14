@@ -15,6 +15,7 @@ interface SpineColor {
   a: number;
 }
 interface SpineBone {
+  data: { name: string; length: number };
   a: number;
   b: number;
   c: number;
@@ -47,7 +48,8 @@ interface SpineAnimation {
 export interface SpineSkeletonData {
   animations: SpineAnimation[];
   findAnimation(name: string): SpineAnimation | null;
-  defaultSkin: SpineSkin;
+  defaultSkin: SpineSkin | null;
+  skins: SpineSkin[];
   findSkin(name: string): SpineSkin | null;
 }
 export interface SpineSkin {
@@ -56,6 +58,7 @@ export interface SpineSkin {
 }
 export interface SpineSkeleton {
   data: SpineSkeletonData;
+  bones: SpineBone[];
   slots: SpineSlot[];
   drawOrder: SpineSlot[];
   setToSetupPose(): void;
@@ -141,6 +144,8 @@ export function loadSkeleton(document: unknown): LoadedSkeleton {
   >;
   const data = new spine.SkeletonJson(loader).readSkeletonData(raw);
   const skeleton = new spine.Skeleton(data);
+  // A file whose only skin is named (no default skin) shows that skin, as the editor does.
+  if (!data.defaultSkin && data.skins.length === 1) skeleton.setSkin(data.skins[0]!);
   skeleton.setToSetupPose();
   skeleton.updateWorldTransform();
   return { raw, data, skeleton };
