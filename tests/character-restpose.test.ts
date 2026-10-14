@@ -82,7 +82,11 @@ describe("rest pose and artist wiring (ADR-024)", () => {
       (x, y) => (x - 35) ** 2 + (y - 30) ** 2 < 400 || (x - 125) ** 2 + (y - 30) ** 2 < 400,
     );
     const asset = assetFor(eyes, "eyes");
-    expect(() => generateFeatureMesh(asset.parts[0]!, eyes.alpha)).toThrow();
+    // The default mesh also wraps both (ADR-028 fallback) instead of failing on the second blob.
+    const plain = generateFeatureMesh(asset.parts[0]!, eyes.alpha);
+    const plainHull = plain.mesh.hull.map((i) => plain.mesh.vertices[i]!);
+    expect(covered([125.5, 30.5], plainHull)).toBe(true);
+    expect(covered([35.5, 30.5], plainHull)).toBe(true);
     const r = generateFeatureMesh(asset.parts[0]!, eyes.alpha, {
       hullVertices: 12,
       interiorVertices: 2,

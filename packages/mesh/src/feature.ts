@@ -243,6 +243,34 @@ function bridgedSolid(alpha: Uint8Array, width: number, height: number): Uint8Ar
   }
   return out;
 }
+/**
+ * The pixel-cell outline of a region, traced on a coarser grid (each cell the union of a k x k
+ * block) when the full-resolution outline cannot be traced (too many corners, or pixels that touch
+ * only at a corner): the coarse outline still covers every pixel.
+ */
+function traceCovering(region: Uint8Array, width: number, height: number): Point[] {
+  for (let k = 1; ; k++) {
+    const w = Math.ceil(width / k),
+      h = Math.ceil(height / k);
+    let mask = region;
+    if (k > 1) {
+      mask = new Uint8Array(w * h);
+      for (let y = 0; y < height; y++)
+        for (let x = 0; x < width; x++)
+          if (region[y * width + x]) mask[Math.floor(y / k) * w + Math.floor(x / k)] = 255;
+    }
+    try {
+      const ring = traceContour(mask, w, h);
+      return k === 1
+        ? ring
+        : ring.map(([x, y]) => [Math.min(width, x * k), Math.min(height, y * k)] as Point);
+    } catch (error) {
+      // Too many corners, or pixels touching only at a corner: a coarser grid fixes both.
+      if (!(error instanceof MeshError) || k >= 16) throw error;
+    }
+  }
+}
+
 /** Transparent 4-connected regions that do not touch the image border. */
 function enclosedHoles(solid: Uint8Array, width: number, height: number): number[][] {
   const seen = new Uint8Array(solid.length),
@@ -416,14 +444,25 @@ export function generateFeatureMesh(
       "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers",
     );
   const budget = options.hullVertices !== undefined;
-  const solid = budget
-    ? bridgedSolid(alpha, width, height)
-    : selectPrimaryComponent(
+  // Detached pieces too large to drop (fur tufts beside a face) are bridged into one outline.
+  const primary = () => {
+    try {
+      return selectPrimaryComponent(
         Uint8Array.from(alpha, (a) => (a > 0 ? 255 : 0)),
         width,
         height,
         0.02,
       ).alpha;
+    } catch (error) {
+      if (
+        !(error instanceof MeshError) ||
+        !error.validation.issues.some((i) => i.code === "DISCARD_BUDGET")
+      )
+        throw error;
+      return bridgedSolid(alpha, width, height);
+    }
+  };
+  const solid = budget ? bridgedSolid(alpha, width, height) : primary();
   const foreground = solid.reduce((n, a) => n + (a ? 1 : 0), 0);
   const holes = enclosedHoles(solid, width, height),
     filled = Uint8Array.from(solid);
@@ -433,14 +472,14 @@ export function generateFeatureMesh(
       : (options.edgeLength ?? Math.max(4, Math.sqrt(foreground) / 16)),
     interior = options.interiorVertices;
   const loop = (region: Uint8Array) => {
-    const ring = simplifyContour(traceContour(region, width, height), region, width, height, true);
+    const ring = simplifyContour(traceCovering(region, width, height), region, width, height, true);
     return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
   };
   // A budget hull starts from the traced pixel-cell outline, which covers every pixel.
   const outer = budget
     ? fitHullBudget(
         (() => {
-          const ring = traceContour(filled, width, height);
+          const ring = traceCovering(filled, width, height);
           return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
         })(),
         options.hullVertices!,
