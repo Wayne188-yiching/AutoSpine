@@ -33,7 +33,7 @@ Decision:
   - `fit-pose` keeps the rest pose logical:
     - The bones on the root stay fixed, because a rest pose does not move the ground. Without this, the horse fit lowered the ground bone 47 px and compensated in the legs and stance.
     - Only the main bone (the hips) and IK targets translate; every other joint only turns. On the wolf's blow loop, the fit had otherwise moved the thigh roots 90–141 px.
-    - Chains, and bones the plan swings with `cycles` (tufts, ears), follow their parent, and their parts count toward it. A strand's bend on frame 0 is motion, not pose: fitting it zig-zagged the fixture's hair ±24° and turned the eagle's and moose's hair tufts 15–40°.
+    - Chains, and bones the plan swings with `cycles` (tufts, ears), follow their parent, and their parts count toward it. A strand's bend on frame 0 is motion, not pose: fitting it zig-zagged the fixture's hair ±24° and turned the eagle's and moose's hair tufts 15–40°. Only end bones swung by rotate cycles qualify: a bone bobbing with a translate cycle, or one with child bones, carries structure and stays fitted. On the ThreePigWC portal the three bobbing heads had been fixed, every face part fell to the group bone and the coverage dropped to 0; with the heads fitted it is 0.83.
     - The result reports `coverage`: the share of sampled texels on parts whose match was used. Below about 0.6 the reference shows what a rest pose cannot, such as a scaled head or another expression, and the pose is not used.
 
 Evidence:
