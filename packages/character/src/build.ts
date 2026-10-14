@@ -16,6 +16,7 @@ import {
 } from "./motion.js";
 import { buildColorTimelines, type ColorTimeline } from "./colors.js";
 import { buildAttachmentTimelines } from "./visibility.js";
+import { applyRestPose } from "./pose.js";
 
 type Slot = CharacterSpineInput["slots"][number];
 type Ik = NonNullable<CharacterSpineInput["ik"]>[number];
@@ -271,7 +272,12 @@ export function animateCharacter(
   const setupColors = new Map(rigging.slots.map((s) => [s.name, s.color ?? "ffffffff"]));
   return {
     specs,
-    animations: specs.map((s) => buildKeyposeAnimation(rigging.rigged.rig, s)),
+    animations: specs.map((s, i) =>
+      applyRestPose(
+        buildKeyposeAnimation(rigging.rigged.rig, s),
+        rigging.plan.motion.animations[i]!.pose,
+      ),
+    ),
     colorTimelines: buildColorTimelines(rigging.plan.motion, setupColors, resolved),
   };
 }
@@ -327,38 +333,58 @@ export interface SeamCheck {
   maxDrift: number;
   inversions: number[];
 }
-/** Engine seam QA: posed overlap drift between planned mesh pairs at one time per animation. */
+/**
+ * Engine seam QA: overlap drift between planned mesh pairs at one time per animation, against the
+ * animation's frame 0 (its rest pose, ADR-024; the setup pose when it has none), along the visible
+ * seam only: the later-drawn part's outline over the other (ADR-025).
+ */
 export function measureSeams(rigging: CharacterRigging, animations: AnimationSpec[]): SeamCheck[] {
   const qa = rigging.plan.qa;
   if (!qa?.seams?.length) return [];
   const out: SeamCheck[] = [];
   for (const anim of animations) {
     const t = qa.at?.[anim.name] ?? anim.duration / 2;
-    // Bone channels stepped to the last key at or before t (no constraints or interpolation).
-    const at = <K extends { time: number }, R>(keys: K[], f: (k: K) => R) => {
-      let k = keys[0]!;
-      for (const x of keys) if (x.time <= t + 1e-9) k = x;
-      return f(k);
+    // Bone channels stepped to the last key at or before a time (no constraints or interpolation).
+    const channels = (time: number) => {
+      const at = <K extends { time: number }, R>(keys: K[], f: (k: K) => R) => {
+        let k = keys[0]!;
+        for (const x of keys) if (x.time <= time + 1e-9) k = x;
+        return f(k);
+      };
+      const rotations: Record<string, number> = {},
+        translations: Record<string, [number, number]> = {},
+        scales: Record<string, [number, number]> = {};
+      for (const tl of anim.rotationTimelines ?? [])
+        rotations[tl.boneId] = at(tl.keys, (k) => k.degrees);
+      for (const tl of anim.translationTimelines ?? [])
+        translations[tl.boneId] = at(tl.keys, (k) => [k.x, k.y]);
+      for (const tl of anim.scaleTimelines ?? [])
+        scales[tl.boneId] = at(tl.keys, (k) => [k.x, k.y]);
+      return { rotations, translations, scales };
     };
-    const rotations: Record<string, number> = {},
-      translations: Record<string, [number, number]> = {},
-      scales: Record<string, [number, number]> = {};
-    for (const tl of anim.rotationTimelines ?? [])
-      rotations[tl.boneId] = at(tl.keys, (k) => k.degrees);
-    for (const tl of anim.translationTimelines ?? [])
-      translations[tl.boneId] = at(tl.keys, (k) => [k.x, k.y]);
-    for (const tl of anim.scaleTimelines ?? []) scales[tl.boneId] = at(tl.keys, (k) => [k.x, k.y]);
+    const rest = channels(0),
+      now = channels(t);
+    // The seam band: 4 % of a head width (the face image), else 20 px.
+    const seamBand = 0.04 * (rigging.motion.faceParallax?.unit ?? 500);
     for (const [a, b] of qa.seams) {
       const A = rigging.meshes.get(a),
         B = rigging.meshes.get(b);
       if (!A || !B) failStage("build", "PLAN_QA", `Seam ${a}/${b} needs two planned meshes`);
       const rig = rigging.rigged.rig;
-      const posed = [A, B].map((m) =>
-        skinVertices(m.mesh, rig, m.weights, rotations, { translations, scales }),
-      );
+      const skin = (m: MeshAsset, c: ReturnType<typeof channels>) =>
+        skinVertices(m.mesh, rig, m.weights, c.rotations, {
+          translations: c.translations,
+          scales: c.scales,
+        });
+      // The rest pose stands in for the setup geometry; the posed mesh is measured against it.
+      const [restA, restB] = [skin(A, rest), skin(B, rest)],
+        posed = [skin(A, now), skin(B, now)];
+      // Only the visible seam counts (ADR-025): the later-drawn part's outline over the other.
+      const order = (part: string) => rigging.slots.findIndex((s) => s.name === part.split("#")[0]);
       const drift = measureOverlapDrift(
-        { mesh: A.mesh, posed: posed[0]! },
-        { mesh: B.mesh, posed: posed[1]! },
+        { mesh: { ...A.mesh, vertices: restA }, posed: posed[0]! },
+        { mesh: { ...B.mesh, vertices: restB }, posed: posed[1]! },
+        { top: order(a) > order(b) ? "a" : "b", band: seamBand },
       );
       out.push({
         animation: anim.name,

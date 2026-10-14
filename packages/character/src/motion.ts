@@ -172,7 +172,18 @@ export function buildMotionSpecs(
             ? (slide * y) / depth
             : (s.upRatio ?? 2 / 3) * y;
         out[s.id] = [r3(n(s.x, "face.x") * fy), r3(fy)];
-      } else out[s.id] = [+(1 - (n(s.amount, `${s.id}.amount`) * y) / depth).toFixed(4), 1];
+      } else if (s.track) {
+        if (s.amount !== undefined)
+          failStage("animation", "PLAN_MOTION_SQUASH", `${s.id}: give amount or track, not both`);
+        const extent = vertical(s.bone);
+        if (!(extent > 1e-6))
+          failStage("animation", "PLAN_MOTION_SQUASH", `${s.id}: ${s.bone} has no vertical extent`);
+        out[s.id] = [+(1 - y / extent).toFixed(5), 1];
+      } else {
+        if (s.amount === undefined)
+          failStage("animation", "PLAN_MOTION_SQUASH", `${s.id}: give amount or track`);
+        out[s.id] = [+(1 - (n(s.amount, `${s.id}.amount`) * y) / depth).toFixed(4), 1];
+      }
     }
     return out;
   };

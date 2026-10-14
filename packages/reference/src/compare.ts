@@ -221,6 +221,61 @@ export function placementDelta(
   return out;
 }
 
+/** Where an attachment puts a UV (barycentric in its UV triangles), or null outside them. */
+function atUv(uvs: number[], tris: number[], verts: number[], u: number, v: number): V2 | null {
+  for (let k = 0; k < tris.length; k += 3) {
+    const [i0, i1, i2] = [tris[k]!, tris[k + 1]!, tris[k + 2]!];
+    const x0 = uvs[2 * i0]!,
+      y0 = uvs[2 * i0 + 1]!,
+      x1 = uvs[2 * i1]!,
+      y1 = uvs[2 * i1 + 1]!,
+      x2 = uvs[2 * i2]!,
+      y2 = uvs[2 * i2 + 1]!;
+    const den = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2);
+    if (Math.abs(den) < 1e-12) continue;
+    const l0 = ((y1 - y2) * (u - x2) + (x2 - x1) * (v - y2)) / den,
+      l1 = ((y2 - y0) * (u - x2) + (x0 - x2) * (v - y2)) / den,
+      l2 = 1 - l0 - l1;
+    if (l0 < -1e-4 || l1 < -1e-4 || l2 < -1e-4) continue;
+    return [
+      l0 * verts[2 * i0]! + l1 * verts[2 * i1]! + l2 * verts[2 * i2]!,
+      l0 * verts[2 * i0 + 1]! + l1 * verts[2 * i1 + 1]! + l2 * verts[2 * i2 + 1]!,
+    ];
+  }
+  return null;
+}
+/**
+ * Rest pose (ADR-024): on frame 0, the mean distance between where the artist's and the generated
+ * attachment put the same UV, over both sides' vertices, for slots both sides show.
+ */
+export function restPoseDelta(art: Tracks, gen: Tracks): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [slot, g] of Object.entries(gen.tr)) {
+    const r = art.tr[slot];
+    const gv = g.verts[0],
+      rv = r?.verts[0];
+    if (!r || !gv || !rv || !g.uvs || !r.uvs || !g.tris || !r.tris) continue;
+    if (g.a[0]! <= 0.02 || r.a[0]! <= 0.02) continue;
+    let sum = 0,
+      n = 0;
+    for (const [from, to] of [
+      [g, r],
+      [r, g],
+    ] as const) {
+      const fv = from.verts[0]!,
+        tv = to.verts[0]!;
+      for (let i = 0; i < fv.length / 2; i++) {
+        const q = atUv(to.uvs!, to.tris!, tv, from.uvs![2 * i]!, from.uvs![2 * i + 1]!);
+        if (!q) continue;
+        sum += Math.hypot(q[0] - fv[2 * i]!, q[1] - fv[2 * i + 1]!);
+        n++;
+      }
+    }
+    if (n) out[slot] = +(sum / n).toFixed(2);
+  }
+  return out;
+}
+
 export interface SlotMotion {
   visible: boolean;
   peakPx?: number;
@@ -518,8 +573,18 @@ export interface CompareResult {
   structure: { artist: StructureStats; generated: StructureStats };
   engineering: {
     A2_setupPlacement: { maxPx: number; perSlot: Record<string, number | null> };
-    A1_imagesOnlyVsArtistSetup: { maxPx: number; worst: [string, number | null][] };
+    /** Over slots the artist's compared animations show (ADR-024); hidden slots reported apart. */
+    A1_imagesOnlyVsArtistSetup: {
+      maxPx: number;
+      worst: [string, number | null][];
+      hiddenMaxPx: number;
+    };
     A4_loopSeam: Record<string, number>;
+    /** Frame-0 pose per animation (ADR-024): per-slot mean offset from the artist, head widths. */
+    A6_restPose: Record<
+      string,
+      { medianHw: number; p90Hw: number; slots: number; worst: [string, number][] }
+    >;
   };
   deformation: Record<string, { artist: DeformationSummary; generated: DeformationSummary }>;
   motion: Record<string, Json | number>;
@@ -564,17 +629,29 @@ export function compareToReference(
     imgVsArt = placementDelta(art, img);
   const numbers = (o: Record<string, number | null>) =>
     Object.values(o).filter((v): v is number => v !== null);
+  // Slots the artist's compared animations show at some frame (alpha above 0.02).
+  const shown = new Set(
+    Object.values(reference.tracks).flatMap((t) =>
+      Object.entries(t.tr)
+        .filter(([, s]) => s.a.some((x) => x > 0.02))
+        .map(([slot]) => slot),
+    ),
+  );
+  const shownOnly = (o: Record<string, number | null>, keep: boolean) =>
+    Object.fromEntries(Object.entries(o).filter(([slot]) => shown.has(slot) === keep));
   const result: CompareResult = {
     structure: { artist: reference.structure, generated: genStructure },
     engineering: {
       A2_setupPlacement: { maxPx: Math.max(0, ...numbers(genVsImg)), perSlot: genVsImg },
       A1_imagesOnlyVsArtistSetup: {
-        maxPx: Math.max(0, ...numbers(imgVsArt)),
-        worst: Object.entries(imgVsArt)
+        maxPx: Math.max(0, ...numbers(shownOnly(imgVsArt, true))),
+        worst: Object.entries(shownOnly(imgVsArt, true))
           .sort((a, b) => (b[1] ?? 0) - (a[1] ?? 0))
           .slice(0, 6),
+        hiddenMaxPx: Math.max(0, ...numbers(shownOnly(imgVsArt, false))),
       },
       A4_loopSeam: {},
+      A6_restPose: {},
     },
     deformation: {},
     motion: { unitHeadWidthPx: +reference.unit.toFixed(1) },
@@ -600,6 +677,18 @@ export function compareToReference(
       }
       result.engineering.A4_loopSeam[`${a}:${who}`] = +worst.toFixed(3);
     }
+    // rest pose on frame 0
+    const rest = restPoseDelta(T.art, T.gen),
+      hw = Object.entries(rest)
+        .map(([slot, px]): [string, number] => [slot, +(px / reference.unit).toFixed(4)])
+        .sort((x, y) => y[1] - x[1]);
+    const q = (f: number) => (hw.length ? hw[Math.floor((1 - f) * (hw.length - 1))]![1] : 0);
+    result.engineering.A6_restPose[a] = {
+      medianHw: q(0.5),
+      p90Hw: q(0.9),
+      slots: hw.length,
+      worst: hw.slice(0, 6),
+    };
     // per-slot motion
     const rows: Json[] = [];
     for (const slot of Object.keys(T.art.tr)) {

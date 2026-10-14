@@ -20,6 +20,7 @@ import {
 import {
   checkAcceptance,
   compareToReference,
+  fitRestPose,
   initialSearchState,
   loadSkeleton,
   reviewFrames,
@@ -380,6 +381,101 @@ export async function optimizeMotionFiles(
     ),
     failing: Object.fromEntries(Object.entries(best.perf).map(([a, p]) => [a, p.failing])),
     trajectory: best.trajectory,
+  };
+}
+
+/**
+ * fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> (ADR-024): the rest pose that
+ * places the build's parts where a reference image shows them. The reference covers plan.qa.view
+ * at any scale; frame 0 of the animation (default: the first) is the starting pose.
+ */
+export async function fitPoseFiles(
+  planPath: string,
+  buildDir: string,
+  referencePath: string,
+  outPath: string,
+  opts: { animation?: string; window?: number; maxRotate?: number } = {},
+) {
+  if (existsSync(outPath))
+    throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  const plan = await readPlan(planPath);
+  const view = plan.qa?.view;
+  if (!view)
+    throw new Error("CLI_FIT_VIEW: fit-pose needs plan.qa.view, the world area of the reference");
+  const animation = opts.animation ?? plan.motion.animations[0]!.name;
+  const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as unknown;
+  const reference = decodePng(await readFile(referencePath), referencePath);
+  const sx = reference.width / view.width,
+    sy = reference.height / view.height;
+  if (Math.abs(sx / sy - 1) > 0.02)
+    throw new Error(
+      `CLI_FIT_VIEW: ${referencePath} is ${reference.width}x${reference.height}; plan.qa.view is ${view.width}x${view.height}`,
+    );
+  const paths = planPaths(planPath, plan);
+  // Only the plan's bones take offsets (the compiler adds helper frames for some of them).
+  const { layout } = await loadLayout(paths.imagesOnly, paths.images);
+  // The face rig stays with the head: a face that differs from the reference is an expression
+  // (ADR-024 leaves expressions out), and its holes must stay over the eyes. The root and the
+  // bones on it place the character on the ground: a rest pose does not move the ground.
+  const rigging = rigCharacter(plan, layout),
+    face = plan.face,
+    fixed = new Set([
+      "root",
+      ...rigging.rigged.rig.bones.filter((b) => b.parentId === "root").map((b) => b.id),
+      // A strand's bend on frame 0 is motion, not pose: chains follow their parent, and their
+      // parts count toward it.
+      ...Object.values(rigging.rigged.chains).flat(),
+      ...((rigging.evidence.faceCarriers as string[] | undefined) ?? []),
+      ...(face
+        ? [
+            face.base,
+            face.control,
+            ...(face.counter ? [face.counter] : []),
+            ...face.followers,
+            ...(face.layers ?? []).map((l) => l.bone),
+          ]
+        : []),
+    ]);
+  const bones = rigging.rigged.rig.bones.map((b) => b.id).filter((id) => !fixed.has(id));
+  // A chain's strand also places the bone it hangs from (hair and moustaches place the head).
+  const groups: Record<string, string> = {};
+  for (const entry of plan.bones)
+    if ("chain" in entry)
+      for (const id of rigging.rigged.chains[entry.chain.part] ?? [])
+        groups[id] = entry.chain.parent;
+  const images = new Map<string, PNG>();
+  const result = fitRestPose(
+    document,
+    animation,
+    { width: reference.width, height: reference.height, rgba: reference.data },
+    (path) => {
+      let png = images.get(path);
+      if (!png) images.set(path, (png = decodePngSync(resolve(paths.images, path + ".png"))));
+      return { width: png.width, height: png.height, rgba: png.data };
+    },
+    {
+      view,
+      bones,
+      groups,
+      // Only the hips (the main bone) and IK targets move; every other joint turns (ADR-025).
+      translate: [plan.motion.main.bone, ...(plan.constraints?.ik ?? []).map((c) => c.target)],
+      ...(opts.window !== undefined ? { window: opts.window } : {}),
+      ...(opts.maxRotate !== undefined ? { maxRotate: opts.maxRotate } : {}),
+    },
+  );
+  await mkdir(dirname(resolve(outPath)), { recursive: true });
+  await writeFile(outPath, JSON.stringify({ animation, ...result }, null, 1), {
+    encoding: "utf8",
+    flag: "wx",
+  });
+  return {
+    output: outPath,
+    animation,
+    bones: Object.keys(result.pose).length,
+    parts: result.parts.length,
+    used: result.parts.filter((p) => p.used).length,
+    coverage: result.coverage,
+    residual: result.residual,
   };
 }
 

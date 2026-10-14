@@ -5,7 +5,7 @@ export interface CriterionRow {
   ok: boolean;
   value: unknown;
 }
-/** Thresholds of the pre-registered acceptance (freeze-F1, ADR-017). */
+/** Thresholds of the pre-registered acceptance (freeze-F1, ADR-017; A1 scope and A6 from ADR-024). */
 export const ACCEPTANCE = Object.freeze({
   imagesOnlyFitPx: 2,
   setupPlacementPx: 0.5,
@@ -16,6 +16,9 @@ export const ACCEPTANCE = Object.freeze({
   precision: 0.7,
   critic: 0.6,
   amplitude: 0.6,
+  /** ADR-024, provisional (one in-sample calibration): frame-0 offsets in head widths. */
+  restPoseMedianHw: 0.03,
+  restPoseP90Hw: 0.1,
 });
 /**
  * Every automatable criterion of the pre-registered acceptance. A3 (runtime load) is implied by
@@ -30,7 +33,7 @@ export function checkAcceptance(
   const add = (id: string, ok: boolean, value: unknown) => rows.push({ id, ok, value });
   const animations = Object.keys(r.performance);
   add(
-    "A1 imagesOnly fit <= 2 px",
+    "A1 imagesOnly fit (shown slots) <= 2 px",
     r.engineering.A1_imagesOnlyVsArtistSetup.maxPx <= ACCEPTANCE.imagesOnlyFitPx,
     r.engineering.A1_imagesOnlyVsArtistSetup.maxPx,
   );
@@ -42,6 +45,14 @@ export function checkAcceptance(
   for (const a of animations) {
     const v = r.engineering.A4_loopSeam[`${a}:generated`] ?? Infinity;
     add(`A4 loop seam ${a} <= 0.5 px`, v <= ACCEPTANCE.loopSeamPx, v);
+  }
+  for (const a of animations) {
+    const p = r.engineering.A6_restPose[a];
+    add(
+      `A6 rest pose ${a}: median <= 0.03, p90 <= 0.1 hw`,
+      !!p && p.medianHw <= ACCEPTANCE.restPoseMedianHw && p.p90Hw <= ACCEPTANCE.restPoseP90Hw,
+      p ? `${p.medianHw} / ${p.p90Hw}` : null,
+    );
   }
   for (const a of animations)
     add(

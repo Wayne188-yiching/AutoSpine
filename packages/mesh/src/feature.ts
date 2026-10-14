@@ -16,6 +16,13 @@ export interface FeatureMeshOptions {
   edgeLength?: number;
   /** Interior lattice spacing in pixels. */
   spacing?: number;
+  /**
+   * Vertex budget (ADR-024): the hull is reduced or split to this many vertices while it keeps
+   * covering every opaque pixel; holes are covered and long edges are not subdivided.
+   */
+  hullVertices?: number;
+  /** Interior lattice points: the spacing is searched to give about this many (0: none). */
+  interiorVertices?: number;
 }
 export interface FeatureMesh {
   mesh: MeshSpec;
@@ -27,6 +34,215 @@ const cross = (a: Point, b: Point, c: Point) =>
   (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
 const edgeKey = (a: number, b: number) => `${Math.min(a, b)}:${Math.max(a, b)}`;
 
+/**
+ * Whether cutting triangle a-v-b off a ring uncovers a solid pixel centre: one strictly on v's side
+ * of the new edge a-b and inside or on the old edges a-v, v-b.
+ */
+function cutsSolid(a: Point, v: Point, b: Point, solid: Uint8Array, width: number, height: number) {
+  const x0 = Math.max(0, Math.floor(Math.min(a[0], v[0], b[0]) - 0.5)),
+    x1 = Math.min(width - 1, Math.ceil(Math.max(a[0], v[0], b[0]))),
+    y0 = Math.max(0, Math.floor(Math.min(a[1], v[1], b[1]) - 0.5)),
+    y1 = Math.min(height - 1, Math.ceil(Math.max(a[1], v[1], b[1])));
+  const s = Math.sign(cross(a, v, b));
+  if (!s) return false;
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
+      if (!solid[y * width + x]) continue;
+      const p: Point = [x + 0.5, y + 0.5];
+      if (cross(a, v, p) * s >= 0 && cross(v, b, p) * s >= 0 && cross(b, a, p) * s > 1e-9)
+        return true;
+    }
+  return false;
+}
+/**
+ * Reduces a covering ring (traced pixel-cell edges) to `target` vertices. Each step takes the
+ * cheapest change in area that keeps every solid pixel centre covered, the ring simple and inside
+ * the image: dropping a vertex (a concave one grows the ring; a convex one may cut empty pixels
+ * only) or replacing two convex neighbours by the meeting point of their outer edges. Long edges
+ * are then split up to the target.
+ */
+function fitHullBudget(
+  ring: Point[],
+  target: number,
+  solid: Uint8Array,
+  width: number,
+  height: number,
+): Point[] {
+  // Collinear runs first: free and exact.
+  let out = ring.filter((v, i) => {
+    const a = ring[(i - 1 + ring.length) % ring.length]!,
+      b = ring[(i + 1) % ring.length]!;
+    return Math.abs(cross(a, v, b)) > 1e-12;
+  });
+  const orient = Math.sign(signedArea2(out)) || 1,
+    inImage = (p: Point) =>
+      p[0] >= -1e-6 && p[1] >= -1e-6 && p[0] <= width + 1e-6 && p[1] <= height + 1e-6;
+  const crossing = (edges: [Point, Point][], skip: Set<number>) =>
+    out.some((c, k) => {
+      if (skip.has(k)) return false;
+      const d = out[(k + 1) % out.length]!;
+      return edges.some(([a, b]) => properCrossing(a, b, c, d));
+    });
+  while (out.length > Math.max(3, target)) {
+    const n = out.length,
+      at = (i: number) => out[((i % n) + n) % n]!;
+    type Step = { cost: number; apply: () => Point[]; edges: [Point, Point][]; skip: Set<number> };
+    const steps: Step[] = [];
+    for (let i = 0; i < n; i++) {
+      const a = at(i - 1),
+        v = at(i),
+        b = at(i + 1);
+      const turn = cross(a, v, b) * orient,
+        area = Math.abs(cross(a, v, b)) / 2;
+      if (turn <= 0 || !cutsSolid(a, v, b, solid, width, height))
+        steps.push({
+          cost: area,
+          apply: () => out.filter((_, k) => k !== i),
+          edges: [[a, b]],
+          skip: new Set([(i - 1 + n) % n, i]),
+        });
+      // v and b both convex: extend edges a-v and c-b to meet beyond them.
+      const c = at(i + 2);
+      if (turn > 0 && cross(v, b, c) * orient > 0) {
+        const d1: Point = [v[0] - a[0], v[1] - a[1]],
+          d2: Point = [b[0] - c[0], b[1] - c[1]],
+          den = d1[0] * d2[1] - d1[1] * d2[0];
+        if (Math.abs(den) < 1e-12) continue;
+        const t = ((c[0] - a[0]) * d2[1] - (c[1] - a[1]) * d2[0]) / den,
+          P: Point = [a[0] + t * d1[0], a[1] + t * d1[1]];
+        if (t <= 1 || !inImage(P)) continue;
+        // Rounding past the image edge would put a UV outside [0, 1].
+        P[0] = Math.min(width, Math.max(0, P[0]));
+        P[1] = Math.min(height, Math.max(0, P[1]));
+        if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0) continue;
+        const j = (i + 1) % n;
+        steps.push({
+          cost: Math.abs(cross(v, P, b)) / 2,
+          apply: () => {
+            const next = out.map((p, k) => (k === i ? P : p));
+            return next.filter((_, k) => k !== j);
+          },
+          edges: [
+            [a, P],
+            [P, c],
+          ],
+          skip: new Set([(i - 1 + n) % n, i, j, (j + 1) % n]),
+        });
+      }
+    }
+    steps.sort((x, y) => x.cost - y.cost);
+    const step = steps.find((x) => !crossing(x.edges, x.skip));
+    if (!step) break;
+    out = step.apply();
+  }
+  while (out.length < target) {
+    let k = 0,
+      longest = -1;
+    out.forEach((a, i) => {
+      const b = out[(i + 1) % out.length]!,
+        l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      if (l > longest) [k, longest] = [i, l];
+    });
+    const a = out[k]!,
+      b = out[(k + 1) % out.length]!;
+    out.splice(k + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+  }
+  return out;
+}
+
+/**
+ * One region for a budget hull: 4-connected components of alpha above 8 (specks under 0.1 % of
+ * the foreground dropped), joined into a tree by 3 px bridges between their closest boundary
+ * pixels, as an artist draws one outline around two eyes on one image.
+ */
+function bridgedSolid(alpha: Uint8Array, width: number, height: number): Uint8Array {
+  const on = Uint8Array.from(alpha, (a) => (a > 8 ? 1 : 0)),
+    label = new Int32Array(on.length).fill(-1),
+    comps: number[][] = [];
+  for (let start = 0; start < on.length; start++) {
+    if (!on[start] || label[start]! >= 0) continue;
+    const comp = [start];
+    label[start] = comps.length;
+    for (let k = 0; k < comp.length; k++) {
+      const i = comp[k]!,
+        x = i % width,
+        y = (i - x) / width;
+      for (const [nx, ny] of [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1],
+      ] as const) {
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+        const j = ny * width + nx;
+        if (on[j] && label[j]! < 0) {
+          label[j] = comps.length;
+          comp.push(j);
+        }
+      }
+    }
+    comps.push(comp);
+  }
+  const total = comps.reduce((n, c) => n + c.length, 0);
+  if (!total) failMesh("FEATURE_EMPTY", "Part has no opaque pixels");
+  const kept = comps.filter((c) => c.length >= Math.max(4, 0.001 * total));
+  kept.sort((a, b) => b.length - a.length);
+  const out = new Uint8Array(on.length);
+  for (const c of kept) for (const i of c) out[i] = 255;
+  if (kept.length === 1) return out;
+  // Boundary pixels of each component, thinned to at most 400 for the pair search.
+  const edges = kept.map((c) => {
+    const id = label[c[0]!]!;
+    const b = c.filter((i) => {
+      const x = i % width,
+        y = (i - x) / width;
+      return [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1],
+      ].some(
+        ([nx, ny]) =>
+          nx! < 0 || ny! < 0 || nx! >= width || ny! >= height || label[ny! * width + nx!] !== id,
+      );
+    });
+    const step = Math.max(1, Math.ceil(b.length / 400));
+    return b.filter((_, k) => k % step === 0);
+  });
+  const joined = [0];
+  while (joined.length < kept.length) {
+    let best: [number, number, number, number] = [Infinity, 0, 0, 0];
+    for (const a of joined)
+      for (let b = 0; b < kept.length; b++) {
+        if (joined.includes(b)) continue;
+        for (const i of edges[a]!)
+          for (const j of edges[b]!) {
+            const dx = (i % width) - (j % width),
+              dy = Math.floor(i / width) - Math.floor(j / width),
+              d = dx * dx + dy * dy;
+            if (d < best[0]) best = [d, i, j, b];
+          }
+      }
+    const [, i, j, b] = best;
+    const x0 = i % width,
+      y0 = Math.floor(i / width),
+      x1 = j % width,
+      y1 = Math.floor(j / width),
+      n = Math.max(1, Math.ceil(Math.hypot(x1 - x0, y1 - y0)));
+    for (let k = 0; k <= n; k++) {
+      const cx = x0 + ((x1 - x0) * k) / n,
+        cy = y0 + ((y1 - y0) * k) / n;
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const x = Math.round(cx) + dx,
+            y = Math.round(cy) + dy;
+          if (x >= 0 && y >= 0 && x < width && y < height) out[y * width + x] = 255;
+        }
+    }
+    joined.push(b);
+  }
+  return out;
+}
 /** Transparent 4-connected regions that do not touch the image border. */
 function enclosedHoles(solid: Uint8Array, width: number, height: number): number[][] {
   const seen = new Uint8Array(solid.length),
@@ -189,31 +405,52 @@ export function generateFeatureMesh(
   if (
     alpha.length !== width * height ||
     !(minHoleFraction > 0 && minHoleFraction <= 1) ||
-    [options.edgeLength, options.spacing].some((v) => v !== undefined && !(v >= 2 && v <= 4096))
+    [options.edgeLength, options.spacing].some((v) => v !== undefined && !(v >= 2 && v <= 4096)) ||
+    (options.hullVertices !== undefined &&
+      !(Number.isInteger(options.hullVertices) && options.hullVertices >= 3)) ||
+    (options.interiorVertices !== undefined &&
+      !(Number.isInteger(options.interiorVertices) && options.interiorVertices >= 0))
   )
     failMesh(
       "FEATURE_INPUT",
-      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px",
+      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers",
     );
-  const solid = selectPrimaryComponent(
-    Uint8Array.from(alpha, (a) => (a > 0 ? 255 : 0)),
-    width,
-    height,
-    0.02,
-  ).alpha;
+  const budget = options.hullVertices !== undefined;
+  const solid = budget
+    ? bridgedSolid(alpha, width, height)
+    : selectPrimaryComponent(
+        Uint8Array.from(alpha, (a) => (a > 0 ? 255 : 0)),
+        width,
+        height,
+        0.02,
+      ).alpha;
   const foreground = solid.reduce((n, a) => n + (a ? 1 : 0), 0);
   const holes = enclosedHoles(solid, width, height),
     filled = Uint8Array.from(solid);
   for (const hole of holes) for (const i of hole) filled[i] = 255;
-  const edgeLength = options.edgeLength ?? Math.max(4, Math.sqrt(foreground) / 16),
-    spacing = options.spacing ?? Math.max(4, Math.sqrt(foreground / 48));
+  const edgeLength = budget
+      ? Infinity
+      : (options.edgeLength ?? Math.max(4, Math.sqrt(foreground) / 16)),
+    interior = options.interiorVertices;
   const loop = (region: Uint8Array) => {
     const ring = simplifyContour(traceContour(region, width, height), region, width, height, true);
     return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
   };
-  const outer = loop(filled);
+  // A budget hull starts from the traced pixel-cell outline, which covers every pixel.
+  const outer = budget
+    ? fitHullBudget(
+        (() => {
+          const ring = traceContour(filled, width, height);
+          return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
+        })(),
+        options.hullVertices!,
+        filled,
+        width,
+        height,
+      )
+    : loop(filled);
   const rings = holes
-    .filter((hole) => hole.length >= minHoleFraction * foreground)
+    .filter((hole) => !budget && hole.length >= minHoleFraction * foreground)
     .map((hole) => {
       const region = new Uint8Array(width * height);
       for (const i of hole) region[i] = 255;
@@ -278,23 +515,46 @@ export function generateFeatureMesh(
   const locked = new Set(
     ringIndices.flatMap((r) => r.map((v, k) => edgeKey(v, r[(k + 1) % r.length]!))),
   );
-  for (let y = spacing / 2 + 0.37; y < height; y += spacing)
-    for (let x = spacing / 2 + 0.61; x < width; x += spacing) {
-      const p: Point = [x, y];
-      if (!inside(p, outer) || rings.some((r) => inside(p, r))) continue;
-      if (boundaries.some((b) => distanceToPolygon(p, b) < 0.5 * spacing)) continue;
-      const target = triangles.findIndex(
-        ([a, b, c]) =>
-          cross(points[a]!, points[b]!, p) > 1e-9 &&
-          cross(points[b]!, points[c]!, p) > 1e-9 &&
-          cross(points[c]!, points[a]!, p) > 1e-9,
-      );
-      if (target < 0) continue;
-      const index = points.length,
-        [a, b, c] = triangles[target]!;
-      points.push(p);
-      triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+  const lattice = (spacing: number) => {
+    const out: Point[] = [];
+    for (let y = spacing / 2 + 0.37; y < height; y += spacing)
+      for (let x = spacing / 2 + 0.61; x < width; x += spacing) {
+        const p: Point = [x, y];
+        if (!inside(p, outer) || rings.some((r) => inside(p, r))) continue;
+        if (boundaries.some((b) => distanceToPolygon(p, b) < 0.5 * spacing)) continue;
+        out.push(p);
+      }
+    return out;
+  };
+  let grid: Point[] = [];
+  if (interior === undefined)
+    grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
+  else if (interior > 0) {
+    // The count falls as the spacing grows: bisect the spacing in log space for the closest count.
+    let lo = 2,
+      hi = Math.max(width, height);
+    grid = lattice(hi);
+    for (let k = 0; k < 24; k++) {
+      const mid = Math.sqrt(lo * hi),
+        g = lattice(mid);
+      if (Math.abs(g.length - interior) < Math.abs(grid.length - interior)) grid = g;
+      if (g.length > interior) lo = mid;
+      else hi = mid;
     }
+  }
+  for (const p of grid) {
+    const target = triangles.findIndex(
+      ([a, b, c]) =>
+        cross(points[a]!, points[b]!, p) > 1e-9 &&
+        cross(points[b]!, points[c]!, p) > 1e-9 &&
+        cross(points[c]!, points[a]!, p) > 1e-9,
+    );
+    if (target < 0) continue;
+    const index = points.length,
+      [a, b, c] = triangles[target]!;
+    points.push(p);
+    triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+  }
   improve(points, triangles, locked);
 
   const canonical = (t: [number, number, number]) => {

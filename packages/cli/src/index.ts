@@ -8,6 +8,7 @@ import {
   lintPlanFile,
   optimizeMotionFiles,
   reviewVideoFiles,
+  fitPoseFiles,
   stripImages,
 } from "./character.js";
 import {
@@ -81,7 +82,8 @@ const characterUsage = `Character commands (ADR-017):
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
   autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
   autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]
-  autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]`;
+  autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]
+  autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--window=units] [--max-rotate=deg]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
     args
@@ -168,6 +170,27 @@ async function characterCommand(args: string[]): Promise<boolean> {
             p[2]!,
             p.length === 5 ? p[3]! : undefined,
             p.at(-1)!,
+            Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined)),
+          ),
+        ),
+      );
+      return true;
+    }
+    case "fit-pose": {
+      if (p.length !== 5) throw new Error(characterUsage);
+      known("animation", "window", "max-rotate");
+      const opts = {
+        animation: flags.get("animation"),
+        window: numberFlag("window"),
+        maxRotate: numberFlag("max-rotate"),
+      };
+      console.log(
+        JSON.stringify(
+          await fitPoseFiles(
+            p[1]!,
+            p[2]!,
+            p[3]!,
+            p[4]!,
             Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined)),
           ),
         ),

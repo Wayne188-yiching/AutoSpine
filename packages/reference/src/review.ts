@@ -67,14 +67,57 @@ export function drawWireframe(sk: LoadedSkeleton, view: View, r: Raster, c: RGB 
       }
   }
 }
+type RuntimeBone = { data: { name: string }; parent: RuntimeBone | null };
+type Constraint = { bones: RuntimeBone[]; target: RuntimeBone };
+/**
+ * Bones that move what is shown (ADR-024): each visible attachment's slot bone and mesh weight
+ * bones, constraint targets acting on them, and all their ancestors. A rig holding several pose
+ * sets has many bones that drive hidden parts only.
+ */
+export function drivingBones(sk: LoadedSkeleton): Set<string> {
+  const skeleton = sk.skeleton as unknown as {
+    bones: RuntimeBone[];
+    drawOrder: {
+      bone: RuntimeBone;
+      color: { a: number };
+      getAttachment(): { color: { a: number }; bones?: number[] | null } | null;
+    }[];
+    ikConstraints?: Constraint[];
+    transformConstraints?: Constraint[];
+  };
+  const set = new Set<RuntimeBone>();
+  for (const slot of skeleton.drawOrder) {
+    const att = slot.getAttachment();
+    if (!att || slot.color.a * att.color.a <= 0.02) continue;
+    set.add(slot.bone);
+    const weights = att.bones;
+    if (weights)
+      for (let i = 0; i < weights.length;) {
+        const n = weights[i++]!;
+        for (let k = 0; k < n; k++) set.add(skeleton.bones[weights[i++]!]!);
+      }
+  }
+  for (const c of [...(skeleton.ikConstraints ?? []), ...(skeleton.transformConstraints ?? [])])
+    if (c.bones.some((b) => set.has(b))) set.add(c.target);
+  const out = new Set<string>();
+  for (const b of set) for (let x: RuntimeBone | null = b; x; x = x.parent) out.add(x.data.name);
+  return out;
+}
 /** Bones from origin to tip (their world x axis times length) with a dot on every origin. */
-export function drawBones(sk: LoadedSkeleton, view: View, r: Raster, c: RGB = [255, 196, 60]) {
-  for (const b of sk.skeleton.bones) {
+export function drawBones(
+  sk: LoadedSkeleton,
+  view: View,
+  r: Raster,
+  c: RGB = [255, 196, 60],
+  only?: ReadonlySet<string>,
+) {
+  const bones = sk.skeleton.bones.filter((b) => !only || only.has(b.data.name));
+  for (const b of bones) {
     const o = toPx(view, b.worldX, b.worldY),
       L = b.data.length;
     if (L > 0) drawLine(r, o, toPx(view, b.worldX + b.a * L, b.worldY + b.c * L), c, 0.95, 2);
   }
-  for (const b of sk.skeleton.bones) drawDot(r, toPx(view, b.worldX, b.worldY), [255, 255, 255], 2);
+  for (const b of bones) drawDot(r, toPx(view, b.worldX, b.worldY), [255, 255, 255], 2);
 }
 
 export type ReviewSegment = "wireframe" | "bones" | "motion";
@@ -124,7 +167,7 @@ export function reviewFrames(
         dim(tile, 0.45);
         pose(sk, animation, Math.min(duration, f / fps));
         if (segment === "wireframe") drawWireframe(sk, view, tile);
-        else drawBones(sk, view, tile);
+        else drawBones(sk, view, tile, undefined, drivingBones(sk));
       }
       const x0 = side * (view.width + gap);
       for (let y = 0; y < view.height; y++)
