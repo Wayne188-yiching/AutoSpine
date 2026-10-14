@@ -189,6 +189,8 @@ export class JointSolver {
         return lerp(this.get(rule.a), this.get(rule.b), rule.t);
       case "project":
         return project(this.get(rule.point), this.get(rule.a), this.get(rule.b));
+      case "align":
+        return [this.get(rule.x)[0], this.get(rule.y)[1]];
       case "narrowest": {
         const r = narrowest(
           ix.opaque(rule.part),

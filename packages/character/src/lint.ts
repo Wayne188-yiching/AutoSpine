@@ -62,6 +62,10 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
         visitRef(rule.a, where, into);
         visitRef(rule.b, where, into);
         break;
+      case "align":
+        visitRef(rule.x, where, into);
+        visitRef(rule.y, where, into);
+        break;
       case "project":
         visitRef(rule.point, where, into);
         visitRef(rule.a, where, into);
@@ -236,6 +240,12 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
       once(slot);
       if (slotNames && !slotNames.has(slot))
         errors.push(`${where}: hide names unknown slot ${slot}`);
+    }
+    // Rest pose (ADR-024): planned bones with finite offsets.
+    for (const [id, p] of Object.entries(a.pose ?? {})) {
+      bone(id, `${where} pose`);
+      if ([p.x, p.y, p.rotate].some((v) => v !== undefined && !Number.isFinite(v)))
+        errors.push(`${where}: pose ${id} needs finite offsets`);
     }
   }
   for (const a of m.animations)

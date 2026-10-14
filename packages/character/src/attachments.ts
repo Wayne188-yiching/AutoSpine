@@ -41,6 +41,20 @@ type Mesh2D = {
 };
 
 const safeId = (s: string) => s.replace(/[^A-Za-z0-9_]/g, "_");
+/**
+ * Artist vertex budget (ADR-024), from 423 artist character meshes (HorseYearFish, mummy cat):
+ * s = sqrt(image width x height) px; hull round(sqrt s) in 6..40; interior 0 below s 100, else
+ * round(s / 80).
+ */
+export function artistBudget(width: number, height: number): { hull: number; interior: number } {
+  const s = Math.sqrt(width * height);
+  return {
+    hull: Math.min(40, Math.max(6, Math.round(Math.sqrt(s)))),
+    interior: s < 100 ? 0 : Math.round(s / 80),
+  };
+}
+const collapsed = (p: CharacterPart) =>
+  Math.abs(p.affine[0] * p.affine[3] - p.affine[1] * p.affine[2]) < 1e-9;
 export function assetFor(p: CharacterPart, id: string, alpha: Uint8Array = p.alpha): AssetSpec {
   return {
     schemaVersion: "0.1",
@@ -125,10 +139,15 @@ export function planAttachments(
     switch (spec.type) {
       case "feature": {
         const asset = assetFor(p, id);
+        const budget = spec.density === "artist" ? artistBudget(p.width, p.height) : undefined;
+        const hullVertices = spec.hullVertices ?? budget?.hull,
+          interiorVertices = spec.interiorVertices ?? budget?.interior;
         const options = {
           ...(spec.spacing !== undefined ? { spacing: spec.spacing } : {}),
           ...(spec.edgeLength !== undefined ? { edgeLength: spec.edgeLength } : {}),
           ...(spec.minHoleFraction !== undefined ? { minHoleFraction: spec.minHoleFraction } : {}),
+          ...(hullVertices !== undefined ? { hullVertices } : {}),
+          ...(interiorVertices !== undefined ? { interiorVertices } : {}),
         };
         const r = generateFeatureMesh(asset.parts[0]!, p.alpha, options);
         return { asset, mesh: toWorldMesh(r.mesh as Mesh2D, p, id), rings: r.rings };
@@ -277,13 +296,41 @@ export function planAttachments(
   for (const p of index.parts.values()) {
     if (!p.sheared || meshes.has(p.key) || meshes.has(p.slot)) continue;
     // A collapsed placement (a scale-0 bone in the source setup) has no area: it stays a region.
-    if (Math.abs(p.affine[0] * p.affine[3] - p.affine[1] * p.affine[2]) < 1e-9) continue;
+    if (collapsed(p)) continue;
     const bone = regionBone(p.slot);
     if (!bone)
       failStage("rig", "PLAN_REGION", `Sheared image ${p.key} needs a region bone or a mesh plan`);
     const id = safeId(p.key === p.slot ? p.slot : p.key),
       mesh = toWorldMesh(quad(p), p, id);
     meshes.set(p.key, { asset: assetFor(p, id), mesh, weights: rigidWeights(mesh, rig, bone) });
+  }
+  // ADR-024: every shown region part becomes an artist-density mesh, rigid to its region bone.
+  if (plan.meshing?.all) {
+    const sets = plan.motion.animations.filter((a) => a.show?.length);
+    const shown = (p: CharacterPart) =>
+      !sets.length ||
+      sets.some((a) =>
+        a.show!.some((entry) => {
+          const i = entry.indexOf("#");
+          if (i >= 0) return entry.slice(0, i) === p.slot && entry.slice(i + 1) === p.attachment;
+          return entry === p.slot && index.part(entry) === p;
+        }),
+      );
+    const skipped: string[] = [];
+    for (const p of index.parts.values()) {
+      if (meshes.has(p.key) || meshes.has(p.slot) || collapsed(p) || !shown(p)) continue;
+      const bone = regionBone(p.slot);
+      if (!bone || !p.alpha.some((a) => a > 8)) continue;
+      const id = safeId(p.key === p.slot ? p.slot : p.key);
+      try {
+        const built = shape({ type: "feature", density: "artist" }, p);
+        meshes.set(p.key, { ...built, weights: rigidWeights(built.mesh, rig, bone) });
+      } catch {
+        // An outline the mesher rejects keeps its region; the build record lists it.
+        skipped.push(id);
+      }
+    }
+    if (skipped.length) evidence.meshingSkipped = skipped;
   }
   return { meshes, faceMix, evidence };
 }

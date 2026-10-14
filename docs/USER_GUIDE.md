@@ -30,6 +30,7 @@
 
 - 動畫名稱與長度。
 - 一個 Spine 檔有多組姿勢時，這個動畫用哪一組（例如「用 Drop 那組」）。
+- 多組姿勢疊在一起時，附一張這個動畫的姿勢圖（截圖或設定圖都可以）。它會照圖擺好起始姿勢。
 - 手的狀態：拿著道具，或靠在桌面、額頭上。
 - 道具類（樹、旗子）要擺多大。
 - 要不要眨眼、眼神移動。
@@ -52,7 +53,7 @@
 
 | 項目 | 檢查什麼                                       |
 | ---- | ---------------------------------------------- |
-| A    | 圖片擺位、循環接得上                           |
+| A    | 圖片擺位、循環接得上、起始姿勢和人工一致       |
 | B    | 網格有沒有翻折、接縫有沒有裂開、拉伸有沒有過度 |
 | C    | 該動的部件有沒有動                             |
 | D    | 動作的時間與幅度接近人工                       |
@@ -74,6 +75,7 @@
 ## 目前做不到
 
 - 同一個動畫中途換圖（眨眼、嘴型、閃光序列）。
+- 表情（例如把笑臉改成閉嘴）。
 - 顏色對不對不在自動驗收內，要看影片。
 - 沒給需求的部分會用預設值：角色是輕微呼吸，道具的擺幅偏小。
 
@@ -85,6 +87,7 @@ node packages/cli/dist/index.js lint-plan <plan.json>
 node packages/cli/dist/index.js build-character <plan.json> <新資料夾>
 node packages/cli/dist/index.js compare-reference <plan.json> <建置資料夾> <人工.json> <新資料夾>
 node packages/cli/dist/index.js review-video <plan.json> <建置資料夾> [<人工.json>] <新影片.mp4>
+node packages/cli/dist/index.js fit-pose <plan.json> <建置資料夾> <姿勢圖.png> <新的 pose.json>
 ```
 
 方案檔（`plan.json`）的寫法見 [CHARACTER_PLAN.md](CHARACTER_PLAN.md)。

@@ -11,7 +11,9 @@ import {
   stripImages,
 } from "@autospine/cli/character";
 import { AutoSpineMcpServer, mcpTools } from "@autospine/mcp";
-import { fixturePlan, fixtureWorkspace } from "./character-fixture.js";
+import { PNG } from "pngjs";
+import { loadSkeleton, pose, premultiply, render } from "@autospine/reference";
+import { fixturePlan, fixtureRgba, fixtureWorkspace } from "./character-fixture.js";
 
 const cli = (...args: string[]) =>
   spawnSync(process.execPath, [resolve("packages/cli/dist/index.js"), ...args], {
@@ -134,6 +136,7 @@ describe("character plan files: MCP tools (ADR-017)", () => {
       "autospine_compare_reference",
       "autospine_optimize_motion",
       "autospine_review_video",
+      "autospine_fit_pose",
     ])
       expect(hint(n)).toBe(false);
   });
@@ -239,5 +242,65 @@ describe("character plan files: MCP tools (ADR-017)", () => {
       "out",
       "plan.json",
     ]);
+  }, 120_000);
+
+  it("fits a rest pose from a reference image of the plan's view (ADR-024)", async () => {
+    const ws = await fixtureWorkspace();
+    const call = await ready(ws);
+    const plan = {
+      ...fixturePlan(),
+      qa: { ...fixturePlan().qa!, view: { x: -60, y: 305, width: 120, height: 310 } },
+    };
+    await writeFile(join(ws, "posed.json"), JSON.stringify(plan));
+    expect(
+      (await call("autospine_build_character", { planPath: "posed.json", outputDir: "b" })).error,
+    ).toBe(false);
+    // The build's own frame 0 as the reference: nothing to move.
+    const sk = loadSkeleton(
+      JSON.parse(await readFile(join(ws, "b", "fixture_character.json"), "utf8")),
+    );
+    pose(sk, "IDLE", 0);
+    const tex = (p: string) => {
+      const im = fixtureRgba(p);
+      return premultiply(im.width, im.height, im.rgba);
+    };
+    const c = render(sk, tex, { x0: -60, y0: 305, scale: 2, width: 240, height: 620 });
+    const png = new PNG({ width: 240, height: 620 });
+    for (let i = 0; i < c.length; i += 4) {
+      const a = Math.min(1, c[i + 3]!);
+      png.data[i + 3] = Math.round(a * 255);
+      for (let k = 0; k < 3; k++)
+        png.data[i + k] = a > 0 ? Math.round(Math.min(1, c[i + k]! / a) * 255) : 0;
+    }
+    await writeFile(join(ws, "ref.png"), PNG.sync.write(png));
+    const fit = await call("autospine_fit_pose", {
+      planPath: "posed.json",
+      buildDir: "b",
+      referencePath: "ref.png",
+      outputPath: "out/pose.json",
+    });
+    expect(fit.error).toBe(false);
+    expect(fit.body).toMatchObject({
+      output: join("out", "pose.json"),
+      artistQualityAccepted: false,
+    });
+    expect(fit.body.used as number).toBeGreaterThan(3);
+    expect((fit.body.residual as { median: number }).median).toBeLessThan(1);
+    const written = JSON.parse(await readFile(join(ws, "out", "pose.json"), "utf8")) as {
+      animation: string;
+      pose: Record<string, { rotate?: number }>;
+    };
+    expect(written.animation).toBe("IDLE");
+    for (const p of Object.values(written.pose)) expect(Math.abs(p.rotate ?? 0)).toBeLessThan(1);
+    expect(
+      (
+        await call("autospine_fit_pose", {
+          planPath: "posed.json",
+          buildDir: "b",
+          referencePath: "ref.png",
+          outputPath: "out/pose.json",
+        })
+      ).body.code,
+    ).toBe("MCP_OUTPUT_EXISTS");
   }, 120_000);
 });

@@ -73,6 +73,8 @@ export const JointRuleSchema = Type.Recursive((Self) => {
     ),
     /** Projection of `point` onto the line a-b. */
     Type.Object({ rule: Type.Literal("project"), point: Ref, a: Ref, b: Ref }, strict),
+    /** x of one joint, y of another: a hip under its leg at the pelvis height (ADR-025). */
+    Type.Object({ rule: Type.Literal("align"), x: Ref, y: Ref }, strict),
     /** Centre of the narrowest cross-section of a part between fractions of a-b (ankle, wrist). */
     Type.Object(
       {
@@ -133,6 +135,14 @@ export const MeshPlanSchema = Type.Object(
           spacing: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
           edgeLength: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
           minHoleFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
+          /**
+           * Vertex budget (ADR-024). `artist`: s = sqrt(image width x height) px, hull round(sqrt s)
+           * clamped to 6..40, interior 0 below s 100 else round(s / 80) (median of 423 artist
+           * character meshes). Explicit counts override it; a budget covers holes.
+           */
+          density: Type.Optional(Type.Literal("artist")),
+          hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
+          interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 })),
         },
         strict,
       ),
@@ -313,6 +323,24 @@ export const MotionPlanSchema = Type.Object(
            */
           show: Type.Optional(Type.Array(PartNameSchema, { maxItems: 512 })),
           hide: Type.Optional(Type.Array(PartNameSchema, { maxItems: 512 })),
+          /**
+           * Rest pose (ADR-024): per-bone offsets added to every key for the whole animation, for a
+           * setup that is a layout of several poses. x, y in the parent's frame (y down); rotate in
+           * degrees, clockwise on screen. `fit-pose` measures them from a reference image.
+           */
+          pose: Type.Optional(
+            Type.Record(
+              IdSchema,
+              Type.Object(
+                {
+                  x: Type.Optional(Type.Number()),
+                  y: Type.Optional(Type.Number()),
+                  rotate: Type.Optional(Type.Number()),
+                },
+                strict,
+              ),
+            ),
+          ),
         },
         strict,
       ),
@@ -411,7 +439,13 @@ export const MotionPlanSchema = Type.Object(
               kind: Type.Literal("squash"),
               id: IdSchema,
               bone: IdSchema,
-              amount: PlanNumberSchema,
+              amount: Type.Optional(PlanNumberSchema),
+              /**
+               * Instead of `amount` (ADR-025): the bone's tip follows the main's vertical offset,
+               * scale = 1 - y / its vertical extent. A vertical stance bone from the ankles to the
+               * pelvis squashes the legs it carries in step with the hips, feet planted.
+               */
+              track: Type.Optional(Type.Boolean()),
             },
             strict,
           ),
@@ -597,6 +631,12 @@ export const CharacterPlanSchema = Type.Object(
     meshes: Type.Optional(Type.Array(MeshPlanSchema, { maxItems: 512 })),
     /** Region attachments rigid to a bone; sheared placements become rigid quads automatically. */
     regions: Type.Optional(Type.Record(PartNameSchema, IdSchema)),
+    /**
+     * ADR-024. `all`: every region part an animation shows (all of them when no animation has
+     * `show`) is meshed at artist density and weighted rigidly to its region bone. Collapsed and
+     * sheared placements keep their region or quad.
+     */
+    meshing: Type.Optional(Type.Object({ all: Type.Optional(Type.Boolean()) }, strict)),
     constraints: Type.Optional(
       Type.Object(
         {

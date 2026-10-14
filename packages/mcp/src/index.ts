@@ -37,6 +37,7 @@ import {
   lintPlanFile,
   optimizeMotionFiles,
   reviewVideoFiles,
+  fitPoseFiles,
 } from "@autospine/cli/character";
 import { lintCharacterPlan } from "@autospine/character";
 import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
@@ -241,6 +242,18 @@ const toolSchemas = {
     },
     strict,
   ),
+  autospine_fit_pose: Type.Object(
+    {
+      planPath: WorkspacePath,
+      buildDir: WorkspacePath,
+      referencePath: WorkspacePath,
+      outputPath: WorkspacePath,
+      animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
+      window: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
+      maxRotate: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 90 })),
+    },
+    strict,
+  ),
 };
 const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_compile_character:
@@ -281,6 +294,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
   autospine_optimize_motion:
     "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
+  autospine_fit_pose:
+    "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose; expressions are not fitted.",
   autospine_review_video:
     "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
@@ -291,6 +306,7 @@ const writingTools = new Set<string>([
   "autospine_compare_reference",
   "autospine_optimize_motion",
   "autospine_review_video",
+  "autospine_fit_pose",
 ]);
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
@@ -679,6 +695,19 @@ export class AutoSpineMcpServer {
             output: relative(root, output),
             artistQualityAccepted: false,
           });
+        }
+        case "autospine_fit_pose": {
+          if (!Value.Check(toolSchemas.autospine_fit_pose, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const build = await guardDirectory(root, args.buildDir);
+          const reference = await guardFile(root, args.referencePath, 64 * 1024 * 1024);
+          const output = await guardOutput(root, args.outputPath, true);
+          const fit = await fitPoseFiles(plan, build, reference, output, {
+            ...(args.animation === undefined ? {} : { animation: args.animation }),
+            ...(args.window === undefined ? {} : { window: args.window }),
+            ...(args.maxRotate === undefined ? {} : { maxRotate: args.maxRotate }),
+          }).catch(characterFailure);
+          return result({ ...fit, output: relative(root, output), artistQualityAccepted: false });
         }
         case "autospine_apply_correction": {
           if (!Value.Check(toolSchemas.autospine_apply_correction, args)) break;
