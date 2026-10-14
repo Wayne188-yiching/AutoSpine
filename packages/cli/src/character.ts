@@ -425,10 +425,16 @@ export async function fitPoseFiles(
     fixed = new Set([
       "root",
       ...rigging.rigged.rig.bones.filter((b) => b.parentId === "root").map((b) => b.id),
-      // A strand's bend on frame 0 is motion, not pose: chains and the bones the plan swings with
-      // cycles (tufts, ears) follow their parent, and their parts count toward it.
+      // A strand's bend on frame 0 is motion, not pose: chains, and end bones the plan swings
+      // with rotate cycles (tufts, ears), follow their parent and their parts count toward it.
+      // A bone bobbing with a translate cycle (a floating head) is structure and stays fitted.
       ...Object.values(rigging.rigged.chains).flat(),
-      ...(plan.motion.cycles ?? []).map((c) => c.bone),
+      ...(plan.motion.cycles ?? [])
+        .filter(
+          (c) =>
+            c.channel === "rotate" && !rigging.rigged.rig.bones.some((b) => b.parentId === c.bone),
+        )
+        .map((c) => c.bone),
       ...((rigging.evidence.faceCarriers as string[] | undefined) ?? []),
       ...(face
         ? [
