@@ -151,6 +151,14 @@ export function loadSkeleton(document: unknown): LoadedSkeleton {
   skeleton.updateWorldTransform();
   return { raw, data, skeleton };
 }
+/**
+ * The time of frame `f` of `frames` in an animation of `duration` seconds. The last frame sits just
+ * before the duration: `pose` loops, so the duration itself wraps to frame 0, and spine-core keeps
+ * key times as 32-bit floats, so `f / fps` can land on either side of it.
+ */
+export function frameTime(f: number, frames: number, duration: number, fps: number): number {
+  return f >= frames ? Math.max(0, duration - 1e-6) : Math.min(duration, f / fps);
+}
 /** Applies an animation at `time` over the setup pose (null = setup pose). */
 export function pose(sk: LoadedSkeleton, animation: string | null, time: number): void {
   const spine = spineRuntime();

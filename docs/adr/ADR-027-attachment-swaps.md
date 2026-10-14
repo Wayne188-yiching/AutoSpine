@@ -6,7 +6,7 @@ Decision:
 
 - `motion.swaps[]: { slot, keys: { animation: [{ frame, attachment | null }] } }`:
   - Each key switches the slot to an attachment, or hides it with `null`.
-  - Before the first key the slot keeps its part-set or setup attachment. Each key holds until the next. The loop closes on the frame-0 attachment unless a key sits on the last frame: a numbered sequence wraps to its first image. (Update after the WC soccer ball blind test, where the last image held on the loop frame and the seam measured 59 px.)
+  - Before the first key the slot keeps its part-set or setup attachment. Each key holds until the next. The timeline closes on the frame-0 attachment unless a key sits on the last frame, as an artist's loop does: a numbered sequence ends on its first image. (Update after the WC soccer ball blind test. Playback was already right, since the runtime wraps the last frame to frame 0. The 59 px A4 seam came from the comparison: the loop seam compared vertex positions of two different meshed images, and the last frame could land on the wrap. A4 now skips a slot that shows another image on the last frame, and the last frame is sampled just before the wrap.)
   - A swapped slot replaces that animation's `show` / `hide` hold for the slot.
 - Lint reports an unknown slot or animation and keys past the end. The build reports an attachment the slot does not have (`PLAN_SWAP`).
 - The handover notes list the swap frames per animation.
