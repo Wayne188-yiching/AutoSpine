@@ -13,5 +13,6 @@ export { buildMotionSpecs, motionContext, motionParams, type MotionContext } fro
 export { buildColorTimelines, type ColorTimeline } from "./colors.js";
 export { buildAttachmentTimelines, type AttachmentTimeline } from "./visibility.js";
 export { applyRestPose, type RestPose } from "./pose.js";
+export { boneRoles, colorBones, handoverNotes, ROLE_COLORS, type BoneRole } from "./handover.js";
 export * from "./build.js";
 export * from "./lint.js";

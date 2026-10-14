@@ -17,6 +17,7 @@ import {
 import { buildColorTimelines, type ColorTimeline } from "./colors.js";
 import { buildAttachmentTimelines } from "./visibility.js";
 import { applyRestPose } from "./pose.js";
+import { boneRoles, colorBones } from "./handover.js";
 
 type Slot = CharacterSpineInput["slots"][number];
 type Ik = NonNullable<CharacterSpineInput["ik"]>[number];
@@ -323,6 +324,8 @@ export function compileCharacter(
       bone: "root",
       ...(e.color ? { color: e.color } : {}),
     });
+  // Bones coloured by role for whoever takes the file over (ADR-026).
+  colorBones(doc, boneRoles(rigging));
   return doc;
 }
 

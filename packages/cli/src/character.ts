@@ -11,6 +11,7 @@ import { readImagesOnlyLayout } from "@autospine/spine";
 import {
   buildCharacter,
   compileCharacter,
+  handoverNotes,
   lintCharacterPlan,
   rigCharacter,
   type CharacterLayout,
@@ -238,6 +239,8 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
     artistQualityAccepted: false,
   };
   await writeFile(join(outDir, "build-record.json"), json(record));
+  // Handover notes for whoever edits the Spine file next (ADR-026).
+  await writeFile(join(outDir, "HANDOVER.md"), handoverNotes(built.rigging, built.animations));
   // Self-contained for Spine import: the images the document uses, under images/.
   const used = new Set([...layout.parts.values()].map((p) => p.path));
   for (const p of used) {
