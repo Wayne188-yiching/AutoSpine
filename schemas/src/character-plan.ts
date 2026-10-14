@@ -291,6 +291,13 @@ export const MotionPlanSchema = Type.Object(
           frames: Type.Integer({ minimum: 4, maximum: 3600 }),
           /** Anticipation scale per cycle (cycle 1 first; a breath scales its depth); default 1. */
           cycleScale: Type.Optional(Type.Array(PlanNumberSchema, { maxItems: 64 })),
+          /**
+           * Part sets (ADR-021): slots shown for the whole animation (a slot's setup attachment,
+           * else its only one, or `slot#attachment`) and slots hidden, e.g. a pose set that is
+           * hidden in setup replacing the setup set.
+           */
+          show: Type.Optional(Type.Array(PartNameSchema, { maxItems: 512 })),
+          hide: Type.Optional(Type.Array(PartNameSchema, { maxItems: 512 })),
         },
         strict,
       ),

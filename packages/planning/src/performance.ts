@@ -148,7 +148,8 @@ export function measurePerformance(
     failStage("animation", "PERFORMANCE_SAMPLE", "Valid performance sample required");
   const tracks = Object.values(sample.probes),
     frames = tracks[0]?.length ?? 0;
-  if (!frames || tracks.some((t) => t.length !== frames))
+  // No probe at all (none shown in this animation) leaves only the key statistics.
+  if (tracks.length && (!frames || tracks.some((t) => t.length !== frames)))
     failStage("animation", "PERFORMANCE_SAMPLE", "Probes need one point per sampled frame");
   const { chain = [], hand, ignoreBefore = 0.1, holdThreshold = 0.15, loop = false } = options;
   if (

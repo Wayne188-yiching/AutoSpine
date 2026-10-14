@@ -84,7 +84,12 @@ export class PartIndex {
   private readonly points = new Map<string, Vec[]>();
   constructor(readonly parts: ReadonlyMap<string, CharacterPart>) {}
   part(name: string): CharacterPart {
-    const p = this.parts.get(name);
+    // A slot hidden in setup has only `slot#attachment` parts; its slot name finds its only one.
+    let p = this.parts.get(name);
+    if (!p) {
+      const keys = [...this.parts.keys()].filter((k) => k.startsWith(name + "#"));
+      if (keys.length === 1) p = this.parts.get(keys[0]!);
+    }
     if (!p)
       failStage(
         "asset",
