@@ -8,8 +8,9 @@ Context: the BuddhaEX_Awaken loops (2026-10 batch blind test) keep the dance and
 
 Decision:
 
-- A slot an animation `show`s while setup keeps it transparent (alpha ≤ 5/255) is held opaque for that animation. Its pulses and colours scale from full alpha.
+- A slot that setup keeps transparent (alpha ≤ 5/255) is held opaque for an animation that `show`s it or swaps an attachment into it (ADR-027; the MaitreyaEX ingot shine is an 8-image sequence faded out in setup). Its pulses and colours scale from full alpha.
 - `headUnit` measures a transparent head as drawn.
+- `fit-pose` compares each sampled texel by the mean colour over the footprint of one reference pixel. A 2600-unit portal symbol in an 800 px picture puts about 3 × 3 texels in each pixel.
 - The main `cycle` and `cycles` periods may be odd: extremes then fall on half frames, and Spine keys are in seconds.
 
 Evidence: `tests/character-posesets-alpha.test.ts`.

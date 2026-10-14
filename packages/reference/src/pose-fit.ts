@@ -170,6 +170,34 @@ export function fitRestPose(
     for (let i = 3; i < tex.rgba.length; i += 4) if (tex.rgba[i]! >= 200) opaque++;
     if (opaque < 50) continue;
     const step = Math.max(1, Math.floor(Math.sqrt(opaque / 1200)));
+    // A reference pixel can cover several texels (a large figure in a small picture): compare the
+    // texels' mean colour over that footprint, as the picture shows it.
+    const xs = item.verts.filter((_, i) => i % 2 === 0),
+      ys = item.verts.filter((_, i) => i % 2 === 1),
+      worldPerTexel = Math.max(
+        (Math.max(...xs) - Math.min(...xs)) / tex.width,
+        (Math.max(...ys) - Math.min(...ys)) / tex.height,
+      ),
+      foot = Math.max(1, Math.round(1 / (scale * worldPerTexel)));
+    const mean = (x: number, y: number): [number, number, number] => {
+      if (foot === 1) {
+        const k = (y * tex.width + x) * 4;
+        return [tex.rgba[k]!, tex.rgba[k + 1]!, tex.rgba[k + 2]!];
+      }
+      const h = foot >> 1,
+        sum: [number, number, number] = [0, 0, 0];
+      let wsum = 0;
+      for (let yy = Math.max(0, y - h); yy <= Math.min(tex.height - 1, y + h); yy++)
+        for (let xx = Math.max(0, x - h); xx <= Math.min(tex.width - 1, x + h); xx++) {
+          const k = (yy * tex.width + xx) * 4,
+            a = tex.rgba[k + 3]! / 255;
+          sum[0] += tex.rgba[k]! * a;
+          sum[1] += tex.rgba[k + 1]! * a;
+          sum[2] += tex.rgba[k + 2]! * a;
+          wsum += a;
+        }
+      return [sum[0] / wsum, sum[1] / wsum, sum[2] / wsum];
+    };
     const list: Sample[] = [];
     for (let y = step >> 1; y < tex.height; y += step)
       for (let x = step >> 1; x < tex.width; x += step) {
@@ -197,7 +225,7 @@ export function fitRestPose(
             tri: t / 3,
             bary: [l0, l1, l2],
             w0: [0, 0],
-            rgb: [tex.rgba[k]!, tex.rgba[k + 1]!, tex.rgba[k + 2]!],
+            rgb: mean(x, y),
           };
           s.w0 = at(item, s);
           list.push(s);

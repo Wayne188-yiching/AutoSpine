@@ -31,8 +31,16 @@ export function buildColorTimelines(
 ): ColorTimeline[] {
   // A slot an animation shows but setup keeps transparent (another pose set faded out, ADR-021)
   // is shown opaque: pulses and colours scale from full alpha, and a hold makes it visible.
+  // Swapped-in slots (ADR-027) count as shown: a sequence faded out in setup must still show.
+  const swapped = (anim: string) =>
+    (motion.swaps ?? [])
+      .filter((w) => (w.keys[anim] ?? []).some((k) => k.attachment !== null))
+      .map((w) => w.slot);
   const shownSlots = new Set(
-    motion.animations.flatMap((a) => (a.show ?? []).map((e) => e.split("#")[0]!)),
+    motion.animations.flatMap((a) => [
+      ...(a.show ?? []).map((e) => e.split("#")[0]!),
+      ...swapped(a.name),
+    ]),
   );
   const transparent = (c: string) => parseInt(c.slice(6, 8), 16) <= 5;
   const setupColors = new Map(
@@ -129,7 +137,7 @@ export function buildColorTimelines(
       }
     }
     // Shown slots that setup keeps transparent, with no colour motion of their own: held opaque.
-    for (const entry of anim.show ?? []) {
+    for (const entry of [...(anim.show ?? []), ...swapped(anim.name)]) {
       const slot = entry.split("#")[0]!,
         raw = rawSetupColors.get(slot);
       if (!raw || !transparent(raw)) continue;
