@@ -150,7 +150,8 @@ export function stripToImagesOnly(
           dropped.push(`${skinName}/${slotName}/${attName}:${type}`);
           continue;
         }
-        const path = (a.path as string | undefined) ?? attName;
+        // A skin key is a placeholder: the attachment's `name` (then its `path`) picks the image.
+        const path = (a.path as string | undefined) ?? (a.name as string | undefined) ?? attName;
         const found = imageSize(path),
           stored: V2 | undefined =
             typeof a.width === "number" && typeof a.height === "number"
@@ -280,7 +281,7 @@ export function stripToImagesOnly(
           if (region.scaleX === 1) delete region.scaleX;
           if (region.scaleY === 1) delete region.scaleY;
         }
-        if (a.path !== undefined) region.path = a.path;
+        if (path !== attName) region.path = path;
         if (a.color !== undefined) region.color = a.color;
         (skinOut.attachments[slotName] ??= {})[attName] = region;
         rows.push({

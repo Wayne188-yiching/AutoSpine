@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto";
+import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { PNG } from "pngjs";
+import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
 import { CharacterPlanSchema, type CharacterPlan } from "@autospine/schemas";
 import { readImagesOnlyLayout } from "@autospine/spine";
@@ -20,6 +22,7 @@ import {
   compareToReference,
   initialSearchState,
   loadSkeleton,
+  reviewFrames,
   makeObjective,
   patternSearch,
   placementDelta,
@@ -49,7 +52,7 @@ async function newDirectory(path: string) {
 
 function decodePng(bytes: Buffer, file: string) {
   try {
-    return PNG.sync.read(bytes);
+    return PNG.sync.read(pngThroughIend(bytes));
   } catch {
     throw new Error(`CLI_PNG: cannot decode ${file}`);
   }
@@ -377,5 +380,163 @@ export async function optimizeMotionFiles(
     ),
     failing: Object.fromEntries(Object.entries(best.perf).map(([a, p]) => [a, p.failing])),
     trajectory: best.trajectory,
+  };
+}
+
+/** ffmpeg filter text: escape the characters drawtext treats specially. */
+const drawtextValue = (v: string) =>
+  v.replace(/\\/g, "\\\\").replace(/:/g, "\\:").replace(/'/g, "\\'");
+/**
+ * review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4>: one video per plan, every
+ * animation as artist | build (or the build alone), first with the mesh wireframe, then with the
+ * bones, then the plain motion (the official 4.0 runtime, plan.qa.view). Needs ffmpeg on PATH; captions use --font
+ * (default: Microsoft JhengHei on Windows) and are skipped without a font.
+ */
+export async function reviewVideoFiles(
+  planPath: string,
+  buildDir: string,
+  artistPath: string | undefined,
+  outPath: string,
+  opts: { loops?: number; height?: number; font?: string } = {},
+) {
+  if (existsSync(outPath))
+    throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  const plan = await readPlan(planPath);
+  const paths = planPaths(planPath, plan);
+  const generated = JSON.parse(
+    await readFile(join(buildDir, `${plan.id}.json`), "utf8"),
+  ) as unknown;
+  const tex = textures(paths.images);
+  // Without an artist file the video shows the build alone.
+  const sides = artistPath
+    ? [
+        loadSkeleton(JSON.parse(await readFile(artistPath, "utf8")) as unknown),
+        loadSkeleton(generated),
+      ]
+    : [loadSkeleton(generated)];
+  const sk = (sides[0]!.raw.skeleton ?? {}) as Record<string, number>;
+  const v = plan.qa?.view ?? {
+    x: sk.x ?? -500,
+    y: (sk.y ?? -500) + (sk.height ?? 1000),
+    width: sk.width ?? 1000,
+    height: sk.height ?? 1000,
+  };
+  const tileHeight = opts.height ?? 540,
+    scale = tileHeight / v.height;
+  const view = {
+    x0: v.x,
+    y0: v.y,
+    scale,
+    width: Math.round((v.width * scale) / 2) * 2,
+    height: Math.round(tileHeight / 2) * 2,
+  };
+  const head = 56;
+  const font =
+    opts.font ?? (process.platform === "win32" ? "C:/Windows/Fonts/msjh.ttc" : undefined);
+  const captions = font && existsSync(font);
+  const labels: { text: string; x: string; y: number; size: number; from?: number; to?: number }[] =
+    [];
+  const reviews = plan.motion.animations.map((a) =>
+    reviewFrames(sides, tex.texture, view, a.name, opts.loops ? { loops: opts.loops } : {}),
+  );
+  const width = reviews[0]!.width;
+  let t0 = 0;
+  const names = { wireframe: "1 佈線", bones: "2 骨架", motion: "3 完整動態" } as const;
+  plan.motion.animations.forEach((a, k) => {
+    const r = reviews[k]!,
+      length = (3 * r.loops * r.frames) / r.fps;
+    for (const s of ["wireframe", "bones", "motion"] as const) {
+      const from = t0 + r.segmentStart(s),
+        to = from + (r.loops * r.frames) / r.fps;
+      labels.push({
+        text: `${a.name}   ${names[s]}`,
+        x: "(w-text_w)/2",
+        y: 14,
+        size: 26,
+        from,
+        to,
+      });
+    }
+    t0 += length;
+  });
+  // Side labels sit inside each tile's top-left corner, under the segment title band.
+  if (artistPath) {
+    labels.push({ text: "人工", x: "12", y: head + 10, size: 22 });
+    labels.push({ text: "AutoSpine", x: String(view.width + 16), y: head + 10, size: 22 });
+  }
+  const filters = captions
+    ? labels
+        .map(
+          (l) =>
+            `drawtext=fontfile='${drawtextValue(font!)}':text='${drawtextValue(l.text)}':x=${l.x}:y=${l.y}:fontsize=${l.size}:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=6` +
+            (l.from !== undefined
+              ? `:enable='between(t,${l.from.toFixed(3)},${l.to!.toFixed(3)})'`
+              : ""),
+        )
+        .join(",")
+    : "null";
+  await mkdir(dirname(resolve(outPath)), { recursive: true });
+  const ffmpeg = spawn(
+    "ffmpeg",
+    [
+      "-y",
+      "-loglevel",
+      "error",
+      "-f",
+      "rawvideo",
+      "-pix_fmt",
+      "rgb24",
+      "-s",
+      `${width}x${view.height + head}`,
+      "-r",
+      String(reviews[0]!.fps),
+      "-i",
+      "-",
+      "-vf",
+      filters,
+      "-c:v",
+      "libx264",
+      "-preset",
+      "medium",
+      "-crf",
+      "20",
+      "-pix_fmt",
+      "yuv420p",
+      "-movflags",
+      "+faststart",
+      resolve(outPath),
+    ],
+    { stdio: ["pipe", "ignore", "pipe"] },
+  );
+  let stderr = "";
+  ffmpeg.stderr.on("data", (d: Buffer) => (stderr += d.toString()));
+  const done = new Promise<number>((ok, fail) => {
+    ffmpeg.on("error", (e) =>
+      fail(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for review videos (${e.message})`)),
+    );
+    ffmpeg.on("close", (code) => ok(code ?? 1));
+  });
+  const write = (b: Uint8Array) =>
+    new Promise<void>((ok) => (ffmpeg.stdin.write(b) ? ok() : ffmpeg.stdin.once("drain", ok)));
+  let frames = 0;
+  const band = new Uint8Array(width * head * 3);
+  for (let i = 0; i < band.length; i += 3) band.set([24, 27, 34], i);
+  for (const r of reviews)
+    for (const { raster } of r.play()) {
+      await write(band);
+      await write(raster.rgb);
+      frames++;
+    }
+  ffmpeg.stdin.end();
+  const code = await done;
+  if (code !== 0) throw new Error(`CLI_FFMPEG: ffmpeg failed (${code}): ${stderr.slice(-400)}`);
+  return {
+    output: outPath,
+    frames,
+    seconds: +(frames / reviews[0]!.fps).toFixed(2),
+    width,
+    height: view.height + head,
+    captions: Boolean(captions),
+    animations: plan.motion.animations.map((a) => a.name),
   };
 }

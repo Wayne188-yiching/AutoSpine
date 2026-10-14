@@ -32,6 +32,20 @@ const ManifestPartSchema = Type.Object(
   },
   { additionalProperties: false },
 );
+/**
+ * The PNG up to the end of its IEND chunk. Some image tools append bytes after IEND (seen on the
+ * GoldTree artist images, 8.7 KB); decoders such as pngjs reject them, editors ignore them.
+ */
+export function pngThroughIend(bytes: Buffer): Buffer {
+  let o = 8;
+  while (o + 12 <= bytes.length) {
+    const len = bytes.readUInt32BE(o),
+      type = bytes.toString("ascii", o + 4, o + 8);
+    o += 12 + len;
+    if (type === "IEND") return o < bytes.length ? bytes.subarray(0, o) : bytes;
+  }
+  return bytes;
+}
 export const PngPartsManifestSchema = Type.Object(
   {
     width: Type.Number({ exclusiveMinimum: 0 }),
@@ -106,7 +120,7 @@ async function readPngInside(
     failAsset("PNG_DIMENSIONS", "PNG dimensions exceed Gate 2 limits", file);
   let image: PNG;
   try {
-    image = PNG.sync.read(bytes, { checkCRC: true });
+    image = PNG.sync.read(pngThroughIend(bytes), { checkCRC: true });
   } catch {
     failAsset("PNG_INVALID", "PNG could not be decoded", file);
   }

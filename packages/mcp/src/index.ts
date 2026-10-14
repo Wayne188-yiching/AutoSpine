@@ -36,6 +36,7 @@ import {
   compareReferenceFiles,
   lintPlanFile,
   optimizeMotionFiles,
+  reviewVideoFiles,
 } from "@autospine/cli/character";
 import { lintCharacterPlan } from "@autospine/character";
 import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
@@ -230,6 +231,16 @@ const toolSchemas = {
     },
     strict,
   ),
+  autospine_review_video: Type.Object(
+    {
+      planPath: WorkspacePath,
+      buildDir: WorkspacePath,
+      artistPath: Type.Optional(WorkspacePath),
+      outputPath: WorkspacePath,
+      loops: Type.Optional(Type.Integer({ minimum: 1, maximum: 10 })),
+    },
+    strict,
+  ),
 };
 const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_compile_character:
@@ -270,6 +281,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
   autospine_optimize_motion:
     "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
+  autospine_review_video:
+    "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
 /** Tools that write into the workspace (new directories, or the optimizer's own state directory). */
 const writingTools = new Set<string>([
@@ -277,6 +290,7 @@ const writingTools = new Set<string>([
   "autospine_build_character",
   "autospine_compare_reference",
   "autospine_optimize_motion",
+  "autospine_review_video",
 ]);
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
@@ -644,6 +658,27 @@ export class AutoSpineMcpServer {
             ...(args.seed === undefined ? {} : { seed: args.seed }),
           }).catch(characterFailure);
           return result({ ...run, stateDir: relative(root, state), artistQualityAccepted: false });
+        }
+        case "autospine_review_video": {
+          if (!Value.Check(toolSchemas.autospine_review_video, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const build = await guardDirectory(root, args.buildDir);
+          const artist = args.artistPath
+            ? await guardFile(root, args.artistPath, 256 * 1024 * 1024)
+            : undefined;
+          const output = await guardOutput(root, args.outputPath, true);
+          const video = await reviewVideoFiles(
+            plan,
+            build,
+            artist,
+            output,
+            args.loops === undefined ? {} : { loops: args.loops },
+          ).catch(characterFailure);
+          return result({
+            ...video,
+            output: relative(root, output),
+            artistQualityAccepted: false,
+          });
         }
         case "autospine_apply_correction": {
           if (!Value.Check(toolSchemas.autospine_apply_correction, args)) break;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import {
@@ -123,6 +123,8 @@ async function ready(workspace: string) {
   };
 }
 
+const hasFfmpeg = spawnSync("ffmpeg", ["-version"]).status === 0;
+
 describe("character plan files: MCP tools (ADR-017)", () => {
   it("annotates the file tools as writing and the lint as read-only", () => {
     const hint = (n: string) => mcpTools.find((t) => t.name === n)!.annotations.readOnlyHint;
@@ -131,6 +133,7 @@ describe("character plan files: MCP tools (ADR-017)", () => {
       "autospine_build_character",
       "autospine_compare_reference",
       "autospine_optimize_motion",
+      "autospine_review_video",
     ])
       expect(hint(n)).toBe(false);
   });
@@ -207,6 +210,28 @@ describe("character plan files: MCP tools (ADR-017)", () => {
       budgetSeconds: 10,
     });
     expect(optimised.body).toMatchObject({ status: "passed", stateDir: join("out", "opt") });
+    if (hasFfmpeg) {
+      const video = await call("autospine_review_video", {
+        planPath: "plan.json",
+        buildDir: "out/build",
+        artistPath: "out/build/fixture_character.json",
+        outputPath: "out/review.mp4",
+        loops: 1,
+      });
+      expect(video.error).toBe(false);
+      // IDLE is 80 frames: wireframe, bones and motion once each.
+      expect(video.body).toMatchObject({ output: join("out", "review.mp4"), frames: 240 });
+      expect((await stat(join(ws, "out", "review.mp4"))).size).toBeGreaterThan(1000);
+      // Without an artist file the video shows the build alone: one tile wide.
+      const alone = await call("autospine_review_video", {
+        planPath: "plan.json",
+        buildDir: "out/build",
+        outputPath: "out/alone.mp4",
+        loops: 1,
+      });
+      expect(alone.error).toBe(false);
+      expect((alone.body.width as number) * 2).toBeLessThan(video.body.width as number);
+    }
     expect((await readdir(ws)).sort()).toEqual([
       "escape.json",
       "images",

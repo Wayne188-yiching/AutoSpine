@@ -233,3 +233,20 @@ describe("Gate 2 asset parser", () => {
     }
   });
 });
+
+describe("PNG trailing bytes", () => {
+  it("decodes a PNG with bytes appended after IEND (GoldTree artist images)", async () => {
+    const { PNG } = await import("pngjs");
+    const { pngThroughIend } = await import("@autospine/assets");
+    const png = new PNG({ width: 2, height: 1 });
+    png.data.set([255, 0, 0, 255, 0, 0, 255, 128]);
+    const clean = PNG.sync.write(png);
+    const dirty = Buffer.concat([clean, Buffer.from("trailing data from an image tool")]);
+    expect(() => PNG.sync.read(dirty)).toThrow();
+    expect(pngThroughIend(dirty).equals(clean)).toBe(true);
+    expect([...PNG.sync.read(pngThroughIend(dirty)).data]).toEqual([
+      255, 0, 0, 255, 0, 0, 255, 128,
+    ]);
+    expect(pngThroughIend(clean)).toBe(clean);
+  });
+});

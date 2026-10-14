@@ -114,6 +114,8 @@ export const ChainPlanSchema = Type.Object(
     bones: Type.Integer({ minimum: 1, maximum: 32 }),
     parent: IdSchema,
     from: Type.Optional(Type.Union([Type.Literal("top"), Type.Literal("bottom")])),
+    /** Start at the strand end nearest this joint (a bough from its trunk); overrides `from`. */
+    near: Type.Optional(JointRefSchema),
     prefix: Type.Optional(IdSchema),
   },
   strict,
@@ -190,6 +192,19 @@ export const MeshPlanSchema = Type.Object(
         strict,
       ),
       Type.Object({ type: Type.Literal("rigid"), bone: IdSchema }, strict),
+      /**
+       * Inverse-distance weights to the nearest of the listed bones (their segments), smoothed
+       * over the mesh: blobs driven by several bones such as a leaf cluster's radiating bones.
+       */
+      Type.Object(
+        {
+          type: Type.Literal("nearest"),
+          bones: Type.Array(IdSchema, { minItems: 1, maxItems: 32 }),
+          maxInfluences: Type.Optional(Type.Integer({ minimum: 1, maximum: 4 })),
+          smoothing: Type.Optional(Type.Integer({ minimum: 0, maximum: 8 })),
+        },
+        strict,
+      ),
     ]),
   },
   strict,

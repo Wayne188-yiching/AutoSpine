@@ -2,6 +2,8 @@
 
 Deterministic 2D mesh, rig and animation preparation, with editable Spine output. AI may later choose parameters; the engines work without AI.
 
+**使用者請先看 [使用說明](docs/USER_GUIDE.md)。**
+
 ## Current development
 
 2026-10-12: **character plans (ADR-017).** The private Yuuna scripts are now repository packages: `@autospine/character` (plan → rig, meshes, weights, constraints, motion, Spine JSON; pure) and `@autospine/reference` (official 4.0.31 runtime: strip to images-only, compare with an artist version, pre-registered acceptance, resumable motion search). Five CLI commands and four MCP tools drive them from one plan file per character, so another character or a cheaper model edits JSON instead of code. The private Yuuna plan reproduces the F4 deliverable exactly (max difference 4.4 × 10⁻¹⁶) and its acceptance numbers (D1 21/22 and 20/22). F4 is benchmark-tuned, not blind; editor round trip and artist approval remain separate. See the [plan reference and runbook](docs/CHARACTER_PLAN.md).
@@ -63,6 +65,7 @@ node packages/cli/dist/index.js lint-plan <plan.json>
 node packages/cli/dist/index.js build-character <plan.json> <new-output-dir> [--params=p.json]
 node packages/cli/dist/index.js compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
 node packages/cli/dist/index.js optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s]
+node packages/cli/dist/index.js review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4>
 ```
 
 One plan file per character holds the joint rules, bones, meshes, weights, constraints, motion blocks and QA probes; the [runbook](docs/CHARACTER_PLAN.md) gives each step, exit code and pitfall. Acceptance thresholds and evidence are in [ADR-017](docs/adr/ADR-017-character-plans-and-reference-acceptance.md).
@@ -79,7 +82,7 @@ This checks formatting, lint, build/types, Vitest contracts and Node portable di
 
 ## Agent tools
 
-Gate 16's [local legacy stdio MCP adapter](docs/MCP_ADAPTER.md) provides nineteen tools: explicit multi-part character compilation in memory, status, validated plans, scoped file builds, numeric review, immutable corrections, eight in-memory engine tools for feature meshes, dome/transfer/chain/gradient weights, pose-table animation and overlap QA, and four character-plan tools (lint in memory; workspace-scoped build, artist comparison and motion search). After building, a host can launch `node packages/mcp/dist/stdio.js` with `AUTOSPINE_WORKSPACE` set to its authorized working directory. No desktop client configuration is automatically modified.
+Gate 16's [local legacy stdio MCP adapter](docs/MCP_ADAPTER.md) provides twenty-one tools: explicit multi-part character compilation in memory, status, validated plans, scoped file builds, numeric review, immutable corrections, eight in-memory engine tools for feature meshes, dome/transfer/chain/gradient weights, pose-table animation and overlap QA, and five character-plan tools (lint in memory; workspace-scoped build, artist comparison, motion search and review video). After building, a host can launch `node packages/mcp/dist/stdio.js` with `AUTOSPINE_WORKSPACE` set to its authorized working directory. No desktop client configuration is automatically modified.
 
 Gate 17's [AutoSpine project Skill](skills/autospine/SKILL.md) operates those existing tools or the CLI. It includes observable reference decision cases, not another geometry solver. It is bundled in this repository; global installation and automatic discovery are not claimed. File builds currently expose only explicit chain-wave; a template function is not image-based anatomical inference.
 

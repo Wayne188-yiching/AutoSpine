@@ -434,9 +434,10 @@ export function headUnit(imagesOnly: LoadedSkeleton, part: string): number {
   // A head hidden in setup (another pose set, ADR-021) is measured on its own attachment.
   const slot = imagesOnly.skeleton.findSlot(part);
   if (slot && !slot.getAttachment()) {
-    const entry = imagesOnly.data.defaultSkin
-      .getAttachments()
-      .find((e) => e.slotIndex === slot.data.index);
+    const skin =
+      imagesOnly.data.defaultSkin ??
+      (imagesOnly.data.skins.length === 1 ? imagesOnly.data.skins[0]! : undefined);
+    const entry = skin?.getAttachments().find((e) => e.slotIndex === slot.data.index);
     if (entry) slot.setAttachment(entry.attachment);
   }
   const d = drawList(imagesOnly).find((x) => x.slot === part);
