@@ -164,11 +164,13 @@ const PERFORMANCE_DEFECT_BY_METRIC: Readonly<Record<string, "amplitude" | "timin
     pupilRange: "amplitude",
     handVsBodyRange: "amplitude",
     overshoot: "amplitude",
+    range: "amplitude",
     parallaxHoldFraction: "timing",
     pupilHoldFraction: "timing",
     pupilPeakToMeanSpeed: "timing",
     peakTime: "timing",
     peakDelay: "timing",
+    lag: "timing",
     keyDensity: "density",
   });
 /** `measurePerformance` keys per-probe metrics as `overshoot:head`; classify on the base name. */

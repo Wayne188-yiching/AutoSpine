@@ -418,6 +418,8 @@ export interface ReferenceOptions {
   alpha?: (path: string) => { width: number; height: number; alpha: Uint8Array };
   /** Character name for profile ids and sources (default "reference"). */
   name?: string;
+  /** Animations loop: phase-invariant chain metrics (ADR-020). Character plans always loop. */
+  loop?: boolean;
 }
 /** Head width of the images-only setup: the unit of every performance metric. */
 export function headUnit(imagesOnly: LoadedSkeleton, part: string): number {
@@ -462,7 +464,7 @@ export function prepareReference(
     const ks = structure.animations[a]!;
     const metrics = measurePerformance(
       performanceSample(t, options.probes, fps, unit),
-      probeOptions(options.probes),
+      { ...probeOptions(options.probes), ...(options.loop ? { loop: true } : {}) },
       {
         keys: Math.max(1, ks.movingKeys),
         timelines: Math.max(1, ks.movingBoneTimelines),
@@ -478,6 +480,7 @@ export function prepareReference(
       fps,
       source: `${options.name ? `${options.name} ` : ""}artist ${a} (official 4.0 runtime, ${fps} fps, head widths), n=1`,
       ...probeOptions(options.probes),
+      ...(options.loop ? { loop: true } : {}),
       targets: Object.fromEntries(
         Object.entries(metrics).map(([k, v]) => [k, targetBand(k, v, fps)]),
       ),

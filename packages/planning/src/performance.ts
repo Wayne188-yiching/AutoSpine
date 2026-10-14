@@ -32,6 +32,13 @@ export interface PerformanceOptions {
   ignoreBefore?: number;
   /** A frame is a hold when its speed is below this fraction of the track's peak (default 0.15). */
   holdThreshold?: number;
+  /**
+   * A looping animation has no start (ADR-020): chain metrics become phase-invariant.
+   * `range:<probe>` (height range) replaces peak time and overshoot, `lag:<probe>` (circular
+   * cross-correlation lag behind the chain root, within half the root's period) replaces peak
+   * delay, and the hand range uses every frame. A closing sample that repeats the first is dropped.
+   */
+  loop?: boolean;
 }
 
 /**
@@ -75,12 +82,60 @@ function holds(v: number[], threshold: number) {
   return peak > 0 ? v.filter((s) => s < threshold * peak).length / v.length : 1;
 }
 const round = (v: number) => Math.round(v * 1e6) / 1e6;
+const centred = (v: number[]) => {
+  const m = v.reduce((s, x) => s + x, 0) / v.length;
+  return v.map((x) => x - m);
+};
+/** Circular correlation of centred tracks: sum of a[i] * b[(i + lag) mod n]. */
+const circular = (a: number[], b: number[], lag: number) => {
+  const n = a.length;
+  let s = 0;
+  for (let i = 0; i < n; i++) s += a[i]! * b[(((i + lag) % n) + n) % n]!;
+  return s;
+};
+/**
+ * Period of a looping track in frames: the first autocorrelation peak of at least half the
+ * zero-lag value within half the loop, else the whole loop (one cycle, or no motion).
+ */
+export function loopPeriod(track: number[]): number {
+  const x = centred(track),
+    n = x.length,
+    r0 = circular(x, x, 0);
+  if (!(r0 > 1e-12)) return n;
+  const r = (lag: number) => circular(x, x, lag) / r0;
+  for (let lag = 2; lag <= Math.floor(n / 2); lag++) {
+    const v = r(lag);
+    if (v >= 0.5 && v >= r(lag - 1) && v >= r(lag + 1)) return lag;
+  }
+  return n;
+}
+/**
+ * Frames by which `b` follows `a` around a loop (positive = later): the circular cross-correlation
+ * maximum within +-maxLag, ties going to the smaller shift. 0 when either track is still.
+ */
+export function loopLag(a: number[], b: number[], maxLag: number): number {
+  const x = centred(a),
+    y = centred(b);
+  if (!(circular(x, x, 0) > 1e-12 && circular(y, y, 0) > 1e-12)) return 0;
+  let best = 0,
+    bestC = circular(x, y, 0);
+  for (let k = 1; k <= maxLag; k++)
+    for (const lag of [k, -k]) {
+      const c = circular(x, y, lag);
+      if (c > bestC + 1e-12 * Math.abs(bestC)) {
+        best = lag;
+        bestC = c;
+      }
+    }
+  return best;
+}
 
 /**
  * Measures the metrics whose probes are present:
  * - `face` + `eyes`: parallax range x/y (eye assembly against the face outline) and its hold fraction;
  * - `eyes` + `pupils`: pupil range, hold fraction and peak/mean speed (saccade read);
  * - `options.chain`: per-probe peak time and overshoot, and peak delay behind the chain's first probe;
+ *   with `options.loop`, per-probe height range and circular lag behind the first probe instead;
  * - `options.hand` with a chain: range of the hand's height relative to the chain root;
  * - `keyStats`: bone keys per timeline-second.
  */
@@ -95,7 +150,7 @@ export function measurePerformance(
     frames = tracks[0]?.length ?? 0;
   if (!frames || tracks.some((t) => t.length !== frames))
     failStage("animation", "PERFORMANCE_SAMPLE", "Probes need one point per sampled frame");
-  const { chain = [], hand, ignoreBefore = 0.1, holdThreshold = 0.15 } = options;
+  const { chain = [], hand, ignoreBefore = 0.1, holdThreshold = 0.15, loop = false } = options;
   if (
     !Number.isFinite(ignoreBefore) ||
     ignoreBefore < 0 ||
@@ -123,7 +178,24 @@ export function measurePerformance(
     out.pupilHoldFraction = holds(v, holdThreshold);
     if (mean > 0) out.pupilPeakToMeanSpeed = Math.max(...v) / mean;
   }
-  if (chain.length) {
+  if (chain.length && loop) {
+    // A loop's start is arbitrary: drop the closing sample, then measure around the circle.
+    const height = (p: Vec) => (sample.yDown ? -p[1] : p[1]) / u,
+      closed = tracks.every(
+        (t) => Math.hypot(t[0]![0] - t[frames - 1]![0], t[0]![1] - t[frames - 1]![1]) <= 1e-6 * u,
+      ),
+      n = closed && frames > 3 ? frames - 1 : frames,
+      h = (name: string) => probe(name)!.slice(0, n).map(height),
+      root = h(chain[0]!),
+      half = Math.floor(loopPeriod(root) / 2);
+    for (const name of chain) out["range:" + name] = range(h(name));
+    for (const name of chain.slice(1))
+      out["lag:" + name] = loopLag(root, h(name), half) / sample.fps;
+    if (hand) {
+      const hh = h(hand);
+      out.handVsBodyRange = range(hh.map((v, i) => v - root[i]!));
+    }
+  } else if (chain.length) {
     const height = (p: Vec) => (sample.yDown ? -p[1] : p[1]) / u,
       first = Math.min(frames - 1, Math.ceil(ignoreBefore * sample.fps - 1e-9)),
       peaks = new Map<string, number>();
@@ -170,6 +242,8 @@ export const PerformanceProfileSchema = Type.Object(
       Type.Array(Type.String({ minLength: 1, maxLength: 64 }), { maxItems: 32 }),
     ),
     hand: Type.Optional(Type.String({ minLength: 1, maxLength: 64 })),
+    /** Measure as a loop: phase-invariant chain metrics (ADR-020). */
+    loop: Type.Optional(Type.Boolean()),
     targets: Type.Record(Type.String({ minLength: 1, maxLength: 96 }), Target),
   },
   { additionalProperties: false },
@@ -185,7 +259,7 @@ export function targetBand(metric: string, reference: number, fps: number) {
     failStage("animation", "PERFORMANCE_TARGET", "Finite reference and positive fps required");
   if (/HoldFraction$/.test(metric))
     return { reference, min: Math.max(0, reference - 0.15), max: Math.min(1, reference + 0.15) };
-  if (/^peak(Delay|Time):/.test(metric))
+  if (/^(peak(Delay|Time)|lag):/.test(metric))
     return { reference, min: reference - 2 / fps, max: reference + 2 / fps };
   return { reference, min: reference / 1.5, max: reference * 1.5 };
 }
@@ -246,7 +320,8 @@ const HINTS: [RegExp, string, string][] = [
   [/^pupilRange$/, "increase saccade gain", "reduce saccade gain"],
   [/^pupilHoldFraction$/, "hold the eyes after each saccade", "shorten eye holds"],
   [/^pupilPeakToMeanSpeed$/, "shorten saccade moves", "lengthen saccade moves or add drift"],
-  [/^peakDelay:/, "increase follow lag", "reduce follow lag"],
+  [/^(peakDelay|lag):/, "increase follow lag", "reduce follow lag"],
+  [/^range:/, "increase this part's travel", "reduce this part's travel"],
   [/^overshoot:/, "increase settle overshoot", "reduce settle overshoot"],
   [/^handVsBodyRange$/, "increase hand travel against the body", "reduce hand travel"],
   [/^keyDensity$/, "add breakdown keys", "use fewer keyposes instead of baking"],
@@ -283,6 +358,7 @@ export function reviewPerformance(
       ...(p.hand && sample.probes[p.hand] && p.chain?.every((c) => sample.probes[c])
         ? { hand: p.hand }
         : {}),
+      ...(p.loop ? { loop: true } : {}),
     },
     keyStats,
   );

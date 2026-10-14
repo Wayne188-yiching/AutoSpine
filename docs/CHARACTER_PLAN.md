@@ -40,7 +40,7 @@ Work on copies. Never write into original artwork folders or an open Spine proje
    node packages/cli/dist/index.js compare-reference work/plan.json work/build-1 artist.json work/compare-1
    ```
 
-   It prints one PASS/FAIL line per criterion and exits 2 if any fails. `acceptance-results.json` has every measurement. In `compare-<animation>.png`, the top row is the artist version and the bottom row the build, at the same times.
+   It prints one PASS/FAIL line per criterion and exits 2 if any fails. Plan animations are loops, so the D1 critic uses phase-invariant chain metrics (ADR-020): `range:<probe>` and `lag:<probe>` replace peak time, overshoot and peak delay, and where the loop starts does not matter. `acceptance-results.json` has every measurement. In `compare-<animation>.png`, the top row is the artist version and the bottom row the build, at the same times.
 
 6. **Tune motion** [`autospine_optimize_motion`] when D1/D2 fail. Run it in chunks:
 
