@@ -374,14 +374,19 @@ export const MotionPlanSchema = Type.Object(
           /**
            * Face slides inside the head: `y` px down at full depth (scaled by the current depth;
            * upRatio x the lift above rest, default 2/3) and `x` as a ratio of that vertical slide.
+           * Or `parallax` (ADR-022): the vertical travel of the first face follower against the
+           * face plate at full depth, in head widths; the engine derives the slide from the dome
+           * weights. `move` holds the face between main beats and moves it within `move` frames.
            */
           Type.Object(
             {
               kind: Type.Literal("face"),
               ...control,
-              y: PlanNumberSchema,
+              y: Type.Optional(PlanNumberSchema),
+              parallax: Type.Optional(PlanNumberSchema),
               x: PlanNumberSchema,
               upRatio: Type.Optional(Type.Number()),
+              move: Type.Optional(PlanNumberSchema),
             },
             strict,
           ),

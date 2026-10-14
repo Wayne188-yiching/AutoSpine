@@ -7,7 +7,13 @@ import { apply, type CharacterPart } from "./geometry.js";
 import { PartIndex, type Params } from "./joints.js";
 import { planRig, type PlannedRig } from "./rig.js";
 import { planAttachments, type MeshAsset } from "./attachments.js";
-import { buildMotionSpecs, motionContext, motionParams, type MotionContext } from "./motion.js";
+import {
+  buildMotionSpecs,
+  motionContext,
+  motionParams,
+  type FaceParallax,
+  type MotionContext,
+} from "./motion.js";
 import { buildColorTimelines, type ColorTimeline } from "./colors.js";
 import { buildAttachmentTimelines } from "./visibility.js";
 
@@ -193,6 +199,36 @@ export function rigCharacter(plan: CharacterPlan, layout: CharacterLayout): Char
       follow("Layer_" + layer.bone, layer.bone, m);
     }
   }
+  // Face parallax per px of slide (ADR-022): the first follower against the face plate's mean.
+  let faceParallax: FaceParallax | undefined;
+  const plate = face && built.meshes.get(face.head),
+    mix = face && built.faceMix[face.followers[0]!];
+  if (face && plate && mix !== undefined) {
+    const counterMix = face.counterMix ?? -0.3;
+    const factor =
+      plate.weights.vertices.reduce(
+        (sum, v) =>
+          sum +
+          v.influences.reduce(
+            (t, i) =>
+              t +
+              (i.boneId === face.control
+                ? i.weight
+                : i.boneId === face.counter
+                  ? counterMix * i.weight
+                  : 0),
+            0,
+          ),
+        0,
+      ) / plate.weights.vertices.length;
+    const p = index.part(face.head),
+      xs = [0, p.width].flatMap((x) => [0, p.height].map((y) => apply(p.affine, [x, y])[0]));
+    faceParallax = {
+      follower: face.followers[0]!,
+      perPx: +(mix - factor).toFixed(5),
+      unit: +(Math.max(...xs) - Math.min(...xs)).toFixed(3),
+    };
+  }
   return {
     plan,
     rigged,
@@ -202,7 +238,7 @@ export function rigCharacter(plan: CharacterPlan, layout: CharacterLayout): Char
     emptySlots,
     ik,
     transform,
-    motion: motionContext(rig, rigged.world, rigged.chains),
+    motion: motionContext(rig, rigged.world, rigged.chains, faceParallax),
     skeleton: layout.skeleton,
     imagesPath: plan.output?.imagesPath ?? "./images/",
     evidence: { ...rigged.evidence, ...built.evidence },

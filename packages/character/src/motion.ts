@@ -13,22 +13,34 @@ import { failStage } from "@autospine/rig";
 import { num, val, type Params } from "./joints.js";
 import type { WorldFrame } from "./rig.js";
 
+/**
+ * Face parallax per px of control slide (ADR-022): the first follower's mix minus the mean
+ * control factor of the face plate's vertices, and the face image's width (the critic's unit).
+ */
+export interface FaceParallax {
+  follower: string;
+  perPx: number;
+  unit: number;
+}
 /** What motion blocks need from the planned rig. */
 export interface MotionContext {
   rigId: string;
   bones: RigSpec["bones"];
   world: ReadonlyMap<string, WorldFrame>;
   chains: Readonly<Record<string, string[]>>;
+  faceParallax?: FaceParallax;
 }
 export const motionContext = (
   rig: RigSpec,
   world: ReadonlyMap<string, WorldFrame>,
   chains: Record<string, string[]>,
+  faceParallax?: FaceParallax,
 ): MotionContext => ({
   rigId: rig.id,
   bones: rig.bones,
   world,
   chains,
+  ...(faceParallax ? { faceParallax } : {}),
 });
 
 const r3 = (v: number) => +v.toFixed(3);
@@ -121,6 +133,24 @@ export function buildMotionSpecs(
     ...main.eases,
   } as Record<"up" | "down" | "hold" | "rest", KeyposeEase>;
 
+  // Face slide at full depth: px, or a target parallax converted with the dome weights.
+  const faceSlide = new Map<string, number>();
+  for (const s of motion.sink ?? []) {
+    if (s.kind !== "face") continue;
+    if ((s.y === undefined) === (s.parallax === undefined))
+      failStage("animation", "PLAN_MOTION_FACE", `${s.id}: give exactly one of y and parallax`);
+    if (s.y !== undefined) faceSlide.set(s.id, n(s.y, "face.y"));
+    else {
+      const fp = ctx.faceParallax;
+      if (!fp || !(Math.abs(fp.perPx) > 1e-6))
+        failStage(
+          "animation",
+          "PLAN_MOTION_FACE",
+          `${s.id}: parallax needs a dome-weighted face plate whose first follower moves against it`,
+        );
+      faceSlide.set(s.id, (n(s.parallax!, "face.parallax") * fp.unit) / fp.perPx);
+    }
+  }
   // Values derived from the main depth y at each beat.
   const sinkValues = (y: number): Record<string, Value> => {
     const out: Record<string, Value> = { [main.id]: [0, r3(y)] };
@@ -135,10 +165,11 @@ export function buildMotionSpecs(
         }
       else if (s.kind === "face") {
         // A breath slides the face with the body either way; a settle lifts it by upRatio.
+        const slide = faceSlide.get(s.id)!;
         const fy = breath
-          ? (n(s.y, "face.y") * y) / Math.abs(depth)
+          ? (slide * y) / Math.abs(depth)
           : y >= 0
-            ? (n(s.y, "face.y") * y) / depth
+            ? (slide * y) / depth
             : (s.upRatio ?? 2 / 3) * y;
         out[s.id] = [r3(n(s.x, "face.x") * fy), r3(fy)];
       } else out[s.id] = [+(1 - (n(s.amount, `${s.id}.amount`) * y) / depth).toFixed(4), 1];
@@ -273,6 +304,31 @@ export function buildMotionSpecs(
           ease: eases.hold,
           poses: at("hold", depth + holdDepth),
         });
+    }
+    // ---- face holds (ADR-022): hold between main beats, arrive `move` frames after each beat
+    for (const s of motion.sink ?? []) {
+      if (s.kind !== "face" || s.move === undefined) continue;
+      const move = Math.round(n(s.move, `${s.id}.move`));
+      const posed = beats
+        .filter((b) => b.poses[s.id] !== undefined)
+        .map((b) => ({ frame: b.frame, value: b.poses[s.id] as Value }));
+      for (const b of beats) delete b.poses[s.id];
+      if (move < 1 || posed.some((p, i) => p.frame + move >= (posed[i + 1]?.frame ?? frames)))
+        failStage(
+          "animation",
+          "PLAN_MOTION_TIMING",
+          `${s.id}: a face move of ${move} frames must end before the next main beat`,
+        );
+      const put = (frame: number, value: Value, ease: KeyposeEase) => {
+        const beat = beats.find((b) => b.frame === frame);
+        if (beat) beat.poses[s.id] = { value, ease };
+        else beats.push({ frame, poses: { [s.id]: { value, ease } } });
+      };
+      posed.forEach((p, i) => {
+        put(p.frame, (posed[i - 1] ?? posed.at(-1)!).value, "linear");
+        put(p.frame + move, p.value, "out");
+      });
+      beats.sort((a, b) => a.frame - b.frame);
     }
     // ---- explicit keys merged by frame; the rest value goes on frame 0
     for (const k of motion.keyed ?? []) {
