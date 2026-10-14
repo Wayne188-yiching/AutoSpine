@@ -64,5 +64,49 @@ export function buildAttachmentTimelines(
       hold(slotName, null);
     }
   }
+  // Swaps inside an animation (ADR-027) replace that slot's hold: keyed frames, held to the end.
+  const fps = motion.fps ?? 30;
+  for (const sw of motion.swaps ?? [])
+    for (const [animName, raw] of Object.entries(sw.keys)) {
+      const anim = motion.animations.find((a) => a.name === animName);
+      if (!anim)
+        failStage(
+          "animation",
+          "PLAN_SWAP",
+          `Swap of ${sw.slot} names unknown animation ${animName}`,
+        );
+      const s = slots.find((x) => x.name === sw.slot);
+      if (!s) failStage("animation", "PLAN_SWAP", `Swap names unknown slot ${sw.slot}`);
+      const duration = durations.get(animName)!;
+      const held = out.findIndex((t) => t.animationName === animName && t.slotName === sw.slot);
+      const start = held >= 0 ? out[held]!.keys[0]!.name : (s.attachment ?? null);
+      if (held >= 0) out.splice(held, 1);
+      const keys = [...raw].sort((a, b) => a.frame - b.frame);
+      for (const k of keys) {
+        if (k.frame > anim.frames)
+          failStage(
+            "animation",
+            "PLAN_SWAP",
+            `${animName}: swap of ${sw.slot} at ${k.frame} is past the end`,
+          );
+        if (k.attachment !== null && !s.attachments.some((a) => a.name === k.attachment))
+          failStage(
+            "animation",
+            "PLAN_SWAP",
+            `${animName}: ${sw.slot} has no attachment ${k.attachment}`,
+          );
+      }
+      const timeline: AttachmentTimeline["keys"] = [];
+      if (keys[0]!.frame > 0) timeline.push({ time: 0, name: start });
+      for (const k of keys) {
+        const time = Math.min(duration, k.frame / fps);
+        const last = timeline.at(-1);
+        if (last && Math.abs(last.time - time) < 1e-9) last.name = k.attachment;
+        else timeline.push({ time, name: k.attachment });
+      }
+      if (timeline.at(-1)!.time < duration - 1e-9)
+        timeline.push({ time: duration, name: timeline.at(-1)!.name });
+      out.push({ animationName: animName, slotName: sw.slot, keys: timeline });
+    }
   return out;
 }
