@@ -90,4 +90,50 @@ describe("branching props (ADR-023)", () => {
     expect(Math.min(...xs)).toBeGreaterThan(20);
     expect(Math.max(...xs)).toBeLessThan(56);
   });
+
+  it("keeps a collapsed placement as a scale-0 region", () => {
+    // HorseYearFish (2026-10-14): S_Roll sat on a scale-0 bone, so its quad had four equal corners
+    // (SPINE_MESH, then RIG_SINGULAR in the region inversion).
+    const doc = fixtureImagesOnly() as ReturnType<typeof fixtureImagesOnly>;
+    const slots = doc.slots as { name: string; bone: string; attachment?: string }[];
+    slots.push({ name: "Roll", bone: "root", attachment: "Eyes" });
+    const atts = doc.skins[0]!.attachments as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    const eyes = atts.Eyes!.Eyes!;
+    atts.Roll = {
+      Eyes: {
+        type: "mesh",
+        uvs: [0, 0, 1, 0, 1, 1, 0, 1],
+        triangles: [1, 2, 3, 1, 3, 0],
+        vertices: [30, 60, 30, 60, 30, 60, 30, 60],
+        hull: 4,
+        width: eyes.width,
+        height: eyes.height,
+      },
+    };
+    const plan = clone(fixturePlan());
+    plan.regions = { ...plan.regions, Roll: "root" };
+    expect(lintCharacterPlan(plan).errors).toEqual([]);
+    const built = buildCharacter(plan, layoutOf(doc));
+    const skins = (
+      built.document as unknown as {
+        skins: { attachments: Record<string, Record<string, Record<string, unknown>>> }[];
+      }
+    ).skins;
+    const region = skins[0]!.attachments.Roll!.Eyes!;
+    expect(region.type).toBeUndefined();
+    expect([region.scaleX, region.scaleY]).toEqual([0, 0]);
+    const sk = loadSkeleton(built.document);
+    pose(sk, null, 0);
+    const drawn = drawList(sk).find((d) => d.slot === "Roll")!;
+    const xs = drawn.verts.filter((_, i) => i % 2 === 0),
+      ys = drawn.verts.filter((_, i) => i % 2 === 1);
+    // The runtime places it on its source point with no area.
+    expect(Math.max(...xs) - Math.min(...xs)).toBeLessThan(1e-6);
+    expect(Math.max(...ys) - Math.min(...ys)).toBeLessThan(1e-6);
+    expect(xs[0]).toBeCloseTo(30, 3);
+    expect(ys[0]).toBeCloseTo(60, 3);
+  });
 });

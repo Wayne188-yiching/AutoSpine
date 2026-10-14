@@ -276,6 +276,8 @@ export function planAttachments(
   // Sheared placements cannot be regions: rigid quads on the region's bone.
   for (const p of index.parts.values()) {
     if (!p.sheared || meshes.has(p.key) || meshes.has(p.slot)) continue;
+    // A collapsed placement (a scale-0 bone in the source setup) has no area: it stays a region.
+    if (Math.abs(p.affine[0] * p.affine[3] - p.affine[1] * p.affine[2]) < 1e-9) continue;
     const bone = regionBone(p.slot);
     if (!bone)
       failStage("rig", "PLAN_REGION", `Sheared image ${p.key} needs a region bone or a mesh plan`);

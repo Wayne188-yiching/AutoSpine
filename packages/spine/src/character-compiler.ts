@@ -417,6 +417,21 @@ export function compileCharacterSpine40(input: CharacterSpineInput) {
           inverseAffine(frames.get(a.boneId) ?? fail("Region bone missing")),
           a.world,
         );
+        // A collapsed region (a scale-0 bone in the source setup) is emitted at scale 0.
+        if (Math.abs(local[0] * local[3] - local[1] * local[2]) < 1e-12) {
+          if (![local[4], local[5]].every(Number.isFinite)) fail("Region position must be finite");
+          attachments[slot.name]![a.name] = {
+            path: a.path,
+            x: local[4],
+            y: -local[5],
+            scaleX: 0,
+            scaleY: 0,
+            width: a.width,
+            height: a.height,
+            ...(a.color === undefined ? {} : { color: a.color }),
+          };
+          continue;
+        }
         inverseAffine(local);
         const r = Math.atan2(local[1], local[0]);
         const sx = Math.hypot(local[0], local[1]);
