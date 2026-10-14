@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildCharacter, handoverNotes, lintCharacterPlan } from "@autospine/character";
-import { deformationQA, drawList, loadSkeleton, pose } from "@autospine/reference";
+import { deformationQA, drawList, loadSkeleton, pose, sampleTracks } from "@autospine/reference";
 import { fixtureLayout, fixturePlan } from "./character-fixture.js";
 
 describe("attachment swaps inside an animation (ADR-027)", () => {
@@ -53,18 +53,16 @@ describe("attachment swaps inside an animation (ADR-027)", () => {
         },
       },
     ];
-    const sk = loadSkeleton(buildCharacter(plan, fixtureLayout()).document);
-    const end = sk.data.findAnimation("IDLE")!.duration;
-    const shown = (time: number) => {
-      pose(sk, "IDLE", time);
-      return drawList(sk).some((d) => d.slot === "Eyes");
+    // The runtime wraps the loop's last frame to frame 0, so read the keys: the timeline ends on
+    // the frame-0 attachment, as an artist's loop does.
+    const doc = buildCharacter(plan, fixtureLayout()).document as unknown as {
+      animations: Record<
+        string,
+        { slots: Record<string, { attachment: { name: string | null }[] }> }
+      >;
     };
-    expect([shown(0), shown(41 / 30), shown(end - 1 / 30), shown(end)]).toEqual([
-      false,
-      true,
-      true,
-      false,
-    ]);
+    const keys = doc.animations.IDLE!.slots.Eyes!.attachment;
+    expect(keys.map((k) => k.name)).toEqual([null, "Eyes", null]);
   });
 
   it("measures a swapped-in image against its own geometry", () => {
@@ -91,6 +89,9 @@ describe("attachment swaps inside an animation (ADR-027)", () => {
         },
       },
     });
+    // The last sampled frame sits just before the wrap: the image before the closing key.
+    const t = sampleTracks(sk, "loop", 30);
+    expect([t.tr.ball!.att[0], t.tr.ball!.att[t.frames]]).toEqual(["a", "b"]);
     const qa = deformationQA(sk, "loop", 30, undefined, []);
     expect(qa.inversions).toEqual({});
     expect(qa.maxCharacterStretch?.value ?? 0).toBeLessThan(1e-6);

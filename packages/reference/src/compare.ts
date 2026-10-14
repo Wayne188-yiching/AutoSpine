@@ -6,7 +6,14 @@ import {
   targetBand,
   type PerformanceProfile,
 } from "@autospine/planning";
-import { drawList, loadSkeleton, pose, type DrawItem, type LoadedSkeleton } from "./runtime.js";
+import {
+  drawList,
+  frameTime,
+  loadSkeleton,
+  pose,
+  type DrawItem,
+  type LoadedSkeleton,
+} from "./runtime.js";
 import { flatten, render, sheet, type Texture } from "./render.js";
 
 type Json = Record<string, unknown>;
@@ -42,7 +49,7 @@ export function sampleTracks(
     tr: Record<string, SlotTrack> = {};
   for (const slot of sk.skeleton.slots) tr[slot.data.name] = { c: [], a: [], att: [], verts: [] };
   for (let f = 0; f <= N; f++) {
-    pose(sk, animation, Math.min(D, f / fps));
+    pose(sk, animation, frameTime(f, N, D, fps));
     const seen = new Set<string>();
     for (const d of drawList(sk)) {
       seen.add(d.slot);
@@ -385,7 +392,7 @@ export function deformationQA(
     visible: Record<string, number> = {},
     stretch: Record<string, number> = {};
   for (let f = 0; f <= N; f++) {
-    pose(sk, animation, Math.min(D, f / fps));
+    pose(sk, animation, frameTime(f, N, D, fps));
     for (const d of drawList(sk)) {
       const s0 = restOf(d);
       if (!s0 || d.tris.length < 6 || s0.verts.length !== d.verts.length) continue;
@@ -693,7 +700,9 @@ export function compareToReference(
       for (const s of Object.values(t.tr)) {
         const v0 = s.verts[0],
           v1 = s.verts[t.frames];
-        if (v0 && v1)
+        // A slot showing another image at the end (a sequence step) has no geometric seam: two
+        // meshed images do not share vertex positions.
+        if (v0 && v1 && s.att[0] === s.att[t.frames])
           for (let i = 0; i < v0.length; i += 2)
             worst = Math.max(worst, Math.hypot(v0[i]! - v1[i]!, v0[i + 1]! - v1[i + 1]!));
       }
