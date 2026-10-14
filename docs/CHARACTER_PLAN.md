@@ -32,7 +32,7 @@ Work on copies. Never write into original artwork folders or an open Spine proje
    node packages/cli/dist/index.js build-character work/plan.json work/build-1 [--params=best-params.json]
    ```
 
-   The plan is linted first. `build-record.json` holds the joints, face mixes, IK bend sides, `setupDeviationPx` (must be ≤ 0.5), each QA seam's drift (≤ 11 px) and inversions (0), and the hashes of the plan and images-only file. The folder imports straight into Spine 4.0.64 (`images/` sits beside the JSON).
+   The plan is linted first. `build-record.json` holds the joints, face mixes, IK bend sides, `setupDeviationPx` (must be ≤ 0.5), each QA seam's drift (≤ 11 px) and inversions (0), and the hashes of the plan and images-only file. The folder imports straight into Spine 4.0.64 (`images/` sits beside the JSON). `HANDOVER.md` explains the file to whoever edits it next, and bones are coloured by role: main blue, control red, face followers orange, chains green (ADR-026).
 
 5. **Compare with the artist version** [`autospine_compare_reference`] when one exists:
 

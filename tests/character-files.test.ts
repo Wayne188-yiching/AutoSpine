@@ -33,6 +33,7 @@ describe("character plan files: CLI (ADR-017)", () => {
     expect(built.setupDeviationPx).toBeLessThanOrEqual(0.01);
     expect((await readdir(out)).sort()).toEqual(
       [
+        "HANDOVER.md",
         "build-record.json",
         "fixture_character.json",
         "images",
