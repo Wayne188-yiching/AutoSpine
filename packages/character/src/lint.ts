@@ -248,6 +248,16 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
         errors.push(`${where}: pose ${id} needs finite offsets`);
     }
   }
+  // Swaps (ADR-027): known slot and animation, frames inside the animation.
+  for (const sw of m.swaps ?? []) {
+    if (slotNames && !slotNames.has(sw.slot)) errors.push(`motion.swaps: unknown slot ${sw.slot}`);
+    for (const [name, keys] of Object.entries(sw.keys)) {
+      const a = m.animations.find((x) => x.name === name);
+      if (!a) errors.push(`motion.swaps ${sw.slot}: unknown animation ${name}`);
+      else if (keys.some((k) => k.frame > a.frames))
+        errors.push(`motion.swaps ${sw.slot}: a key is past the end of ${name}`);
+    }
+  }
   for (const a of m.animations)
     if (a.frames % m.cycle !== 0)
       warnings.push(

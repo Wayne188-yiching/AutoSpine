@@ -189,6 +189,11 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
       if (k.keys[a.name]) add(`- 關鍵幀：\`${k.bone}\` 的 ${k.channel}。`);
     for (const p of plan.motion.pulses ?? [])
       add(`- 透明度：${p.slots.map((s) => `\`${s}\``).join("、")} 明暗變化。`);
+    for (const sw of plan.motion.swaps ?? [])
+      if (sw.keys[a.name])
+        add(
+          `- 換圖：\`${sw.slot}\` 在 ${sw.keys[a.name]!.map((k) => k.frame).join("、")} 幀切換附件（例如眨眼）。`,
+        );
     add(`- 共 ${moved.size} 根骨有關鍵幀，都是稀疏關鍵幀加貝茲曲線，可以直接拖動。`);
     add();
   });
