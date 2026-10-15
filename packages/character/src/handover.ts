@@ -188,6 +188,16 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
             "、",
           )} 在每個關鍵幀上的固定偏移。改姿勢就改這些骨的關鍵幀（第 0 幀與最後一幀同值）。`,
       );
+    if (a.keyposes?.length) {
+      const bones = [...new Set(a.keyposes.flatMap((k) => Object.keys(k.pose)))];
+      add(
+        `- 關鍵姿勢：依參考圖在第 ${a.keyposes.map((k) => k.frame).join("、")} 幀擺的姿勢（${bones
+          .map((b) => `\`${b}\``)
+          .join(
+            "、",
+          )}），疊在主動作、跟隨和波動之上。改姿勢就改這些幀上的關鍵幀；兩者都動的骨在那段是逐幀的鍵。`,
+      );
+    }
     if (a.show?.length) add(`- 部件組：顯示 ${a.show.length} 個 slot，用 attachment 關鍵幀切換。`);
     const mm = motionFor(plan.motion, a),
       m = mm.main;

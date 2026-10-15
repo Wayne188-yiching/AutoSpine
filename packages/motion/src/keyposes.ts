@@ -153,6 +153,186 @@ function periodic(keys: Key[], N: number): Track {
   return crop(repeated, 0, N);
 }
 
+/** A key of a track: `curve` shapes the segment to the next key (none: linear). */
+export type TrackKey = Key;
+/**
+ * The track through posed values: each entry's ease shapes the way into it. A loop wraps from its
+ * last entry to its first; a one-shot holds its first and last values.
+ */
+export function poseTrack(
+  entries: readonly { frame: number; value: number[]; ease?: KeyposeEase }[],
+  frames: number,
+  loop: boolean,
+): TrackKey[] {
+  const keys = entries.map((e, i, all) => {
+    const next = loop ? all[(i + 1) % all.length]! : all[i + 1];
+    return withCurve({ frame: e.frame, value: e.value }, next && curveOf(next.ease));
+  });
+  if (loop) return periodic(keys, frames);
+  if (keys[0]!.frame > 0) keys.unshift({ frame: 0, value: [...keys[0]!.value] });
+  if (keys.at(-1)!.frame < frames) keys.push({ frame: frames, value: [...keys.at(-1)!.value] });
+  return keys;
+}
+/** A track's value at `frame`; held before its first key and after its last. */
+export function trackValue(track: readonly TrackKey[], frame: number): number[] {
+  if (frame <= track[0]!.frame) return [...track[0]!.value];
+  const i = track.findIndex((k) => k.frame >= frame);
+  if (i < 0) return [...track.at(-1)!.value];
+  const a = track[i - 1]!,
+    b = track[i]!;
+  return a.curve?.type === "stepped" && frame < b.frame ? [...a.value] : segmentValue(a, b, frame);
+}
+const sameCurve = (a: KeyCurve | undefined, b: KeyCurve | undefined) =>
+  (a?.type ?? "linear") === (b?.type ?? "linear") &&
+  (a?.type !== "bezier" ||
+    (b?.type === "bezier" &&
+      Math.abs(a.x1 - b.x1) +
+        Math.abs(a.y1 - b.y1) +
+        Math.abs(a.x2 - b.x2) +
+        Math.abs(a.y2 - b.y2) <
+        1e-9));
+/**
+ * The piece of a track between two of its key times or times outside it: end values and the
+ * curve between them (`null` when no single curve describes it).
+ */
+function piece(track: Track, t0: number, t1: number) {
+  const i = track.findIndex((k) => k.frame >= t1 - EPS);
+  const v0 = trackValue(track, t0),
+    v1 = trackValue(track, t1);
+  if (i <= 0) return { v0, v1, curve: undefined as KeyCurve | undefined | null };
+  const a = track[i - 1]!,
+    b = track[i]!;
+  if (a.curve?.type === "stepped")
+    return t1 < b.frame - EPS
+      ? { v0, v1: v0, curve: undefined }
+      : { v0, v1, curve: a.curve as KeyCurve | undefined | null };
+  let curve: KeyCurve | undefined | null = a.curve;
+  const span = b.frame - a.frame,
+    u0 = (t0 - a.frame) / span,
+    u1 = (t1 - a.frame) / span;
+  if (curve && u0 > EPS) curve = splitCurve(curve, u0).right;
+  if (curve && u1 < 1 - EPS) curve = splitCurve(curve, (u1 - u0) / (1 - u0)).left;
+  return { v0, v1, curve };
+}
+/** Largest gap between a fitted sum segment and the exact sum: degrees or px (ADR-033). */
+const SUM_TOLERANCE = 0.1;
+/**
+ * One curve through `sum` from t0 to t1, shared by every channel as an IR key's curve is: linear,
+ * or a Bezier whose handles are fitted by least squares; `null` when none stays within the
+ * tolerance on every frame between.
+ */
+function fitSegment(
+  sum: (t: number) => number[],
+  t0: number,
+  t1: number,
+  step: number,
+  hints: readonly KeyCurve[] = [],
+): { curve: KeyCurve | undefined } | null {
+  const v0 = sum(t0),
+    v1 = sum(t1),
+    delta = v1.map((v, j) => v - v0[j]!);
+  const n = Math.max(8, 2 * Math.ceil((t1 - t0) / step)),
+    us = Array.from({ length: n - 1 }, (_, k) => (k + 1) / n),
+    values = us.map((u) => sum(t0 + u * (t1 - t0)));
+  const error = (f: (u: number) => number) =>
+    Math.max(
+      0,
+      ...us.flatMap((u, k) => values[k]!.map((v, j) => Math.abs(v - v0[j]! - delta[j]! * f(u)))),
+    );
+  if (error((u) => u) <= SUM_TOLERANCE) return { curve: undefined };
+  const moving = delta.flatMap((d, j) => (Math.abs(d) > SUM_TOLERANCE ? [j] : []));
+  if (!moving.length) return null;
+  let best: { curve: KeyCurve; error: number } | undefined;
+  // The pieces' own handles first: a linear track plus a curved one is that curve's shape.
+  const grid = [0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95];
+  const pairs = [
+    ...hints.flatMap((c) => (c.type === "bezier" ? [[c.x1, c.x2] as const] : [])),
+    ...grid.flatMap((x1) => grid.map((x2) => [x1, x2] as const)),
+  ];
+  for (const [x1, x2] of pairs) {
+    // y(s) = b1 y1 + b2 y2 + s^3 at the s where u(s) = u: least squares for y1, y2 in units.
+    let a11 = 0,
+      a12 = 0,
+      a22 = 0,
+      r1 = 0,
+      r2 = 0;
+    us.forEach((u, k) => {
+      const s = parameterAt({ x1, x2 }, u),
+        b1 = 3 * (1 - s) * (1 - s) * s,
+        b2 = 3 * (1 - s) * s * s;
+      for (const j of moving) {
+        const w = delta[j]! * delta[j]!,
+          g = (values[k]![j]! - v0[j]!) / delta[j]! - s * s * s;
+        a11 += w * b1 * b1;
+        a12 += w * b1 * b2;
+        a22 += w * b2 * b2;
+        r1 += w * b1 * g;
+        r2 += w * b2 * g;
+      }
+    });
+    const det = a11 * a22 - a12 * a12;
+    if (Math.abs(det) < 1e-12) continue;
+    const clamp = (y: number) => Math.min(10, Math.max(-10, y));
+    const curve = bezier(
+      x1,
+      clamp((r1 * a22 - r2 * a12) / det),
+      x2,
+      clamp((a11 * r2 - a12 * r1) / det),
+    );
+    const e = error((u) => keyFraction(curve, u));
+    if (!best || e < best.error) best = { curve, error: e };
+  }
+  return best && best.error <= SUM_TOLERANCE ? { curve: best.curve } : null;
+}
+/**
+ * The sum of two tracks, keyed at both tracks' key times. A segment where one track holds still,
+ * or both move on the same curve, keeps that curve exactly. Elsewhere one fitted curve stands for
+ * the sum within 0.1 degree or px on every frame; where none does, the segment is split at a frame
+ * and fitted again, down to one key per `step` frames.
+ */
+export function addTracks(a: readonly TrackKey[], b: readonly TrackKey[], step = 1): TrackKey[] {
+  const times = [...a, ...b]
+    .map((k) => k.frame)
+    .sort((x, y) => x - y)
+    .filter((t, i, all) => i === 0 || t - all[i - 1]! > EPS);
+  const sum = (t: number) => trackValue(a, t).map((v, j) => v + trackValue(b, t)[j]!);
+  const out: Key[] = [];
+  const fitted = (t0: number, t1: number, hints: KeyCurve[]) => {
+    const fit = fitSegment(sum, t0, t1, step, hints);
+    const half = Math.round((t1 - t0) / 2 / step) * step;
+    if (fit || half < step || t1 - t0 - half < step) {
+      out.push(withCurve({ frame: t0, value: sum(t0) }, fit?.curve));
+      return;
+    }
+    fitted(t0, t0 + half, hints);
+    fitted(t0 + half, t1, hints);
+  };
+  for (let i = 0; i < times.length - 1; i++) {
+    const t0 = times[i]!,
+      t1 = times[i + 1]!,
+      pa = piece(a as Track, t0, t1),
+      pb = piece(b as Track, t0, t1);
+    // The curves the moving channels need: one shared curve keeps the segment exact.
+    const needed: (KeyCurve | undefined | null)[] = [];
+    pa.v0.forEach((v, j) => {
+      if (Math.abs(pa.v1[j]! - v) > 1e-9) needed.push(pa.curve);
+      if (Math.abs(pb.v1[j]! - pb.v0[j]!) > 1e-9) needed.push(pb.curve);
+    });
+    const v0 = pa.v0.map((v, j) => v + pb.v0[j]!);
+    if (!needed.length) out.push({ frame: t0, value: v0 });
+    else if (needed.every((c) => c !== null && sameCurve(c, needed[0]!)))
+      out.push(withCurve({ frame: t0, value: v0 }, needed[0]!));
+    else
+      fitted(
+        t0,
+        t1,
+        needed.filter((c): c is KeyCurve => !!c),
+      );
+  }
+  out.push({ frame: times.at(-1)!, value: sum(times.at(-1)!) });
+  return out;
+}
+
 // ---- drivers -------------------------------------------------------------------------------
 function shifted(track: Track, lag: number, N: number, loop: boolean): Track {
   if (loop) {
@@ -302,18 +482,7 @@ export function buildKeyposeAnimation(rig: RigSpec, spec: KeyposeSpec): Animatio
     if (!driver.has(id)) fail("KEYPOSE_DRIVER", `Control ${id} has no beats or rule`);
 
   const tracks = new Map<string, Track>();
-  for (const [id, entries] of posed) {
-    const keys = entries.map((e, i, all) => {
-      const next = loop ? all[(i + 1) % all.length]! : all[i + 1];
-      return withCurve({ frame: e.frame, value: e.value }, next && curveOf(next.ease));
-    });
-    if (loop) tracks.set(id, periodic(keys, N));
-    else {
-      if (keys[0]!.frame > 0) keys.unshift({ frame: 0, value: [...keys[0]!.value] });
-      if (keys.at(-1)!.frame < N) keys.push({ frame: N, value: [...keys.at(-1)!.value] });
-      tracks.set(id, keys);
-    }
-  }
+  for (const [id, entries] of posed) tracks.set(id, poseTrack(entries, N, loop));
   const gainOf = (id: string, gain: number | [number, number]): Vec => {
     if (typeof gain !== "number" && arity(id) !== 2)
       fail("KEYPOSE_RULE", `A [x, y] gain needs a two-channel control (${id})`);

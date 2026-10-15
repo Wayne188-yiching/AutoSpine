@@ -35,6 +35,7 @@
 - 道具類（樹、旗子）要擺多大。
 - 要不要眨眼（在第幾幀）、眼神移動。
 - 是循環還是單次動畫（進場、退場、勝利）。單次動畫要說明開頭和結尾的樣子，例如「從 0 放大到原尺寸並淡入」。
+- 單次動畫最好附幾張關鍵姿勢圖（分鏡圖或參考影片截圖），標上第幾幀，例如「第 0、8、14、44、60 幀」，包含開頭與結尾。只給名稱時動作是猜的（「勝利」可能被做成跳躍）；有圖就會照圖擺出每個關鍵姿勢，中間補緩動，呼吸、跟隨、擺動照舊疊在上面。表情、吐舌頭這類網格變形和縮放不會照圖做。
 
 ## 你會拿到
 
@@ -91,9 +92,12 @@ node packages/cli/dist/index.js build-character <plan.json> <新資料夾>
 node packages/cli/dist/index.js compare-reference <plan.json> <建置資料夾> <人工.json> <新資料夾>
 node packages/cli/dist/index.js review-video <plan.json> <建置資料夾> [<人工.json>] <新影片.mp4>
 node packages/cli/dist/index.js fit-pose <plan.json> <建置資料夾> <姿勢圖.png> <新的 pose.json>
+node packages/cli/dist/index.js fit-pose <plan.json> <建置資料夾> 0=<第0幀.png> 14=<第14幀.png>... <新的 keyposes.json> --animation=<動畫> --zero=0
 node packages/cli/dist/index.js merge-plans <新的 plan.json> <plan.json> <plan.json>...
 ```
 
 同一個角色做了好幾段動畫時，用 `merge-plans` 合成一份方案再建置一次，就會得到一個包含全部動畫的 Spine 專案（ADR-031）。
+
+第二種 `fit-pose` 是關鍵姿勢（ADR-033）：每張圖寫成 `幀=檔案`，結果的 `keyposes` 放進方案的 `motion.animations[].keyposes` 再建置一次。`--zero=0` 表示第 0 幀那張就是起始姿勢（已經照它擺好），用來扣掉比對本身的誤差。輸出會列出每張圖的覆蓋率與沒對上的部件；覆蓋率低於 0.6 的圖不採用。
 
 方案檔（`plan.json`）的寫法見 [CHARACTER_PLAN.md](CHARACTER_PLAN.md)。

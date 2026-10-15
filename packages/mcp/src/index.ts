@@ -256,9 +256,36 @@ const toolSchemas = {
     {
       planPath: WorkspacePath,
       buildDir: WorkspacePath,
-      referencePath: WorkspacePath,
+      /** One picture of the rest pose (ADR-024); or `references` for key poses. */
+      referencePath: Type.Optional(WorkspacePath),
+      /** Pictures of key poses on their frames (ADR-033): storyboard or video frames. */
+      references: Type.Optional(
+        Type.Array(
+          Type.Object(
+            { frame: Type.Integer({ minimum: 0, maximum: 3600 }), path: WorkspacePath },
+            strict,
+          ),
+          { minItems: 1, maxItems: 64 },
+        ),
+      ),
       outputPath: WorkspacePath,
       animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
+      ease: Type.Optional(
+        Type.Union([
+          Type.Literal("linear"),
+          Type.Literal("hold"),
+          Type.Literal("ease"),
+          Type.Literal("sine"),
+          Type.Literal("out"),
+          Type.Literal("in"),
+          Type.Literal("drift"),
+        ]),
+      ),
+      minCoverage: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
+      ignore: Type.Optional(
+        Type.Array(Type.String({ minLength: 1, maxLength: 128 }), { maxItems: 512 }),
+      ),
+      zeroFrame: Type.Optional(Type.Integer({ minimum: 0, maximum: 3600 })),
       window: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
       maxRotate: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 90 })),
     },
@@ -307,7 +334,7 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_merge_plans:
     "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose:
-    "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose; expressions are not fitted.",
+    "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
   autospine_review_video:
     "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
@@ -435,6 +462,14 @@ function characterFailure(error: unknown): never {
   if (code === "OUTPUT_EXISTS") throw new Error("MCP_OUTPUT_EXISTS: choose a new output directory");
   if (code === "PNG_SIZE" || code === "PNG")
     throw new Error("MCP_PLAN_IMAGES: an image is missing, unreadable or not the layout's size");
+  // Fit inputs (ADR-024, ADR-033), named without the workspace paths the CLI message holds.
+  const fit: Record<string, string> = {
+    FIT_FRAMES: "each picture needs its own frame inside the animation",
+    FIT_VIEW: "the plan needs qa.view, and every picture its aspect ratio",
+    FIT_ANIMATION: "the plan has no such animation",
+    FIT_SLOTS: "ignore names a slot the layout does not have",
+  };
+  if (code && fit[code]) throw new Error(`MCP_${code}: ${fit[code]}`);
   if (code === "PLAN_QA" || code === "PLAN_SEARCH")
     throw new Error(`MCP_${code}: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
   // Engine failures carry a validation report (stage, code, reason) that safeFailure passes on.
@@ -730,12 +765,27 @@ export class AutoSpineMcpServer {
           if (!Value.Check(toolSchemas.autospine_fit_pose, args)) break;
           const { root, plan } = await guardPlan(this.workspace, args.planPath);
           const build = await guardDirectory(root, args.buildDir);
-          const reference = await guardFile(root, args.referencePath, 64 * 1024 * 1024);
+          // Exactly one of a rest-pose picture and key-pose pictures.
+          if ((args.referencePath === undefined) === (args.references === undefined)) break;
+          const picture = (path: string) => guardFile(root, path, 64 * 1024 * 1024);
+          const references =
+            args.referencePath !== undefined
+              ? await picture(args.referencePath)
+              : await Promise.all(
+                  args.references!.map(async (r) => ({
+                    frame: r.frame,
+                    path: await picture(r.path),
+                  })),
+                );
           const output = await guardOutput(root, args.outputPath, true);
-          const fit = await fitPoseFiles(plan, build, reference, output, {
+          const fit = await fitPoseFiles(plan, build, references, output, {
             ...(args.animation === undefined ? {} : { animation: args.animation }),
             ...(args.window === undefined ? {} : { window: args.window }),
             ...(args.maxRotate === undefined ? {} : { maxRotate: args.maxRotate }),
+            ...(args.minCoverage === undefined ? {} : { minCoverage: args.minCoverage }),
+            ...(args.ease === undefined ? {} : { ease: args.ease }),
+            ...(args.ignore === undefined ? {} : { ignore: args.ignore }),
+            ...(args.zeroFrame === undefined ? {} : { zeroFrame: args.zeroFrame }),
           }).catch(characterFailure);
           return result({ ...fit, output: relative(root, output), artistQualityAccepted: false });
         }
