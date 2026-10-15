@@ -137,5 +137,7 @@ describe("one project per character (ADR-031)", () => {
     const notes = await readFile(join(ws, "build", "HANDOVER.md"), "utf8");
     expect(notes).toContain("Extra/IN");
     expect(notes).toContain("單次");
+    // The one-shot's `move` bone carries no image and is keyed: a control bone (red).
+    expect(notes).toMatch(/控制骨（紅）.*`move`/);
   });
 });

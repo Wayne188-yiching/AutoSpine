@@ -219,6 +219,30 @@ describe("keyframe curves in AnimationSpec", () => {
     const color = character();
     color.colorTimelines![0]!.keys.at(-1)!.curve = { type: "stepped" };
     expect(code(() => compileCharacterSpine40(color))).toBe("SPINE_CHARACTER");
+    // An invalid input names the first offending path.
+    const short = character();
+    short.colorTimelines![0]!.keys = [short.colorTimelines![0]!.keys[0]!];
+    expect(() => compileCharacterSpine40(short)).toThrow(/required: \/colorTimelines\/0\/keys/);
+  });
+
+  it("takes one timeline per animation and slot beyond 512 (one project per character)", () => {
+    // 12 slots x 50 animations: 600 colour timelines, as a merged character holds.
+    const many = character();
+    const slot = many.slots[0]!,
+      line = many.colorTimelines![0]!,
+      anim = many.animations[0]!;
+    many.slots = Array.from({ length: 12 }, (_, k) => ({ ...slot, name: `arm${k}` }));
+    many.animations = Array.from({ length: 50 }, (_, a) => ({
+      ...anim,
+      id: `a${a}`,
+      name: `a${a}`,
+    }));
+    many.colorTimelines = many.animations.flatMap((a) =>
+      many.slots.map((s) => ({ ...line, animationName: a.name, slotName: s.name })),
+    );
+    many.deformTimelines = [];
+    expect(many.colorTimelines).toHaveLength(600);
+    expect(() => compileCharacterSpine40(many)).not.toThrow();
   });
 
   it("exports Spine 4.0 absolute handles that the official Runtime evaluates like the IR", () => {
