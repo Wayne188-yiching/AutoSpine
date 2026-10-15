@@ -6,6 +6,7 @@ import {
   buildCharacterFiles,
   compareReferenceFiles,
   deliverFiles,
+  initProjectFolder,
   lintPlanFile,
   optimizeMotionFiles,
   reviewVideoFiles,
@@ -88,6 +89,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
+  autospine init-project <project-dir>
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
@@ -181,6 +183,11 @@ async function characterCommand(args: string[]): Promise<boolean> {
       );
       return true;
     }
+    case "init-project":
+      if (p.length !== 2) throw new Error(characterUsage);
+      known();
+      console.log(JSON.stringify(await initProjectFolder(p[1]!)));
+      return true;
     case "deliver": {
       if (p.length !== 4 && p.length !== 5) throw new Error(characterUsage);
       known("name", "images", "spine", "replace", "force", "no-video");

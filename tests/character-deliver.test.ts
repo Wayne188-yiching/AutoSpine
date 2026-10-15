@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
 import { chmod, mkdtemp, readFile, readdir, utimes, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, relative } from "node:path";
-import { buildCharacterFiles, deliverFiles } from "@autospine/cli/character";
+import { join } from "node:path";
+import { buildCharacterFiles, deliverFiles, initProjectFolder } from "@autospine/cli/character";
 import { fixtureWorkspace } from "./character-fixture.js";
 
 const hasFfmpeg = spawnSync("ffmpeg", ["-version"]).status === 0;
@@ -24,9 +24,9 @@ fs.writeFileSync(a[a.indexOf("-o") + 1], JSON.stringify({ args: a, images: doc.s
   return exe;
 }
 
-describe("deliver: only the Spine project and the video reach the requester", () => {
+describe("deliver: the project folder holds only the Spine project, its images and the video", () => {
   it.skipIf(process.platform === "win32")(
-    "writes <name>.spine and <name>.mp4, pointing the project at the original images",
+    "writes <name>.spine, images/ and <name>.mp4",
     async () => {
       const ws = await fixtureWorkspace();
       const plan = join(ws, "plan.json");
@@ -40,17 +40,18 @@ describe("deliver: only the Spine project and the video reach the requester", ()
         spine,
         video,
       });
-      const expected = ["Fixture_Idle.spine", ...(video ? ["Fixture_Idle.mp4"] : [])];
+      const expected = ["Fixture_Idle.spine", "images", ...(video ? ["Fixture_Idle.mp4"] : [])];
       expect((await readdir(delivery)).sort()).toEqual(expected.sort());
+      expect((await readdir(join(delivery, "images"))).sort()).toEqual(
+        (await readdir(join(ws, "images"))).sort(),
+      );
       expect(first.replaced).toBeNull();
       const project = JSON.parse(await readFile(join(delivery, "Fixture_Idle.spine"), "utf8")) as {
         args: string[];
         images: string;
       };
-      // The original images folder, relative to the delivered project.
-      expect(project.images).toBe(
-        relative(delivery, join(ws, "images")).split("\\").join("/") + "/",
-      );
+      // The art travels with the project.
+      expect(project.images).toBe("./images/");
       expect(project.args).toEqual(expect.arrayContaining(["-u", "4.0.64", "-r", "Fixture_Idle"]));
 
       // A second delivery needs --replace; the old files move into the build folder.
@@ -68,7 +69,9 @@ describe("deliver: only the Spine project and the video reach the requester", ()
         replace: true,
       });
       expect((await readdir(delivery)).sort()).toEqual(expected.sort());
-      expect((await readdir(second.replaced!)).sort()).toEqual(expected.sort());
+      // The old project and video move away; images/ stays for the new project.
+      const replacedFiles = expected.filter((f) => f !== "images");
+      expect((await readdir(second.replaced!)).sort()).toEqual(replacedFiles.sort());
 
       if (video) {
         // A project saved after its video was written was edited in Spine: not replaced silently.
@@ -105,13 +108,11 @@ describe("deliver: only the Spine project and the video reach the requester", ()
         video: false,
       });
       if (result.spine) return; // a real Spine install on this machine
-      expect(await readdir(delivery)).toEqual(["fixture_character.json"]);
+      expect((await readdir(delivery)).sort()).toEqual(["fixture_character.json", "images"]);
       const doc = JSON.parse(await readFile(result.json!, "utf8")) as {
         skeleton: { images: string };
       };
-      expect(doc.skeleton.images).toBe(
-        relative(delivery, join(ws, "images")).split("\\").join("/") + "/",
-      );
+      expect(doc.skeleton.images).toBe("./images/");
     } finally {
       if (saved !== undefined) process.env.AUTOSPINE_SPINE = saved;
     }
@@ -123,5 +124,33 @@ describe("deliver: only the Spine project and the video reach the requester", ()
         replace: true,
       }),
     ).rejects.toThrow("CLI_SPINE");
+  }, 120_000);
+
+  it("lays out _work/ and reports anything else left at the top of the project folder", async () => {
+    const ws = await fixtureWorkspace();
+    const project = join(ws, "Character", "AutoSpine");
+    const layout = await initProjectFolder(project);
+    expect((await readdir(layout.work)).sort()).toEqual(
+      ["builds", "checks", "input", "notes", "plans"].sort(),
+    );
+    // Idempotent: a second call keeps what is there.
+    await writeFile(join(layout.work, "notes", "note.txt"), "kept");
+    await initProjectFolder(project);
+    expect(await readdir(join(layout.work, "notes"))).toEqual(["note.txt"]);
+
+    const plan = join(ws, "plan.json");
+    await buildCharacterFiles(plan, join(layout.work, "builds", "build-01"));
+    await writeFile(join(project, "make-plan.mjs"), "// a helper script left behind");
+    await writeFile(join(project, "plan-3.json"), "{}");
+    const result = await deliverFiles(
+      plan,
+      join(layout.work, "builds", "build-01"),
+      project,
+      undefined,
+      { video: false },
+    );
+    // Only files that are neither projects, videos nor art are reported; nothing is moved.
+    expect(result.stray).toEqual(["make-plan.mjs"]);
+    expect(await readdir(project)).toContain("make-plan.mjs");
   }, 120_000);
 });

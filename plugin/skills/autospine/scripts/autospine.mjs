@@ -7204,10 +7204,10 @@ var require_jpeg = __commonJS({
       if (frames.length != 1)
         throw new Error("only single frame JPEGs supported");
       for (let i = 0; i < frames.length; i++) {
-        const cp = frames[i].components;
-        for (let j in cp) {
-          cp[j].quantizationTable = quantizationTables[cp[j].quantizationIdx];
-          delete cp[j].quantizationIdx;
+        const cp2 = frames[i].components;
+        for (let j in cp2) {
+          cp2[j].quantizationTable = quantizationTables[cp2[j].quantizationIdx];
+          delete cp2[j].quantizationIdx;
         }
       }
       self.width = frame2.samplesPerLine;
@@ -30155,7 +30155,7 @@ function closestOnTriangle(p, a, b, c) {
     const v2 = d1 / (d1 - d3);
     return [1 - v2, v2, 0];
   }
-  const cp = sub2(p, c), d5 = dot(ab, cp), d6 = dot(ac, cp);
+  const cp2 = sub2(p, c), d5 = dot(ab, cp2), d6 = dot(ac, cp2);
   if (d6 >= 0 && d5 <= d6) return [0, 0, 1];
   const vb = d5 * d2 - d1 * d6;
   if (vb <= 0 && d2 >= 0 && d6 <= 0) {
@@ -32489,8 +32489,8 @@ var import_pngjs2 = __toESM(require_png(), 1);
 import { createHash as createHash2 } from "node:crypto";
 import { spawn } from "node:child_process";
 import { existsSync as existsSync2, readFileSync as readFileSync2 } from "node:fs";
-import { copyFile, mkdir as mkdir2, readFile as readFile3, rename as rename2, rm, writeFile as writeFile2, stat as stat2 } from "node:fs/promises";
-import { basename as basename3, dirname as dirname3, isAbsolute as isAbsolute3, join as join2, relative as relative3, resolve as resolve3, sep } from "node:path";
+import { copyFile, cp, mkdir as mkdir2, readFile as readFile3, readdir as readdir2, rename as rename2, rm, writeFile as writeFile2, stat as stat2 } from "node:fs/promises";
+import { basename as basename3, dirname as dirname3, join as join2, relative as relative3, resolve as resolve3, sep } from "node:path";
 
 // packages/character/src/geometry.ts
 var apply = (m, p) => [
@@ -37982,13 +37982,6 @@ function spineExecutable(explicit) {
   ];
   return candidates.find((c) => !!c && existsSync2(c));
 }
-function imagesReference(from, images) {
-  const rel = relative3(from, images);
-  if (isAbsolute3(rel))
-    return images.split(sep).join("/") + "/";
-  const posix = rel.split(sep).join("/");
-  return (posix === "" ? "." : posix.startsWith(".") ? posix : `./${posix}`) + "/";
-}
 function runSpine(exe, args) {
   return new Promise((ok) => {
     let output = "";
@@ -38005,6 +37998,17 @@ function runSpine(exe, args) {
       ok({ code: code ?? -1, output });
     });
   });
+}
+var WORK_LAYOUT = ["input", "plans", "builds", "checks", "notes"];
+async function initProjectFolder(projectDir) {
+  const work = join2(resolve3(projectDir), "_work");
+  for (const sub2 of WORK_LAYOUT)
+    await mkdir2(join2(work, sub2), { recursive: true });
+  return { project: resolve3(projectDir), work, folders: WORK_LAYOUT.map((s2) => join2(work, s2)) };
+}
+var DELIVERABLE = /\.(spine|json|mp4|mov|webm|gif|png|jpe?g|webp|psd|atlas)$/i;
+function strayEntries(names) {
+  return names.filter((n) => !["images", "_work"].includes(n) && !n.startsWith(".") && !DELIVERABLE.test(n));
 }
 async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = {}) {
   const plan = await readPlan(planPath);
@@ -38040,7 +38044,10 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
       await moveFile(p, join2(replaced, basename3(p)));
   }
   await mkdir2(out, { recursive: true });
-  document2.skeleton = { ...document2.skeleton, images: imagesReference(out, images) };
+  const deliveredImages = join2(out, "images");
+  if (resolve3(images) !== resolve3(deliveredImages))
+    await cp(images, deliveredImages, { recursive: true, force: true });
+  document2.skeleton = { ...document2.skeleton, images: "./images/" };
   const result = {
     spine: null,
     json: null,
@@ -38070,6 +38077,7 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
     await moveFile(staged, target.video);
     result.video = target.video;
   }
+  result.stray = strayEntries(await readdir2(out));
   return result;
 }
 
@@ -38111,6 +38119,7 @@ var characterUsage = `Character commands (ADR-017):
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
+  autospine init-project <project-dir>
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video]`;
 async function characterCommand(args) {
   const flags = new Map(args.filter((a) => a.startsWith("--")).map((a) => [a.slice(2).split("=")[0], a.split("=").slice(1).join("=")]));
@@ -38197,6 +38206,12 @@ ${characterUsage}`);
       console.log(JSON.stringify(await reviewVideoFiles(p[1], p[2], p.length === 5 ? p[3] : void 0, p.at(-1), Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== void 0)))));
       return true;
     }
+    case "init-project":
+      if (p.length !== 2)
+        throw new Error(characterUsage);
+      known();
+      console.log(JSON.stringify(await initProjectFolder(p[1])));
+      return true;
     case "deliver": {
       if (p.length !== 4 && p.length !== 5)
         throw new Error(characterUsage);

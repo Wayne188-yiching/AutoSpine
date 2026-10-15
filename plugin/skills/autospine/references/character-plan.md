@@ -84,13 +84,13 @@ Work on copies. Never write into original artwork folders or an open Spine proje
 
    Then build and compare again. The search only moves parameters listed in `motion.search`. Results tuned against the artist version are **benchmark-tuned**, not blind; say so when reporting.
 
-8. **Deliver** into the requester's folder:
+8. **Deliver** into the project folder:
 
    ```text
-   node <skill>/scripts/autospine.mjs deliver work/plan.json work/build-1 <delivery-dir> [artist.json] --name=<Name> --images=<original images>
+   node <skill>/scripts/autospine.mjs deliver _work/plans/plan-NN.json _work/builds/build-NN <project-dir> [artist.json] --name=<Name>
    ```
 
-   The delivery folder gets exactly `<Name>.spine` (imported with the Spine 4.0.64 command line, its images path pointing at `--images` relative to the project) and `<Name>.mp4` (the review video, artist | build when an artist file is given). Working files stay in `work/`. Without the editor (`--spine`, `AUTOSPINE_SPINE` or the standard install) it writes `<Name>.json` for Import Data. Delivering again needs `--replace`, which moves the old files into the build folder; a project saved after its video (edited in Spine) stops with `CLI_DELIVER_EDITED` unless `--force`.
+   The project folder's top level gets exactly `<Name>.spine` (imported with the Spine 4.0.64 command line), `images/` (the art it uses, so `./images/` opens anywhere) and `<Name>.mp4` (the review video, artist | build when an artist file is given). Working files live in `<project-dir>/_work/` (`init-project <project-dir>` creates `input/`, `plans/`, `builds/`, `checks/`, `notes/`); `deliver` lists anything else left at the top level as `stray`. Without the editor (`--spine`, `AUTOSPINE_SPINE` or the standard install) it writes `<Name>.json` for Import Data. Delivering again needs `--replace`, which moves the old project and video into the build folder; a project saved after its video (edited in Spine) stops with `CLI_DELIVER_EDITED` unless `--force`.
 
 9. **Hand off**: open the delivered project in the Spine editor (A5) and get an artist's review (E). Numeric acceptance is not artistic approval.
 
