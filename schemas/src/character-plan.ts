@@ -416,6 +416,8 @@ const motionBlocks = {
    * (degrees per px), or `travel` with `to`: the `to` bone then moves `travel` times the main's
    * vertical travel relative to `bone` (a rotate control; gain = travel x 180/pi / distance from
    * `bone` to `to`). A positive travel moves it with the main when it sits beside the pivot.
+   * A translate control (ADR-032) takes `gain` as a fraction of the main's offset: the bone moves
+   * that much further, lag frames later (a head trailing the hips).
    */
   follow: Type.Optional(
     Type.Array(

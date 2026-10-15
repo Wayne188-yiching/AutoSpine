@@ -252,13 +252,18 @@ describe("cycles and the measured loop length", () => {
     expect([0.5, 1, 2.4, 4, 6].map(suggestLoopCycles)).toEqual([1, 1, 1, 2, 3]);
     expect(code(() => suggestLoopCycles(0))).toBe("BEAT_DURATION");
   });
-  it("warns when a loop cycle falls outside the measured 1.0-2.4 s range", () => {
+  it("warns when a loop cycle falls outside the measured 1.0-3.0 s range", () => {
     const long = reviewMotionBrief(breath());
     expect(long.warnings.map((w) => [w.code, w.suggestedCycles])).toEqual([
       ["BRIEF_LOOP_PERIOD", 2],
     ]);
     expect(reviewMotionBrief(breath({ cycles: 2 })).warnings).toEqual([]);
     expect(reviewMotionBrief(breath({ frames: 72 })).warnings).toEqual([]);
+    // ADR-032: a 3 s breath (a 90-frame idle breathing once) is inside the range, 3.3 s is not.
+    expect(reviewMotionBrief(breath({ frames: 90 })).warnings).toEqual([]);
+    expect(reviewMotionBrief(breath({ frames: 100 })).warnings.map((w) => w.code)).toEqual([
+      "BRIEF_LOOP_PERIOD",
+    ]);
     expect(reviewMotionBrief(breath({ frames: 30 })).warnings).toEqual([]);
     expect(reviewMotionBrief(breath({ frames: 30, cycles: 3 })).warnings[0]!.suggestedCycles).toBe(
       1,

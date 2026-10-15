@@ -340,6 +340,9 @@ function lintOne(
       errors.push(`${where}: give exactly one of gain and travel`);
     if (c.travel !== undefined && (c.to === undefined || c.channel !== "rotate"))
       errors.push(`${where}: travel needs a rotate control and to`);
+    if (c.channel === "scale") errors.push(`${where}: follow drives a rotate or translate control`);
+    if (c.channel === "translate" && m.main.channel !== "translate")
+      errors.push(`${where}: a translate follow needs a translate main`);
     if (c.to !== undefined) bone(c.to, where);
   });
   m.waves?.forEach((w, i) => {
