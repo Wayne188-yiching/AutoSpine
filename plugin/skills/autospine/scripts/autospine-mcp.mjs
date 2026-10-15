@@ -19338,7 +19338,7 @@ import process2 from "node:process";
 
 // packages/mcp/dist/index.js
 import { lstat as lstat2, readFile as readFile4, realpath as realpath2 } from "node:fs/promises";
-import { dirname as dirname4, isAbsolute as isAbsolute3, relative as relative4, resolve as resolve5 } from "node:path";
+import { dirname as dirname4, isAbsolute as isAbsolute4, relative as relative4, resolve as resolve5 } from "node:path";
 
 // node_modules/@sinclair/typebox/build/esm/type/guard/value.mjs
 var value_exports = {};
@@ -32266,8 +32266,8 @@ var import_pngjs2 = __toESM(require_png(), 1);
 import { createHash as createHash3 } from "node:crypto";
 import { spawn } from "node:child_process";
 import { existsSync as existsSync2, readFileSync as readFileSync2 } from "node:fs";
-import { copyFile, mkdir as mkdir2, readFile as readFile3, writeFile as writeFile2, stat as stat2 } from "node:fs/promises";
-import { dirname as dirname3, join as join2, relative as relative3, resolve as resolve3, sep } from "node:path";
+import { copyFile, mkdir as mkdir2, readFile as readFile3, rename as rename2, rm, writeFile as writeFile2, stat as stat2 } from "node:fs/promises";
+import { basename as basename3, dirname as dirname3, isAbsolute as isAbsolute3, join as join2, relative as relative3, resolve as resolve3, sep } from "node:path";
 
 // packages/character/src/geometry.ts
 var apply = (m, p) => [
@@ -37898,7 +37898,7 @@ var mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
 }));
 function contains(root, target) {
   const sub2 = relative4(root, target);
-  return sub2 === "" || !isAbsolute3(sub2) && sub2 !== ".." && !sub2.startsWith("../") && !sub2.startsWith("..\\");
+  return sub2 === "" || !isAbsolute4(sub2) && sub2 !== ".." && !sub2.startsWith("../") && !sub2.startsWith("..\\");
 }
 function policy(condition) {
   if (!condition)

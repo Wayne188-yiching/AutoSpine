@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { copyFile, mkdir, readFile, writeFile, stat } from "node:fs/promises";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { copyFile, mkdir, readFile, rename, rm, writeFile, stat } from "node:fs/promises";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { PNG } from "pngjs";
 import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
@@ -778,4 +778,164 @@ export async function reviewVideoFiles(
     captions: Boolean(captions),
     animations: plan.motion.animations.map((a) => a.name),
   };
+}
+
+/** Characters a Windows or macOS file name cannot hold. */
+const safeFileName = (name: string) =>
+  [...name]
+    .map((c) => (/[\\/:*?"<>|]/.test(c) || c.charCodeAt(0) < 32 ? "_" : c))
+    .join("")
+    .trim() || "character";
+const stamp = () => new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+async function moveFile(from: string, to: string) {
+  try {
+    await rename(from, to);
+  } catch {
+    // Across drives: copy, then remove the original.
+    await copyFile(from, to);
+    await rm(from, { force: true });
+  }
+}
+/** The Spine editor's command line: --spine, AUTOSPINE_SPINE, then the default install. */
+export function spineExecutable(explicit?: string): string | undefined {
+  if (explicit) {
+    if (!existsSync(explicit)) throw new Error(`CLI_SPINE: ${explicit} not found`);
+    return explicit;
+  }
+  const candidates = [
+    process.env.AUTOSPINE_SPINE,
+    process.platform === "win32" ? "C:\\Program Files\\Spine\\Spine.com" : undefined,
+    process.platform === "darwin" ? "/Applications/Spine.app/Contents/MacOS/Spine" : undefined,
+  ];
+  return candidates.find((c): c is string => !!c && existsSync(c));
+}
+/** Images folder as a skeleton `images` path relative to the delivered project. */
+function imagesReference(from: string, images: string) {
+  const rel = relative(from, images);
+  if (isAbsolute(rel)) return images.split(sep).join("/") + "/"; // another drive
+  const posix = rel.split(sep).join("/");
+  return (posix === "" ? "." : posix.startsWith(".") ? posix : `./${posix}`) + "/";
+}
+function runSpine(exe: string, args: string[]) {
+  return new Promise<{ code: number; output: string }>((ok) => {
+    let output = "";
+    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"] });
+    const timer = setTimeout(() => child.kill(), 10 * 60_000);
+    child.stdout.on("data", (d: Buffer) => (output += d.toString()));
+    child.stderr.on("data", (d: Buffer) => (output += d.toString()));
+    child.on("error", (e) => {
+      clearTimeout(timer);
+      ok({ code: -1, output: e.message });
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      ok({ code: code ?? -1, output });
+    });
+  });
+}
+
+export interface DeliverOptions {
+  /** File name without extension; default the plan id. */
+  name?: string;
+  /** The images folder the project points at; default the plan's (`source.images`). */
+  images?: string;
+  /** Spine editor executable; default AUTOSPINE_SPINE or the standard install. */
+  spine?: string;
+  /** Swap an earlier delivery for this build; the old files move into the build folder. */
+  replace?: boolean;
+  /** Replace even a project that was saved after it was delivered (edited in Spine). */
+  force?: boolean;
+  /** Render the review video (default true). */
+  video?: boolean;
+}
+/**
+ * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the requester's folder gets only
+ * `<name>.spine` (imported with the Spine command line, pointing at the original images folder)
+ * and `<name>.mp4` (the review video, artist | build when an artist file is given). Plans, builds,
+ * comparisons and every other working file stay where they are. Without the Spine editor the
+ * project is delivered as `<name>.json` for Import Data instead.
+ */
+export async function deliverFiles(
+  planPath: string,
+  buildDir: string,
+  deliveryDir: string,
+  artistPath: string | undefined,
+  opts: DeliverOptions = {},
+) {
+  const plan = await readPlan(planPath);
+  const name = safeFileName(opts.name ?? plan.id);
+  const images = resolve(opts.images ?? planPaths(planPath, plan).images);
+  if (!(await exists(images))) throw new Error(`CLI_DELIVER_IMAGES: ${images} not found`);
+  const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as {
+    skeleton: Record<string, unknown>;
+  };
+  const out = resolve(deliveryDir);
+  const target = {
+    spine: join(out, `${name}.spine`),
+    json: join(out, `${name}.json`),
+    video: join(out, `${name}.mp4`),
+  };
+  const present = Object.values(target).filter((p) => existsSync(p));
+  if (present.length && !opts.replace)
+    throw new Error(
+      `CLI_OUTPUT_EXISTS: ${present.join(", ")} already delivered; pass --replace to swap in this build (the old files move into the build folder)`,
+    );
+  // The project and its video are written together; a project saved later was edited in Spine.
+  if (present.length && !opts.force && existsSync(target.spine) && existsSync(target.video)) {
+    const [project, video] = await Promise.all([stat(target.spine), stat(target.video)]);
+    if (project.mtimeMs > video.mtimeMs + 120_000)
+      throw new Error(
+        `CLI_DELIVER_EDITED: ${target.spine} was saved after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`,
+      );
+  }
+  // Render first, in the build folder: a missing ffmpeg leaves the delivery folder untouched.
+  let staged: string | undefined;
+  if (opts.video !== false) {
+    staged = join(resolve(buildDir), `delivery-${stamp()}.mp4`);
+    await reviewVideoFiles(planPath, buildDir, artistPath, staged);
+  }
+  let replaced: string | undefined;
+  if (present.length) {
+    replaced = join(resolve(buildDir), `replaced-${stamp()}`);
+    await mkdir(replaced, { recursive: true });
+    for (const p of present) await moveFile(p, join(replaced, basename(p)));
+  }
+  await mkdir(out, { recursive: true });
+  document.skeleton = { ...document.skeleton, images: imagesReference(out, images) };
+  const result: {
+    spine: string | null;
+    json: string | null;
+    video: string | null;
+    images: string;
+    replaced: string | null;
+    spineError?: string;
+  } = {
+    spine: null,
+    json: null,
+    video: null,
+    images: String(document.skeleton.images),
+    replaced: replaced ?? null,
+  };
+  const exe = spineExecutable(opts.spine);
+  if (exe) {
+    // Imported from beside the project, so the relative images path means the same to both.
+    const temp = join(out, `.${name}.autospine-import.json`);
+    await writeFile(temp, JSON.stringify(document));
+    try {
+      const run = await runSpine(exe, ["-u", "4.0.64", "-i", temp, "-o", target.spine, "-r", name]);
+      if (run.code === 0 && existsSync(target.spine)) result.spine = target.spine;
+      else result.spineError = `Spine exited ${run.code}: ${run.output.trim().slice(-600)}`;
+    } finally {
+      await rm(temp, { force: true });
+    }
+  }
+  if (!result.spine) {
+    await writeFile(target.json, json(document));
+    result.json = target.json;
+  }
+  if (staged) {
+    await moveFile(staged, target.video);
+    result.video = target.video;
+  }
+  return result;
 }

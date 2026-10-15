@@ -5,6 +5,7 @@ import { buildJobFile } from "./build.js";
 import {
   buildCharacterFiles,
   compareReferenceFiles,
+  deliverFiles,
   lintPlanFile,
   optimizeMotionFiles,
   reviewVideoFiles,
@@ -86,7 +87,8 @@ const characterUsage = `Character commands (ADR-017):
   autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
-  autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]`;
+  autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
+  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
     args
@@ -177,6 +179,20 @@ async function characterCommand(args: string[]): Promise<boolean> {
           ),
         ),
       );
+      return true;
+    }
+    case "deliver": {
+      if (p.length !== 4 && p.length !== 5) throw new Error(characterUsage);
+      known("name", "images", "spine", "replace", "force", "no-video");
+      const opts = {
+        name: flags.get("name") || undefined,
+        images: flags.get("images") || undefined,
+        spine: flags.get("spine") || undefined,
+        replace: flags.has("replace"),
+        force: flags.has("force"),
+        video: !flags.has("no-video"),
+      };
+      console.log(JSON.stringify(await deliverFiles(p[1]!, p[2]!, p[3]!, p[4], opts)));
       return true;
     }
     case "merge-plans": {

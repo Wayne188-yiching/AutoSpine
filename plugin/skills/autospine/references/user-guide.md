@@ -38,20 +38,18 @@
 
 ## 你會拿到
 
-| 檔案                       | 用途                                                                       |
-| -------------------------- | -------------------------------------------------------------------------- |
-| `<名稱>.json` 與 `images/` | Spine 檔。在 Spine 選 Import Data 匯入即可                                 |
-| `review.mp4`               | 檢查影片，依序播放：① 佈線 ② 骨架 ③ 完整動態。有人工版時左為人工、右為自動 |
-| `HANDOVER.md`              | 接手說明：每根骨的用途、約束、各動畫動了哪些骨、要改什麼去哪裡改           |
-| `acceptance-check.json`    | 有人工版時才有的驗收結果                                                   |
+只有兩個檔案，放在你指定的資料夾（沒指定時是原 `.spine` 旁邊的 `AutoSpine` 資料夾）：
+
+| 檔案           | 用途                                                                       |
+| -------------- | -------------------------------------------------------------------------- |
+| `<名稱>.spine` | Spine 專案，直接開。圖片指向你原本的 images 資料夾，不會另外複製一份       |
+| `<名稱>.mp4`   | 檢查影片，依序播放：① 佈線 ② 骨架 ③ 完整動態。有人工版時左為人工、右為自動 |
+
+骨架說明、驗收結果會直接在對話裡告訴你。方案、建置檔這些工作檔都留在 `使用者資料夾\AutoSpine`，要看再跟它要。
 
 骨的顏色代表用途：藍是主骨、紅是控制骨（沒有圖片）、橘是臉部跟隨骨、綠是頭髮尾巴等骨鏈，其他是身體關節。動畫是稀疏關鍵幀，可以直接在 Spine 裡改；手動修改不會回寫方案。
 
-用命令列轉成 Spine 專案：
-
-```text
-"C:\Program Files\Spine\Spine.com" -u 4.0.64 -i <名稱>.json -o <新專案>.spine -r
-```
+改完需求重做時，新版會取代舊的兩個檔案，舊版移回工作資料夾。若你已經在 Spine 裡改過交付的檔案，它會先問你，不會直接蓋掉。
 
 ## 怎麼看驗收結果
 
@@ -93,7 +91,10 @@ node <skill>/scripts/autospine.mjs review-video <plan.json> <建置資料夾> [<
 node <skill>/scripts/autospine.mjs fit-pose <plan.json> <建置資料夾> <姿勢圖.png> <新的 pose.json>
 node <skill>/scripts/autospine.mjs fit-pose <plan.json> <建置資料夾> 0=<第0幀.png> 14=<第14幀.png>... <新的 keyposes.json> --animation=<動畫> --zero=0
 node <skill>/scripts/autospine.mjs merge-plans <新的 plan.json> <plan.json> <plan.json>...
+node <skill>/scripts/autospine.mjs deliver <plan.json> <建置資料夾> <交付資料夾> [<人工.json>] --name=<名稱> --images=<原本的 images 資料夾> [--replace]
 ```
+
+`deliver` 只在交付資料夾放 `<名稱>.spine` 和 `<名稱>.mp4`；沒有安裝 Spine 時改放 `<名稱>.json`，用 Spine 的 Import Data 匯入。
 
 同一個角色做了好幾段動畫時，用 `merge-plans` 合成一份方案再建置一次，就會得到一個包含全部動畫的 Spine 專案（ADR-031）。
 
