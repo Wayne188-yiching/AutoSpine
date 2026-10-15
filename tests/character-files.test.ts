@@ -304,5 +304,43 @@ describe("character plan files: MCP tools (ADR-017)", () => {
         })
       ).body.code,
     ).toBe("MCP_OUTPUT_EXISTS");
+    // Key poses (ADR-033): pictures on frames. The build's own frame 0 again: nothing to move.
+    const keyed = await call("autospine_fit_pose", {
+      planPath: "posed.json",
+      buildDir: "b",
+      references: [{ frame: 0, path: "ref.png" }],
+      outputPath: "out/keyposes.json",
+      ease: "out",
+    });
+    expect(keyed.error).toBe(false);
+    expect(keyed.body).toMatchObject({
+      output: join("out", "keyposes.json"),
+      keyposes: 1,
+      artistQualityAccepted: false,
+    });
+    expect((keyed.body.frames as { accepted: boolean }[])[0]!.accepted).toBe(true);
+    const keyposes = JSON.parse(await readFile(join(ws, "out", "keyposes.json"), "utf8")) as {
+      keyposes: { frame: number; ease?: string; pose: Record<string, { rotate?: number }> }[];
+    };
+    expect(keyposes.keyposes[0]).toMatchObject({ frame: 0, ease: "out" });
+    for (const p of Object.values(keyposes.keyposes[0]!.pose))
+      expect(Math.abs(p.rotate ?? 0)).toBeLessThan(1);
+    // One rest-pose picture or key-pose pictures, not both; a frame past the end is refused.
+    const both = await call("autospine_fit_pose", {
+      planPath: "posed.json",
+      buildDir: "b",
+      referencePath: "ref.png",
+      references: [{ frame: 0, path: "ref.png" }],
+      outputPath: "out/both.json",
+    });
+    expect(both.body.code).toBe("MCP_TOOL_ARGUMENTS");
+    const late = await call("autospine_fit_pose", {
+      planPath: "posed.json",
+      buildDir: "b",
+      references: [{ frame: 80, path: "ref.png" }],
+      outputPath: "out/late.json",
+    });
+    expect(late.error).toBe(true);
+    expect(late.body.code).toBe("MCP_FIT_FRAMES");
   }, 120_000);
 });

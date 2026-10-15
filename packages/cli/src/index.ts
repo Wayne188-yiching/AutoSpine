@@ -84,7 +84,8 @@ const characterUsage = `Character commands (ADR-017):
   autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
   autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]
   autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]
-  autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--window=units] [--max-rotate=deg]
+  autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
+  autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
@@ -194,20 +195,34 @@ async function characterCommand(args: string[]): Promise<boolean> {
       return true;
     }
     case "fit-pose": {
-      if (p.length !== 5) throw new Error(characterUsage);
-      known("animation", "window", "max-rotate");
+      if (p.length < 5) throw new Error(characterUsage);
+      known("animation", "window", "max-rotate", "min-coverage", "ease", "ignore", "zero");
+      // <frame>=<picture.png> pairs are key poses (ADR-033); one plain picture is the rest pose.
+      const keyed = p.slice(3, -1).map((a) => /^(\d+)=(.+)$/.exec(a));
+      if (keyed.some((m) => !m) && p.length !== 5) throw new Error(characterUsage);
+      const references = keyed.every((m) => m)
+        ? keyed.map((m) => ({ frame: Number(m![1]), path: m![2]! }))
+        : p[3]!;
+      const ease = flags.get("ease");
+      const eases = ["linear", "hold", "ease", "sine", "out", "in", "drift"] as const;
+      if (ease !== undefined && !eases.includes(ease as (typeof eases)[number]))
+        throw new Error(`CLI_FLAG: --ease must be one of ${eases.join(", ")}`);
       const opts = {
         animation: flags.get("animation"),
         window: numberFlag("window"),
         maxRotate: numberFlag("max-rotate"),
+        minCoverage: numberFlag("min-coverage"),
+        ease: ease as (typeof eases)[number] | undefined,
+        ignore: flags.get("ignore")?.split(",").filter(Boolean),
+        zeroFrame: numberFlag("zero"),
       };
       console.log(
         JSON.stringify(
           await fitPoseFiles(
             p[1]!,
             p[2]!,
-            p[3]!,
-            p[4]!,
+            references,
+            p.at(-1)!,
             Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined)),
           ),
         ),

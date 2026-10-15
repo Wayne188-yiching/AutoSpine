@@ -280,6 +280,20 @@ function lintOne(
       if ([p.x, p.y, p.rotate].some((v) => v !== undefined && !Number.isFinite(v)))
         errors.push(`${where}: pose ${id} needs finite offsets`);
     }
+    // Key poses (ADR-033): increasing frames inside the animation, planned bones, finite offsets.
+    const keyposes = a.keyposes ?? [],
+      last = a.loop === false ? a.frames : a.frames - 1;
+    keyposes.forEach((k, i) => {
+      if (k.frame > last)
+        errors.push(`${where}: key pose at ${k.frame} is past frame ${last} (${a.frames} frames)`);
+      if (i > 0 && k.frame <= keyposes[i - 1]!.frame)
+        errors.push(`${where}: key pose frames must increase (${k.frame})`);
+      for (const [id, p] of Object.entries(k.pose)) {
+        bone(id, `${where} key pose ${k.frame}`);
+        if ([p.x, p.y, p.rotate].some((v) => v !== undefined && !Number.isFinite(v)))
+          errors.push(`${where}: key pose ${k.frame} ${id} needs finite offsets`);
+      }
+    });
   }
   // Swaps (ADR-027): known slot and animation, frames inside the animation.
   for (const sw of m.swaps ?? []) {
