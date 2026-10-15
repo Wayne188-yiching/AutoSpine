@@ -562,6 +562,37 @@ export const MotionPlanSchema = Type.Object(
               ),
             ),
           ),
+          /**
+           * Key poses (ADR-033): a pose layer keyed on frames, eased between them and added to every
+           * bone timeline like a `pose` that changes over time, so the plan's follows and waves stay
+           * on top. A bone missing from a key has no offset there. Frame 0 has no offset unless a
+           * key sits there; a one-shot holds its last key, a loop returns to frame 0. `fit-pose`
+           * measures them from reference pictures (storyboard or video frames).
+           */
+          keyposes: Type.Optional(
+            Type.Array(
+              Type.Object(
+                {
+                  frame: Type.Integer({ minimum: 0, maximum: 3600 }),
+                  /** Arrival ease; default "ease". */
+                  ease: Type.Optional(KeyposeEaseSchema),
+                  pose: Type.Record(
+                    IdSchema,
+                    Type.Object(
+                      {
+                        x: Type.Optional(Type.Number()),
+                        y: Type.Optional(Type.Number()),
+                        rotate: Type.Optional(Type.Number()),
+                      },
+                      strict,
+                    ),
+                  ),
+                },
+                strict,
+              ),
+              { minItems: 1, maxItems: 256 },
+            ),
+          ),
         },
         strict,
       ),

@@ -67,6 +67,47 @@ export function fixtureRgba(name: string): { width: number; height: number; rgba
   return { width: im.width, height: im.height, rgba };
 }
 
+const hash = (i: number, j: number) => {
+  let n = (i * 374761393 + j * 668265263) | 0;
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+};
+const noise = (x: number, y: number) => {
+  const i = Math.floor(x / 4),
+    j = Math.floor(y / 4),
+    fx = x / 4 - i,
+    fy = y / 4 - j;
+  const top = hash(i, j) * (1 - fx) + hash(i + 1, j) * fx,
+    bottom = hash(i, j + 1) * (1 - fx) + hash(i + 1, j + 1) * fx;
+  return top * (1 - fy) + bottom * fy;
+};
+/**
+ * The fixture's images with texture, for pose fitting (ADR-024): flat colours would match anywhere
+ * inside a same-coloured part. Value noise in 4 px cells is fine and not periodic, so one placement
+ * matches; each image has its own noise, as separate drawings do (two equal legs side by side
+ * would match each other). Same sizes and alpha as `fixtureRgba`.
+ */
+export function fixtureTextures(): Map<
+  string,
+  { width: number; height: number; rgba: Uint8Array }
+> {
+  return new Map(
+    Object.entries(FIXTURE_IMAGES).map(([name, im], n) => {
+      const rgba = new Uint8Array(im.width * im.height * 4);
+      for (let y = 0; y < im.height; y++)
+        for (let x = 0; x < im.width; x++) {
+          if (!im.inside((x + 0.5) / im.width, (y + 0.5) / im.height)) continue;
+          const k = 0.35 + 0.65 * noise(x + 97 * n, y + 53 * n);
+          rgba.set(
+            [im.color[0] * k, im.color[1] * (1.2 - k / 2), im.color[2] * k, 255],
+            (y * im.width + x) * 4,
+          );
+        }
+      return [name, { width: im.width, height: im.height, rgba }];
+    }),
+  );
+}
+
 /** The images-only Spine 4.0 document: one root bone, one region per slot. */
 export function fixtureImagesOnly() {
   return {

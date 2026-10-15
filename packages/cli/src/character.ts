@@ -6,10 +6,11 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import { PNG } from "pngjs";
 import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
-import { CharacterPlanSchema, type CharacterPlan } from "@autospine/schemas";
+import { CharacterPlanSchema, type CharacterPlan, type KeyposeEase } from "@autospine/schemas";
 import { readImagesOnlyLayout } from "@autospine/spine";
 import {
   buildCharacter,
+  addKeyposes,
   compileCharacter,
   handoverNotes,
   lintCharacterPlan,
@@ -23,6 +24,7 @@ import {
 import {
   checkAcceptance,
   compareToReference,
+  fitKeyPoses,
   fitRestPose,
   initialSearchState,
   loadSkeleton,
@@ -438,13 +440,28 @@ export async function optimizeMotionFiles(
  * fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> (ADR-024): the rest pose that
  * places the build's parts where a reference image shows them. The reference covers plan.qa.view
  * at any scale; frame 0 of the animation (default: the first) is the starting pose.
+ *
+ * fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> (ADR-033): key poses
+ * from storyboard or video frames, each fitted over the build's pose on its frame. Pictures below
+ * the coverage limit give no key pose. The written `keyposes` replace the animation's block: they
+ * include key poses the plan already had, since the build was posed with them. With `zeroFrame`,
+ * that frame's picture shows a pose the build already has (the rest pose fitted from it): it gives
+ * no key pose, and what the matching reports for it is taken off the other pictures.
  */
 export async function fitPoseFiles(
   planPath: string,
   buildDir: string,
-  referencePath: string,
+  references: string | readonly { frame: number; path: string }[],
   outPath: string,
-  opts: { animation?: string; window?: number; maxRotate?: number } = {},
+  opts: {
+    animation?: string;
+    window?: number;
+    maxRotate?: number;
+    minCoverage?: number;
+    ease?: KeyposeEase;
+    ignore?: readonly string[];
+    zeroFrame?: number;
+  } = {},
 ) {
   if (existsSync(outPath))
     throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
@@ -456,13 +473,33 @@ export async function fitPoseFiles(
   const planned = plan.motion.animations.find((a) => a.name === animation);
   if (!planned) throw new Error(`CLI_FIT_ANIMATION: the plan has no animation ${animation}`);
   const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as unknown;
-  const reference = decodePng(await readFile(referencePath), referencePath);
-  const sx = reference.width / view.width,
-    sy = reference.height / view.height;
-  if (Math.abs(sx / sy - 1) > 0.02)
-    throw new Error(
-      `CLI_FIT_VIEW: ${referencePath} is ${reference.width}x${reference.height}; plan.qa.view is ${view.width}x${view.height}`,
-    );
+  const pictures = typeof references === "string" ? [{ frame: 0, path: references }] : references;
+  if (!pictures.length) throw new Error("CLI_FIT_FRAMES: give at least one picture");
+  const loop = planned.loop !== false,
+    last = loop ? planned.frames - 1 : planned.frames;
+  const seen = new Set<number>();
+  for (const { frame, path } of pictures) {
+    if (!Number.isInteger(frame) || frame < 0 || frame > last)
+      throw new Error(
+        `CLI_FIT_FRAMES: ${path} is on frame ${frame}; ${animation} has frames 0-${last}`,
+      );
+    if (seen.has(frame)) throw new Error(`CLI_FIT_FRAMES: two pictures for frame ${frame}`);
+    seen.add(frame);
+  }
+  if (opts.zeroFrame !== undefined && (typeof references === "string" || !seen.has(opts.zeroFrame)))
+    throw new Error(`CLI_FIT_FRAMES: the zero frame ${opts.zeroFrame} needs one of the pictures`);
+  const decoded = await Promise.all(
+    pictures.map(async ({ frame, path }) => {
+      const png = decodePng(await readFile(path), path);
+      const sx = png.width / view.width,
+        sy = png.height / view.height;
+      if (Math.abs(sx / sy - 1) > 0.02)
+        throw new Error(
+          `CLI_FIT_VIEW: ${path} is ${png.width}x${png.height}; plan.qa.view is ${view.width}x${view.height}`,
+        );
+      return { frame, image: { width: png.width, height: png.height, rgba: png.data } };
+    }),
+  );
   const paths = planPaths(planPath, plan);
   // Only the plan's bones take offsets (the compiler adds helper frames for some of them).
   const { layout } = await loadLayout(paths.imagesOnly, paths.images);
@@ -503,41 +540,85 @@ export async function fitPoseFiles(
       for (const id of rigging.rigged.chains[entry.chain.part] ?? [])
         groups[id] = entry.chain.parent;
   const images = new Map<string, PNG>();
-  const result = fitRestPose(
-    document,
-    animation,
-    { width: reference.width, height: reference.height, rgba: reference.data },
-    (path) => {
-      let png = images.get(path);
-      if (!png) images.set(path, (png = decodePngSync(resolve(paths.images, path + ".png"))));
-      return { width: png.width, height: png.height, rgba: png.data };
-    },
-    {
-      view,
-      bones,
-      groups,
-      // Only the hips (the main bone) and IK targets move; every other joint turns (ADR-025).
-      translate: [
-        motionFor(plan.motion, planned).main.bone,
-        ...(plan.constraints?.ik ?? []).map((c) => c.target),
-      ],
-      ...(opts.window !== undefined ? { window: opts.window } : {}),
-      ...(opts.maxRotate !== undefined ? { maxRotate: opts.maxRotate } : {}),
-    },
-  );
+  const texture = (path: string) => {
+    let png = images.get(path);
+    if (!png) images.set(path, (png = decodePngSync(resolve(paths.images, path + ".png"))));
+    return { width: png.width, height: png.height, rgba: png.data };
+  };
+  const options = {
+    view,
+    bones,
+    groups,
+    // Only the hips (the main bone) and IK targets move; every other joint turns (ADR-025).
+    translate: [
+      motionFor(plan.motion, planned).main.bone,
+      ...(plan.constraints?.ik ?? []).map((c) => c.target),
+    ],
+    ...(opts.window !== undefined ? { window: opts.window } : {}),
+    ...(opts.maxRotate !== undefined ? { maxRotate: opts.maxRotate } : {}),
+    ...(opts.ignore?.length ? { ignore: opts.ignore } : {}),
+  };
+  const unknown = opts.ignore?.filter((s) => !layout.slots.some((x) => x.name === s));
+  if (unknown?.length) throw new Error(`CLI_FIT_SLOTS: no slot ${unknown.join(", ")}`);
   await mkdir(dirname(resolve(outPath)), { recursive: true });
-  await writeFile(outPath, JSON.stringify({ animation, ...result }, null, 1), {
-    encoding: "utf8",
-    flag: "wx",
+  if (typeof references === "string") {
+    const result = fitRestPose(document, animation, decoded[0]!.image, texture, options);
+    // Placements only serve key poses (ADR-033); the rest-pose file keeps its fields.
+    const written: Partial<typeof result> = { ...result };
+    delete written.placements;
+    await writeFile(outPath, JSON.stringify({ animation, ...written }, null, 1), {
+      encoding: "utf8",
+      flag: "wx",
+    });
+    return {
+      output: outPath,
+      animation,
+      bones: Object.keys(result.pose).length,
+      parts: result.parts.length,
+      used: result.parts.filter((p) => p.used).length,
+      coverage: result.coverage,
+      residual: result.residual,
+    };
+  }
+  const fit = fitKeyPoses(document, animation, decoded, texture, {
+    ...options,
+    fps: plan.motion.fps ?? 30,
+    ...(opts.minCoverage !== undefined ? { minCoverage: opts.minCoverage } : {}),
+    ...(opts.zeroFrame !== undefined ? { zeroFrame: opts.zeroFrame } : {}),
   });
+  const keyposes = fit.keyposes.length
+    ? addKeyposes(planned.keyposes, fit.keyposes, planned.frames, loop, opts.ease)
+    : (planned.keyposes ?? []);
+  await writeFile(
+    outPath,
+    JSON.stringify(
+      { animation, keyposes, frames: fit.frames, ...(fit.zero ? { zero: fit.zero } : {}) },
+      null,
+      1,
+    ),
+    { encoding: "utf8", flag: "wx" },
+  );
   return {
     output: outPath,
     animation,
-    bones: Object.keys(result.pose).length,
-    parts: result.parts.length,
-    used: result.parts.filter((p) => p.used).length,
-    coverage: result.coverage,
-    residual: result.residual,
+    keyposes: keyposes.length,
+    bones: new Set(keyposes.flatMap((k) => Object.keys(k.pose))).size,
+    ...(fit.zero
+      ? {
+          zero: { frame: fit.zero.frame, coverage: fit.zero.coverage, residual: fit.zero.residual },
+        }
+      : {}),
+    // Parts the bones' fit does not explain: a bent mesh, another drawing, a hidden part.
+    frames: fit.frames.map((f) => {
+      const unused = f.parts.filter((p) => !p.used).map((p) => p.slot);
+      return {
+        frame: f.frame,
+        accepted: f.accepted,
+        coverage: f.coverage,
+        residual: f.residual,
+        ...(unused.length ? { unused } : {}),
+      };
+    }),
   };
 }
 

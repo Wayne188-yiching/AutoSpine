@@ -18,7 +18,7 @@ export {
 } from "./motion.js";
 export { buildColorTimelines, shownOpaque, type ColorTimeline } from "./colors.js";
 export { buildAttachmentTimelines, type AttachmentTimeline } from "./visibility.js";
-export { applyRestPose, type RestPose } from "./pose.js";
+export { addKeyposes, applyKeyposes, applyRestPose, type Keyposes, type RestPose } from "./pose.js";
 export { boneRoles, colorBones, handoverNotes, ROLE_COLORS, type BoneRole } from "./handover.js";
 export { mergePlans, type MergedPlan } from "./merge.js";
 export * from "./build.js";

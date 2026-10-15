@@ -1,5 +1,5 @@
 import type { AnimationSpec, CharacterPlan, KeyposeSpec, RigSpec } from "@autospine/schemas";
-import { buildKeyposeAnimation } from "@autospine/motion";
+import { buildKeyposeAnimation, sampleAnimation } from "@autospine/motion";
 import { failStage } from "@autospine/rig";
 import { compileCharacterSpine40, type CharacterSpineInput } from "@autospine/spine";
 import { measureDeformation, measureOverlapDrift, skinVertices } from "@autospine/weights";
@@ -17,7 +17,7 @@ import {
 } from "./motion.js";
 import { buildColorTimelines, type ColorTimeline } from "./colors.js";
 import { buildAttachmentTimelines } from "./visibility.js";
-import { applyRestPose } from "./pose.js";
+import { applyKeyposes, applyRestPose } from "./pose.js";
 import { boneRoles, colorBones } from "./handover.js";
 
 type Slot = CharacterSpineInput["slots"][number];
@@ -279,8 +279,13 @@ export function animateCharacter(
   const setupColors = new Map(rigging.slots.map((s) => [s.name, s.color ?? "ffffffff"]));
   return {
     specs,
+    // The rest pose and the key poses (ADR-024, ADR-033) are offsets over the compiled motion.
     animations: specs.map((s, i) =>
-      applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s), plan.animations[i]!.pose),
+      applyKeyposes(
+        applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s), plan.animations[i]!.pose),
+        plan.animations[i]!.keyposes,
+        s.fps,
+      ),
     ),
     // Shown transparent slots are judged over the whole plan, not per animation.
     colorTimelines: own.flatMap(({ m, resolved }) =>
@@ -353,24 +358,9 @@ export function measureSeams(rigging: CharacterRigging, animations: AnimationSpe
   const out: SeamCheck[] = [];
   for (const anim of animations) {
     const t = qa.at?.[anim.name] ?? anim.duration / 2;
-    // Bone channels stepped to the last key at or before a time (no constraints or interpolation).
-    const channels = (time: number) => {
-      const at = <K extends { time: number }, R>(keys: K[], f: (k: K) => R) => {
-        let k = keys[0]!;
-        for (const x of keys) if (x.time <= time + 1e-9) k = x;
-        return f(k);
-      };
-      const rotations: Record<string, number> = {},
-        translations: Record<string, [number, number]> = {},
-        scales: Record<string, [number, number]> = {};
-      for (const tl of anim.rotationTimelines ?? [])
-        rotations[tl.boneId] = at(tl.keys, (k) => k.degrees);
-      for (const tl of anim.translationTimelines ?? [])
-        translations[tl.boneId] = at(tl.keys, (k) => [k.x, k.y]);
-      for (const tl of anim.scaleTimelines ?? [])
-        scales[tl.boneId] = at(tl.keys, (k) => [k.x, k.y]);
-      return { rotations, translations, scales };
-    };
+    // Bone channels at a time, eased between keys as the runtime plays them (no constraints): a
+    // time between sparse keys (key poses, ADR-033) is measured where the bones really are.
+    const channels = (time: number) => sampleAnimation(anim, rigging.rigged.rig, time);
     const rest = channels(0),
       now = channels(t);
     // The seam band: 4 % of a head width (the face image), else 20 px.
