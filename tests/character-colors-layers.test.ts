@@ -82,8 +82,13 @@ describe("slot colour motion: pulses and keyed colours", () => {
       { id: "p1", slots: ["Nope"], low: 0, high: 1, period: 30 },
       { id: "p2", slots: ["Eyes"], low: 0, high: 1, period: 40 },
     ];
+    // Two blocks on one slot in the same animation clash (ADR-031: ownership is per animation).
     plan.motion.colors = [
-      { id: "c1", slots: ["Eyes"], keys: { WALK: [{ frame: 1, alpha: 0.5 }] } },
+      {
+        id: "c1",
+        slots: ["Eyes"],
+        keys: { IDLE: [{ frame: 1, alpha: 0.5 }], WALK: [{ frame: 1, alpha: 0.5 }] },
+      },
     ];
     const errors = lintCharacterPlan(plan, fixtureLayout().parts.keys()).errors.join("\n");
     expect(errors).toMatch(/unknown slot Nope/);

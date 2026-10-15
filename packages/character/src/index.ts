@@ -9,10 +9,17 @@ export {
   type MeshAsset,
   type PlannedAttachments,
 } from "./attachments.js";
-export { buildMotionSpecs, motionContext, motionParams, type MotionContext } from "./motion.js";
-export { buildColorTimelines, type ColorTimeline } from "./colors.js";
+export {
+  buildMotionSpecs,
+  motionContext,
+  motionFor,
+  motionParams,
+  type MotionContext,
+} from "./motion.js";
+export { buildColorTimelines, shownOpaque, type ColorTimeline } from "./colors.js";
 export { buildAttachmentTimelines, type AttachmentTimeline } from "./visibility.js";
 export { applyRestPose, type RestPose } from "./pose.js";
 export { boneRoles, colorBones, handoverNotes, ROLE_COLORS, type BoneRole } from "./handover.js";
+export { mergePlans, type MergedPlan } from "./merge.js";
 export * from "./build.js";
 export * from "./lint.js";

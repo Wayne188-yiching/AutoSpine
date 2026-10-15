@@ -91,6 +91,9 @@ node packages/cli/dist/index.js build-character <plan.json> <新資料夾>
 node packages/cli/dist/index.js compare-reference <plan.json> <建置資料夾> <人工.json> <新資料夾>
 node packages/cli/dist/index.js review-video <plan.json> <建置資料夾> [<人工.json>] <新影片.mp4>
 node packages/cli/dist/index.js fit-pose <plan.json> <建置資料夾> <姿勢圖.png> <新的 pose.json>
+node packages/cli/dist/index.js merge-plans <新的 plan.json> <plan.json> <plan.json>...
 ```
+
+同一個角色做了好幾段動畫時，用 `merge-plans` 合成一份方案再建置一次，就會得到一個包含全部動畫的 Spine 專案（ADR-031）。
 
 方案檔（`plan.json`）的寫法見 [CHARACTER_PLAN.md](CHARACTER_PLAN.md)。

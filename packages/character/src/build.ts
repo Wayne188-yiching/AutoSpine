@@ -10,6 +10,7 @@ import { planAttachments, type MeshAsset } from "./attachments.js";
 import {
   buildMotionSpecs,
   motionContext,
+  motionFor,
   motionParams,
   type FaceParallax,
   type MotionContext,
@@ -268,18 +269,23 @@ export function animateCharacter(
   rigging: CharacterRigging,
   params: Params = {},
 ): CharacterAnimations {
-  const resolved = motionParams(rigging.plan.motion, params);
-  const specs = buildMotionSpecs(rigging.plan.motion, rigging.motion, resolved);
+  // Each animation runs on its own motion (ADR-031): the plan's blocks with its overrides.
+  const plan = rigging.plan.motion;
+  const own = plan.animations.map((a) => {
+    const m = motionFor(plan, a);
+    return { m, resolved: motionParams(m, params) };
+  });
+  const specs = own.flatMap(({ m, resolved }) => buildMotionSpecs(m, rigging.motion, resolved));
   const setupColors = new Map(rigging.slots.map((s) => [s.name, s.color ?? "ffffffff"]));
   return {
     specs,
     animations: specs.map((s, i) =>
-      applyRestPose(
-        buildKeyposeAnimation(rigging.rigged.rig, s),
-        rigging.plan.motion.animations[i]!.pose,
-      ),
+      applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s), plan.animations[i]!.pose),
     ),
-    colorTimelines: buildColorTimelines(rigging.plan.motion, setupColors, resolved),
+    // Shown transparent slots are judged over the whole plan, not per animation.
+    colorTimelines: own.flatMap(({ m, resolved }) =>
+      buildColorTimelines(m, setupColors, resolved, plan),
+    ),
   };
 }
 

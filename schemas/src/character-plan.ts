@@ -299,6 +299,201 @@ const SearchRangeSchema = Type.Object(
 );
 
 /**
+ * Motion blocks an animation may also carry for itself (ADR-031): the main cycle, its beats and
+ * sink, follow, waves, cycles and pulses. Keyed tracks, swaps and colour keys are already keyed
+ * per animation.
+ */
+const motionBlocks = {
+  main: Type.Object(
+    {
+      ...control,
+      /**
+       * `settle` (default): rest, anticipation lift at `up`, sink at `down`, hold, rest; needs
+       * `up`, `hold` and `rise`. `breath`: rest at the cycle start, the `depth` extreme at `down`
+       * (usually half the cycle), sine both ways; the setup pose is one end of the breath.
+       */
+      shape: Type.Optional(Type.Union([Type.Literal("settle"), Type.Literal("breath")])),
+      /** Frames inside the cycle. */
+      up: Type.Optional(PlanNumberSchema),
+      down: PlanNumberSchema,
+      hold: Type.Optional(PlanNumberSchema),
+      /** Anticipation lift and sink depth, px (positive = down at the sink). */
+      rise: Type.Optional(PlanNumberSchema),
+      depth: PlanNumberSchema,
+      /** Extra depth reached at the end of the hold; default 1. */
+      holdDepth: Type.Optional(PlanNumberSchema),
+      eases: Type.Optional(
+        Type.Object(
+          {
+            up: Type.Optional(KeyposeEaseSchema),
+            down: Type.Optional(KeyposeEaseSchema),
+            hold: Type.Optional(KeyposeEaseSchema),
+            rest: Type.Optional(KeyposeEaseSchema),
+          },
+          strict,
+        ),
+      ),
+    },
+    strict,
+  ),
+  /** Controls keyed on the main beats; a missing beat leaves the control unkeyed there. */
+  beats: Type.Optional(
+    Type.Array(
+      Type.Object(
+        {
+          ...control,
+          rest: PlanValueSchema,
+          up: Type.Optional(PlanValueSchema),
+          down: Type.Optional(PlanValueSchema),
+          hold: Type.Optional(PlanValueSchema),
+          /** Multiply the anticipation value by the cycle's scale. */
+          scaleUp: Type.Optional(Type.Boolean()),
+        },
+        strict,
+      ),
+      { maxItems: 128 },
+    ),
+  ),
+  /** Values derived from the main depth on every main beat. */
+  sink: Type.Optional(
+    Type.Array(
+      Type.Union([
+        /** Thigh shortens by depth / leg vertical span; the foot counter-scales (feet stay planted). */
+        Type.Object(
+          {
+            kind: Type.Literal("legs"),
+            legs: Type.Array(
+              Type.Object(
+                { side: IdSchema, thigh: IdSchema, calf: IdSchema, foot: IdSchema },
+                strict,
+              ),
+              { minItems: 1, maxItems: 8 },
+            ),
+          },
+          strict,
+        ),
+        /**
+         * Face slides inside the head: `y` px down at full depth (scaled by the current depth;
+         * upRatio x the lift above rest, default 2/3) and `x` as a ratio of that vertical slide.
+         * Or `parallax` (ADR-022): the vertical travel of the first face follower against the
+         * face plate at full depth, in head widths; the engine derives the slide from the dome
+         * weights. `move` holds the face between main beats and moves it within `move` frames.
+         */
+        Type.Object(
+          {
+            kind: Type.Literal("face"),
+            ...control,
+            y: Type.Optional(PlanNumberSchema),
+            parallax: Type.Optional(PlanNumberSchema),
+            x: PlanNumberSchema,
+            upRatio: Type.Optional(Type.Number()),
+            move: Type.Optional(PlanNumberSchema),
+          },
+          strict,
+        ),
+        /** A chain root shortens by amount at full depth (strands settling onto the body). */
+        Type.Object(
+          {
+            kind: Type.Literal("squash"),
+            id: IdSchema,
+            bone: IdSchema,
+            amount: Type.Optional(PlanNumberSchema),
+            /**
+             * Instead of `amount` (ADR-025): the bone's tip follows the main's vertical offset,
+             * scale = 1 - y / its vertical extent. A vertical stance bone from the ankles to the
+             * pelvis squashes the legs it carries in step with the hips, feet planted.
+             */
+            track: Type.Optional(Type.Boolean()),
+          },
+          strict,
+        ),
+      ]),
+      { maxItems: 64 },
+    ),
+  ),
+  /**
+   * Overlap: rotate with the main control's vertical offset, delayed by lag frames. Give `gain`
+   * (degrees per px), or `travel` with `to`: the `to` bone then moves `travel` times the main's
+   * vertical travel relative to `bone` (a rotate control; gain = travel x 180/pi / distance from
+   * `bone` to `to`). A positive travel moves it with the main when it sits beside the pivot.
+   */
+  follow: Type.Optional(
+    Type.Array(
+      Type.Object(
+        {
+          ...control,
+          gain: Type.Optional(PlanNumberSchema),
+          travel: Type.Optional(PlanNumberSchema),
+          to: Type.Optional(IdSchema),
+          lag: PlanNumberSchema,
+        },
+        strict,
+      ),
+      { maxItems: 128 },
+    ),
+  ),
+  /** Follow-through waves on bone chains: root follows, outer bones oscillate with phase steps. */
+  waves: Type.Optional(
+    Type.Array(
+      Type.Object(
+        {
+          chain: PartNameSchema,
+          amp: PlanNumberSchema,
+          rootGain: PlanNumberSchema,
+          rootGainScale: Type.Optional(Type.Number()),
+          rootLag: Type.Optional(PlanNumberSchema),
+          peak: PlanNumberSchema,
+          growth: PlanNumberSchema,
+          step: PlanNumberSchema,
+        },
+        strict,
+      ),
+      { maxItems: 128 },
+    ),
+  ),
+  cycles: Type.Optional(
+    Type.Array(
+      Type.Object(
+        {
+          ...control,
+          amplitude: PlanValueSchema,
+          /** Frames, or "animation" for one period per animation. */
+          period: Type.Union([PlanNumberSchema, Type.Literal("animation")]),
+          /** Frame of the positive extreme, or a raw phase, or a fraction of the animation. */
+          peak: Type.Optional(PlanNumberSchema),
+          phase: Type.Optional(PlanNumberSchema),
+          phaseFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
+        },
+        strict,
+      ),
+      { maxItems: 128 },
+    ),
+  ),
+  /**
+   * Slot transparency pulses (lights, glows): alpha oscillates between `low` and `high` times the
+   * setup alpha, peaking at `peak`; each further slot peaks `stagger` frames later (a chase). The
+   * period ("animation", "cycle" or frames) must divide every animation so the loop stays seamless.
+   */
+  pulses: Type.Optional(
+    Type.Array(
+      Type.Object(
+        {
+          id: IdSchema,
+          slots: Type.Array(PartNameSchema, { minItems: 1, maxItems: 64 }),
+          low: PlanNumberSchema,
+          high: PlanNumberSchema,
+          period: Type.Union([PlanNumberSchema, Type.Literal("animation"), Type.Literal("cycle")]),
+          peak: Type.Optional(PlanNumberSchema),
+          stagger: Type.Optional(PlanNumberSchema),
+        },
+        strict,
+      ),
+      { maxItems: 64 },
+    ),
+  ),
+};
+
+/**
  * Motion blocks. One main cycle of `cycle` frames is repeated `frames / cycle` times: a `settle`
  * cycle (anticipation, sink, hold, rise) or a symmetric `breath` (rest, one extreme, rest); everything else is posed on its beats, derived from its depth, or timed
  * by follow/cycle rules. Numbers may reference `params`, which the optimizer searches.
@@ -321,6 +516,25 @@ export const MotionPlanSchema = Type.Object(
            * the loop seam. Default true (a loop).
            */
           loop: Type.Optional(Type.Boolean()),
+          /**
+           * This animation's own motion blocks (ADR-031), over the plan's: one character plan can
+           * hold loops and one-shots that move differently. `params` merge over the plan's.
+           */
+          motion: Type.Optional(
+            Type.Partial(
+              Type.Object(
+                {
+                  cycle: Type.Integer({ minimum: 4, maximum: 3600 }),
+                  params: Type.Record(
+                    Type.String({ pattern: "^[A-Za-z_][A-Za-z0-9_]*$" }),
+                    Type.Number(),
+                  ),
+                  ...motionBlocks,
+                },
+                strict,
+              ),
+            ),
+          ),
           /** Anticipation scale per cycle (cycle 1 first; a breath scales its depth); default 1. */
           cycleScale: Type.Optional(Type.Array(PlanNumberSchema, { maxItems: 64 })),
           /**
@@ -353,171 +567,7 @@ export const MotionPlanSchema = Type.Object(
       ),
       { minItems: 1, maxItems: 64 },
     ),
-    main: Type.Object(
-      {
-        ...control,
-        /**
-         * `settle` (default): rest, anticipation lift at `up`, sink at `down`, hold, rest; needs
-         * `up`, `hold` and `rise`. `breath`: rest at the cycle start, the `depth` extreme at `down`
-         * (usually half the cycle), sine both ways; the setup pose is one end of the breath.
-         */
-        shape: Type.Optional(Type.Union([Type.Literal("settle"), Type.Literal("breath")])),
-        /** Frames inside the cycle. */
-        up: Type.Optional(PlanNumberSchema),
-        down: PlanNumberSchema,
-        hold: Type.Optional(PlanNumberSchema),
-        /** Anticipation lift and sink depth, px (positive = down at the sink). */
-        rise: Type.Optional(PlanNumberSchema),
-        depth: PlanNumberSchema,
-        /** Extra depth reached at the end of the hold; default 1. */
-        holdDepth: Type.Optional(PlanNumberSchema),
-        eases: Type.Optional(
-          Type.Object(
-            {
-              up: Type.Optional(KeyposeEaseSchema),
-              down: Type.Optional(KeyposeEaseSchema),
-              hold: Type.Optional(KeyposeEaseSchema),
-              rest: Type.Optional(KeyposeEaseSchema),
-            },
-            strict,
-          ),
-        ),
-      },
-      strict,
-    ),
-    /** Controls keyed on the main beats; a missing beat leaves the control unkeyed there. */
-    beats: Type.Optional(
-      Type.Array(
-        Type.Object(
-          {
-            ...control,
-            rest: PlanValueSchema,
-            up: Type.Optional(PlanValueSchema),
-            down: Type.Optional(PlanValueSchema),
-            hold: Type.Optional(PlanValueSchema),
-            /** Multiply the anticipation value by the cycle's scale. */
-            scaleUp: Type.Optional(Type.Boolean()),
-          },
-          strict,
-        ),
-        { maxItems: 128 },
-      ),
-    ),
-    /** Values derived from the main depth on every main beat. */
-    sink: Type.Optional(
-      Type.Array(
-        Type.Union([
-          /** Thigh shortens by depth / leg vertical span; the foot counter-scales (feet stay planted). */
-          Type.Object(
-            {
-              kind: Type.Literal("legs"),
-              legs: Type.Array(
-                Type.Object(
-                  { side: IdSchema, thigh: IdSchema, calf: IdSchema, foot: IdSchema },
-                  strict,
-                ),
-                { minItems: 1, maxItems: 8 },
-              ),
-            },
-            strict,
-          ),
-          /**
-           * Face slides inside the head: `y` px down at full depth (scaled by the current depth;
-           * upRatio x the lift above rest, default 2/3) and `x` as a ratio of that vertical slide.
-           * Or `parallax` (ADR-022): the vertical travel of the first face follower against the
-           * face plate at full depth, in head widths; the engine derives the slide from the dome
-           * weights. `move` holds the face between main beats and moves it within `move` frames.
-           */
-          Type.Object(
-            {
-              kind: Type.Literal("face"),
-              ...control,
-              y: Type.Optional(PlanNumberSchema),
-              parallax: Type.Optional(PlanNumberSchema),
-              x: PlanNumberSchema,
-              upRatio: Type.Optional(Type.Number()),
-              move: Type.Optional(PlanNumberSchema),
-            },
-            strict,
-          ),
-          /** A chain root shortens by amount at full depth (strands settling onto the body). */
-          Type.Object(
-            {
-              kind: Type.Literal("squash"),
-              id: IdSchema,
-              bone: IdSchema,
-              amount: Type.Optional(PlanNumberSchema),
-              /**
-               * Instead of `amount` (ADR-025): the bone's tip follows the main's vertical offset,
-               * scale = 1 - y / its vertical extent. A vertical stance bone from the ankles to the
-               * pelvis squashes the legs it carries in step with the hips, feet planted.
-               */
-              track: Type.Optional(Type.Boolean()),
-            },
-            strict,
-          ),
-        ]),
-        { maxItems: 64 },
-      ),
-    ),
-    /**
-     * Overlap: rotate with the main control's vertical offset, delayed by lag frames. Give `gain`
-     * (degrees per px), or `travel` with `to`: the `to` bone then moves `travel` times the main's
-     * vertical travel relative to `bone` (a rotate control; gain = travel x 180/pi / distance from
-     * `bone` to `to`). A positive travel moves it with the main when it sits beside the pivot.
-     */
-    follow: Type.Optional(
-      Type.Array(
-        Type.Object(
-          {
-            ...control,
-            gain: Type.Optional(PlanNumberSchema),
-            travel: Type.Optional(PlanNumberSchema),
-            to: Type.Optional(IdSchema),
-            lag: PlanNumberSchema,
-          },
-          strict,
-        ),
-        { maxItems: 128 },
-      ),
-    ),
-    /** Follow-through waves on bone chains: root follows, outer bones oscillate with phase steps. */
-    waves: Type.Optional(
-      Type.Array(
-        Type.Object(
-          {
-            chain: PartNameSchema,
-            amp: PlanNumberSchema,
-            rootGain: PlanNumberSchema,
-            rootGainScale: Type.Optional(Type.Number()),
-            rootLag: Type.Optional(PlanNumberSchema),
-            peak: PlanNumberSchema,
-            growth: PlanNumberSchema,
-            step: PlanNumberSchema,
-          },
-          strict,
-        ),
-        { maxItems: 128 },
-      ),
-    ),
-    cycles: Type.Optional(
-      Type.Array(
-        Type.Object(
-          {
-            ...control,
-            amplitude: PlanValueSchema,
-            /** Frames, or "animation" for one period per animation. */
-            period: Type.Union([PlanNumberSchema, Type.Literal("animation")]),
-            /** Frame of the positive extreme, or a raw phase, or a fraction of the animation. */
-            peak: Type.Optional(PlanNumberSchema),
-            phase: Type.Optional(PlanNumberSchema),
-            phaseFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
-          },
-          strict,
-        ),
-        { maxItems: 128 },
-      ),
-    ),
+    ...motionBlocks,
     /**
      * Explicit keys per animation (props, light sweeps); merged into the main beats by frame.
      * With `move`, each key is a saccade (eye looks): hold the previous value until `frame`, arrive
@@ -550,32 +600,6 @@ export const MotionPlanSchema = Type.Object(
           strict,
         ),
         { maxItems: 128 },
-      ),
-    ),
-    /**
-     * Slot transparency pulses (lights, glows): alpha oscillates between `low` and `high` times the
-     * setup alpha, peaking at `peak`; each further slot peaks `stagger` frames later (a chase). The
-     * period ("animation", "cycle" or frames) must divide every animation so the loop stays seamless.
-     */
-    pulses: Type.Optional(
-      Type.Array(
-        Type.Object(
-          {
-            id: IdSchema,
-            slots: Type.Array(PartNameSchema, { minItems: 1, maxItems: 64 }),
-            low: PlanNumberSchema,
-            high: PlanNumberSchema,
-            period: Type.Union([
-              PlanNumberSchema,
-              Type.Literal("animation"),
-              Type.Literal("cycle"),
-            ]),
-            peak: Type.Optional(PlanNumberSchema),
-            stagger: Type.Optional(PlanNumberSchema),
-          },
-          strict,
-        ),
-        { maxItems: 64 },
       ),
     ),
     /**

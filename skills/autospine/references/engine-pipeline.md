@@ -138,6 +138,7 @@
 - 在動畫上用 `show` 列出要顯示的 slot（或 `slot#attachment`），用 `hide` 列出要隱藏的 slot。
 - setup 隱藏的 slot 只有一個附件時，關節、網格、臉部與探針可以直接寫 slot 名稱。
 - 同一動畫中途換圖（眨眼、嘴型）用 `motion.swaps`（ADR-027）：指定第幾幀換成哪個附件或隱藏。
+- 同一角色的多段動畫最後用 `merge-plans` 合成一份方案、建一個 Spine 專案（ADR-031）；各單次動畫的 `move` 骨要用同一個支點。
 - 進場、退場、勝利等單次動畫（ADR-030）：`animations[].loop: false`，用 `keyed` 的縮放、位移、旋轉關鍵幀和 `colors` 淡入淡出；最後的值會停住，不回到第 0 幀。一個單次動畫一份方案，`cycle` 等於它的幀數。
 
 ## 循環的驗收指標（ADR-020）

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, writeFile, stat } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { PNG } from "pngjs";
 import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
@@ -13,6 +13,8 @@ import {
   compileCharacter,
   handoverNotes,
   lintCharacterPlan,
+  mergePlans,
+  motionFor,
   rigCharacter,
   type CharacterLayout,
   type CharacterPart,
@@ -138,6 +140,39 @@ function decodePngSync(file: string) {
 }
 
 /**
+ * merge-plans <new-plan.json> <plan.json> <plan.json>...: one plan from several plans of the same
+ * character (ADR-031), so one build (one Spine project) holds every animation. The plans must read
+ * the same images-only layout; the new plan names it from its own folder. Returns what the merge
+ * decided (inserted parents, renamed blocks, animations with their own motion).
+ */
+export async function mergePlanFiles(
+  outPath: string,
+  planFiles: readonly string[],
+  opts: { id?: string; name?: string } = {},
+) {
+  if (existsSync(outPath))
+    throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  const plans = await Promise.all(planFiles.map(readPlan));
+  const sources = plans.map((p, i) => planPaths(planFiles[i]!, p));
+  for (const [i, s] of sources.entries())
+    if (s.imagesOnly !== sources[0]!.imagesOnly || s.images !== sources[0]!.images)
+      throw new Error(`CLI_MERGE_SOURCE: ${planFiles[i]} reads another images-only layout`);
+  const from = (p: string) =>
+    relative(dirname(resolve(outPath)), p)
+      .split(sep)
+      .join("/");
+  const source = { imagesOnly: from(sources[0]!.imagesOnly), images: from(sources[0]!.images) };
+  const { plan, notes } = mergePlans(
+    plans.map((p) => ({ ...p, source })),
+    opts,
+  );
+  const { layout } = await loadLayout(sources[0]!.imagesOnly, sources[0]!.images);
+  assertLint(lintCharacterPlan(plan, layout.parts.keys()), outPath);
+  await writeFile(outPath, json(plan));
+  return { output: outPath, animations: plan.motion.animations.map((a) => a.name), notes };
+}
+
+/**
  * lint-plan <plan.json>: schema plus cross-reference check against the images-only layout (part
  * names, joints, bones, meshes, constraints, motion parameters). No pixels are read.
  */
@@ -223,7 +258,12 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
       animations: built.animations,
     }),
   );
-  for (const s of built.specs) await writeFile(join(outDir, `keypose-${s.name}.json`), json(s));
+  // Animation names may hold Spine folders ("History/_Look"): file names keep safe characters only.
+  for (const s of built.specs)
+    await writeFile(
+      join(outDir, `keypose-${s.name.replace(/[^A-Za-z0-9_-]/g, "_")}.json`),
+      json(s),
+    );
   const record = {
     plan: { id: plan.id, sha256: sha256(await readFile(planPath)) },
     imagesOnly: { sha256: sha256(await readFile(paths.imagesOnly)) },
@@ -310,7 +350,10 @@ export async function compareReferenceFiles(
   for (const [a, s] of Object.entries(sheets)) {
     const png = new PNG({ width: s.width, height: s.height });
     png.data.set(s.rgba);
-    await writeFile(join(outDir, `compare-${a}.png`), PNG.sync.write(png));
+    await writeFile(
+      join(outDir, `compare-${a.replace(/[^A-Za-z0-9_-]/g, "_")}.png`),
+      PNG.sync.write(png),
+    );
   }
   return check;
 }
@@ -410,6 +453,8 @@ export async function fitPoseFiles(
   if (!view)
     throw new Error("CLI_FIT_VIEW: fit-pose needs plan.qa.view, the world area of the reference");
   const animation = opts.animation ?? plan.motion.animations[0]!.name;
+  const planned = plan.motion.animations.find((a) => a.name === animation);
+  if (!planned) throw new Error(`CLI_FIT_ANIMATION: the plan has no animation ${animation}`);
   const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as unknown;
   const reference = decodePng(await readFile(referencePath), referencePath);
   const sx = reference.width / view.width,
@@ -433,7 +478,7 @@ export async function fitPoseFiles(
       // with rotate cycles (tufts, ears), follow their parent and their parts count toward it.
       // A bone bobbing with a translate cycle (a floating head) is structure and stays fitted.
       ...Object.values(rigging.rigged.chains).flat(),
-      ...(plan.motion.cycles ?? [])
+      ...(motionFor(plan.motion, planned).cycles ?? [])
         .filter(
           (c) =>
             c.channel === "rotate" && !rigging.rigged.rig.bones.some((b) => b.parentId === c.bone),
@@ -472,7 +517,10 @@ export async function fitPoseFiles(
       bones,
       groups,
       // Only the hips (the main bone) and IK targets move; every other joint turns (ADR-025).
-      translate: [plan.motion.main.bone, ...(plan.constraints?.ik ?? []).map((c) => c.target)],
+      translate: [
+        motionFor(plan.motion, planned).main.bone,
+        ...(plan.constraints?.ik ?? []).map((c) => c.target),
+      ],
       ...(opts.window !== undefined ? { window: opts.window } : {}),
       ...(opts.maxRotate !== undefined ? { maxRotate: opts.maxRotate } : {}),
     },
