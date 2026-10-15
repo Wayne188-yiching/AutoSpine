@@ -139,5 +139,6 @@ describe("one project per character (ADR-031)", () => {
     expect(notes).toContain("單次");
     // The one-shot's `move` bone carries no image and is keyed: a control bone (red).
     expect(notes).toMatch(/控制骨（紅）.*`move`/);
+    expect(notes).toMatch(/控制骨（紅） \| [^|]*單次動畫的整體位移與縮放/);
   });
 });

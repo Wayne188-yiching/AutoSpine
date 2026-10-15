@@ -97,13 +97,19 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
   add();
   add("| 類型 | 用途 | 骨 |");
   add("| --- | --- | --- |");
+  const keyedBones = new Set((plan.motion.keyed ?? []).map((k) => k.bone));
   const purpose: Record<BoneRole, string> = {
     main: "動作的主控：呼吸、下沉的位移都打在這裡",
-    control:
-      "沒有圖片，只用來驅動：臉部視差（face_ctl 等）、IK 目標、壓縮腿部的站姿骨、單次動畫的整體位移與縮放（move）",
+    control: `沒有圖片，只用來驅動：臉部視差（face_ctl 等）、IK 目標、壓縮腿部的站姿骨${
+      byRole("control").some((id) => keyedBones.has(id)) ? "、單次動畫的整體位移與縮放" : ""
+    }`,
     follower: "臉部五官與 2.5D 圖層，透過 transform 約束跟著臉部控制骨；`*_frame` 是對齊方向的載體",
     chain: "頭髮、尾巴、耳朵、鬍子、吊飾等軟部件的骨鏈，擺動打在這些骨的旋轉上",
-    joint: "身體關節：軀幹、頸、頭、四肢、手指",
+    joint: `身體關節：軀幹、頸、頭、四肢、手指${
+      byRole("joint").some((id) => keyedBones.has(id))
+        ? "；有關鍵幀的上層骨帶著單次動畫的整體位移與縮放"
+        : ""
+    }`,
   };
   for (const r of ["main", "control", "follower", "chain", "joint"] as const) {
     const ids = byRole(r);
