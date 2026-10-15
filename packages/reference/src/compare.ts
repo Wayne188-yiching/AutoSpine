@@ -466,9 +466,11 @@ export function performanceSample(t: Tracks, probes: Probes, fps: number, unit: 
   for (const [name, part] of probes.chain ?? []) parts[name] = part;
   if (probes.hand) parts[probes.hand[0]] = probes.hand[1];
   const sample: Record<string, V2[]> = {};
-  for (const [k, slot] of Object.entries(parts)) {
+  for (const [k, part] of Object.entries(parts)) {
+    // Tracks are per slot: a `slot#image` part (a slot with no setup image) is its slot.
+    const slot = part.split("#")[0]!;
     const tr = t.tr[slot];
-    if (!tr) throw new Error(`REFERENCE_PROBE: probe ${k} uses unknown part ${slot}`);
+    if (!tr) throw new Error(`REFERENCE_PROBE: probe ${k} uses unknown part ${part}`);
     // A part never shown in this animation is no probe: its metrics are missing, not invented.
     const first = tr.c.find(Boolean);
     if (first) sample[k] = tr.c.map((c) => c ?? first);
@@ -520,18 +522,22 @@ export function loops(options: Pick<ReferenceOptions, "loop">, animation: string
 /** Head width of the images-only setup: the unit of every performance metric. */
 export function headUnit(imagesOnly: LoadedSkeleton, part: string): number {
   pose(imagesOnly, null, 0);
-  // A head hidden in setup (another pose set, ADR-021) is measured on its own attachment.
-  const slot = imagesOnly.skeleton.findSlot(part);
-  if (slot && !slot.getAttachment()) {
+  // A head hidden in setup (another pose set, ADR-021) is measured on its own attachment; a part
+  // named `slot#image` (a slot with no setup image) on that image.
+  const [slotName, image] = part.split("#") as [string, string | undefined];
+  const slot = imagesOnly.skeleton.findSlot(slotName);
+  if (slot && (image !== undefined || !slot.getAttachment())) {
     const skin =
       imagesOnly.data.defaultSkin ??
       (imagesOnly.data.skins.length === 1 ? imagesOnly.data.skins[0]! : undefined);
-    const entry = skin?.getAttachments().find((e) => e.slotIndex === slot.data.index);
+    const entry = skin
+      ?.getAttachments()
+      .find((e) => e.slotIndex === slot.data.index && (image === undefined || e.name === image));
     if (entry) slot.setAttachment(entry.attachment);
   }
   // A head that setup keeps transparent (another pose set) is measured all the same.
   if (slot) slot.color.a = 1;
-  const d = drawList(imagesOnly).find((x) => x.slot === part);
+  const d = drawList(imagesOnly).find((x) => x.slot === slotName);
   pose(imagesOnly, null, 0);
   if (!d) throw new Error(`REFERENCE_UNIT: no ${part} in the images-only setup`);
   const xs = d.verts.filter((_, i) => i % 2 === 0);
