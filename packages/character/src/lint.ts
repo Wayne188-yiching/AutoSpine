@@ -1,5 +1,6 @@
 import type { CharacterPlan, JointRef, JointRule } from "@autospine/schemas";
 import { num } from "./joints.js";
+import { motionFor } from "./motion.js";
 
 export interface PlanLint {
   /** Problems that make the build fail or silently wrong. */
@@ -21,6 +22,37 @@ const isParamString = (v: unknown): v is string =>
  * every part the plan names. Cheap enough to run after every edit of a plan.
  */
 export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<string>): PlanLint {
+  const parts = partNames ? [...partNames] : undefined;
+  const own = plan.motion.animations.filter((a) => a.motion);
+  if (!own.length) return lintOne(plan, parts);
+  // ADR-031: an animation with its own motion is checked on that motion, the rest on the plan's.
+  const shared = plan.motion.animations.filter((a) => !a.motion);
+  // Keys for the other animations are checked in their own run.
+  const known = new Set(plan.motion.animations.map((a) => a.name));
+  const runs = [
+    ...(shared.length
+      ? [lintOne({ ...plan, motion: { ...plan.motion, animations: shared } }, parts, known)]
+      : []),
+    ...own.map((a) => lintOne({ ...plan, motion: motionFor(plan.motion, a) }, parts, known)),
+  ];
+  return {
+    errors: [...new Set(runs.flatMap((r) => r.errors))],
+    warnings: [...new Set(runs.flatMap((r) => r.warnings))],
+    bones: runs[0]!.bones,
+    params: {
+      referenced: [...new Set(runs.flatMap((r) => r.params.referenced))],
+      unused: [...new Set(runs.flatMap((r) => r.params.unused))].filter(
+        (p) => !runs.some((r) => r.params.referenced.includes(p)),
+      ),
+    },
+  };
+}
+
+function lintOne(
+  plan: CharacterPlan,
+  partNames?: Iterable<string>,
+  knownAnimations?: ReadonlySet<string>,
+): PlanLint {
   const errors: string[] = [];
   const warnings: string[] = [];
   const parts = partNames ? new Set(partNames) : undefined;
@@ -222,6 +254,7 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
   // Motion: controls, animations, parameters.
   const m = plan.motion;
   const anims = new Set(m.animations.map((a) => a.name));
+  const known = knownAnimations ?? anims;
   // Part sets (ADR-021): shown parts must resolve to one attachment; a slot is listed once.
   for (const a of m.animations) {
     const where = `motion.animations ${a.name}`;
@@ -253,8 +286,9 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     if (slotNames && !slotNames.has(sw.slot)) errors.push(`motion.swaps: unknown slot ${sw.slot}`);
     for (const [name, keys] of Object.entries(sw.keys)) {
       const a = m.animations.find((x) => x.name === name);
-      if (!a) errors.push(`motion.swaps ${sw.slot}: unknown animation ${name}`);
-      else if (keys.some((k) => k.frame > a.frames))
+      if (!a) {
+        if (!known.has(name)) errors.push(`motion.swaps ${sw.slot}: unknown animation ${name}`);
+      } else if (keys.some((k) => k.frame > a.frames))
         errors.push(`motion.swaps ${sw.slot}: a key is past the end of ${name}`);
     }
   }
@@ -333,7 +367,7 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     for (const [a, keys] of Object.entries(c.keys)) {
       const anim = m.animations.find((x) => x.name === a);
       if (!anim) {
-        errors.push(`${where}: unknown animation ${a}`);
+        if (!known.has(a)) errors.push(`${where}: unknown animation ${a}`);
         continue;
       }
       if (move === undefined || move < 1) continue;
@@ -351,19 +385,21 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
         );
     }
   });
-  // Colour blocks address slots, not bones; one block per slot.
-  const coloured = new Map<string, string>();
-  const colourSlot = (slot: string, id: string, where: string) => {
+  // Colour blocks address slots, not bones; one block per slot in any one animation.
+  const coloured = new Map<string, { id: string; anims: string[] }[]>();
+  const colourSlot = (slot: string, id: string, anims: string[], where: string) => {
     if (slotNames && !slotNames.has(slot)) errors.push(`${where}: unknown slot ${slot}`);
-    const prev = coloured.get(slot);
-    if (prev && prev !== id) errors.push(`${where}: slot ${slot} is already coloured by ${prev}`);
-    coloured.set(slot, id);
+    const list = coloured.get(slot) ?? [];
+    const prev = list.find((o) => o.id !== id && o.anims.some((a) => anims.includes(a)));
+    if (prev) errors.push(`${where}: slot ${slot} is already coloured by ${prev.id}`);
+    coloured.set(slot, [...list, { id, anims }]);
   };
+  const allAnims = m.animations.map((a) => a.name);
   m.pulses?.forEach((p, i) => {
     const where = `motion.pulses[${i}]`;
     if (controlIds.has(p.id)) errors.push(`${where}: control id ${p.id} is used twice`);
     controlIds.add(p.id);
-    p.slots.forEach((s) => colourSlot(s, p.id, where));
+    p.slots.forEach((s) => colourSlot(s, p.id, allAnims, where));
     if (typeof p.period === "number")
       for (const a of m.animations)
         if (a.loop !== false && a.frames % p.period !== 0)
@@ -375,9 +411,9 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     const where = `motion.colors[${i}]`;
     if (controlIds.has(c.id)) errors.push(`${where}: control id ${c.id} is used twice`);
     controlIds.add(c.id);
-    c.slots.forEach((s) => colourSlot(s, c.id, where));
+    c.slots.forEach((s) => colourSlot(s, c.id, Object.keys(c.keys), where));
     for (const a of Object.keys(c.keys))
-      if (!anims.has(a)) errors.push(`${where}: unknown animation ${a}`);
+      if (!known.has(a)) errors.push(`${where}: unknown animation ${a}`);
   });
   const referenced = new Set<string>();
   const walk = (v: unknown, path: string) => {
@@ -411,7 +447,7 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     for (const p of [a, b]) if (!meshed.has(p)) errors.push(`qa.seams: ${p} is not meshed`);
   }
   for (const a of Object.keys(qa?.at ?? {}))
-    if (!anims.has(a)) errors.push(`qa.at: unknown animation ${a}`);
+    if (!known.has(a)) errors.push(`qa.at: unknown animation ${a}`);
   const pr = qa?.probes;
   if (pr) {
     for (const k of ["face", "eyes", "pupils"] as const) if (pr[k]) part(pr[k], `qa.probes.${k}`);

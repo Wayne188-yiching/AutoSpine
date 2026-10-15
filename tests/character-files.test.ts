@@ -138,6 +138,7 @@ describe("character plan files: MCP tools (ADR-017)", () => {
       "autospine_optimize_motion",
       "autospine_review_video",
       "autospine_fit_pose",
+      "autospine_merge_plans",
     ])
       expect(hint(n)).toBe(false);
   });

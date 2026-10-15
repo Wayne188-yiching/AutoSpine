@@ -1,5 +1,10 @@
-import type { AnimationSpec } from "@autospine/schemas";
+import type { AnimationSpec, CharacterPlan } from "@autospine/schemas";
 import type { CharacterRigging, SpineDocument } from "./build.js";
+import { motionFor } from "./motion.js";
+
+/** Each animation's motion (ADR-031). */
+const motions = (plan: CharacterPlan) =>
+  plan.motion.animations.map((a) => motionFor(plan.motion, a));
 
 /**
  * Bone roles for whoever takes the file over (ADR-026): the main bone that carries the motion,
@@ -48,10 +53,12 @@ export function boneRoles(rigging: CharacterRigging): Map<string, BoneRole> {
       roles.set(id, "control");
   for (const id of [
     ...(plan.constraints?.ik ?? []).map((c) => c.target),
-    ...(plan.motion.sink ?? []).flatMap((s) => (s.kind === "squash" ? [s.bone] : [])),
+    ...motions(plan).flatMap((m) =>
+      (m.sink ?? []).flatMap((s) => (s.kind === "squash" ? [s.bone] : [])),
+    ),
   ])
     if (!carries.has(id)) roles.set(id, "control");
-  roles.set(plan.motion.main.bone, "main");
+  for (const m of motions(plan)) roles.set(m.main.bone, "main");
   return roles;
 }
 /** Colours the document's bones by role (Spine shows them in the tree and the viewport). */
@@ -173,25 +180,26 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
           )} 在每個關鍵幀上的固定偏移。改姿勢就改這些骨的關鍵幀（第 0 幀與最後一幀同值）。`,
       );
     if (a.show?.length) add(`- 部件組：顯示 ${a.show.length} 個 slot，用 attachment 關鍵幀切換。`);
-    const m = plan.motion.main;
+    const mm = motionFor(plan.motion, a),
+      m = mm.main;
     add(
       `- 主動作：\`${m.bone}\` 的 ${m.channel}，${m.shape === "breath" ? "對稱呼吸" : "預備、下沉、停住、回位"}；幅度改第 ${m.down} 幀的值。`,
     );
-    for (const f of plan.motion.follow ?? [])
+    for (const f of mm.follow ?? [])
       add(`- 跟隨：\`${f.bone}\` 的 ${f.channel} 晚主動作幾幀跟上。`);
-    for (const s of plan.motion.sink ?? [])
+    for (const s of mm.sink ?? [])
       if (s.kind === "face") add(`- 臉部視差：\`${s.bone}\` 的 translate，五官與臉皮反向滑動。`);
       else if (s.kind === "squash")
         add(`- 壓縮：\`${s.bone}\` 的 scale，腿部跟著臀部壓縮、腳不動。`);
       else if (s.kind === "legs") add(`- 腿部：大腿縮短、腳反向縮放。`);
-    for (const w of plan.motion.waves ?? [])
+    for (const w of mm.waves ?? [])
       add(
         `- 波動：${(rigging.rigged.chains[w.chain] ?? []).map((b) => `\`${b}\``).join("、")} 的旋轉依序擺動。`,
       );
-    for (const c of plan.motion.cycles ?? []) add(`- 循環：\`${c.bone}\` 的 ${c.channel}。`);
+    for (const c of mm.cycles ?? []) add(`- 循環：\`${c.bone}\` 的 ${c.channel}。`);
     for (const k of plan.motion.keyed ?? [])
       if (k.keys[a.name]) add(`- 關鍵幀：\`${k.bone}\` 的 ${k.channel}。`);
-    for (const p of plan.motion.pulses ?? [])
+    for (const p of mm.pulses ?? [])
       add(`- 透明度：${p.slots.map((s) => `\`${s}\``).join("、")} 明暗變化。`);
     for (const sw of plan.motion.swaps ?? [])
       if (sw.keys[a.name])

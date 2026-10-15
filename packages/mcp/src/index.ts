@@ -38,6 +38,7 @@ import {
   optimizeMotionFiles,
   reviewVideoFiles,
   fitPoseFiles,
+  mergePlanFiles,
 } from "@autospine/cli/character";
 import { lintCharacterPlan } from "@autospine/character";
 import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
@@ -242,6 +243,15 @@ const toolSchemas = {
     },
     strict,
   ),
+  autospine_merge_plans: Type.Object(
+    {
+      planPaths: Type.Array(WorkspacePath, { minItems: 2, maxItems: 64 }),
+      outputPath: WorkspacePath,
+      id: Type.Optional(Type.String({ minLength: 1, maxLength: 64 })),
+      name: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
+    },
+    strict,
+  ),
   autospine_fit_pose: Type.Object(
     {
       planPath: WorkspacePath,
@@ -294,6 +304,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
   autospine_optimize_motion:
     "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
+  autospine_merge_plans:
+    "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose:
     "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose; expressions are not fitted.",
   autospine_review_video:
@@ -307,6 +319,7 @@ const writingTools = new Set<string>([
   "autospine_optimize_motion",
   "autospine_review_video",
   "autospine_fit_pose",
+  "autospine_merge_plans",
 ]);
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
@@ -695,6 +708,23 @@ export class AutoSpineMcpServer {
             output: relative(root, output),
             artistQualityAccepted: false,
           });
+        }
+        case "autospine_merge_plans": {
+          if (!Value.Check(toolSchemas.autospine_merge_plans, args)) break;
+          const guarded = await Promise.all(
+            args.planPaths.map((p) => guardPlan(this.workspace, p)),
+          );
+          const root = guarded[0]!.root;
+          const output = await guardOutput(root, args.outputPath, true);
+          const merged = await mergePlanFiles(
+            output,
+            guarded.map((g) => g.plan),
+            {
+              ...(args.id === undefined ? {} : { id: args.id }),
+              ...(args.name === undefined ? {} : { name: args.name }),
+            },
+          ).catch(characterFailure);
+          return result({ ...merged, output: relative(root, output) });
         }
         case "autospine_fit_pose": {
           if (!Value.Check(toolSchemas.autospine_fit_pose, args)) break;

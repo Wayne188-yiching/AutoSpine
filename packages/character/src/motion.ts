@@ -49,6 +49,20 @@ const sgn = (v: number) => (v < 0 ? -1 : 1);
 type Value = number | [number, number];
 type Pose = Value | { value: Value; ease: KeyposeEase };
 
+/**
+ * The motion one animation runs on (ADR-031): the plan's blocks with the animation's own `motion`
+ * over them (its `params` merged over the plan's), and only that animation.
+ */
+export function motionFor(motion: MotionPlan, anim: MotionPlan["animations"][number]): MotionPlan {
+  const own = anim.motion ?? {};
+  return {
+    ...motion,
+    ...own,
+    params: { ...motion.params, ...(own.params ?? {}) },
+    animations: [anim],
+  } as MotionPlan;
+}
+
 /** The motion plan's parameters, optionally overridden (the optimizer's search point). */
 export const motionParams = (motion: MotionPlan, overrides: Params = {}): Params => ({
   ...motion.params,

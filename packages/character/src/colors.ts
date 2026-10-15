@@ -19,6 +19,35 @@ function tint(setup: string, alpha: number | undefined, rgb: string | undefined)
   return base + hex2(alpha === undefined ? a : a * alpha);
 }
 
+/** Slots an animation swaps an attachment into (ADR-027). */
+const swappedIn = (motion: MotionPlan, anim: string) =>
+  (motion.swaps ?? [])
+    .filter((w) => (w.keys[anim] ?? []).some((k) => k.attachment !== null))
+    .map((w) => w.slot);
+/**
+ * Setup colours with every slot an animation shows but setup keeps transparent (another pose set
+ * faded out, ADR-021) made opaque: pulses and colours scale from full alpha, and a hold makes it
+ * visible. Swapped-in slots (ADR-027) count as shown: a sequence faded out in setup must still show.
+ */
+export function shownOpaque(
+  motion: MotionPlan,
+  rawSetupColors: ReadonlyMap<string, string>,
+): Map<string, string> {
+  const shownSlots = new Set(
+    motion.animations.flatMap((a) => [
+      ...(a.show ?? []).map((e) => e.split("#")[0]!),
+      ...swappedIn(motion, a.name),
+    ]),
+  );
+  const transparent = (c: string) => parseInt(c.slice(6, 8), 16) <= 5;
+  return new Map(
+    [...rawSetupColors].map(([slot, c]) => [
+      slot,
+      shownSlots.has(slot) && transparent(c) ? c.slice(0, 6) + "ff" : c,
+    ]),
+  );
+}
+
 /**
  * Slot colour motion: `pulses` (alpha oscillating between two multipliers of the setup alpha, a
  * sine keyed at its extremes) and `colors` (explicit RGB / alpha keys). In a loop a pulse period
@@ -29,27 +58,12 @@ export function buildColorTimelines(
   motion: MotionPlan,
   rawSetupColors: ReadonlyMap<string, string>,
   params: Params,
+  /** The whole plan's motion when `motion` is one animation's (ADR-031): its shown slots. */
+  plan: MotionPlan = motion,
 ): ColorTimeline[] {
-  // A slot an animation shows but setup keeps transparent (another pose set faded out, ADR-021)
-  // is shown opaque: pulses and colours scale from full alpha, and a hold makes it visible.
-  // Swapped-in slots (ADR-027) count as shown: a sequence faded out in setup must still show.
-  const swapped = (anim: string) =>
-    (motion.swaps ?? [])
-      .filter((w) => (w.keys[anim] ?? []).some((k) => k.attachment !== null))
-      .map((w) => w.slot);
-  const shownSlots = new Set(
-    motion.animations.flatMap((a) => [
-      ...(a.show ?? []).map((e) => e.split("#")[0]!),
-      ...swapped(a.name),
-    ]),
-  );
+  const swapped = (anim: string) => swappedIn(motion, anim);
+  const setupColors = shownOpaque(plan, rawSetupColors);
   const transparent = (c: string) => parseInt(c.slice(6, 8), 16) <= 5;
-  const setupColors = new Map(
-    [...rawSetupColors].map(([slot, c]) => [
-      slot,
-      shownSlots.has(slot) && transparent(c) ? c.slice(0, 6) + "ff" : c,
-    ]),
-  );
   const fps = motion.fps ?? 30,
     n = (v: Parameters<typeof num>[0], where: string) => num(v, params, where);
   const owner = new Map<string, string>();
@@ -61,7 +75,9 @@ export function buildColorTimelines(
     owner.set(slot, id);
   };
   for (const p of motion.pulses ?? []) p.slots.forEach((s) => claim(s, p.id));
-  for (const c of motion.colors ?? []) c.slots.forEach((s) => claim(s, c.id));
+  // A colour block claims its slots only in the animations it keys (ADR-031).
+  for (const c of motion.colors ?? [])
+    if (motion.animations.some((a) => c.keys[a.name])) c.slots.forEach((s) => claim(s, c.id));
   const out: ColorTimeline[] = [];
   for (const anim of motion.animations) {
     const frames = anim.frames,
