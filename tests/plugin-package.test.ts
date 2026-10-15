@@ -46,6 +46,26 @@ describe("MCP workspace choice", () => {
   });
 });
 
+describe("advertised MCP tool schemas", () => {
+  // Claude Code drops a tool whose schema the Anthropic API would reject (JSON Schema 2020-12):
+  // tuples must be `prefixItems`, never an array-valued `items` or `additionalItems`.
+  it("use 2020-12 tuples, so Claude Code keeps every tool", () => {
+    const problems: string[] = [];
+    const walk = (node: unknown, path: string) => {
+      if (Array.isArray(node)) return node.forEach((n, i) => walk(n, `${path}/${i}`));
+      if (!node || typeof node !== "object") return;
+      const record = node as Record<string, unknown>;
+      if (Array.isArray(record.items)) problems.push(`${path}/items is an array`);
+      if ("additionalItems" in record) problems.push(`${path}/additionalItems`);
+      for (const [key, value] of Object.entries(record)) walk(value, `${path}/${key}`);
+    };
+    for (const tool of mcpTools) walk(tool.inputSchema, tool.name);
+    expect(problems).toEqual([]);
+    const featureMesh = JSON.stringify(mcpTools.find((t) => t.name === "autospine_feature_mesh"));
+    expect(featureMesh).toContain('"prefixItems"');
+  });
+});
+
 describe("plugin package (Claude and Codex)", () => {
   it("is generated from the current build", () => {
     const run = spawnSync(process.execPath, ["tools/build-plugin.mjs", "--check"], {

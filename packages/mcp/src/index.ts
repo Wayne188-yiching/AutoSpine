@@ -31,6 +31,7 @@ import {
   transferWeights,
 } from "@autospine/weights";
 import { buildJobFile } from "@autospine/cli/build";
+import { advertisedSchema } from "./api-schema.js";
 import {
   buildCharacterFiles,
   compareReferenceFiles,
@@ -351,7 +352,7 @@ const writingTools = new Set<string>([
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
   description: descriptions[name as keyof typeof toolSchemas],
-  inputSchema,
+  inputSchema: advertisedSchema(inputSchema),
   annotations: {
     readOnlyHint: !writingTools.has(name),
     destructiveHint: false,

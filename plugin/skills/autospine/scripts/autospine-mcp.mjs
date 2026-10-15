@@ -30341,13 +30341,13 @@ function buildKeyposeAnimation(rig, spec) {
         { frame: N, value: track[0].value }
       ];
     const unit = c.unit ?? 1, parent = bones.get(c.boneId).parentId, inv = c.channel === "translate" && (c.space ?? "world") === "world" && parent ? inverseAffine(world.get(parent)) : void 0;
-    const convert = (v) => {
+    const convert2 = (v) => {
       if (c.channel !== "translate") return c.channel === "rotate" ? [v[0] * unit] : v;
       const x = v[0] * unit, y = v[1] * unit;
       return inv ? [inv[0] * x + inv[2] * y, inv[1] * x + inv[3] * y] : [x, y];
     };
     const keys = track.map((k, i) => {
-      const v = convert(k.value), curve = i < track.length - 1 ? k.curve : void 0;
+      const v = convert2(k.value), curve = i < track.length - 1 ? k.curve : void 0;
       return { time: k.frame / spec.fps, v, ...curve ? { curve: { ...curve } } : {} };
     });
     if (c.channel === "rotate")
@@ -32239,6 +32239,26 @@ async function buildJobFile(jobPath) {
   await assertAbsent(output);
   await rename(temporary, output);
   return output;
+}
+
+// packages/mcp/dist/api-schema.js
+function advertisedSchema(schema) {
+  return convert(JSON.parse(JSON.stringify(schema)));
+}
+function convert(node) {
+  if (Array.isArray(node))
+    return node.map(convert);
+  if (!node || typeof node !== "object")
+    return node;
+  const out = {};
+  for (const [key, value] of Object.entries(node))
+    out[key] = convert(value);
+  if (Array.isArray(out.items)) {
+    out.prefixItems = out.items;
+    out.items = out.additionalItems === void 0 ? false : out.additionalItems;
+    delete out.additionalItems;
+  }
+  return out;
 }
 
 // packages/cli/dist/character.js
@@ -37868,7 +37888,7 @@ var writingTools = /* @__PURE__ */ new Set([
 var mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
   description: descriptions[name],
-  inputSchema,
+  inputSchema: advertisedSchema(inputSchema),
   annotations: {
     readOnlyHint: !writingTools.has(name),
     destructiveHint: false,
