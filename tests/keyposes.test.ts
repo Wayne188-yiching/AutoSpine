@@ -395,5 +395,12 @@ describe("pose-table motion grammar", () => {
     ];
     for (const [patch, expected] of cases)
       expect(code(() => buildKeyposeAnimation(rig, spec(patch)))).toBe(expected);
+    // An invalid spec names the first offending path.
+    expect(() =>
+      buildKeyposeAnimation(
+        rig,
+        spec({ controls: [one], beats: [{ frame: 0, poses: { t1: 0 } }], fps: 0 }),
+      ),
+    ).toThrow(/Invalid KeyposeSpec at \/fps/);
   });
 });

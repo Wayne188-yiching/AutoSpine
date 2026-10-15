@@ -43,6 +43,8 @@ export function checkAcceptance(
     r.engineering.A2_setupPlacement.maxPx,
   );
   for (const a of animations) {
+    // A one-shot (ADR-030) need not end where it starts.
+    if (r.engineering.oneShots?.includes(a)) continue;
     const v = r.engineering.A4_loopSeam[`${a}:generated`] ?? Infinity;
     add(`A4 loop seam ${a} <= 0.5 px`, v <= ACCEPTANCE.loopSeamPx, v);
   }

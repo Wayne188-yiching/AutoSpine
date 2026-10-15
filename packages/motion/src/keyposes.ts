@@ -233,8 +233,13 @@ const REST: Record<KeyposeControl["channel"], Vec> = {
  * Each control is driven exactly once; layer motions on separate bones.
  */
 export function buildKeyposeAnimation(rig: RigSpec, spec: KeyposeSpec): AnimationSpec {
-  if (!Value.Check(RigSpecSchema, rig) || !Value.Check(KeyposeSpecSchema, spec))
-    fail("KEYPOSE_INPUT", "Valid RigSpec and KeyposeSpec required");
+  for (const [schema, value, what] of [
+    [RigSpecSchema, rig, "RigSpec"],
+    [KeyposeSpecSchema, spec, "KeyposeSpec"],
+  ] as const) {
+    const error = Value.Errors(schema, value).First();
+    if (error) fail("KEYPOSE_INPUT", `Invalid ${what} at ${error.path || "/"}: ${error.message}`);
+  }
   if (spec.rigId !== rig.id) fail("KEYPOSE_REFERENCE", "KeyposeSpec rigId must match the rig");
   const N = spec.frames,
     loop = spec.loop,

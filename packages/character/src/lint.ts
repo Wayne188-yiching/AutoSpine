@@ -343,7 +343,9 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
         if (j > 0 && f < frames[j - 1]! + move!)
           errors.push(`${where}: ${a} look at ${f} starts before the previous one arrives`);
       });
-      if (frames.length && frames.at(-1)! + 2 * move > anim.frames)
+      // A one-shot (ADR-030) may end on its last look.
+      const tail = anim.loop === false ? move : 2 * move;
+      if (frames.length && frames.at(-1)! + tail > anim.frames)
         errors.push(
           `${where}: ${a} needs ${2 * move} frames after the last look to close the loop`,
         );
@@ -364,7 +366,7 @@ export function lintCharacterPlan(plan: CharacterPlan, partNames?: Iterable<stri
     p.slots.forEach((s) => colourSlot(s, p.id, where));
     if (typeof p.period === "number")
       for (const a of m.animations)
-        if (a.frames % p.period !== 0)
+        if (a.loop !== false && a.frames % p.period !== 0)
           errors.push(
             `${where}: period ${p.period} does not divide ${a.name} (${a.frames} frames)`,
           );
