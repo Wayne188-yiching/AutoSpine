@@ -314,6 +314,13 @@ export const MotionPlanSchema = Type.Object(
         {
           name: NameSchema,
           frames: Type.Integer({ minimum: 4, maximum: 3600 }),
+          /**
+           * One-shot animation (ADR-030): false for an entry, exit, win or transition. Its keys need
+           * not meet at the ends: swaps and keyed colours hold their last value, the main motion
+           * returns to rest on the last frame, periods need not divide it, and the comparison skips
+           * the loop seam. Default true (a loop).
+           */
+          loop: Type.Optional(Type.Boolean()),
           /** Anticipation scale per cycle (cycle 1 first; a breath scales its depth); default 1. */
           cycleScale: Type.Optional(Type.Array(PlanNumberSchema, { maxItems: 64 })),
           /**
@@ -531,7 +538,8 @@ export const MotionPlanSchema = Type.Object(
                   {
                     frame: Type.Integer({ minimum: 0, maximum: 3600 }),
                     value: PlanValueSchema,
-                    ease: KeyposeEaseSchema,
+                    /** Arrival ease; default the beat's (a look arrives with "out"). */
+                    ease: Type.Optional(KeyposeEaseSchema),
                   },
                   strict,
                 ),

@@ -153,8 +153,12 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
   add();
   plan.motion.animations.forEach((a, i) => {
     const spec = animations[i];
-    add(`### ${a.name}（${a.frames} 幀）`);
+    add(`### ${a.name}（${a.frames} 幀${a.loop === false ? "，單次" : ""}）`);
     add();
+    if (a.loop === false)
+      add(
+        "- 單次動畫：不循環，最後一幀不必等於第 0 幀；換圖和顏色停在最後的值，主動作在最後一幀回到原位。",
+      );
     const moved = new Set([
       ...(spec?.rotationTimelines ?? []).map((t) => t.boneId),
       ...(spec?.translationTimelines ?? []).map((t) => t.boneId),

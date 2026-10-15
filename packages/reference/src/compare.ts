@@ -507,8 +507,15 @@ export interface ReferenceOptions {
   alpha?: (path: string) => { width: number; height: number; alpha: Uint8Array };
   /** Character name for profile ids and sources (default "reference"). */
   name?: string;
-  /** Animations loop: phase-invariant chain metrics (ADR-020). Character plans always loop. */
-  loop?: boolean;
+  /**
+   * Looping animations: phase-invariant chain metrics (ADR-020) and the loop seam. true for all,
+   * or the names of the loops; a one-shot (ADR-030) gets neither.
+   */
+  loop?: boolean | readonly string[];
+}
+/** Whether `animation` loops under `options.loop`. */
+export function loops(options: Pick<ReferenceOptions, "loop">, animation: string): boolean {
+  return Array.isArray(options.loop) ? options.loop.includes(animation) : options.loop === true;
 }
 /** Head width of the images-only setup: the unit of every performance metric. */
 export function headUnit(imagesOnly: LoadedSkeleton, part: string): number {
@@ -566,7 +573,10 @@ export function prepareReference(
     const sample = performanceSample(t, options.probes, fps, unit);
     const metrics = measurePerformance(
       sample,
-      { ...probeOptions(options.probes, sample.probes), ...(options.loop ? { loop: true } : {}) },
+      {
+        ...probeOptions(options.probes, sample.probes),
+        ...(loops(options, a) ? { loop: true } : {}),
+      },
       {
         keys: Math.max(1, ks.movingKeys),
         timelines: Math.max(1, ks.movingBoneTimelines),
@@ -582,7 +592,7 @@ export function prepareReference(
       fps,
       source: `${options.name ? `${options.name} ` : ""}artist ${a} (official 4.0 runtime, ${fps} fps, head widths), n=1`,
       ...probeOptions(options.probes, sample.probes),
-      ...(options.loop ? { loop: true } : {}),
+      ...(loops(options, a) ? { loop: true } : {}),
       targets: Object.fromEntries(
         Object.entries(metrics).map(([k, v]) => [k, targetBand(k, v, fps)]),
       ),
@@ -609,6 +619,8 @@ export interface CompareResult {
       hiddenMaxPx: number;
     };
     A4_loopSeam: Record<string, number>;
+    /** One-shot animations (ADR-030, named outside a `loop` list): no loop seam. */
+    oneShots?: string[];
     /** Frame-0 pose per animation (ADR-024): per-slot mean offset from the artist, head widths. */
     A6_restPose: Record<
       string,
@@ -692,10 +704,15 @@ export function compareToReference(
     if (!gen.data.findAnimation(a))
       throw new Error(`REFERENCE_ANIMATION: generated file has no ${a}`);
     const T = { art: reference.tracks[a]!, gen: sampleTracks(gen, a, fps) };
-    for (const [who, t] of [
-      ["artist", T.art],
-      ["generated", T.gen],
-    ] as const) {
+    // A one-shot (ADR-030) need not end where it starts: no loop seam.
+    const oneShot = Array.isArray(options.loop) && !options.loop.includes(a);
+    if (oneShot) (result.engineering.oneShots ??= []).push(a);
+    for (const [who, t] of oneShot
+      ? []
+      : ([
+          ["artist", T.art],
+          ["generated", T.gen],
+        ] as const)) {
       let worst = 0;
       for (const s of Object.values(t.tr)) {
         const v0 = s.verts[0],

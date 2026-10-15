@@ -231,6 +231,7 @@ export function buildMotionSpecs(
     k: NonNullable<MotionPlan["keyed"]>[number],
     raw: NonNullable<MotionPlan["keyed"]>[number]["keys"][string],
     frames: number,
+    loop: boolean,
   ) => {
     const move = Math.round(n(k.move!, `${k.id}.move`)),
       restValue = v2(k.rest, `${k.id}.rest`),
@@ -250,10 +251,11 @@ export function buildMotionSpecs(
         out.push({ frame: key.frame, value: prev, ease: "linear" });
       prev = v2(key.value, `${k.id}.key`);
       free = key.frame + move;
-      out.push({ frame: free, value: prev, ease: key.ease });
+      out.push({ frame: free, value: prev, ease: key.ease ?? "out" });
     }
-    const end = same(prev, restValue) ? free : frames - move;
-    if (end < free || free >= frames)
+    // A one-shot (ADR-030) ends on its last look; a loop closes back to rest.
+    const end = !loop || same(prev, restValue) ? free : frames - move;
+    if (end < free || free > frames || (loop && free >= frames))
       failStage(
         "animation",
         "PLAN_MOTION_TIMING",
@@ -268,7 +270,8 @@ export function buildMotionSpecs(
 
   const specs: KeyposeSpec[] = [];
   for (const anim of motion.animations) {
-    const frames = anim.frames;
+    const frames = anim.frames,
+      loop = anim.loop !== false;
     if (frames % C !== 0)
       failStage(
         "animation",
@@ -316,6 +319,8 @@ export function buildMotionSpecs(
           poses: at("hold", depth + holdDepth),
         });
     }
+    // A one-shot (ADR-030) has no next cycle to return through: the main ends at rest.
+    if (!loop) beats.push({ frame: frames, ease: eases.rest, poses: { ...rest } });
     // ---- face holds (ADR-022): hold between main beats, arrive `move` frames after each beat
     for (const s of motion.sink ?? []) {
       if (s.kind !== "face" || s.move === undefined) continue;
@@ -353,9 +358,10 @@ export function buildMotionSpecs(
               value: v2(key.value, `${k.id}.key`),
               ease: key.ease,
             }))
-          : looks(k, raw, frames);
+          : looks(k, raw, frames, loop);
       for (const key of keys) {
-        const entry = { value: key.value, ease: key.ease };
+        // A key without an ease takes the beat's (the keypose object form needs one).
+        const entry = key.ease === undefined ? key.value : { value: key.value, ease: key.ease };
         const beat = beats.find((b) => b.frame === key.frame);
         if (beat) beat.poses[k.id] = entry;
         else beats.push({ frame: key.frame, poses: { [k.id]: entry } });
@@ -436,7 +442,7 @@ export function buildMotionSpecs(
       rigId: ctx.rigId,
       fps: motion.fps ?? 30,
       frames,
-      loop: true,
+      loop,
       controls,
       beats,
       rules,

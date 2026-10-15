@@ -258,6 +258,10 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
   };
 }
 
+/** The plan's looping animations; the rest are one-shots (ADR-030). */
+const loopNames = (plan: CharacterPlan) =>
+  plan.motion.animations.filter((a) => a.loop !== false).map((a) => a.name);
+
 /**
  * compare-reference <plan.json> <generated-dir> <artist.json> <new-output-dir>: pre-registered
  * acceptance of a build against the artist file, with review sheets and the criteria check.
@@ -284,13 +288,13 @@ export async function compareReferenceFiles(
   const record = JSON.parse(await readFile(join(buildDir, "build-record.json"), "utf8")) as {
     seams: { maxDrift: number }[];
   };
-  // Character plan animations always loop (ADR-020: phase-invariant chain metrics).
+  // Loops get phase-invariant chain metrics (ADR-020) and a loop seam; one-shots (ADR-030) neither.
   const options = {
     probes,
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: true,
+    loop: loopNames(plan),
   };
   const reference = prepareReference(artist, imagesOnly, options);
   const { result, sheets } = compareToReference(reference, generated, imagesOnly, {
@@ -345,7 +349,7 @@ export async function optimizeMotionFiles(
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: true,
+    loop: loopNames(plan),
   });
   const rigging = rigCharacter(plan, layout);
   const evaluate = makeObjective(rigging, reference, {

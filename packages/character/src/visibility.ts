@@ -65,7 +65,7 @@ export function buildAttachmentTimelines(
     }
   }
   // Swaps inside an animation (ADR-027) replace that slot's hold: keyed frames, each held until the
-  // next; the loop closes on the frame-0 attachment.
+  // next; a loop closes on the frame-0 attachment, a one-shot (ADR-030) keeps its last.
   const fps = motion.fps ?? 30;
   for (const sw of motion.swaps ?? [])
     for (const [animName, raw] of Object.entries(sw.keys)) {
@@ -105,10 +105,13 @@ export function buildAttachmentTimelines(
         if (last && Math.abs(last.time - time) < 1e-9) last.name = k.attachment;
         else timeline.push({ time, name: k.attachment });
       }
-      // The loop closes on its frame-0 attachment (a sequence wraps to its first image) unless a
-      // key sits on the last frame.
+      // A loop closes on its frame-0 attachment (a sequence wraps to its first image) unless a
+      // key sits on the last frame; a one-shot holds its last attachment.
       if (timeline.at(-1)!.time < duration - 1e-9)
-        timeline.push({ time: duration, name: timeline[0]!.name });
+        timeline.push({
+          time: duration,
+          name: anim.loop === false ? timeline.at(-1)!.name : timeline[0]!.name,
+        });
       out.push({ animationName: animName, slotName: sw.slot, keys: timeline });
     }
   return out;

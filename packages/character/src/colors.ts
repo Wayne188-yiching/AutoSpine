@@ -21,8 +21,9 @@ function tint(setup: string, alpha: number | undefined, rgb: string | undefined)
 
 /**
  * Slot colour motion: `pulses` (alpha oscillating between two multipliers of the setup alpha, a
- * sine keyed at its extremes) and `colors` (explicit RGB / alpha keys). Every plan animation is a
- * loop, so a pulse period must divide the animation and keyed colours close on their first value.
+ * sine keyed at its extremes) and `colors` (explicit RGB / alpha keys). In a loop a pulse period
+ * must divide the animation and keyed colours close on their first value; a one-shot (ADR-030)
+ * ends wherever its pulse is and holds its last colour key.
  */
 export function buildColorTimelines(
   motion: MotionPlan,
@@ -63,7 +64,8 @@ export function buildColorTimelines(
   for (const c of motion.colors ?? []) c.slots.forEach((s) => claim(s, c.id));
   const out: ColorTimeline[] = [];
   for (const anim of motion.animations) {
-    const frames = anim.frames;
+    const frames = anim.frames,
+      loop = anim.loop !== false;
     for (const p of motion.pulses ?? []) {
       const period =
         p.period === "animation"
@@ -71,7 +73,7 @@ export function buildColorTimelines(
           : p.period === "cycle"
             ? motion.cycle
             : Math.round(n(p.period, `${p.id}.period`));
-      if (!(period >= 2) || frames % period !== 0)
+      if (!(period >= 2) || (loop && frames % period !== 0))
         fail(
           "PLAN_MOTION_CYCLE",
           `${p.id}: period ${period} must divide ${anim.name} (${frames} frames)`,
@@ -127,7 +129,11 @@ export function buildColorTimelines(
         if (keyed[0]!.frame !== 0)
           keyed.unshift({ frame: 0, ease: undefined, color: setup.toLowerCase() });
         if (keyed.at(-1)!.frame !== frames)
-          keyed.push({ frame: frames, ease: undefined, color: keyed[0]!.color });
+          keyed.push({
+            frame: frames,
+            ease: undefined,
+            color: loop ? keyed[0]!.color : keyed.at(-1)!.color,
+          });
         // A key's ease shapes the segment arriving at it (KeyposeBeat convention).
         const keys: ColorKey[] = keyed.map((k, i) => {
           const curve = keyed[i + 1] ? easeCurve(keyed[i + 1]!.ease ?? "ease") : undefined;
