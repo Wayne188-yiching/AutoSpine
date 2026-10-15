@@ -165,6 +165,15 @@
         display: grid;
         gap: 8px;
       }
+      ol.sub {
+        margin: 0;
+        padding-left: 1.3em;
+        display: grid;
+        gap: 8px;
+      }
+      ol.sub li::marker {
+        color: var(--muted);
+      }
 
       .cmd {
         position: relative;
@@ -230,16 +239,11 @@
         <div class="num" aria-hidden="true">1</div>
         <div class="body">
           <h2>先準備</h2>
-          <ul>
-            <li>
-              安裝 Node.js：
-              <div class="cmd">
-                <pre>winget install OpenJS.NodeJS.LTS</pre>
-                <button type="button">複製</button>
-              </div>
-            </li>
-            <li>請 Wayne 把你加進 GitHub 上的 AutoSpine，並接受邀請。</li>
-          </ul>
+          <p>安裝 Node.js：</p>
+          <div class="cmd">
+            <pre>winget install OpenJS.NodeJS.LTS</pre>
+            <button type="button">複製</button>
+          </div>
           <p class="muted">
             要匯出 Spine 檔、產生檢查影片的話，電腦也要有 Spine 4.0.64 和 ffmpeg。
           </p>
@@ -250,15 +254,19 @@
         <div class="num" aria-hidden="true">2</div>
         <div class="body">
           <h2>安裝外掛</h2>
-          <p>
-            <b>Claude</b>（桌面 App、Cowork、Claude Code 共用）：到
-            <b>Customize → Plugins → Add → Add marketplace</b>，貼上下面這行，再找到 AutoSpine 按
-            <b>Add</b>。
-          </p>
-          <div class="cmd">
-            <pre>Wayne188-yiching/AutoSpine</pre>
-            <button type="button">複製</button>
-          </div>
+          <p><b>Claude</b>（桌面 App、Cowork、Claude Code 共用）</p>
+          <ol class="sub">
+            <li>左側選單點 <b>自訂</b>，選 <b>外掛程式</b>。</li>
+            <li>按右上角 <b>＋ 新增</b> → <b>新增市集</b>。</li>
+            <li>
+              在「網址」貼上下面這行，按 <b>同步</b>。
+              <div class="cmd">
+                <pre>Wayne188-yiching/AutoSpine</pre>
+                <button type="button">複製</button>
+              </div>
+            </li>
+            <li>到 <b>探索</b> 找到 AutoSpine，點開後按 <b>新增</b>。</li>
+          </ol>
           <p class="muted">第一次會要你連結 GitHub，照畫面按同意就好。</p>
           <p><b>Codex</b>：在終端機執行下面這行，再到 Plugins 安裝 AutoSpine。</p>
           <div class="cmd">
@@ -282,7 +290,10 @@
             <pre>用 autospine 把 D:\素材\角色\角色.spine 的 idle 做成 2 秒呼吸</pre>
             <button type="button">複製</button>
           </div>
-          <p>它會交給你 Spine 檔和一支檢查影片。看完直接說哪裡要改。原檔不會被改動。</p>
+          <p>
+            它會交給你 Spine 檔和一支檢查影片，工作檔另外收在
+            <code>_work</code> 資料夾。看完直接說哪裡要改，原檔不會被改動。
+          </p>
         </div>
       </section>
 

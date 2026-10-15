@@ -36,18 +36,20 @@
 
 ## 你會拿到
 
-只有兩個檔案，放在你指定的資料夾（沒指定時是原 `.spine` 旁邊的 `AutoSpine` 資料夾）：
+放在你指定的專案資料夾（沒指定時是原 `.spine` 旁邊的 `AutoSpine\<動畫>` 資料夾）。最外層只有你會用到的東西：
 
-| 檔案           | 用途                                                                       |
+| 位置           | 內容                                                                       |
 | -------------- | -------------------------------------------------------------------------- |
-| `<名稱>.spine` | Spine 專案，直接開。圖片指向你原本的 images 資料夾，不會另外複製一份       |
+| `<名稱>.spine` | Spine 專案，直接開                                                         |
 | `<名稱>.mp4`   | 檢查影片，依序播放：① 佈線 ② 骨架 ③ 完整動態。有人工版時左為人工、右為自動 |
+| `images\`      | 專案用到的圖片。整個資料夾搬給別人也能直接開                               |
+| `_work\`       | 工作檔：匯出的原始資料、每一版方案、每次建置、比對結果。之後要再改才用得到 |
 
-骨架說明、驗收結果會直接在對話裡告訴你。方案、建置檔這些工作檔都留在 `使用者資料夾\AutoSpine`，要看再跟它要。
+骨架說明、驗收結果會直接在對話裡告訴你。角色確定完成後，`_work\` 可以整個刪掉。
 
 骨的顏色代表用途：藍是主骨、紅是控制骨（沒有圖片）、橘是臉部跟隨骨、綠是頭髮尾巴等骨鏈，其他是身體關節。動畫是稀疏關鍵幀，可以直接在 Spine 裡改；手動修改不會回寫方案。
 
-改完需求重做時，新版會取代舊的兩個檔案，舊版移回工作資料夾。若你已經在 Spine 裡改過交付的檔案，它會先問你，不會直接蓋掉。
+改完需求重做時，新版會取代舊的 `.spine` 和影片，舊版收進 `_work\`。若你已經在 Spine 裡改過交付的檔案，它會先問你，不會直接蓋掉。
 
 ## 怎麼看驗收結果
 
@@ -89,10 +91,11 @@ node packages/cli/dist/index.js review-video <plan.json> <建置資料夾> [<人
 node packages/cli/dist/index.js fit-pose <plan.json> <建置資料夾> <姿勢圖.png> <新的 pose.json>
 node packages/cli/dist/index.js fit-pose <plan.json> <建置資料夾> 0=<第0幀.png> 14=<第14幀.png>... <新的 keyposes.json> --animation=<動畫> --zero=0
 node packages/cli/dist/index.js merge-plans <新的 plan.json> <plan.json> <plan.json>...
-node packages/cli/dist/index.js deliver <plan.json> <建置資料夾> <交付資料夾> [<人工.json>] --name=<名稱> --images=<原本的 images 資料夾> [--replace]
+node packages/cli/dist/index.js init-project <專案資料夾>
+node packages/cli/dist/index.js deliver <plan.json> <建置資料夾> <專案資料夾> [<人工.json>] --name=<名稱> [--replace]
 ```
 
-`deliver` 只在交付資料夾放 `<名稱>.spine` 和 `<名稱>.mp4`；沒有安裝 Spine 時改放 `<名稱>.json`，用 Spine 的 Import Data 匯入。
+`init-project` 在專案資料夾建好 `_work\`（input、plans、builds、checks、notes）。`deliver` 只在專案資料夾最外層放 `<名稱>.spine`、`images\` 和 `<名稱>.mp4`；沒有安裝 Spine 時改放 `<名稱>.json`，用 Spine 的 Import Data 匯入。
 
 同一個角色做了好幾段動畫時，用 `merge-plans` 合成一份方案再建置一次，就會得到一個包含全部動畫的 Spine 專案（ADR-031）。
 

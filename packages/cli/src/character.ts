@@ -1,8 +1,18 @@
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { copyFile, mkdir, readFile, rename, rm, writeFile, stat } from "node:fs/promises";
-import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
+import {
+  copyFile,
+  cp,
+  mkdir,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  writeFile,
+  stat,
+} from "node:fs/promises";
+import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { PNG } from "pngjs";
 import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
@@ -809,13 +819,6 @@ export function spineExecutable(explicit?: string): string | undefined {
   ];
   return candidates.find((c): c is string => !!c && existsSync(c));
 }
-/** Images folder as a skeleton `images` path relative to the delivered project. */
-function imagesReference(from: string, images: string) {
-  const rel = relative(from, images);
-  if (isAbsolute(rel)) return images.split(sep).join("/") + "/"; // another drive
-  const posix = rel.split(sep).join("/");
-  return (posix === "" ? "." : posix.startsWith(".") ? posix : `./${posix}`) + "/";
-}
 function runSpine(exe: string, args: string[]) {
   return new Promise<{ code: number; output: string }>((ok) => {
     let output = "";
@@ -834,10 +837,26 @@ function runSpine(exe: string, args: string[]) {
   });
 }
 
+/** Working folders inside a project folder; the top level keeps only what the requester uses. */
+export const WORK_LAYOUT = ["input", "plans", "builds", "checks", "notes"] as const;
+/** init-project <project-dir>: creates `_work/` and its subfolders (idempotent). */
+export async function initProjectFolder(projectDir: string) {
+  const work = join(resolve(projectDir), "_work");
+  for (const sub of WORK_LAYOUT) await mkdir(join(work, sub), { recursive: true });
+  return { project: resolve(projectDir), work, folders: WORK_LAYOUT.map((s) => join(work, s)) };
+}
+/** Top-level entries that belong in a project folder: projects, videos, art and `_work/`. */
+const DELIVERABLE = /\.(spine|json|mp4|mov|webm|gif|png|jpe?g|webp|psd|atlas)$/i;
+function strayEntries(names: string[]) {
+  return names.filter(
+    (n) => !["images", "_work"].includes(n) && !n.startsWith(".") && !DELIVERABLE.test(n),
+  );
+}
+
 export interface DeliverOptions {
   /** File name without extension; default the plan id. */
   name?: string;
-  /** The images folder the project points at; default the plan's (`source.images`). */
+  /** The images to deliver in `<delivery-dir>/images/`; default the plan's (`source.images`). */
   images?: string;
   /** Spine editor executable; default AUTOSPINE_SPINE or the standard install. */
   spine?: string;
@@ -849,11 +868,11 @@ export interface DeliverOptions {
   video?: boolean;
 }
 /**
- * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the requester's folder gets only
- * `<name>.spine` (imported with the Spine command line, pointing at the original images folder)
- * and `<name>.mp4` (the review video, artist | build when an artist file is given). Plans, builds,
- * comparisons and every other working file stay where they are. Without the Spine editor the
- * project is delivered as `<name>.json` for Import Data instead.
+ * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the project folder gets only
+ * `<name>.spine` (imported with the Spine command line), `images/` (the art it uses, so the folder
+ * opens anywhere) and `<name>.mp4` (the review video, artist | build when an artist file is given).
+ * Plans, builds, comparisons and every other working file stay in the work folder. Without the
+ * Spine editor the project is delivered as `<name>.json` for Import Data instead.
  */
 export async function deliverFiles(
   planPath: string,
@@ -901,7 +920,11 @@ export async function deliverFiles(
     for (const p of present) await moveFile(p, join(replaced, basename(p)));
   }
   await mkdir(out, { recursive: true });
-  document.skeleton = { ...document.skeleton, images: imagesReference(out, images) };
+  // The art travels with the project: images/ beside it, overwritten file by file.
+  const deliveredImages = join(out, "images");
+  if (resolve(images) !== resolve(deliveredImages))
+    await cp(images, deliveredImages, { recursive: true, force: true });
+  document.skeleton = { ...document.skeleton, images: "./images/" };
   const result: {
     spine: string | null;
     json: string | null;
@@ -909,6 +932,7 @@ export async function deliverFiles(
     images: string;
     replaced: string | null;
     spineError?: string;
+    stray?: string[];
   } = {
     spine: null,
     json: null,
@@ -918,7 +942,7 @@ export async function deliverFiles(
   };
   const exe = spineExecutable(opts.spine);
   if (exe) {
-    // Imported from beside the project, so the relative images path means the same to both.
+    // Imported from beside the project, so "./images/" means the same to both.
     const temp = join(out, `.${name}.autospine-import.json`);
     await writeFile(temp, JSON.stringify(document));
     try {
@@ -937,5 +961,7 @@ export async function deliverFiles(
     await moveFile(staged, target.video);
     result.video = target.video;
   }
+  // Anything else at the top level belongs in _work/ (reported, never moved by the engine).
+  result.stray = strayEntries(await readdir(out));
   return result;
 }
