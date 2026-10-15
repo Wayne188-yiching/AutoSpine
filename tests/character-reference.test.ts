@@ -175,6 +175,8 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     pose(sk, null, 0);
     expect(drawList(sk).map((d) => d.slot)).toContain("Head");
     expect(headUnit(loadSkeleton(named), "Head")).toBeCloseTo(80, 3);
+    // A part named `slot#image` (a slot with no setup image) is measured on that image.
+    expect(headUnit(loadSkeleton(named), "Head#Head")).toBeCloseTo(80, 3);
   });
 
   it("profiles loops with phase-invariant chain metrics (ADR-020)", () => {
