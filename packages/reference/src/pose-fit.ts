@@ -1,4 +1,4 @@
-import { loadSkeleton, pose, type LoadedSkeleton } from "./runtime.js";
+import { frameTime, loadSkeleton, pose, type LoadedSkeleton } from "./runtime.js";
 
 /** Straight (not premultiplied) 8-bit RGBA. */
 export interface FitImage {
@@ -11,6 +11,11 @@ export interface PoseFitOptions {
   view: { x: number; y: number; width: number; height: number };
   /** Slots to match (default: every slot drawn on frame 0 of the animation). */
   slots?: readonly string[];
+  /**
+   * Slots not to match: parts whose drawing changes, such as an expression's mouth, eyes and
+   * tongue (ADR-033). A head with many face parts is placed by its fur and ears instead.
+   */
+  ignore?: readonly string[];
   /**
    * Bones free to move (default: every bone except the root). Parts of other bones are matched as
    * part of their nearest free ancestor.
@@ -32,6 +37,22 @@ export interface PoseFitOptions {
   maxRotate?: number;
   /** Bone matches scoring below this are not used (default 0.35; a score is the mean colour match). */
   minScore?: number;
+  /**
+   * Animation time posed under the reference, seconds (default 0: the rest pose). The fitted
+   * offsets are added to that pose (ADR-033 key poses).
+   */
+  time?: number;
+  /**
+   * Per-bone placements measured on a picture whose pose the build already shows (ADR-033): the
+   * matching's own error on these drawings (a part the build bends differently), taken off this
+   * fit's targets.
+   */
+  zero?: Readonly<Record<string, Placement>>;
+}
+/** A rigid world move: x -> R(r) x + t, degrees counter-clockwise (Spine world, y up). */
+export interface Placement {
+  r: number;
+  t: [number, number];
 }
 export interface PoseFitPart {
   slot: string;
@@ -55,6 +76,8 @@ export interface PoseFitResult {
   /** Share of the sampled texels on parts whose match was used: below about 0.6 the reference
    *  shows something a rest pose cannot (a scaled head, another expression); do not use the pose. */
   coverage: number;
+  /** Placements of the bones whose own parts matched, for `zero` (ADR-033). */
+  placements: Record<string, Placement>;
 }
 
 interface Sample {
@@ -120,8 +143,9 @@ export function fitRestPose(
     scale = reference.width / view.width,
     maxRotate = options.maxRotate ?? 30,
     window = options.window ?? 0.3 * Math.max(view.width, view.height),
-    minScore = options.minScore ?? 0.35;
-  pose(sk, animation, 0);
+    minScore = options.minScore ?? 0.35,
+    time = options.time ?? 0;
+  pose(sk, animation, time);
   // Parts drawn on frame 0, with their texture paths.
   const drawn: { slot: string; path: string; uvs: number[] }[] = [];
   for (const slot of sk.skeleton.drawOrder) {
@@ -130,6 +154,7 @@ export function fitRestPose(
       | null;
     if (!att || slot.color.a * (att.color as { a: number }).a <= 0.02) continue;
     if (options.slots && !options.slots.includes(slot.data.name)) continue;
+    if (options.ignore?.includes(slot.data.name)) continue;
     const uvs = att.regionUVs
       ? Array.from(att.regionUVs)
       : "offset" in att
@@ -237,7 +262,7 @@ export function fitRestPose(
 
   // ---- rigid placement per bone, parents first: a bone's parts are matched together, around
   //      where its parent's fit puts them (a lone small part matches too many places alone)
-  type Rigid = { r: number; t: [number, number] }; // x -> R(r) x + t, world, degrees counter-clockwise
+  type Rigid = Placement;
   const move = (T: Rigid, x: [number, number]): [number, number] => {
     const a = (T.r * Math.PI) / 180,
       cos = Math.cos(a),
@@ -264,8 +289,16 @@ export function fitRestPose(
       gb = g === undefined ? undefined : byName.get(g);
     if (gb) slotGroup.set(slot, freeOwner(gb));
   }
+  // A zero placement's inverse: where the matching would put a part the build already shows.
+  const unmove = (T: Rigid, x: [number, number]): [number, number] => {
+    const a = (-T.r * Math.PI) / 180,
+      u = x[0] - T.t[0],
+      v = x[1] - T.t[1];
+    return [Math.cos(a) * u - Math.sin(a) * v, Math.sin(a) * u + Math.cos(a) * v];
+  };
   const fitted = new Map<string, Rigid>(),
     anchored = new Set<string>(),
+    placements: Record<string, Rigid> = {},
     parts: PoseFitPart[] = [],
     targets = new Map<string, { sample: Sample; to: [number, number] }[]>();
   const childWindow = 0.5 * window;
@@ -387,7 +420,11 @@ export function fitRestPose(
         ? { r: D0.r + rot, t: [Rt0[0] + c[0] + dx - Rc[0], Rt0[1] + c[1] + dy - Rc[1]] }
         : D0;
     fitted.set(name, D);
-    if (boneScore >= minScore) anchored.add(name);
+    if (boneScore >= minScore) {
+      anchored.add(name);
+      placements[name] = { r: +D.r.toFixed(4), t: [+D.t[0].toFixed(3), +D.t[1].toFixed(3)] };
+    }
+    const Z = options.zero?.[name];
     for (const slot of slots) {
       const list = samples.get(slot)!;
       const mine = set.filter((x) => x.slot === slot);
@@ -416,7 +453,9 @@ export function fitRestPose(
       const k = Math.max(1, Math.floor(list.length / 16));
       targets.set(
         slot,
-        list.filter((_, i) => i % k === 0).map((sample) => ({ sample, to: move(D, sample.w0) })),
+        list
+          .filter((_, i) => i % k === 0)
+          .map((sample) => ({ sample, to: move(D, Z ? unmove(Z, sample.w0) : sample.w0) })),
       );
     }
   }
@@ -460,7 +499,7 @@ export function fitRestPose(
       b.data.y = setup[i]![1]! + o[i]![1]!;
       b.data.rotation = setup[i]![2]! + o[i]![2]!;
     });
-    pose(sk, animation, 0);
+    pose(sk, animation, time);
     const now = worldVertices(sk, used);
     const r: number[] = [];
     for (const slot of used) {
@@ -474,6 +513,9 @@ export function fitRestPose(
     params.forEach((q, j) => {
       const v = (q.ch === 2 ? degree : 1) * p[j]!;
       r.push((reg * v) / Math.sqrt(Math.abs(v) + 0.5));
+      // No bone turns further than a part may (ADR-033): a hand the drawing moved off its arm
+      // must not spin the forearm round to reach it.
+      if (q.ch === 2) r.push(10 * Math.max(0, Math.abs(p[j]!) - maxRotate));
     });
     return r;
   };
@@ -553,6 +595,7 @@ export function fitRestPose(
   return {
     pose: out,
     parts,
+    placements,
     coverage: +(sampled ? usedSamples / sampled : 0).toFixed(3),
     residual: {
       median: +(perPart[Math.floor((perPart.length - 1) / 2)] ?? 0).toFixed(2),
@@ -560,6 +603,75 @@ export function fitRestPose(
     },
     iterations,
   };
+}
+
+/** A reference picture of the pose on one frame (a storyboard frame or a frame of a video). */
+export interface KeyPicture {
+  frame: number;
+  image: FitImage;
+}
+export interface KeyPoseFitOptions extends Omit<PoseFitOptions, "time" | "zero"> {
+  /** Frames per second of the animation (default 30). */
+  fps?: number;
+  /** Pictures with less coverage are not used (default 0.6, the rest pose's limit). */
+  minCoverage?: number;
+  /**
+   * The frame of a picture whose pose the build already shows, usually frame 0 after its rest pose
+   * was fitted from that picture: it gives no key pose; its matching error is taken off the others.
+   */
+  zeroFrame?: number;
+}
+export interface KeyPoseFitResult {
+  /** Offsets per accepted picture, over the animation's pose on that frame (ADR-033). */
+  keyposes: { frame: number; pose: PoseFitResult["pose"] }[];
+  /** Every key picture's fit; `accepted` is false below the coverage limit. */
+  frames: (PoseFitResult & { frame: number; accepted: boolean })[];
+  /** The zero picture's fit: what the matching reports for a pose the build already shows. */
+  zero?: PoseFitResult & { frame: number };
+}
+
+/**
+ * Fits key poses (ADR-033): each picture is fitted like a rest pose (ADR-024), on the animation's
+ * pose at its frame, so the offsets add to the motion already there. A picture that shows what the
+ * bones cannot (a scaled part, another expression) covers too little and gives no key pose.
+ */
+export function fitKeyPoses(
+  document: unknown,
+  animation: string,
+  pictures: readonly KeyPicture[],
+  image: (path: string) => FitImage,
+  options: KeyPoseFitOptions,
+): KeyPoseFitResult {
+  const fps = options.fps ?? 30,
+    minCoverage = options.minCoverage ?? 0.6;
+  const found = loadSkeleton(document).data.findAnimation(animation);
+  if (!found) throw new Error(`REFERENCE_ANIMATION: no animation ${animation}`);
+  const frames = Math.round(found.duration * fps);
+  const out: KeyPoseFitResult = { keyposes: [], frames: [] };
+  const fit = (picture: KeyPicture, zero?: Record<string, Placement>) => {
+    if (!Number.isInteger(picture.frame) || picture.frame < 0 || picture.frame > frames)
+      throw new Error(`REFERENCE_FRAME: ${animation} has frames 0-${frames}, not ${picture.frame}`);
+    return fitRestPose(document, animation, picture.image, image, {
+      ...options,
+      time: frameTime(picture.frame, frames, found.duration, fps),
+      ...(zero ? { zero } : {}),
+    });
+  };
+  const zeroPicture =
+    options.zeroFrame === undefined
+      ? undefined
+      : pictures.find((p) => p.frame === options.zeroFrame);
+  if (options.zeroFrame !== undefined && !zeroPicture)
+    throw new Error(`REFERENCE_FRAME: no picture on the zero frame ${options.zeroFrame}`);
+  if (zeroPicture) out.zero = { frame: zeroPicture.frame, ...fit(zeroPicture) };
+  for (const picture of [...pictures].sort((a, b) => a.frame - b.frame)) {
+    if (picture === zeroPicture) continue;
+    const fitted = fit(picture, out.zero?.placements);
+    const accepted = fitted.coverage >= minCoverage;
+    out.frames.push({ frame: picture.frame, ...fitted, accepted });
+    if (accepted) out.keyposes.push({ frame: picture.frame, pose: fitted.pose });
+  }
+  return out;
 }
 
 /** Gaussian elimination with partial pivoting (small dense systems). */
