@@ -99,7 +99,9 @@ import { failStage } from "@autospine/rig";
  * The idle cycle length is measured too. In four blind tests (2026-10-13) hand-made idle loops
  * turned around once per 1.0-2.4 s cycle: pig 2.4 s, panda 1.0 and 1.17 s, Yuuna 2.0 s in all four
  * of its loops (two breaths in 4 s), mummy cat body 1.0 s. A brief that assumed one cycle per 4 s
- * loop missed the artist turnarounds; `LOOP_CYCLE_SECONDS` = 2 s is the median.
+ * loop missed the artist turnarounds; `LOOP_CYCLE_SECONDS` = 2 s is the median. The 2026-10 batch
+ * (ADR-032, 8 idles, 7 arts) measured 0.97-3.0 s, median 2.33 s: the median stays, the range grows
+ * to 3 s (one 90-frame idle breathes once).
  */
 const fail: (code: string, reason: string) => never = (code, reason) =>
   failStage("animation", code, reason);
@@ -113,7 +115,7 @@ const LAG_SECONDS_PER_LEVEL = 2 / 30;
 /** Median cycle length of hand-made idle loops; measured, see "Constants". */
 export const LOOP_CYCLE_SECONDS = 2;
 /** Range of idle cycle lengths seen in hand-made loops (seconds). */
-export const LOOP_CYCLE_RANGE_SECONDS: readonly [number, number] = [1, 2.4];
+export const LOOP_CYCLE_RANGE_SECONDS: readonly [number, number] = [1, 3];
 /** Share of one readable unit U per phase kind; see the file header for the derivation. */
 const LADDER: Record<MotionPhaseKind, number> = {
   anticipation: 1 / 2,
@@ -412,7 +414,7 @@ export interface BriefWarning {
  * Structural checks a brief writer cannot see in the planner output. Today: a loop whose cycle
  * length falls outside the measured range of hand-made idles (`LOOP_CYCLE_RANGE_SECONDS`). One
  * cycle is one `travel` phase per repetition; a loop without travel (a still `hold`) is not checked.
- * Warnings are advice from five hand-made characters, not a rule of the format.
+ * Warnings are advice from the measured idles (ADR-019, ADR-032), not a rule of the format.
  */
 export function reviewMotionBrief(brief: MotionBrief): { warnings: BriefWarning[] } {
   const plan = planBeats(brief),

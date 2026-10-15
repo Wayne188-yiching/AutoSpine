@@ -396,7 +396,25 @@ export function buildMotionSpecs(
       });
     for (const f of motion.follow ?? []) {
       controls.push(control(f));
-      follow(f.id, followGain(f), n(f.lag, `${f.id}.lag`));
+      if (f.channel !== "translate") {
+        follow(f.id, followGain(f), n(f.lag, `${f.id}.lag`));
+        continue;
+      }
+      // ADR-032: a translate follow moves its bone `gain` times the main's offset, `lag` frames
+      // later (a head that travels further than the hips and trails them).
+      if (f.gain === undefined || f.travel !== undefined || main.channel !== "translate")
+        failStage(
+          "animation",
+          "PLAN_MOTION_FOLLOW",
+          `${f.id}: a translate follow needs gain (no travel) and a translate main`,
+        );
+      rules.push({
+        rule: "follow",
+        control: f.id,
+        source: main.id,
+        gain: +n(f.gain!, `${f.id}.gain`).toFixed(4),
+        lag: Math.round(n(f.lag, `${f.id}.lag`)),
+      });
     }
     // ---- secondary cycles
     for (const cy of motion.cycles ?? []) {

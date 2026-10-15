@@ -6,6 +6,7 @@ export * from "./curves.js";
 export * from "./sampling.js";
 export * from "./beats.js";
 export * from "./keyposes.js";
+export * from "./priors.js";
 export function generateWave(rig: RigSpec, wave: BuildJob["wave"]): AnimationSpec {
   const { duration, fps, amplitudeDegrees, phaseDegrees } = wave;
   if (
