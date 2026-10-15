@@ -491,6 +491,7 @@ function safeFailure(error: unknown) {
     artistQualityAccepted: false,
   };
 }
+export { chooseWorkspace, type WorkspaceChoice } from "./workspace.js";
 export class AutoSpineMcpServer {
   private initialized = false;
   private ready = false;
@@ -607,6 +608,8 @@ export class AutoSpineMcpServer {
           }
           return result({
             status,
+            // Plans, images-only inputs, artist files and outputs must sit inside this folder.
+            workspace: this.workspace,
             capabilities: {
               profile: "chain-wave",
               inMemoryCharacterCompilation:

@@ -1,0 +1,15 @@
+{
+  "name": "autospine",
+  "owner": { "name": "IGS RD8" },
+  "metadata": {
+    "description": "AutoSpine: Spine 4.0 rigging and animation from images-only Spine files."
+  },
+  "plugins": [
+    {
+      "name": "autospine",
+      "source": "./plugin",
+      "description": "Rig and animate Spine 4.0 characters from an images-only Spine file, with a review video, handover notes and an optional artist comparison.",
+      "version": "0.1.0"
+    }
+  ]
+}

@@ -4,3 +4,7 @@ docs/reviews/GATE_3_2_DESIGN_REQUEST.json -text
 docs/reviews/GATE_3_2_STRUCTURE_REQUEST.json -text
 docs/reviews/GATE_4_PRECISION_REQUEST.json -text
 docs/reviews/gate-4-resume/chain-rig.json -text
+# Generated plugin files are compared byte for byte by tools/build-plugin.mjs --check.
+plugin/skills/autospine/scripts/** -text
+plugin/skills/autospine/references/** -text
+plugin/skills/autospine/assets/** -text

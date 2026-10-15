@@ -1,0 +1,16 @@
+{
+  "name": "autospine",
+  "version": "0.1.0",
+  "description": "Rig and animate Spine 4.0 characters from an images-only Spine file: bones, meshes, weights, constraints, motion, a review video and handover notes, with an optional comparison against the artist's version. The engine is bundled; it needs Node.js 22.12 or later.",
+  "author": { "name": "IGS RD8" },
+  "repository": "https://github.com/Wayne188-yiching/AutoSpine",
+  "skills": "./skills/",
+  "mcpServers": "./.codex-mcp.json",
+  "interface": {
+    "displayName": "AutoSpine",
+    "shortDescription": "Spine 4.0 rigs and animation from images-only Spine files",
+    "developerName": "IGS RD8",
+    "category": "Productivity",
+    "defaultPrompt": "用 autospine 把 <角色.spine> 的 idle 做成 2 秒呼吸"
+  }
+}
