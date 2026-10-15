@@ -56,6 +56,8 @@ export function boneRoles(rigging: CharacterRigging): Map<string, BoneRole> {
     ...motions(plan).flatMap((m) =>
       (m.sink ?? []).flatMap((s) => (s.kind === "squash" ? [s.bone] : [])),
     ),
+    // A keyed bone over the whole (a one-shot's `move`, ADR-030/031) carries no image either.
+    ...(plan.motion.keyed ?? []).map((k) => k.bone).filter((id) => id !== "root"),
   ])
     if (!carries.has(id)) roles.set(id, "control");
   for (const m of motions(plan)) roles.set(m.main.bone, "main");
@@ -97,7 +99,8 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
   add("| --- | --- | --- |");
   const purpose: Record<BoneRole, string> = {
     main: "動作的主控：呼吸、下沉的位移都打在這裡",
-    control: "沒有圖片，只用來驅動：臉部視差（face_ctl 等）、IK 目標、壓縮腿部的站姿骨",
+    control:
+      "沒有圖片，只用來驅動：臉部視差（face_ctl 等）、IK 目標、壓縮腿部的站姿骨、單次動畫的整體位移與縮放（move）",
     follower: "臉部五官與 2.5D 圖層，透過 transform 約束跟著臉部控制骨；`*_frame` 是對齊方向的載體",
     chain: "頭髮、尾巴、耳朵、鬍子、吊飾等軟部件的骨鏈，擺動打在這些骨的旋轉上",
     joint: "身體關節：軀幹、頸、頭、四肢、手指",

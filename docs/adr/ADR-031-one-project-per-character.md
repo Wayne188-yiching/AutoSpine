@@ -22,6 +22,8 @@ Decision:
   - Everything else that clashes is listed (`PLAN_MERGE`) and nothing is written.
 - One-shots of one character share one pivot: the base plan's `ground` joint, else the box of every placed image. Pivots computed from each one-shot's shown parts do not merge.
 - Animation names may hold Spine folders (`History/_Look`). Build and comparison file names keep safe characters only.
+- The Spine compiler takes one attachment, colour or deform timeline per animation and slot: up to 32768 (64 animations × 512 slots) instead of 512. Its input error names the first invalid path.
+- The handover notes list a keyed bone without images (`move`) as a control bone (red).
 
 Evidence:
 
@@ -33,6 +35,12 @@ Evidence:
   - Ten plans merge into one plan, one build of 48 bones with 10 animations.
   - Each animation scores against the artist exactly as its own blind build did.
   - The official 4.0.64 editor CLI imports it into a `.spine` project and exports it back. Bones, slots and animations are kept, and drawn vertices differ by at most 0.10 px.
+
+- All batch characters (private, local), one project each:
+  - wolf (10 animations), BuddhaEX (13), eagle, jaguar, moose (3 each), the two walking wolves (6 each), trophies, soccer ball, logo, Award, the effects files.
+  - Every round trip keeps bones, slots and animations; drawn vertices differ by at most 0.13 px.
+  - BuddhaEX first failed to build: its 13 animations needed more than 512 attachment timelines.
+- `tests/key-curves.test.ts`: 600 colour timelines (12 slots × 50 animations) compile; an invalid input names its path.
 
 Consequences:
 

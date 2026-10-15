@@ -103,7 +103,8 @@ export const CharacterSpineInputSchema = Type.Object(
           },
           strict,
         ),
-        { maxItems: 512 },
+        // One timeline per animation and slot: 64 animations x 512 slots (one project per character).
+        { maxItems: 32768 },
       ),
     ),
     colorTimelines: Type.Optional(
@@ -122,7 +123,8 @@ export const CharacterSpineInputSchema = Type.Object(
           },
           strict,
         ),
-        { maxItems: 512 },
+        // One timeline per animation and slot: 64 animations x 512 slots (one project per character).
+        { maxItems: 32768 },
       ),
     ),
     deformTimelines: Type.Optional(
@@ -146,7 +148,8 @@ export const CharacterSpineInputSchema = Type.Object(
           },
           strict,
         ),
-        { maxItems: 512 },
+        // One timeline per animation and slot: 64 animations x 512 slots (one project per character).
+        { maxItems: 32768 },
       ),
     ),
     ik: Type.Optional(
@@ -203,7 +206,8 @@ export type CharacterSpineInput = Static<typeof CharacterSpineInputSchema>;
 /** Explicit multi-part adapter. Geometry, weights and motion remain engine IR inputs. */
 export function compileCharacterSpine40(input: CharacterSpineInput) {
   const fail = (reason: string): never => failStage("spine", "SPINE_CHARACTER", reason);
-  if (!Value.Check(CharacterSpineInputSchema, input)) fail("Strict character input required");
+  const invalid = Value.Errors(CharacterSpineInputSchema, input).First();
+  if (invalid) fail(`Strict character input required: ${invalid.path || "/"}: ${invalid.message}`);
   const { rig, slots, animations } = input;
   const bones = orderBones(rig.bones),
     byId = new Map(bones.map((b) => [b.id, b]));
