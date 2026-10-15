@@ -82,7 +82,15 @@ Work on copies. Never write into original artwork folders or an open Spine proje
 
    Then build and compare again. The search only moves parameters listed in `motion.search`. Results tuned against the artist version are **benchmark-tuned**, not blind; say so when reporting.
 
-8. **Hand off**: import into the Spine editor (A5) and get an artist's review (E). Numeric acceptance is not artistic approval.
+8. **Deliver** into the requester's folder:
+
+   ```text
+   node packages/cli/dist/index.js deliver work/plan.json work/build-1 <delivery-dir> [artist.json] --name=<Name> --images=<original images>
+   ```
+
+   The delivery folder gets exactly `<Name>.spine` (imported with the Spine 4.0.64 command line, its images path pointing at `--images` relative to the project) and `<Name>.mp4` (the review video, artist | build when an artist file is given). Working files stay in `work/`. Without the editor (`--spine`, `AUTOSPINE_SPINE` or the standard install) it writes `<Name>.json` for Import Data. Delivering again needs `--replace`, which moves the old files into the build folder; a project saved after its video (edited in Spine) stops with `CLI_DELIVER_EDITED` unless `--force`.
+
+9. **Hand off**: open the delivered project in the Spine editor (A5) and get an artist's review (E). Numeric acceptance is not artistic approval.
 
 ## Plan reference
 

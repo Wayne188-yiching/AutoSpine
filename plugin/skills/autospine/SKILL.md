@@ -22,7 +22,7 @@ Use whichever is available, in this order:
 
 Run the engine where the files are. If you reach the requester's files only through a file bridge (a cloud session linked to their computer), copy the inputs into your own working folder, run there, and copy the outputs back to a new folder beside the inputs.
 
-Check the install once when it is new or failing: copy `<skill>/assets/example/` to a new folder and run `lint-plan plan.json` then `build-character plan.json build`. It must print a summary with `"bones":20` and `"setupDeviationPx"` below 0.5.
+Check the install once when it is new or failing: copy `<skill>/assets/example/` to a new folder under `~/AutoSpine/` and run `lint-plan plan.json` then `build-character plan.json build`. It must print a summary with `"bones":20` and `"setupDeviationPx"` below 0.5.
 
 The references and the user guide write commands as `node <skill>/scripts/autospine.mjs`; MCP tool names are given beside them in [the plan runbook](references/character-plan.md).
 
@@ -41,14 +41,19 @@ Ask only for what is missing, in one message:
 
 Without a brief, the defaults are a light breath for characters and a small sway for props.
 
-## 3. Work on copies
+## 3. Folders: work folder and delivery folder
 
-Never write into the original art folder or into a Spine project open with unsaved edits. Make a new job folder (inside the MCP workspace when using MCP), e.g. `<workspace>/<character>/<yyyy-mm-dd>/`, and copy the inputs there. Every build and comparison goes into a new output folder; the engine refuses existing ones.
+The requester wants only two files back: the Spine project and its video. Keep everything else out of their folders.
 
-A `.spine` project is exported to JSON with the Spine 4.0.64 command line (`Spine.com` on Windows, usually `C:\Program Files\Spine\Spine.com`; `/Applications/Spine.app/Contents/MacOS/Spine` on macOS):
+- **Work folder** — every working file: copied inputs, `imagesOnly.json`, plans and their versions, builds, comparisons, pose fits, optimiser state, test videos, scratch notes. Use `~/AutoSpine/<character>/<animation or date>/` (inside the MCP workspace, so MCP tools can reach it). Never put a working file in the requester's folders. Edit `plan.json` in place rather than writing helper scripts; if you need a script, it goes in the work folder too.
+- **Delivery folder** — the folder the requester named for the result, otherwise `AutoSpine/` beside their `.spine` file. Only the `deliver` command writes there, and it writes exactly `<name>.spine` and `<name>.mp4` (step 5).
+- Never write into the original art folder, and never touch a Spine project that is open with unsaved edits.
+- Every build and comparison goes into a new folder inside the work folder; the engine refuses existing ones.
+
+A `.spine` project is exported to JSON (into the work folder) with the Spine 4.0.64 command line (`Spine.com` on Windows, usually `C:\Program Files\Spine\Spine.com`; `/Applications/Spine.app/Contents/MacOS/Spine` on macOS):
 
 ```text
-"<Spine.com>" -u 4.0.64 -i <project.spine> -o <job>/export -e <skill>/assets/spine-export-json.json
+"<Spine.com>" -u 4.0.64 -i <project.spine> -o <work>/export -e <skill>/assets/spine-export-json.json
 ```
 
 If Spine is not installed where you run, ask the requester to export JSON from Spine (File › Export, JSON, nonessential data on) and send it with its images.
@@ -57,28 +62,37 @@ If Spine is not installed where you run, ask the requester to export JSON from S
 
 Follow [the plan runbook](references/character-plan.md); the short form:
 
-1. `strip-images <artist.json> <images> <job>/imagesOnly.json` — keep placements only. Check `summary.over2px` is empty.
+1. `strip-images <artist.json> <images> <work>/imagesOnly.json` — keep placements only. Check `summary.over2px` is empty.
 2. **Write the plan** (`plan.json` beside it). Start from a previous character's plan or `<skill>/assets/example/plan.json`. Part names are slot names (`slot#attachment` for non-setup attachments). Lay out the skeleton by the template in [the engine pipeline](references/engine-pipeline.md): every bone from its joint to the next, soft strands and ornaments as chains, mesh every shown part (`meshing: { all: true }`). Start motion from the measured priors there, not guesses; the brief and references override them.
 3. `lint-plan plan.json` (`autospine_lint_character_plan`) until it reports no errors.
-4. `build-character plan.json <job>/build-1` (`autospine_build_character`). Check `setupDeviationPx` ≤ 0.5 in `build-record.json`.
-5. Pose pictures: `fit-pose plan.json <job>/build-1 pose.png pose.json` for a rest pose; `fit-pose plan.json <job>/build-1 0=f00.png 14=f14.png ... keyposes.json --animation=<name> --zero=0` for one-shot key poses (`autospine_fit_pose`). Put the result in the plan, build again into a new folder. Pictures with coverage below 0.6 are not used; say which.
-6. `review-video plan.json <build> [artist.json] <job>/review.mp4` (`autospine_review_video`, needs ffmpeg). Always make it: wireframe, then bones, then plain motion; artist on the left when given.
-7. With an artist version: `compare-reference plan.json <build> artist.json <job>/compare-1` (`autospine_compare_reference`). If D1/D2 fail, `optimize-motion plan.json artist.json <job>/opt --budget=150` (`autospine_optimize_motion`; exit 3 means run it again to resume), then build with `--params=<job>/opt/best-params.json`.
-8. Several animations of one character: plan them apart if easier, then `merge-plans <job>/plan-all.json plan-a.json plan-b.json ...` (`autospine_merge_plans`) and build once, so the artist gets **one project per character**.
-9. Optional editable project: `"<Spine.com>" -u 4.0.64 -i <build>/<name>.json -o <job>/<name>.spine -r`.
+4. `build-character plan.json <work>/build-1` (`autospine_build_character`). Check `setupDeviationPx` ≤ 0.5 in `build-record.json`.
+5. Pose pictures: `fit-pose plan.json <work>/build-1 pose.png pose.json` for a rest pose; `fit-pose plan.json <work>/build-1 0=f00.png 14=f14.png ... keyposes.json --animation=<name> --zero=0` for one-shot key poses (`autospine_fit_pose`). Put the result in the plan, build again into a new folder. Pictures with coverage below 0.6 are not used; say which.
+6. Check your work with `review-video plan.json <build> [artist.json] <work>/check.mp4` (`autospine_review_video`, needs ffmpeg) when you need to look at it yourself; the requester's video comes from `deliver`.
+7. With an artist version: `compare-reference plan.json <build> artist.json <work>/compare-1` (`autospine_compare_reference`). If D1/D2 fail, `optimize-motion plan.json artist.json <work>/opt --budget=150` (`autospine_optimize_motion`; exit 3 means run it again to resume), then build with `--params=<work>/opt/best-params.json`.
+8. Several animations of one character: plan them apart if easier, then `merge-plans <work>/plan-all.json plan-a.json plan-b.json ...` (`autospine_merge_plans`) and build once, so the artist gets **one project per character**.
 
 When a step fails, read its error code and fix the plan; the [pitfalls list](references/character-plan.md#pitfalls-seen-so-far) covers the common ones. Do not edit the engine's output JSON by hand.
 
-## 5. Hand over
+## 5. Deliver
 
-Give the requester, with paths:
+Deliver with the command line (the MCP tools cannot write outside their workspace):
 
-- The Spine JSON and its `images/` (Spine › Import Data), or the `.spine` project.
-- `review.mp4`, and say what to look at.
-- `HANDOVER.md`: bones by role (blue main, red control, orange face followers, green chains), constraints, what each animation keys, where to edit.
+```text
+node <skill>/scripts/autospine.mjs deliver <work>/plan.json <work>/build-N "<delivery folder>" [<artist.json>] --name=<Name> --images="<original images folder>"
+```
+
+- It writes only `<Name>.spine` and `<Name>.mp4` into the delivery folder. The video plays every animation as wireframe, bones, then plain motion; artist | AutoSpine side by side when an artist file is given.
+- `--images` is the requester's own images folder (the one beside their `.spine`), so the project shows the art without a copy. Use `--name` for a readable file name such as `RedRobedReindeer`; one project per character holds every animation.
+- Spine's command line is found at the standard install path, or pass `--spine=<path>`. Without Spine it delivers `<Name>.json` instead, for Spine › Import Data; say so.
+- Delivering again needs `--replace`; the previous files move into the build folder, not the bin. If it stops with `CLI_DELIVER_EDITED`, the requester has saved the project in Spine since the last delivery: ask before passing `--force`, because their hand edits would be replaced.
+
+Then tell the requester, in the chat (not as files):
+
+- Where the two files are, and what to look at in the video.
+- The rig in a few lines from `HANDOVER.md` in the build folder: bones by role (blue main, red control, orange face followers, green chains), constraints, what each animation keys. Offer the full notes if they want them.
 - With an artist version, the A–D results as PASS/FAIL lines (A placement and loops, B mesh folds and seams, C parts that should move, D timing and size against the artist). All PASS only means the numbers are close; the video decides. Results tuned against the artist are **benchmark-tuned**, not blind.
 
-Then ask what to change. Feedback such as "the cane should follow the hand" or "sway the tree more" goes into the plan; rebuild into a new folder and send a new video. Hand edits in Spine are not written back to the plan, so the last 5–10 % of polishing is done in Spine after the plan is final.
+Then ask what to change. Feedback such as "the cane should follow the hand" or "sway the tree more" goes into the plan; rebuild in the work folder and deliver again with `--replace`. Hand edits in Spine are not written back to the plan, so the last 5–10 % of polishing is done in Spine after the plan is final.
 
 ## 6. Limits
 

@@ -19335,7 +19335,7 @@ var require_dist = __commonJS({
 
 // packages/cli/dist/index.js
 import { readFile as readFile4, writeFile as writeFile3 } from "node:fs/promises";
-import { basename as basename3, dirname as dirname4, extname as extname2, resolve as resolve4 } from "node:path";
+import { basename as basename4, dirname as dirname4, extname as extname2, resolve as resolve4 } from "node:path";
 
 // packages/cli/dist/build.js
 import { lstat, mkdir, mkdtemp, readFile as readFile2, rename, stat, writeFile } from "node:fs/promises";
@@ -32489,8 +32489,8 @@ var import_pngjs2 = __toESM(require_png(), 1);
 import { createHash as createHash2 } from "node:crypto";
 import { spawn } from "node:child_process";
 import { existsSync as existsSync2, readFileSync as readFileSync2 } from "node:fs";
-import { copyFile, mkdir as mkdir2, readFile as readFile3, writeFile as writeFile2, stat as stat2 } from "node:fs/promises";
-import { dirname as dirname3, join as join2, relative as relative3, resolve as resolve3, sep } from "node:path";
+import { copyFile, mkdir as mkdir2, readFile as readFile3, rename as rename2, rm, writeFile as writeFile2, stat as stat2 } from "node:fs/promises";
+import { basename as basename3, dirname as dirname3, isAbsolute as isAbsolute3, join as join2, relative as relative3, resolve as resolve3, sep } from "node:path";
 
 // packages/character/src/geometry.ts
 var apply = (m, p) => [
@@ -37959,6 +37959,119 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
     animations: plan.motion.animations.map((a) => a.name)
   };
 }
+var safeFileName = (name) => [...name].map((c) => /[\\/:*?"<>|]/.test(c) || c.charCodeAt(0) < 32 ? "_" : c).join("").trim() || "character";
+var stamp = () => (/* @__PURE__ */ new Date()).toISOString().replace(/[:.]/g, "-").slice(0, 19);
+async function moveFile(from, to) {
+  try {
+    await rename2(from, to);
+  } catch {
+    await copyFile(from, to);
+    await rm(from, { force: true });
+  }
+}
+function spineExecutable(explicit) {
+  if (explicit) {
+    if (!existsSync2(explicit))
+      throw new Error(`CLI_SPINE: ${explicit} not found`);
+    return explicit;
+  }
+  const candidates = [
+    process.env.AUTOSPINE_SPINE,
+    process.platform === "win32" ? "C:\\Program Files\\Spine\\Spine.com" : void 0,
+    process.platform === "darwin" ? "/Applications/Spine.app/Contents/MacOS/Spine" : void 0
+  ];
+  return candidates.find((c) => !!c && existsSync2(c));
+}
+function imagesReference(from, images) {
+  const rel = relative3(from, images);
+  if (isAbsolute3(rel))
+    return images.split(sep).join("/") + "/";
+  const posix = rel.split(sep).join("/");
+  return (posix === "" ? "." : posix.startsWith(".") ? posix : `./${posix}`) + "/";
+}
+function runSpine(exe, args) {
+  return new Promise((ok) => {
+    let output = "";
+    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"] });
+    const timer = setTimeout(() => child.kill(), 10 * 6e4);
+    child.stdout.on("data", (d) => output += d.toString());
+    child.stderr.on("data", (d) => output += d.toString());
+    child.on("error", (e) => {
+      clearTimeout(timer);
+      ok({ code: -1, output: e.message });
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      ok({ code: code ?? -1, output });
+    });
+  });
+}
+async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = {}) {
+  const plan = await readPlan(planPath);
+  const name = safeFileName(opts.name ?? plan.id);
+  const images = resolve3(opts.images ?? planPaths(planPath, plan).images);
+  if (!await exists(images))
+    throw new Error(`CLI_DELIVER_IMAGES: ${images} not found`);
+  const document2 = JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8"));
+  const out = resolve3(deliveryDir);
+  const target = {
+    spine: join2(out, `${name}.spine`),
+    json: join2(out, `${name}.json`),
+    video: join2(out, `${name}.mp4`)
+  };
+  const present = Object.values(target).filter((p) => existsSync2(p));
+  if (present.length && !opts.replace)
+    throw new Error(`CLI_OUTPUT_EXISTS: ${present.join(", ")} already delivered; pass --replace to swap in this build (the old files move into the build folder)`);
+  if (present.length && !opts.force && existsSync2(target.spine) && existsSync2(target.video)) {
+    const [project2, video] = await Promise.all([stat2(target.spine), stat2(target.video)]);
+    if (project2.mtimeMs > video.mtimeMs + 12e4)
+      throw new Error(`CLI_DELIVER_EDITED: ${target.spine} was saved after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`);
+  }
+  let staged;
+  if (opts.video !== false) {
+    staged = join2(resolve3(buildDir), `delivery-${stamp()}.mp4`);
+    await reviewVideoFiles(planPath, buildDir, artistPath, staged);
+  }
+  let replaced;
+  if (present.length) {
+    replaced = join2(resolve3(buildDir), `replaced-${stamp()}`);
+    await mkdir2(replaced, { recursive: true });
+    for (const p of present)
+      await moveFile(p, join2(replaced, basename3(p)));
+  }
+  await mkdir2(out, { recursive: true });
+  document2.skeleton = { ...document2.skeleton, images: imagesReference(out, images) };
+  const result = {
+    spine: null,
+    json: null,
+    video: null,
+    images: String(document2.skeleton.images),
+    replaced: replaced ?? null
+  };
+  const exe = spineExecutable(opts.spine);
+  if (exe) {
+    const temp = join2(out, `.${name}.autospine-import.json`);
+    await writeFile2(temp, JSON.stringify(document2));
+    try {
+      const run = await runSpine(exe, ["-u", "4.0.64", "-i", temp, "-o", target.spine, "-r", name]);
+      if (run.code === 0 && existsSync2(target.spine))
+        result.spine = target.spine;
+      else
+        result.spineError = `Spine exited ${run.code}: ${run.output.trim().slice(-600)}`;
+    } finally {
+      await rm(temp, { force: true });
+    }
+  }
+  if (!result.spine) {
+    await writeFile2(target.json, json(document2));
+    result.json = target.json;
+  }
+  if (staged) {
+    await moveFile(staged, target.video);
+    result.video = target.video;
+  }
+  return result;
+}
 
 // packages/cli/dist/index.js
 var usage = "Usage: autospine <compile-minimal|parse-png|parse-psd|mesh-png|mesh-asset|rig-chain> <input> <output.json> [manifest.json|part-id|cleanup-fraction] [cleanup-fraction] [--intent=rigid|chain|unknown] [--reference-profile=profile.json]";
@@ -37997,7 +38110,8 @@ var characterUsage = `Character commands (ADR-017):
   autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
-  autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]`;
+  autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
+  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video]`;
 async function characterCommand(args) {
   const flags = new Map(args.filter((a) => a.startsWith("--")).map((a) => [a.slice(2).split("=")[0], a.split("=").slice(1).join("=")]));
   const p = args.filter((a) => !a.startsWith("--"));
@@ -38081,6 +38195,21 @@ ${characterUsage}`);
         font: flags.get("font")
       };
       console.log(JSON.stringify(await reviewVideoFiles(p[1], p[2], p.length === 5 ? p[3] : void 0, p.at(-1), Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== void 0)))));
+      return true;
+    }
+    case "deliver": {
+      if (p.length !== 4 && p.length !== 5)
+        throw new Error(characterUsage);
+      known("name", "images", "spine", "replace", "force", "no-video");
+      const opts = {
+        name: flags.get("name") || void 0,
+        images: flags.get("images") || void 0,
+        spine: flags.get("spine") || void 0,
+        replace: flags.has("replace"),
+        force: flags.has("force"),
+        video: !flags.has("no-video")
+      };
+      console.log(JSON.stringify(await deliverFiles(p[1], p[2], p[3], p[4], opts)));
       return true;
     }
     case "merge-plans": {
@@ -38169,7 +38298,7 @@ async function main() {
     if (manifestPath && resolve4(manifestPath) === resolve4(destination))
       throw new Error("Output path must not overwrite the input manifest");
     const manifest = manifestPath ? JSON.parse(await readFile4(manifestPath, "utf8")) : void 0;
-    const name = basename3(resolve4(source));
+    const name = basename4(resolve4(source));
     const asset = await parsePngParts(source, { id: name, name, manifest });
     await writeFile3(destination, `${JSON.stringify(asset, null, 2)}
 `, {
@@ -38179,11 +38308,11 @@ async function main() {
     return;
   }
   if (command === "parse-psd" && !manifestPath && !extra) {
-    const name = basename3(source, extname2(source));
+    const name = basename4(source, extname2(source));
     const asset = parsePsd(await readFile4(source), {
       id: name,
       name,
-      sourcePath: basename3(source)
+      sourcePath: basename4(source)
     });
     await writeFile3(destination, `${JSON.stringify(asset, null, 2)}
 `, {
@@ -38193,18 +38322,18 @@ async function main() {
     return;
   }
   if (command === "mesh-png" && !extra) {
-    const name = basename3(source, extname2(source));
+    const name = basename4(source, extname2(source));
     const header = await readFile4(source);
     if (header.length < 24)
       throw new Error("Input PNG header is incomplete");
     const asset = await parsePngParts(dirname4(source), {
       id: name,
       name,
-      sourcePath: basename3(source),
+      sourcePath: basename4(source),
       manifest: {
         width: header.readUInt32BE(16),
         height: header.readUInt32BE(20),
-        parts: [{ id: name, name, file: basename3(source), x: 0, y: 0, drawOrder: 0 }]
+        parts: [{ id: name, name, file: basename4(source), x: 0, y: 0, drawOrder: 0 }]
       }
     });
     await writeMesh(asset.parts[0], destination, manifestPath, meshOptions);
