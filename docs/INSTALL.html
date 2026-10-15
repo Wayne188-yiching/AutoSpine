@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>AutoSpine 安裝指南</title>
+    <meta name="claude:viewport-fit-sides" content="cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap"
+    />
+    <style>
+      /* Layout: one reading column (46rem); steps are real sequences, commands are copyable blocks.
+     Accent colours are Spine bone roles as AutoSpine colours them (main, control, face, chain). */
+      :root {
+        --bg: #f5f7fa;
+        --surface: #ffffff;
+        --fg: #17202b;
+        --muted: #586473;
+        --line: #dbe1e8;
+        --code-bg: #edf1f6;
+        --accent: #2f6bd0;
+        --bone-main: #3a78d8;
+        --bone-ctl: #cf4038;
+        --bone-face: #d9821a;
+        --bone-chain: #2f9a52;
+        --note-bg: #eef4fd;
+        --warn-bg: #fdf3e6;
+        --font-display: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+        --font-body: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif;
+        --font-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, "Microsoft JhengHei", monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #10151c;
+          --surface: #171f29;
+          --fg: #e5eaf0;
+          --muted: #9ba6b4;
+          --line: #2a3542;
+          --code-bg: #0c1117;
+          --accent: #74a6f2;
+          --bone-main: #6a9ff0;
+          --bone-ctl: #ec6c63;
+          --bone-face: #f0a347;
+          --bone-chain: #5cc27f;
+          --note-bg: #16233a;
+          --warn-bg: #2d2416;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #10151c;
+        --surface: #171f29;
+        --fg: #e5eaf0;
+        --muted: #9ba6b4;
+        --line: #2a3542;
+        --code-bg: #0c1117;
+        --accent: #74a6f2;
+        --bone-main: #6a9ff0;
+        --bone-ctl: #ec6c63;
+        --bone-face: #f0a347;
+        --bone-chain: #5cc27f;
+        --note-bg: #16233a;
+        --warn-bg: #2d2416;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.75;
+      }
+      .page {
+        max-width: 50rem;
+        margin: 0 auto;
+        padding-block: 40px 72px;
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+        display: grid;
+        gap: 44px;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: var(--font-display);
+        text-wrap: balance;
+        line-height: 1.3;
+        margin: 0;
+      }
+      h1 {
+        font-size: 2.1rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      h3 {
+        font-size: 1.08rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0;
+      }
+      a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        background: var(--code-bg);
+        padding: 1px 6px;
+        border-radius: 4px;
+        overflow-wrap: anywhere;
+      }
+      .muted {
+        color: var(--muted);
+      }
+
+      header {
+        display: grid;
+        gap: 14px;
+      }
+      .eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+      .lead {
+        font-size: 1.12rem;
+        max-width: 40rem;
+      }
+      .facts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .facts b {
+        color: var(--fg);
+        font-weight: 500;
+      }
+
+      .bones {
+        display: grid;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .bones-bar {
+        display: grid;
+        grid-template-columns: 4fr 1.2fr 1.5fr 2.3fr;
+        height: 6px;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .bones-bar span:nth-child(1) {
+        background: var(--bone-main);
+      }
+      .bones-bar span:nth-child(2) {
+        background: var(--bone-ctl);
+      }
+      .bones-bar span:nth-child(3) {
+        background: var(--bone-face);
+      }
+      .bones-bar span:nth-child(4) {
+        background: var(--bone-chain);
+      }
+      .bones-key {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 16px;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .bones-key i {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 2px;
+        margin-right: 6px;
+        vertical-align: 0;
+      }
+
+      nav.jump {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      nav.jump a {
+        font-size: 0.9rem;
+        text-decoration: none;
+        color: var(--fg);
+        border: 1px solid var(--line);
+        background: var(--surface);
+        padding: 4px 12px;
+        border-radius: 999px;
+      }
+      nav.jump a:hover {
+        border-color: var(--accent);
+      }
+
+      section {
+        display: grid;
+        gap: 18px;
+        scroll-margin-top: 16px;
+      }
+      .section-head {
+        display: grid;
+        gap: 6px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 10px;
+      }
+
+      .reqs {
+        display: grid;
+        gap: 0;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .req {
+        display: grid;
+        grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+        gap: 4px 20px;
+        padding: 14px 18px;
+        border-top: 1px solid var(--line);
+      }
+      .req:first-child {
+        border-top: 0;
+      }
+      .req-name {
+        font-weight: 700;
+        display: grid;
+        gap: 2px;
+        align-content: start;
+      }
+      .tag {
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+      .tag.must {
+        color: var(--bone-ctl);
+      }
+      .req-body {
+        display: grid;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .host {
+        display: grid;
+        gap: 14px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+      }
+      .host-title {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 6px 12px;
+      }
+      .host-title .muted {
+        font-size: 0.9rem;
+      }
+      ol.steps {
+        margin: 0;
+        padding-left: 1.4em;
+        display: grid;
+        gap: 10px;
+      }
+      ol.steps li {
+        padding-left: 4px;
+      }
+      ol.steps li::marker {
+        font-family: var(--font-mono);
+        color: var(--muted);
+      }
+      ul.plain {
+        margin: 0;
+        padding-left: 1.2em;
+        display: grid;
+        gap: 6px;
+      }
+
+      .cmd {
+        position: relative;
+        display: grid;
+        min-width: 0;
+      }
+      .cmd pre {
+        margin: 0;
+        background: var(--code-bg);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 84px 12px 14px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font-family: var(--font-mono);
+        font-size: 0.86rem;
+        line-height: 1.6;
+        color: var(--fg);
+      }
+      .cmd button {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font: inherit;
+        font-size: 0.78rem;
+        padding: 3px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        color: var(--fg);
+        cursor: pointer;
+      }
+      .cmd button:hover {
+        border-color: var(--accent);
+      }
+
+      .note {
+        background: var(--note-bg);
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.94rem;
+        display: grid;
+        gap: 6px;
+      }
+      .note.warn {
+        background: var(--warn-bg);
+      }
+
+      .trouble {
+        display: grid;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .trouble > div {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+        gap: 4px 20px;
+        padding: 12px 18px;
+        border-top: 1px solid var(--line);
+      }
+      .trouble > div:first-child {
+        border-top: 0;
+      }
+      .trouble dt {
+        font-weight: 500;
+        margin: 0;
+      }
+      .trouble dd {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      footer {
+        font-size: 0.85rem;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+      }
+
+      @media (max-width: 560px) {
+        h1 {
+          font-size: 1.7rem;
+        }
+        .req,
+        .trouble > div {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .host {
+          padding: 16px;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        html {
+          scroll-behavior: smooth;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="eyebrow">AutoSpine · 研八 RD8</div>
+        <h1>AutoSpine 安裝指南</h1>
+        <p class="lead">
+          每台電腦裝一次。之後在 Claude Code、Cowork 或 Codex 的任何對話，說一句「用 autospine
+          把⋯⋯做成⋯⋯」就會開始建骨架、網格、權重和動作。
+        </p>
+        <div class="facts">
+          <span>外掛 <b>0.1.0</b></span>
+          <span>Spine <b>4.0.64</b></span>
+          <span>Node.js <b>22.12+</b></span>
+          <span>工作資料夾 <b>使用者資料夾\AutoSpine</b></span>
+        </div>
+        <div class="bones" aria-label="AutoSpine 交付的骨頭顏色">
+          <div class="bones-bar" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="bones-key">
+            <span><i style="background: var(--bone-main)"></i>主骨</span>
+            <span><i style="background: var(--bone-ctl)"></i>控制骨</span>
+            <span><i style="background: var(--bone-face)"></i>臉部跟隨</span>
+            <span><i style="background: var(--bone-chain)"></i>頭髮、尾巴等骨鏈</span>
+            <span>（交付的 Spine 檔就用這些顏色標骨頭）</span>
+          </div>
+        </div>
+        <nav class="jump" aria-label="章節">
+          <a href="#prepare">先準備</a>
+          <a href="#claude">Claude／Cowork</a>
+          <a href="#claude-code">Claude Code</a>
+          <a href="#codex">Codex</a>
+          <a href="#first-run">第一次使用</a>
+          <a href="#update">更新</a>
+          <a href="#trouble">疑難排解</a>
+          <a href="#maintain">維護者</a>
+        </nav>
+      </header>
+
+      <section id="prepare">
+        <div class="section-head">
+          <h2>先準備</h2>
+          <p class="muted">
+            每台電腦一次。裝完 Node.js 或 ffmpeg 後，要把 Claude 或 Codex 整個關掉再開，才抓得到。
+          </p>
+        </div>
+        <div class="reqs">
+          <div class="req">
+            <div class="req-name">Node.js 22.12 以上<span class="tag must">必要</span></div>
+            <div class="req-body">
+              <p>
+                AutoSpine 引擎靠它執行。外掛已經內含整個引擎，不用下載程式碼，也不用
+                <code>npm install</code>。
+              </p>
+              <div class="cmd">
+                <pre>winget install OpenJS.NodeJS.LTS</pre>
+                <button type="button">複製</button>
+              </div>
+              <p class="muted">
+                或從 nodejs.org 下載 LTS 版。檢查：<code>node --version</code> 要顯示 v22.12.0
+                以上。
+              </p>
+            </div>
+          </div>
+          <div class="req">
+            <div class="req-name">GitHub 權限<span class="tag must">必要</span></div>
+            <div class="req-body">
+              <p>
+                外掛放在私人 repo <code>Wayne188-yiching/AutoSpine</code>。請 Wayne 用你的 GitHub
+                帳號邀請你，並到信箱或 GitHub 通知接受邀請。
+              </p>
+            </div>
+          </div>
+          <div class="req">
+            <div class="req-name">Spine 4.0.64<span class="tag">建議</span></div>
+            <div class="req-body">
+              <p>
+                用來把 <code>.spine</code> 匯出成 JSON、把結果存回
+                <code>.spine</code>。沒有命令列可用時，自己在 Spine 匯出 JSON（含 nonessential
+                data）交給它也可以。
+              </p>
+            </div>
+          </div>
+          <div class="req">
+            <div class="req-name">ffmpeg<span class="tag">建議</span></div>
+            <div class="req-body">
+              <p>產生檢查影片 <code>review.mp4</code>（依序播放佈線、骨架、完整動態）。</p>
+              <div class="cmd">
+                <pre>winget install Gyan.FFmpeg</pre>
+                <button type="button">複製</button>
+              </div>
+              <p class="muted">檢查：<code>ffmpeg -version</code>。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="install">
+        <div class="section-head">
+          <h2>安裝外掛</h2>
+          <p class="muted">
+            用哪個就裝哪個。Claude 裝一次會綁在帳號上，Claude Code 會自動同步，不用再裝。
+          </p>
+        </div>
+
+        <div class="host" id="claude">
+          <div class="host-title">
+            <h3>Claude 桌面 App、Cowork</h3>
+            <span class="muted">也會同步到 Claude Code</span>
+          </div>
+          <ol class="steps">
+            <li>
+              打開 Claude 桌面 App（或 claude.ai），進入 <b>Customize（自訂）→ Plugins（外掛）</b>。
+            </li>
+            <li>
+              選 <b>Add → Add marketplace</b>，輸入：
+              <div class="cmd">
+                <pre>Wayne188-yiching/AutoSpine</pre>
+                <button type="button">複製</button>
+              </div>
+            </li>
+            <li>第一次會要求連結 GitHub，並允許 Claude GitHub App 存取這個 repo，照畫面完成。</li>
+            <li>在清單找到 <b>AutoSpine</b>，按 <b>Add</b>。</li>
+            <li>
+              Claude Code 下次啟動會自動同步；已經開著的話，輸入 <code>/reload-plugins</code>。
+            </li>
+          </ol>
+          <div class="note">
+            <p>
+              外掛裡的 AutoSpine 連接器標示
+              <b>Runs in each session</b>，表示它在你自己的電腦上執行。Claude Code 和跑在你電腦上的
+              Cowork 會自動接上。接不上的環境，AI 會直接執行外掛內建的引擎，結果相同。
+            </p>
+            <p>網頁版聊天碰不到你電腦上的檔案，請在 Cowork 或 Claude Code 使用。</p>
+          </div>
+        </div>
+
+        <div class="host" id="claude-code">
+          <div class="host-title">
+            <h3>只用 Claude Code</h3>
+            <span class="muted">終端機、IDE 擴充、桌面 App 的 Code 分頁</span>
+          </div>
+          <p>
+            已經在 Claude App 裝過就不用做這步。沒有的話，在 Claude Code 輸入（Claude Code 2.1.275
+            以上）：
+          </p>
+          <div class="cmd">
+            <pre>/plugin install autospine --marketplace Wayne188-yiching/AutoSpine</pre>
+            <button type="button">複製</button>
+          </div>
+          <p class="muted">這是私人 repo，你的 git 要能讀到它。先在終端機確認：</p>
+          <div class="cmd">
+            <pre>git ls-remote https://github.com/Wayne188-yiching/AutoSpine</pre>
+            <button type="button">複製</button>
+          </div>
+          <p class="muted">
+            有列出內容就可以；要求登入時，用 GitHub 帳號登入（Windows 版 Git
+            會跳出登入視窗，或先執行 <code>gh auth login</code>）。
+          </p>
+        </div>
+
+        <div class="host" id="codex">
+          <div class="host-title">
+            <h3>Codex</h3>
+            <span class="muted">CLI 與 Codex App</span>
+          </div>
+          <p>
+            <b>方法一：外掛。</b>在終端機加入來源，再到 Codex App 的 Plugins 目錄選 AutoSpine
+            安裝（不同版本的選單名稱可能略有不同）。
+          </p>
+          <div class="cmd">
+            <pre>codex plugin marketplace add Wayne188-yiching/AutoSpine</pre>
+            <button type="button">複製</button>
+          </div>
+          <p>
+            <b>方法二：只裝 skill。</b>外掛功能不能用、或想最快裝好時，用 PowerShell 把 skill 複製到
+            Codex 的 skills 資料夾。skill 已經內含引擎，功能相同，只是不走 MCP。
+          </p>
+          <div class="cmd">
+            <pre>
+git clone --depth 1 https://github.com/Wayne188-yiching/AutoSpine "$env:TEMP\AutoSpine"
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.agents\skills" | Out-Null
+Copy-Item -Recurse -Force "$env:TEMP\AutoSpine\plugin\skills\autospine" "$env:USERPROFILE\.agents\skills\"
+Remove-Item -Recurse -Force "$env:TEMP\AutoSpine"</pre>
+            <button type="button">複製</button>
+          </div>
+          <p class="muted">裝好後在 Codex 輸入 <code>/skills</code>，清單裡要看得到 autospine。</p>
+        </div>
+      </section>
+
+      <section id="first-run">
+        <div class="section-head">
+          <h2>第一次使用</h2>
+        </div>
+        <ol class="steps">
+          <li>
+            先確認安裝正常。在任何對話說：
+            <div class="cmd">
+              <pre>用 autospine 跑內建範例，確認安裝正常</pre>
+              <button type="button">複製</button>
+            </div>
+            它會建出一個 20 根骨的範例角色並回報結果。這個範例是程式畫的測試角色，不含任何美術資產。
+          </li>
+          <li>
+            正式做角色，直接給原檔路徑和需求：
+            <div class="cmd">
+              <pre>
+用 autospine 把 D:\素材\角色\角色.spine 的 idle 做成 2 秒呼吸，手扶著額頭不動，輸出到 D:\輸出\角色</pre>
+              <button type="button">複製</button>
+            </div>
+            它會先把檔案複製到工作資料夾
+            <code>C:\Users\你的帳號\AutoSpine\</code> 再處理，原檔不會被改。
+          </li>
+          <li>
+            看完
+            <code>review.mp4</code
+            >，直接說哪裡要改，例如「拐杖要跟著手動」「樹冠擺動再大一點」。它會改方案、重建，再給新影片。最後的細節在
+            Spine 裡手修。
+          </li>
+        </ol>
+        <div class="note">
+          <p>
+            單次動畫（進場、退場、勝利）最好附幾張關鍵姿勢圖並標幀號，例如「第 0、8、14、44、60
+            幀」。只給名稱時動作是用猜的。完整寫法見
+            <a href="https://github.com/Wayne188-yiching/AutoSpine/blob/main/docs/USER_GUIDE.md"
+              >使用說明</a
+            >。
+          </p>
+        </div>
+      </section>
+
+      <section id="update">
+        <div class="section-head">
+          <h2>更新</h2>
+          <p class="muted">Wayne 推出新版後，各環境這樣拿到：</p>
+        </div>
+        <ul class="plain">
+          <li>
+            <b>Claude App／Cowork：</b>會從 GitHub 自動更新。要馬上更新，到 Customize → Plugins，在
+            AutoSpine 這個 marketplace 按 <b>Check for updates</b>。
+          </li>
+          <li><b>Claude Code 指令安裝的：</b><code>/plugin marketplace update autospine</code></li>
+          <li><b>Codex 方法一：</b><code>codex plugin marketplace upgrade</code></li>
+          <li><b>Codex 方法二：</b>重新執行上面那段 PowerShell。</li>
+        </ul>
+      </section>
+
+      <section id="trouble">
+        <div class="section-head">
+          <h2>疑難排解</h2>
+        </div>
+        <dl class="trouble">
+          <div>
+            <dt>「node 不是內部或外部命令」或 node not found</dt>
+            <dd>安裝 Node.js 22.12 以上，然後把 Claude 或 Codex 完全關掉再開。</dd>
+          </div>
+          <div>
+            <dt>新增 marketplace 時說沒有權限</dt>
+            <dd>
+              確認已接受 repo 邀請；在 Claude 連結 GitHub 並允許 Claude GitHub App 存取 AutoSpine。
+            </dd>
+          </div>
+          <div>
+            <dt>AI 說沒有 autospine 工具</dt>
+            <dd>
+              沒有 MCP 也能做，它會改用內建引擎。若連 autospine
+              技能都沒有，確認外掛是開啟狀態；Claude Code 輸入 <code>/reload-plugins</code>。
+            </dd>
+          </div>
+          <div>
+            <dt>錯誤碼 <code>MCP_WORKSPACE_POLICY</code></dt>
+            <dd>
+              檔案不在工作資料夾內。請它先把檔案複製到 <code>使用者資料夾\AutoSpine</code> 再做。
+            </dd>
+          </div>
+          <div>
+            <dt>錯誤碼 <code>CLI_OUTPUT_EXISTS</code> 或 <code>MCP_OUTPUT_EXISTS</code></dt>
+            <dd>輸出資料夾已經存在。它不會覆蓋舊結果，請它換一個新資料夾名稱。</dd>
+          </div>
+          <div>
+            <dt>沒有產生檢查影片</dt>
+            <dd>安裝 ffmpeg，重開 App 後再請它重做影片。</dd>
+          </div>
+          <div>
+            <dt>想換工作資料夾</dt>
+            <dd>
+              設定系統環境變數 <code>AUTOSPINE_WORKSPACE</code>，例如
+              <code>D:\AutoSpine</code>，重開 App。
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section id="maintain">
+        <div class="section-head">
+          <h2>給維護者</h2>
+          <p class="muted">改了引擎或文件之後，同事要拿到新版：</p>
+        </div>
+        <ol class="steps">
+          <li>
+            在 AutoSpine repo 重新產生外掛內容（引擎單檔、參考文件、範例角色）：
+            <div class="cmd">
+              <pre>npm run build:plugin</pre>
+              <button type="button">複製</button>
+            </div>
+          </li>
+          <li>
+            把三個檔案的
+            <code>version</code>
+            一起加一：<code>plugin/.claude-plugin/plugin.json</code>、<code>plugin/.codex-plugin/plugin.json</code>、<code>.claude-plugin/marketplace.json</code>。
+          </li>
+          <li>跑 <code>npm test</code>（會檢查外掛跟程式碼是否同步），commit 後推上 main。</li>
+        </ol>
+        <p class="muted">
+          邀請同事：GitHub 上的 AutoSpine repo → Settings → Collaborators → Add people。
+        </p>
+      </section>
+
+      <footer>AutoSpine 外掛 0.1.0。外掛只在執行對話的電腦上運作，不會把檔案傳到其他地方。</footer>
+    </div>
+
+    <script>
+      for (const button of document.querySelectorAll(".cmd button")) {
+        button.addEventListener("click", async () => {
+          const pre = button.parentElement.querySelector("pre");
+          const text = pre.textContent;
+          try {
+            await navigator.clipboard.writeText(text);
+            button.textContent = "已複製";
+          } catch {
+            const range = document.createRange();
+            range.selectNodeContents(pre);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            button.textContent = "已選取";
+          }
+          setTimeout(() => (button.textContent = "複製"), 1600);
+        });
+      }
+    </script>
+  </body>
+</html>

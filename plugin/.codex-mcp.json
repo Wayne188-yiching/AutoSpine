@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "autospine": {
+      "cwd": ".",
+      "command": "node",
+      "args": ["./skills/autospine/scripts/autospine-mcp.mjs", "--workspace=~/AutoSpine"],
+      "env": { "AUTOSPINE_MCP_MAX_MESSAGE_MIB": "16" }
+    }
+  }
+}

@@ -2,7 +2,9 @@
 
 Deterministic 2D mesh, rig and animation preparation, with editable Spine output. AI may later choose parameters; the engines work without AI.
 
-**使用者請先看 [使用說明](docs/USER_GUIDE.md)。**
+**使用者請先看 [使用說明](docs/USER_GUIDE.md)；安裝外掛（Claude Code、Cowork、Codex）見 [安裝指南](docs/INSTALL.html)。**
+
+The `plugin/` folder is the installable AutoSpine plugin for Claude and Codex: the skill, a single-file bundle of the engine and MCP server, and a runnable example. This repository is its marketplace (`.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json`). After changing engines or documents, run `npm run build:plugin` and raise the plugin version; `tests/plugin-package.test.ts` fails while the plugin is out of date.
 
 ## Current development
 

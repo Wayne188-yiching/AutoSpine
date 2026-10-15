@@ -4,21 +4,18 @@
 
 ## 準備（第一次）
 
-1. 安裝 Node.js 22.12 以上、Spine 4.0.64（含命令列 `Spine.com`）、ffmpeg。
-2. 在 AutoSpine 資料夾執行：
-
-   ```text
-   npm install
-   npm run build
-   ```
+1. 安裝 Node.js 22.12 以上；要匯出、匯入 Spine 檔與產生檢查影片，另需 Spine 4.0.64（含命令列 `Spine.com`）和 ffmpeg。
+2. 安裝 AutoSpine 外掛，步驟見[安裝說明](INSTALL.html)。Claude（Claude Code、Cowork）與 Codex 各裝一次，不用下載或建置這個 repo。
 
 ## 使用
 
-在 Claude Code 或 Codex 開啟 AutoSpine 資料夾，直接說：
+在 Claude Code、Cowork 或 Codex 的任何對話直接說：
 
 ```text
-用 autospine 技能，把 D:\素材\角色\角色.spine 的 idle 做成 2 秒呼吸，手扶著額頭不動，輸出到 D:\輸出\角色
+用 autospine 把 D:\素材\角色\角色.spine 的 idle 做成 2 秒呼吸，手扶著額頭不動，輸出到 D:\輸出\角色
 ```
+
+它會把檔案複製到工作資料夾（預設 `使用者資料夾\AutoSpine`）再處理，不會改到原檔。
 
 要和人工做好的版本比對時，加一句：
 

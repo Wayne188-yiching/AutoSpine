@@ -29,13 +29,15 @@
     "rig:chain": "npm run build && node packages/cli/dist/index.js rig-chain",
     "build:job": "npm run build && node packages/cli/dist/index.js build",
     "typecheck": "tsc -b && tsc -p tests/tsconfig.json --noEmit",
-    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test"
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test",
+    "build:plugin": "npm run build && node tools/build-plugin.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@esotericsoftware/spine-core": "^4.0.31",
     "@types/node": "^22.20.4",
     "@types/pngjs": "^6.0.5",
+    "esbuild": "^0.28.2",
     "eslint": "^10.11.0",
     "prettier": "^3.9.8",
     "typescript": "^6.0.3",

@@ -1,8 +1,13 @@
+import { mkdirSync } from "node:fs";
 import process from "node:process";
 import { AutoSpineMcpServer } from "./index.js";
+import { chooseWorkspace } from "./workspace.js";
 
 // Legacy MCP stdio: UTF-8 JSON-RPC, exactly one line per message, no other stdout.
-const server = new AutoSpineMcpServer(process.env.AUTOSPINE_WORKSPACE ?? process.cwd());
+const workspace = chooseWorkspace(process.env, process.argv.slice(2), process.cwd());
+// The plugin's default folder (`--workspace=~/AutoSpine`) is created on first start.
+if (workspace.source === "argument") mkdirSync(workspace.path, { recursive: true });
+const server = new AutoSpineMcpServer(workspace.path);
 // Host-controlled allowance for explicit character IR. Keep the original default.
 const configured = Number(process.env.AUTOSPINE_MCP_MAX_MESSAGE_MIB ?? 1);
 const messageMiB =

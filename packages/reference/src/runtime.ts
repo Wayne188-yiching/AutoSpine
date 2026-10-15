@@ -1,6 +1,7 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
 /**
@@ -82,11 +83,20 @@ interface SpineModule {
   MixDirection: { mixIn: unknown };
 }
 let cached: SpineModule | undefined;
+/**
+ * The single-file engine in the plugin ships the IIFE as `spine-core.js` beside itself, with no
+ * node_modules; a normal checkout resolves the installed package.
+ */
+function spineCoreSource(): string {
+  const beside = join(dirname(fileURLToPath(import.meta.url)), "spine-core.js");
+  if (existsSync(beside)) return readFileSync(beside, "utf8");
+  const require = createRequire(import.meta.url);
+  const dir = dirname(require.resolve("@esotericsoftware/spine-core/package.json"));
+  return readFileSync(join(dir, "dist", "iife", "spine-core.js"), "utf8");
+}
 export function spineRuntime(): SpineModule {
   if (!cached) {
-    const require = createRequire(import.meta.url);
-    const dir = dirname(require.resolve("@esotericsoftware/spine-core/package.json"));
-    const code = readFileSync(join(dir, "dist", "iife", "spine-core.js"), "utf8");
+    const code = spineCoreSource();
     cached = vm.runInThisContext(`(function () {\n${code}\nreturn spine;\n})()`, {
       filename: "spine-core.js",
     }) as SpineModule;

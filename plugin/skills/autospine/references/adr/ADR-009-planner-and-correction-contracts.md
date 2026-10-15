@@ -1,0 +1,7 @@
+<!-- Generated from docs/adr/ADR-009-planner-and-correction-contracts.md by tools/build-plugin.mjs. Edit the source, then rebuild. -->
+
+# ADR-009 — tool proposals outside numerical IR
+
+Gate 14/15 decision: add strict planner-proposal and correction contracts at the orchestration boundary, not a ninth numerical IR registry entry. Planner chooses bounded chain/wave parameters for an identified asset; filesystem locations remain supplied by the host. Low confidence and invalid schema/semantic input never invoke Core. An injected provider may supply proposals; no paid/network model is built in or invoked automatically.
+
+Critic proposals may identify defects and suggest only validated rebuild parameters. They cannot replace vertices, bones or weights. The host/Core recreates immutable outputs from the original asset and specifications. Offline fixture evaluation proves contract safety and numerical defect handling, not live vision accuracy or anatomical inference. Source images and artist scoring answers stay out of provider context by default. This additive tool-level design follows the owner's Gate17/self-review authority without introducing an AI dependency into any deterministic package.
