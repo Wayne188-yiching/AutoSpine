@@ -571,6 +571,20 @@ export const MotionPlanSchema = Type.Object(
            * key sits there; a one-shot holds its last key, a loop returns to frame 0. `fit-pose`
            * measures them from reference pictures (storyboard or video frames).
            */
+          /**
+           * Reference video (ADR-034): the motion this animation should match. `video` is relative
+           * to the plan file; `start` is the time in the video, in seconds, of the animation's
+           * frame 0. `compare-video` and `deliver` compare the build with it.
+           */
+          reference: Type.Optional(
+            Type.Object(
+              {
+                video: Type.String({ minLength: 1, maxLength: 4096 }),
+                start: Type.Optional(Type.Number({ minimum: 0, maximum: 3600 })),
+              },
+              strict,
+            ),
+          ),
           keyposes: Type.Optional(
             Type.Array(
               Type.Object(

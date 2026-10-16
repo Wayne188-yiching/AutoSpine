@@ -137,6 +137,7 @@ describe("character plan files: MCP tools (ADR-017)", () => {
       "autospine_compare_reference",
       "autospine_optimize_motion",
       "autospine_review_video",
+      "autospine_compare_video",
       "autospine_fit_pose",
       "autospine_merge_plans",
     ])
@@ -236,6 +237,26 @@ describe("character plan files: MCP tools (ADR-017)", () => {
       });
       expect(alone.error).toBe(false);
       expect((alone.body.width as number) * 2).toBeLessThan(video.body.width as number);
+      // A reference video outside the workspace is refused; one inside is compared (ADR-034).
+      const outside = await call("autospine_compare_video", {
+        planPath: "plan.json",
+        buildDir: "out/build",
+        videoPath: "../elsewhere.mp4",
+        outputDir: "out/vs",
+      });
+      expect(outside.error).toBe(true);
+      const compared = await call("autospine_compare_video", {
+        planPath: "plan.json",
+        buildDir: "out/build",
+        videoPath: "out/alone.mp4",
+        outputDir: "out/vs",
+      });
+      expect(compared.error).toBe(false);
+      expect(compared.body).toMatchObject({ outputDir: join("out", "vs") });
+      expect((await readdir(join(ws, "out", "vs", "IDLE"))).sort()).toEqual([
+        "compare.mp4",
+        "report.json",
+      ]);
     }
     expect((await readdir(ws)).sort()).toEqual([
       "escape.json",

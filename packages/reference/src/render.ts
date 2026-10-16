@@ -33,15 +33,27 @@ export function render(
   sk: LoadedSkeleton,
   texture: (path: string) => Texture,
   view: View,
+  /** Filled with the index (in `sk.skeleton.slots`) of the slot that covers each pixel, or -1. */
+  owner?: Int16Array,
 ): Float32Array {
   const { width: w, height: h } = view;
   const c = new Float32Array(w * h * 4);
+  const slotIndex = new Map<string, number>();
+  if (owner) {
+    owner.fill(-1);
+    sk.skeleton.slots.forEach((slot, i) => slotIndex.set(slot.data.name, i));
+  }
   const toPx = (x: number, y: number): [number, number] => [
     (x - view.x0) * view.scale,
     (view.y0 - y) * view.scale,
   ];
   for (const item of drawList(sk)) {
     const tex = texture(item.path);
+    // Additive and screen glows do not hide what is under them.
+    const id =
+      owner && item.blend !== BLEND.additive && item.blend !== BLEND.screen
+        ? (slotIndex.get(item.slot) ?? -1)
+        : -1;
     const P: [number, number][] = [];
     for (let i = 0; i < item.verts.length; i += 2) P.push(toPx(item.verts[i]!, item.verts[i + 1]!));
     const [cr, cg, cb, ca] = item.color;
@@ -96,6 +108,7 @@ export function render(
             sg = s(1) * cg * ca,
             sb = s(2) * cb * ca;
           const o = (py * w + px) * 4;
+          if (id >= 0 && sa > 0.5) owner![py * w + px] = id;
           const dr = c[o]!,
             dg = c[o + 1]!,
             db = c[o + 2]!,

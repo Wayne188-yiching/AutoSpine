@@ -36,6 +36,7 @@ Ask only for what is missing, in one message:
 - Hands: holding a prop, or resting on a table or forehead. How large props (trees, flags) should sway.
 - Blinks (which frames), eye looks.
 - **One-shots:** a few key-pose pictures (storyboard or reference-video frames) labelled with frame numbers, start and end included, e.g. `0, 8, 14, 44, 60`. A name alone only guesses the motion ("win" may become a jump). Expressions and mesh deforms are not fitted from pictures.
+- A reference video of the motion, if there is one (the artist's render, another project's export, a generated clip): on a single-colour background, starting at the animation's frame 0, or say the second it starts. Every build is then checked against it.
 - An artist version to compare with, if one exists. Comparing is optional.
 - Where to put the result.
 
@@ -49,9 +50,10 @@ The project folder is where the result goes: the folder the requester named, oth
 <project folder>/
   <Name>.spine        delivered project          (written by deliver)
   <Name>.mp4          review video               (written by deliver)
+  <Name>-vs-reference.mp4   reference | build | difference, when the plan has a reference video (written by deliver)
   images/             art the project uses       (written by deliver)
   _work/
-    input/            export of their .spine, artist.json, imagesOnly.json, images/, reference pictures
+    input/            export of their .spine, artist.json, imagesOnly.json, images/, reference pictures and videos
     plans/            plan-01.json, plan-02.json, ... one file per version; the highest is current
     builds/           build-01, build-02, ... one per build (old deliveries move into the build folder)
     checks/           comparisons, pose and key-pose fits, optimiser state, your own test videos
@@ -82,8 +84,9 @@ Follow [the plan runbook](references/character-plan.md); the short form:
 4. `build-character plan.json _work/builds/build-01` (`autospine_build_character`). Check `setupDeviationPx` ≤ 0.5 in `build-record.json`.
 5. Pose pictures: `fit-pose plan.json _work/builds/build-01 pose.png pose.json` for a rest pose; `fit-pose plan.json _work/builds/build-01 0=f00.png 14=f14.png ... keyposes.json --animation=<name> --zero=0` for one-shot key poses (`autospine_fit_pose`). Put the result in the plan, build again into a new folder. Pictures with coverage below 0.6 are not used; say which.
 6. Check your work with `review-video plan.json <build> [artist.json] _work/checks/check-01.mp4` (`autospine_review_video`, needs ffmpeg) when you need to look at it yourself; the requester's video comes from `deliver`.
-7. With an artist version: `compare-reference plan.json <build> artist.json _work/checks/compare-01` (`autospine_compare_reference`). If D1/D2 fail, `optimize-motion plan.json artist.json _work/checks/opt --budget=150` (`autospine_optimize_motion`; exit 3 means run it again to resume), then build with `--params=_work/checks/opt/best-params.json`.
-8. Several animations of one character: plan them apart if easier, then `merge-plans _work/plans/plan-NN.json plan-a.json plan-b.json ...` (`autospine_merge_plans`) and build once, so the artist gets **one project per character**.
+7. **Reference video**: copy it to `_work/input/` and record it in the plan, `motion.animations[].reference: { "video": "../input/<file>.mp4", "start": <seconds of frame 0> }`. Check a build with `compare-video plan.json <build> _work/checks/video-01 [--animation=<name>]` (`autospine_compare_video` with `videoPath`; needs ffmpeg). It prints V1–V4 as PASS/FAIL with hints and writes `compare.mp4` and `report.json` per animation; exit 2 means not passed. It needs a single-colour background (`CLI_VIDEO` otherwise) and the reference starting at frame 0 (`--start` skips a lead-in).
+8. With an artist version: `compare-reference plan.json <build> artist.json _work/checks/compare-01` (`autospine_compare_reference`). If D1/D2 fail, `optimize-motion plan.json artist.json _work/checks/opt --budget=150` (`autospine_optimize_motion`; exit 3 means run it again to resume), then build with `--params=_work/checks/opt/best-params.json`.
+9. Several animations of one character: plan them apart if easier, then `merge-plans _work/plans/plan-NN.json plan-a.json plan-b.json ...` (`autospine_merge_plans`) and build once, so the artist gets **one project per character**.
 
 When a step fails, read its error code and fix the plan; the [pitfalls list](references/character-plan.md#pitfalls-seen-so-far) covers the common ones. Do not edit the engine's output JSON by hand.
 
@@ -95,16 +98,18 @@ Deliver with the command line (the MCP tools cannot write outside their workspac
 node <skill>/scripts/autospine.mjs deliver _work/plans/plan-NN.json _work/builds/build-NN "<project folder>" [_work/input/artist.json] --name=<Name>
 ```
 
-- It writes `<Name>.spine`, `images/` and `<Name>.mp4` at the top of the project folder, and nothing else. The project points at that `images/`, so the folder opens anywhere. The video plays every animation as wireframe, bones, then plain motion; artist | AutoSpine side by side when an artist file is given.
+- It writes `<Name>.spine`, `images/` and `<Name>.mp4` at the top of the project folder, and `<Name>-vs-reference.mp4` (`<Name>-<animation>-vs-reference.mp4` with several animations) for every animation whose plan names a reference video; nothing else. The project points at that `images/`, so the folder opens anywhere. The video plays every animation as wireframe, bones, then plain motion; artist | AutoSpine side by side when an artist file is given.
 - Use `--name` for a readable file name such as `RedRobedReindeer`; one project per character holds every animation. `--images=<folder>` delivers other art than the plan's `source.images`.
 - Spine's command line is found at the standard install path, or pass `--spine=<path>`. Without Spine it delivers `<Name>.json` instead, for Spine › Import Data; say so.
 - Delivering again needs `--replace`; the previous project and video move into that build's folder. If it stops with `CLI_DELIVER_EDITED`, the requester has saved the project in Spine since the last delivery: ask before passing `--force`, because their hand edits would be replaced.
-- `deliver` reports anything else at the top of the project folder as `stray`. Move each into `_work/notes/` (or the folder it belongs in) before you finish: only `<Name>.spine`, `<Name>.mp4`, `images/` and `_work/` stay at the top level.
+- With reference videos, its output has `reference` (pass, `rows` and `hints` per animation, and the `report` path). `referenceError` means the comparison could not run (missing video, no plain background); the delivery still happened, so say why it was not checked. `--no-reference` skips it.
+- `deliver` reports anything else at the top of the project folder as `stray`. Move each into `_work/notes/` (or the folder it belongs in) before you finish: only `<Name>.spine`, `<Name>.mp4`, the `-vs-reference.mp4` videos, `images/` and `_work/` stay at the top level. A reference video the requester left at the top level is theirs: leave it.
 
 Then tell the requester, in the chat (not as files):
 
 - Where the project and the video are, and what to look at in the video. `_work/` can be deleted once the character is final; it is only needed to change it again.
 - The rig in a few lines from `HANDOVER.md` in the build folder: bones by role (blue main, red control, orange face followers, green chains), constraints, what each animation keys. Offer the full notes if they want them.
+- With a reference video, the V1–V4 results as PASS/FAIL lines (V1 outline, V2 each part's position, V3 whole-figure timing and size, V4 loop seam), the `hints` in plain words, and the comparison video to watch. **When a row fails, only report it**: say what differs and what could be changed, and let the requester decide. Do not change the plan and rebuild on your own because of a failed row. Numbers that pass still need the video.
 - With an artist version, the A–D results as PASS/FAIL lines (A placement and loops, B mesh folds and seams, C parts that should move, D timing and size against the artist). All PASS only means the numbers are close; the video decides. Results tuned against the artist are **benchmark-tuned**, not blind.
 
 Then ask what to change. Feedback such as "the cane should follow the hand" or "sway the tree more" goes into the plan; save the next plan version, build into the next `builds/` folder and deliver again with `--replace`. Hand edits in Spine are not written back to the plan, so the last 5–10 % of polishing is done in Spine after the plan is final.
@@ -125,4 +130,4 @@ Read only what the current step needs:
 - [Rig and deformation rules](references/rig-deformation.md), [controls and animation rules](references/controls-animation.md), [production workflow and capability map](references/production-workflow.md).
 - [MCP tools](references/mcp-tools.md) — every `autospine_*` tool and its limits.
 - [Spine application knowledge](references/spine-application-knowledge.md), [tutorial engineering notes](references/spine-tutorial-notes.md).
-- `references/adr/` — why each engine rule exists (ADR-017 plans, ADR-024 rest pose, ADR-031 one project per character, ADR-033 key poses).
+- `references/adr/` — why each engine rule exists (ADR-017 plans, ADR-024 rest pose, ADR-031 one project per character, ADR-033 key poses, ADR-034 reference-video acceptance).
