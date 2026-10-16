@@ -19,6 +19,7 @@ import { buildColorTimelines, type ColorTimeline } from "./colors.js";
 import { buildAttachmentTimelines } from "./visibility.js";
 import { applyKeyposes, applyRestPose } from "./pose.js";
 import { boneRoles, colorBones } from "./handover.js";
+import { applyMirrors } from "./mirror.js";
 
 type Slot = CharacterSpineInput["slots"][number];
 type Ik = NonNullable<CharacterSpineInput["ik"]>[number];
@@ -337,6 +338,8 @@ export function compileCharacter(
     });
   // Bones coloured by role for whoever takes the file over (ADR-026).
   colorBones(doc, boneRoles(rigging));
+  // Mirror layers (ADR-035) on the document: a stepped flip and the bones kept unflipped.
+  applyMirrors(doc as unknown as Parameters<typeof applyMirrors>[0], rigging.plan);
   return doc;
 }
 

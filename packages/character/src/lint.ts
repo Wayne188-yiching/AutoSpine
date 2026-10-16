@@ -138,6 +138,7 @@ function lintOne(
   // Bones in plan order; parents must come first.
   const bones: string[] = [];
   const boneSet = new Set<string>();
+  const parentOf = new Map<string, string | undefined>();
   const chains = new Map<string, string[]>();
   const addBone = (id: string, parent: string | undefined, where: string) => {
     if (boneSet.has(id)) errors.push(`${where}: bone ${id} is planned twice`);
@@ -145,6 +146,7 @@ function lintOne(
       errors.push(`${where}: parent ${parent} must be planned before ${id}`);
     bones.push(id);
     boneSet.add(id);
+    parentOf.set(id, parent);
   };
   plan.bones.forEach((entry, i) => {
     if ("chain" in entry) {
@@ -293,6 +295,32 @@ function lintOne(
         if ([p.x, p.y, p.rotate].some((v) => v !== undefined && !Number.isFinite(v)))
           errors.push(`${where}: key pose ${k.frame} ${id} needs finite offsets`);
       }
+    });
+  }
+  // Mirror (ADR-035): planned bones, kept bones under the mirrored one, ordered ranges inside.
+  const under = (id: string, top: string) => {
+    for (let p = parentOf.get(id); p; p = parentOf.get(p)) if (p === top) return true;
+    return false;
+  };
+  for (const a of m.animations) {
+    const mr = a.mirror;
+    if (!mr) continue;
+    const where = `motion.animations ${a.name} mirror`;
+    bone(mr.bone, where);
+    for (const k of mr.keep ?? []) {
+      bone(k, `${where} keep`);
+      if (boneSet.has(k) && boneSet.has(mr.bone) && !under(k, mr.bone))
+        errors.push(`${where}: kept bone ${k} is not under ${mr.bone}`);
+    }
+    const last = a.loop === false ? a.frames : a.frames - 1;
+    const ranges = [...mr.frames].sort((x, y) => x[0] - y[0]);
+    ranges.forEach(([from, to], i) => {
+      if (from > to) errors.push(`${where}: range ${from}-${to} ends before it starts`);
+      if (to > last) errors.push(`${where}: range ${from}-${to} is past frame ${last}`);
+      if (i > 0 && from <= ranges[i - 1]![1] + 1)
+        errors.push(
+          `${where}: ranges ${ranges[i - 1]![0]}-${ranges[i - 1]![1]} and ${from}-${to} overlap or touch; join them`,
+        );
     });
   }
   // Swaps (ADR-027): known slot and animation, frames inside the animation.

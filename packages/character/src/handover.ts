@@ -198,6 +198,13 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
           )}），疊在主動作、跟隨和波動之上。改姿勢就改這些幀上的關鍵幀；兩者都動的骨在那段是逐幀的鍵。`,
       );
     }
+    if (a.mirror) {
+      const r = a.mirror.frames.map(([f, t]) => `${f}–${t}`).join("、");
+      const keep = (a.mirror.keep ?? []).map((b) => `\`${b}\``).join("、");
+      add(
+        `- 左右翻轉：第 ${r} 幀 \`${a.mirror.bone}\` 以下水平翻轉（scale X = -1，stepped 關鍵幀）。${keep ? `${keep} 設為不繼承縮放與翻轉（noScaleOrReflection），維持原方向。` : ""}改翻轉時間就移動 \`${a.mirror.bone}\` 的 scale 關鍵幀。`,
+      );
+    }
     if (a.show?.length) add(`- 部件組：顯示 ${a.show.length} 個 slot，用 attachment 關鍵幀切換。`);
     const mm = motionFor(plan.motion, a),
       m = mm.main;
