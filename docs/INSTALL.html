@@ -230,16 +230,14 @@
     <div class="page">
       <header>
         <h1>AutoSpine 安裝指南</h1>
-        <p class="lead">
-          裝一次就好。之後在 Claude 或 Codex 說一句話，就會幫你做 Spine 骨架和動畫。
-        </p>
+        <p class="lead">安裝 AutoSpine 外掛後，可在 Claude 或 Codex 製作 Spine 骨架與動畫。</p>
       </header>
 
       <section class="step">
         <div class="num" aria-hidden="true">1</div>
         <div class="body">
           <h2>先準備</h2>
-          <p>安裝 Node.js：</p>
+          <p>安裝 Node.js 22.12 以上：</p>
           <div class="cmd">
             <pre>winget install OpenJS.NodeJS.LTS</pre>
             <button type="button">複製</button>
@@ -267,7 +265,7 @@
             </li>
             <li>到 <b>探索</b> 找到 AutoSpine，點開後按 <b>新增</b>。</li>
           </ol>
-          <p class="muted">第一次會要你連結 GitHub，照畫面按同意就好。</p>
+          <p class="muted">私有儲存庫需使用有存取權限的 GitHub 帳號登入。</p>
           <p><b>Codex</b>：在終端機執行下面這行，再到 Plugins 安裝 AutoSpine。</p>
           <div class="cmd">
             <pre>codex plugin marketplace add Wayne188-yiching/AutoSpine</pre>
@@ -291,14 +289,14 @@
             <button type="button">複製</button>
           </div>
           <p>
-            它會交給你 Spine 檔和一支檢查影片，工作檔另外收在
-            <code>_work</code> 資料夾。看完直接說哪裡要改，原檔不會被改動。
+            輸出包含 Spine 專案與檢查影片，工作檔收在
+            <code>_work</code> 資料夾。看完影片後，直接說明要修改的地方。
           </p>
         </div>
       </section>
 
       <footer>
-        新版會自動更新。有問題找 Wayne；需求怎麼寫比較好，見<a
+        問題回報：Wayne。完整操作見<a
           href="https://github.com/Wayne188-yiching/AutoSpine/blob/main/docs/USER_GUIDE.md"
           >使用說明</a
         >。
