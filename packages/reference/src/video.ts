@@ -330,15 +330,17 @@ export function partTemplate(
  * Where the part shows in `img`: the shift (half-size pixels, within `radius`) and turn about its
  * centre with the best normalised cross-correlation. Shift every other pixel unturned first, then
  * turns of up to 30 degrees around it, then the shift to a fraction of a pixel. Turning matters:
- * a limb matched unturned is placed nearer its root than it is.
+ * a limb matched unturned is placed nearer its root than it is. With `mirror`, the part is also
+ * tried flipped left to right (a body drawn facing the other way), and `mirrored` says which won.
  */
 export function matchPart(
   img: { w: number; h: number; g: Float32Array },
   tpl: PartTemplate,
   radius: number,
   /** Last frame's answer: searched around first; the full search runs only if that is poor. */
-  guess?: { dx: number; dy: number; angle: number },
-): { dx: number; dy: number; angle: number; score: number } {
+  guess?: { dx: number; dy: number; angle: number; mirrored?: boolean },
+  mirror = false,
+): { dx: number; dy: number; angle: number; mirrored: boolean; score: number } {
   const { xs, ys, t, norm } = tpl,
     n = t.length,
     w = img.w,
@@ -351,26 +353,27 @@ export function matchPart(
   }
   cx /= n;
   cy /= n;
-  const turned = new Map<number, { ox: Int32Array; oy: Int32Array }>();
-  const offsets = (deg: number) => {
-    let o = turned.get(deg);
+  const turned = new Map<string, { ox: Int32Array; oy: Int32Array }>();
+  const offsets = (deg: number, flip: boolean) => {
+    const key = `${deg}${flip ? "m" : ""}`;
+    let o = turned.get(key);
     if (!o) {
       const c = Math.cos((deg * Math.PI) / 180),
         s = Math.sin((deg * Math.PI) / 180);
       const ox = new Int32Array(n),
         oy = new Int32Array(n);
       for (let i = 0; i < n; i++) {
-        const x = xs[i]! - cx,
+        const x = (flip ? -1 : 1) * (xs[i]! - cx),
           y = ys[i]! - cy;
         ox[i] = Math.round(cx + c * x - s * y);
         oy[i] = Math.round(cy + s * x + c * y);
       }
-      turned.set(deg, (o = { ox, oy }));
+      turned.set(key, (o = { ox, oy }));
     }
     return o;
   };
-  const ncc = (dx: number, dy: number, deg: number) => {
-    const { ox, oy } = offsets(deg);
+  const ncc = (dx: number, dy: number, deg: number, flip: boolean) => {
+    const { ox, oy } = offsets(deg, flip);
     let sum = 0,
       sq = 0,
       dot = 0;
@@ -386,15 +389,35 @@ export function matchPart(
     const varSum = sq - (sum * sum) / n;
     return varSum <= 1e-6 ? -1 : dot / (Math.sqrt(varSum) * norm);
   };
-  let best = { dx: 0, dy: 0, angle: 0, score: ncc(0, 0, 0) };
+  interface Hit {
+    dx: number;
+    dy: number;
+    angle: number;
+    mirrored: boolean;
+    score: number;
+  }
+  const at = (dx: number, dy: number, angle: number, mirrored: boolean): Hit => ({
+    dx,
+    dy,
+    angle,
+    mirrored,
+    score: ncc(dx, dy, angle, mirrored),
+  });
+  let best = at(0, 0, 0, false);
   const near = (dxs: number[], dys: number[], angles: number[]) => {
     const c = { ...best };
     for (const a of angles)
       for (const ddy of dys)
         for (const ddx of dxs) {
-          const v = ncc(c.dx + ddx, c.dy + ddy, c.angle + a);
+          const v = ncc(c.dx + ddx, c.dy + ddy, c.angle + a, c.mirrored);
           if (v > best.score)
-            best = { dx: c.dx + ddx, dy: c.dy + ddy, angle: c.angle + a, score: v };
+            best = {
+              dx: c.dx + ddx,
+              dy: c.dy + ddy,
+              angle: c.angle + a,
+              mirrored: c.mirrored,
+              score: v,
+            };
         }
   };
   const two = [-2, -1, 0, 1, 2],
@@ -405,35 +428,86 @@ export function matchPart(
     near(one, one, [-5, 0, 5]);
     near(one, one, [-2, 0, 2]);
   };
-  if (guess) {
-    const g = { dx: Math.round(guess.dx), dy: Math.round(guess.dy), angle: guess.angle };
-    best = { ...g, score: ncc(g.dx, g.dy, g.angle) };
-    near(three, three, [0]);
-    refine();
-  }
-  if (!guess || best.score < 0.75) {
-    const local = best;
-    best = { dx: 0, dy: 0, angle: 0, score: ncc(0, 0, 0) };
+  const full = (flip: boolean) => {
+    best = at(0, 0, 0, flip);
     for (let dy = -radius; dy <= radius; dy += 2)
       for (let dx = -radius; dx <= radius; dx += 2) {
-        const v = ncc(dx, dy, 0);
-        if (v > best.score) best = { dx, dy, angle: 0, score: v };
+        const v = ncc(dx, dy, 0, flip);
+        if (v > best.score) best = { dx, dy, angle: 0, mirrored: flip, score: v };
       }
     refine();
-    if (guess && local.score > best.score) best = local;
+    return best;
+  };
+  let local: Hit | undefined;
+  if (guess) {
+    best = at(Math.round(guess.dx), Math.round(guess.dy), guess.angle, mirror && !!guess.mirrored);
+    near(three, three, [0]);
+    refine();
+    local = best;
   }
-  if (best.score < 0) return { dx: 0, dy: 0, angle: 0, score: -1 };
+  if (!local || local.score < 0.75) {
+    const candidates = [full(false), ...(mirror ? [full(true)] : []), ...(local ? [local] : [])];
+    best = candidates.reduce((a, b) => (b.score > a.score ? b : a));
+  }
+  if (best.score < 0) return { dx: 0, dy: 0, angle: 0, mirrored: false, score: -1 };
   const offset = (a: number, b: number) => {
     const d = a - 2 * best.score + b;
     return a >= 0 && b >= 0 && d < -1e-9 ? Math.max(-0.5, Math.min(0.5, (a - b) / (2 * d))) : 0;
   };
-  const { dx, dy, angle } = best;
+  const { dx, dy, angle, mirrored } = best;
   return {
-    dx: dx + offset(ncc(dx - 1, dy, angle), ncc(dx + 1, dy, angle)),
-    dy: dy + offset(ncc(dx, dy - 1, angle), ncc(dx, dy + 1, angle)),
+    dx: dx + offset(ncc(dx - 1, dy, angle, mirrored), ncc(dx + 1, dy, angle, mirrored)),
+    dy: dy + offset(ncc(dx, dy - 1, angle, mirrored), ncc(dx, dy + 1, angle, mirrored)),
     angle,
+    mirrored,
     score: best.score,
   };
+}
+
+/**
+ * How much the part looks like its own mirror image where it is drawn (1 = left-right symmetric):
+ * a part this symmetric cannot show whether the reference flipped it.
+ */
+export function mirrorSimilarity(
+  img: { w: number; h: number; g: Float32Array },
+  tpl: PartTemplate,
+): number {
+  let cx = 0;
+  for (let i = 0; i < tpl.xs.length; i++) cx += tpl.xs[i]!;
+  cx /= tpl.xs.length;
+  const xs = tpl.xs.map((x) => Math.round(2 * cx - x));
+  let x0 = Infinity,
+    x1 = -Infinity;
+  for (let i = 0; i < xs.length; i++) {
+    x0 = Math.min(x0, xs[i]!);
+    x1 = Math.max(x1, xs[i]!);
+  }
+  const flipped: PartTemplate = { ...tpl, xs, box: { ...tpl.box, x0, x1 } };
+  return Math.max(0, matchPart(img, flipped, 3).score);
+}
+
+/**
+ * The longest run of frames in which a part showed mirrored, as [first, last], when it covers at
+ * least `minRun` frames; null otherwise. Frames where it was not found neither break nor extend it.
+ */
+export function mirroredRun(flags: (boolean | null)[], minRun: number): [number, number] | null {
+  let best: [number, number] | null = null,
+    start = -1,
+    last = -1;
+  const close = () => {
+    if (start >= 0 && (!best || last - start > best[1] - best[0])) best = [start, last];
+    start = -1;
+  };
+  flags.forEach((m, i) => {
+    if (m === null) return;
+    if (m) {
+      if (start < 0) start = i;
+      last = i;
+    } else close();
+  });
+  close();
+  const run = best as [number, number] | null;
+  return run && run[1] - run[0] + 1 >= minRun ? run : null;
 }
 
 /**

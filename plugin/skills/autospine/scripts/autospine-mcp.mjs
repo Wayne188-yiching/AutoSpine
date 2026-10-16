@@ -26400,13 +26400,6 @@ var MotionPlanSchema = Type.Object(
             )
           ),
           /**
-           * Key poses (ADR-033): a pose layer keyed on frames, eased between them and added to every
-           * bone timeline like a `pose` that changes over time, so the plan's follows and waves stay
-           * on top. A bone missing from a key has no offset there. Frame 0 has no offset unless a
-           * key sits there; a one-shot holds its last key, a loop returns to frame 0. `fit-pose`
-           * measures them from reference pictures (storyboard or video frames).
-           */
-          /**
            * Reference video (ADR-034): the motion this animation should match. `video` is relative
            * to the plan file; `start` is the time in the video, in seconds, of the animation's
            * frame 0. `compare-video` and `deliver` compare the build with it.
@@ -26420,6 +26413,13 @@ var MotionPlanSchema = Type.Object(
               strict2
             )
           ),
+          /**
+           * Key poses (ADR-033): a pose layer keyed on frames, eased between them and added to every
+           * bone timeline like a `pose` that changes over time, so the plan's follows and waves stay
+           * on top. A bone missing from a key has no offset there. Frame 0 has no offset unless a
+           * key sits there; a one-shot holds its last key, a loop returns to frame 0. `fit-pose`
+           * measures them from reference pictures (storyboard or video frames).
+           */
           keyposes: Type.Optional(
             Type.Array(
               Type.Object(
@@ -26442,6 +26442,29 @@ var MotionPlanSchema = Type.Object(
                 strict2
               ),
               { minItems: 1, maxItems: 256 }
+            )
+          ),
+          /**
+           * Mirror (ADR-035): `bone` and everything under it flipped left to right on the frames of
+           * each range (inclusive): it flips on a range's first frame and back after its last. `keep`
+           * bones under it keep their drawing the right way round while they ride along (a head
+           * that keeps facing the viewer's way). For a body that turns the other way for a while,
+           * such as a walk; `compare-video` reports parts drawn mirrored in a reference video.
+           */
+          mirror: Type.Optional(
+            Type.Object(
+              {
+                bone: IdSchema,
+                keep: Type.Optional(Type.Array(IdSchema, { maxItems: 64 })),
+                frames: Type.Array(
+                  Type.Tuple([
+                    Type.Integer({ minimum: 0, maximum: 3600 }),
+                    Type.Integer({ minimum: 0, maximum: 3600 })
+                  ]),
+                  { minItems: 1, maxItems: 32 }
+                )
+              },
+              strict2
             )
           )
         },
@@ -33876,6 +33899,13 @@ function handoverNotes(rigging, animations) {
         )}\uFF09\uFF0C\u758A\u5728\u4E3B\u52D5\u4F5C\u3001\u8DDF\u96A8\u548C\u6CE2\u52D5\u4E4B\u4E0A\u3002\u6539\u59FF\u52E2\u5C31\u6539\u9019\u4E9B\u5E40\u4E0A\u7684\u95DC\u9375\u5E40\uFF1B\u5169\u8005\u90FD\u52D5\u7684\u9AA8\u5728\u90A3\u6BB5\u662F\u9010\u5E40\u7684\u9375\u3002`
       );
     }
+    if (a.mirror) {
+      const r = a.mirror.frames.map(([f, t]) => `${f}\u2013${t}`).join("\u3001");
+      const keep = (a.mirror.keep ?? []).map((b) => `\`${b}\``).join("\u3001");
+      add(
+        `- \u5DE6\u53F3\u7FFB\u8F49\uFF1A\u7B2C ${r} \u5E40 \`${a.mirror.bone}\` \u4EE5\u4E0B\u6C34\u5E73\u7FFB\u8F49\uFF08scale X = -1\uFF0Cstepped \u95DC\u9375\u5E40\uFF09\u3002${keep ? `${keep} \u8A2D\u70BA\u4E0D\u7E7C\u627F\u7E2E\u653E\u8207\u7FFB\u8F49\uFF08noScaleOrReflection\uFF09\uFF0C\u7DAD\u6301\u539F\u65B9\u5411\u3002` : ""}\u6539\u7FFB\u8F49\u6642\u9593\u5C31\u79FB\u52D5 \`${a.mirror.bone}\` \u7684 scale \u95DC\u9375\u5E40\u3002`
+      );
+    }
     if (a.show?.length) add(`- \u90E8\u4EF6\u7D44\uFF1A\u986F\u793A ${a.show.length} \u500B slot\uFF0C\u7528 attachment \u95DC\u9375\u5E40\u5207\u63DB\u3002`);
     const mm = motionFor(plan.motion, a), m = mm.main;
     add(
@@ -34127,6 +34157,80 @@ function mergePlans(plans, options = {}) {
   return { plan, notes };
 }
 
+// packages/character/src/mirror.ts
+function applyMirrors(doc, plan) {
+  const fps = plan.motion.fps ?? 30;
+  const parent = new Map(doc.bones.map((b) => [b.name, b.parent]));
+  const rotation = new Map(doc.bones.map((b) => [b.name, b.rotation ?? 0]));
+  const worldAngle = (id) => {
+    let a = rotation.get(id) ?? 0;
+    for (let p = parent.get(id); p; p = parent.get(p)) a += rotation.get(p) ?? 0;
+    return a;
+  };
+  const ancestors = (id) => {
+    const out = [];
+    for (let p = parent.get(id); p; p = parent.get(p)) out.push(p);
+    return out;
+  };
+  const kept = /* @__PURE__ */ new Map();
+  const mirrorBone = /* @__PURE__ */ new Map();
+  for (const a of plan.motion.animations) {
+    const m = a.mirror;
+    if (!m) continue;
+    if (!parent.has(m.bone))
+      failStage("build", "PLAN_MIRROR_BONE", `${a.name}: mirror bone ${m.bone} is not in the rig`);
+    const anim = (doc.animations ??= {})[a.name] ??= {};
+    const timelines = (anim.bones ??= {})[m.bone] ??= {};
+    if (timelines.scale)
+      failStage(
+        "build",
+        "PLAN_MIRROR_BONE",
+        `${a.name}: ${m.bone} already scales in this animation; mirror a bone without its own scale keys (the base)`
+      );
+    const angle = (worldAngle(m.bone) % 180 + 180) % 180;
+    const level = Math.min(angle, 180 - angle) <= 5, upright = Math.abs(angle - 90) <= 5;
+    if (!level && !upright)
+      failStage(
+        "build",
+        "PLAN_MIRROR_BONE",
+        `${a.name}: ${m.bone} lies at ${angle.toFixed(1)}\xB0; mirror a bone that is level or upright (the base)`
+      );
+    const ranges = [...m.frames].sort((x, y) => x[0] - y[0]);
+    const keys = [];
+    const key = (frame2, flip, stepped) => keys.push({
+      time: frame2 / fps,
+      x: level ? flip : 1,
+      y: level ? 1 : flip,
+      ...stepped ? { curve: "stepped" } : {}
+    });
+    if (ranges[0][0] > 0) key(0, 1, true);
+    ranges.forEach(([from, to], i) => {
+      key(from, -1, true);
+      if (to + 1 <= a.frames) key(to + 1, 1, i < ranges.length - 1);
+    });
+    timelines.scale = keys;
+    mirrorBone.set(a.name, m.bone);
+    for (const k of m.keep ?? []) {
+      if (!ancestors(k).includes(m.bone))
+        failStage("build", "PLAN_MIRROR_KEEP", `${a.name}: kept bone ${k} is not under ${m.bone}`);
+      kept.set(k, a.name);
+    }
+  }
+  if (!kept.size) return;
+  for (const [name, anim] of Object.entries(doc.animations ?? {}))
+    for (const [b, timelines] of Object.entries(anim.bones ?? {})) {
+      if (!timelines.scale || mirrorBone.get(name) === b) continue;
+      for (const [k] of kept)
+        if (ancestors(k).includes(b))
+          failStage(
+            "build",
+            "PLAN_MIRROR_KEEP",
+            `${k} is kept the right way round, so it would no longer follow the scale of ${b} in ${name}`
+          );
+    }
+  for (const b of doc.bones) if (kept.has(b.name)) b.transform = "noScaleOrReflection";
+}
+
 // packages/character/src/build.ts
 function rigCharacter(plan, layout) {
   const index = new PartIndex(layout.parts);
@@ -34355,6 +34459,7 @@ function compileCharacter(rigging, animations, bend = {}, colorTimelines = []) {
       ...e.color ? { color: e.color } : {}
     });
   colorBones(doc, boneRoles(rigging));
+  applyMirrors(doc, rigging.plan);
   return doc;
 }
 function measureSeams(rigging, animations) {
@@ -34509,6 +34614,7 @@ function lintOne(plan, partNames, knownAnimations) {
   for (const id of deps.keys()) if (cycle2(id, [])) break;
   const bones = [];
   const boneSet = /* @__PURE__ */ new Set();
+  const parentOf2 = /* @__PURE__ */ new Map();
   const chains = /* @__PURE__ */ new Map();
   const addBone = (id, parent, where) => {
     if (boneSet.has(id)) errors.push(`${where}: bone ${id} is planned twice`);
@@ -34516,6 +34622,7 @@ function lintOne(plan, partNames, knownAnimations) {
       errors.push(`${where}: parent ${parent} must be planned before ${id}`);
     bones.push(id);
     boneSet.add(id);
+    parentOf2.set(id, parent);
   };
   plan.bones.forEach((entry, i) => {
     if ("chain" in entry) {
@@ -34652,6 +34759,31 @@ function lintOne(plan, partNames, knownAnimations) {
         if ([p.x, p.y, p.rotate].some((v) => v !== void 0 && !Number.isFinite(v)))
           errors.push(`${where}: key pose ${k.frame} ${id} needs finite offsets`);
       }
+    });
+  }
+  const under = (id, top) => {
+    for (let p = parentOf2.get(id); p; p = parentOf2.get(p)) if (p === top) return true;
+    return false;
+  };
+  for (const a of m.animations) {
+    const mr = a.mirror;
+    if (!mr) continue;
+    const where = `motion.animations ${a.name} mirror`;
+    bone(mr.bone, where);
+    for (const k of mr.keep ?? []) {
+      bone(k, `${where} keep`);
+      if (boneSet.has(k) && boneSet.has(mr.bone) && !under(k, mr.bone))
+        errors.push(`${where}: kept bone ${k} is not under ${mr.bone}`);
+    }
+    const last = a.loop === false ? a.frames : a.frames - 1;
+    const ranges = [...mr.frames].sort((x, y) => x[0] - y[0]);
+    ranges.forEach(([from, to], i) => {
+      if (from > to) errors.push(`${where}: range ${from}-${to} ends before it starts`);
+      if (to > last) errors.push(`${where}: range ${from}-${to} is past frame ${last}`);
+      if (i > 0 && from <= ranges[i - 1][1] + 1)
+        errors.push(
+          `${where}: ranges ${ranges[i - 1][0]}-${ranges[i - 1][1]} and ${from}-${to} overlap or touch; join them`
+        );
     });
   }
   for (const sw of m.swaps ?? []) {
@@ -34907,7 +35039,7 @@ function loadSkeleton(document2) {
   return { raw, data, skeleton };
 }
 function frameTime(f, frames, duration, fps) {
-  return f >= frames ? Math.max(0, duration - 1e-6) : Math.min(duration, f / fps);
+  return f >= frames ? Math.max(0, duration - 1e-6) : Math.min(duration - 1e-6, f / fps + 1e-6);
 }
 function pose(sk, animation, time) {
   const spine = spineRuntime();
@@ -37396,7 +37528,7 @@ function partTemplate(img, owned, opts = {}) {
   if (Math.sqrt(ss / n) < minStd) return null;
   return { xs, ys, t, norm: Math.sqrt(ss), box: { x0, y0, x1, y1 } };
 }
-function matchPart(img, tpl, radius, guess) {
+function matchPart(img, tpl, radius, guess, mirror = false) {
   const { xs, ys, t, norm } = tpl, n = t.length, w = img.w, h = img.h;
   let cx = 0, cy = 0;
   for (let i = 0; i < n; i++) {
@@ -37406,22 +37538,23 @@ function matchPart(img, tpl, radius, guess) {
   cx /= n;
   cy /= n;
   const turned = /* @__PURE__ */ new Map();
-  const offsets = (deg) => {
-    let o = turned.get(deg);
+  const offsets = (deg, flip) => {
+    const key = `${deg}${flip ? "m" : ""}`;
+    let o = turned.get(key);
     if (!o) {
       const c = Math.cos(deg * Math.PI / 180), s2 = Math.sin(deg * Math.PI / 180);
       const ox = new Int32Array(n), oy = new Int32Array(n);
       for (let i = 0; i < n; i++) {
-        const x = xs[i] - cx, y = ys[i] - cy;
+        const x = (flip ? -1 : 1) * (xs[i] - cx), y = ys[i] - cy;
         ox[i] = Math.round(cx + c * x - s2 * y);
         oy[i] = Math.round(cy + s2 * x + c * y);
       }
-      turned.set(deg, o = { ox, oy });
+      turned.set(key, o = { ox, oy });
     }
     return o;
   };
-  const ncc = (dx2, dy2, deg) => {
-    const { ox, oy } = offsets(deg);
+  const ncc = (dx2, dy2, deg, flip) => {
+    const { ox, oy } = offsets(deg, flip);
     let sum = 0, sq = 0, dot = 0;
     for (let i = 0; i < n; i++) {
       const x = ox[i] + dx2, y = oy[i] + dy2;
@@ -37434,15 +37567,28 @@ function matchPart(img, tpl, radius, guess) {
     const varSum = sq - sum * sum / n;
     return varSum <= 1e-6 ? -1 : dot / (Math.sqrt(varSum) * norm);
   };
-  let best = { dx: 0, dy: 0, angle: 0, score: ncc(0, 0, 0) };
+  const at2 = (dx2, dy2, angle2, mirrored2) => ({
+    dx: dx2,
+    dy: dy2,
+    angle: angle2,
+    mirrored: mirrored2,
+    score: ncc(dx2, dy2, angle2, mirrored2)
+  });
+  let best = at2(0, 0, 0, false);
   const near = (dxs, dys, angles) => {
     const c = { ...best };
     for (const a of angles)
       for (const ddy of dys)
         for (const ddx of dxs) {
-          const v = ncc(c.dx + ddx, c.dy + ddy, c.angle + a);
+          const v = ncc(c.dx + ddx, c.dy + ddy, c.angle + a, c.mirrored);
           if (v > best.score)
-            best = { dx: c.dx + ddx, dy: c.dy + ddy, angle: c.angle + a, score: v };
+            best = {
+              dx: c.dx + ddx,
+              dy: c.dy + ddy,
+              angle: c.angle + a,
+              mirrored: c.mirrored,
+              score: v
+            };
         }
   };
   const two = [-2, -1, 0, 1, 2], one = [-1, 0, 1], three = [-3, -2, -1, 0, 1, 2, 3];
@@ -37451,35 +37597,70 @@ function matchPart(img, tpl, radius, guess) {
     near(one, one, [-5, 0, 5]);
     near(one, one, [-2, 0, 2]);
   };
-  if (guess) {
-    const g = { dx: Math.round(guess.dx), dy: Math.round(guess.dy), angle: guess.angle };
-    best = { ...g, score: ncc(g.dx, g.dy, g.angle) };
-    near(three, three, [0]);
-    refine();
-  }
-  if (!guess || best.score < 0.75) {
-    const local = best;
-    best = { dx: 0, dy: 0, angle: 0, score: ncc(0, 0, 0) };
+  const full = (flip) => {
+    best = at2(0, 0, 0, flip);
     for (let dy2 = -radius; dy2 <= radius; dy2 += 2)
       for (let dx2 = -radius; dx2 <= radius; dx2 += 2) {
-        const v = ncc(dx2, dy2, 0);
-        if (v > best.score) best = { dx: dx2, dy: dy2, angle: 0, score: v };
+        const v = ncc(dx2, dy2, 0, flip);
+        if (v > best.score) best = { dx: dx2, dy: dy2, angle: 0, mirrored: flip, score: v };
       }
     refine();
-    if (guess && local.score > best.score) best = local;
+    return best;
+  };
+  let local;
+  if (guess) {
+    best = at2(Math.round(guess.dx), Math.round(guess.dy), guess.angle, mirror && !!guess.mirrored);
+    near(three, three, [0]);
+    refine();
+    local = best;
   }
-  if (best.score < 0) return { dx: 0, dy: 0, angle: 0, score: -1 };
+  if (!local || local.score < 0.75) {
+    const candidates = [full(false), ...mirror ? [full(true)] : [], ...local ? [local] : []];
+    best = candidates.reduce((a, b) => b.score > a.score ? b : a);
+  }
+  if (best.score < 0) return { dx: 0, dy: 0, angle: 0, mirrored: false, score: -1 };
   const offset = (a, b) => {
     const d = a - 2 * best.score + b;
     return a >= 0 && b >= 0 && d < -1e-9 ? Math.max(-0.5, Math.min(0.5, (a - b) / (2 * d))) : 0;
   };
-  const { dx, dy, angle } = best;
+  const { dx, dy, angle, mirrored } = best;
   return {
-    dx: dx + offset(ncc(dx - 1, dy, angle), ncc(dx + 1, dy, angle)),
-    dy: dy + offset(ncc(dx, dy - 1, angle), ncc(dx, dy + 1, angle)),
+    dx: dx + offset(ncc(dx - 1, dy, angle, mirrored), ncc(dx + 1, dy, angle, mirrored)),
+    dy: dy + offset(ncc(dx, dy - 1, angle, mirrored), ncc(dx, dy + 1, angle, mirrored)),
     angle,
+    mirrored,
     score: best.score
   };
+}
+function mirrorSimilarity(img, tpl) {
+  let cx = 0;
+  for (let i = 0; i < tpl.xs.length; i++) cx += tpl.xs[i];
+  cx /= tpl.xs.length;
+  const xs = tpl.xs.map((x) => Math.round(2 * cx - x));
+  let x0 = Infinity, x1 = -Infinity;
+  for (let i = 0; i < xs.length; i++) {
+    x0 = Math.min(x0, xs[i]);
+    x1 = Math.max(x1, xs[i]);
+  }
+  const flipped = { ...tpl, xs, box: { ...tpl.box, x0, x1 } };
+  return Math.max(0, matchPart(img, flipped, 3).score);
+}
+function mirroredRun(flags, minRun) {
+  let best = null, start = -1, last = -1;
+  const close = () => {
+    if (start >= 0 && (!best || last - start > best[1] - best[0])) best = [start, last];
+    start = -1;
+  };
+  flags.forEach((m, i) => {
+    if (m === null) return;
+    if (m) {
+      if (start < 0) start = i;
+      last = i;
+    } else close();
+  });
+  close();
+  const run = best;
+  return run && run[1] - run[0] + 1 >= minRun ? run : null;
 }
 function lagAndAmplitude(r, s2, loop, maxLag = 12) {
   const n = Math.min(r.length, s2.length);
@@ -38365,6 +38546,8 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
     const tracksByPart = /* @__PURE__ */ new Map();
     const owner = new Int16Array(W * H);
     const lastHit = /* @__PURE__ */ new Map();
+    const mirroredByPart = /* @__PURE__ */ new Map();
+    const symmetryByPart = /* @__PURE__ */ new Map();
     const radius = Math.max(6, Math.ceil(0.08 * figureHeight / 2));
     const labels = ["\u53C3\u8003 Reference", "AutoSpine", "\u5DEE\u7570 Difference x4"];
     const captions = font && existsSync2(font);
@@ -38406,15 +38589,25 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
           tracksByPart.set(name, track = { part: name, ref: Array(f).fill(null), build: Array(f).fill(null) });
         const mine = pixels.get(slotNames.indexOf(name));
         const tpl = mine && partTemplate(gb, mine);
-        const hit = tpl && matchPart(gr, tpl, radius, lastHit.get(name));
+        const hit = tpl && matchPart(gr, tpl, radius, lastHit.get(name), true);
         if (hit && hit.score >= 0.6)
           lastHit.set(name, hit);
         else
           lastHit.delete(name);
+        let flips = mirroredByPart.get(name);
+        if (!flips)
+          mirroredByPart.set(name, flips = Array(f).fill(null));
         if (!mine || !tpl || !hit || hit.score < 0.6) {
           track.ref.push(null);
           track.build.push(null);
+          flips.push(null);
           continue;
+        }
+        flips.push(hit.mirrored);
+        if (f % 8 === 0) {
+          const sym = symmetryByPart.get(name) ?? [];
+          sym.push(mirrorSimilarity(gb, tpl));
+          symmetryByPart.set(name, sym);
         }
         let sx = 0, sy = 0;
         for (const q of mine) {
@@ -38463,7 +38656,12 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
     const parts = scoreParts([...tracksByPart.values()], figureHeight, loop && ious.length === count).sort((x, y) => (y.median || 0) - (x.median || 0));
     const rows = checkVideoAcceptance({ iou: ious, parts, figure, seam });
     const pass = rows.every((r) => r.ok);
-    const hints = videoHints(rows, ious, figure, parts, count, fps);
+    const median = (v) => [...v].sort((a, b) => a - b)[v.length >> 1] ?? 1;
+    const mirrored = [...mirroredByPart].filter(([part]) => median(symmetryByPart.get(part) ?? []) < 0.8).map(([part, flags]) => ({
+      part,
+      frames: mirroredRun(flags, Math.max(4, Math.round(count / 10)))
+    })).filter((m) => m.frames !== null);
+    const hints = videoHints(rows, ious, figure, parts, count, fps, mirrored);
     const report3 = join2(dir, "report.json");
     await writeFile2(report3, json({
       animation,
@@ -38472,6 +38670,7 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
       fps,
       frames: { compared: ious.length, animation: count },
       registration: { iou: +reg.iou.toFixed(3), pixelsPerUnit: +view.scale.toFixed(4) },
+      mirrored,
       notJudged: parts.filter((p) => !judgedParts([p], ious.length).length).map((p) => ({ part: p.part, frames: p.frames })),
       ...process.env.AUTOSPINE_DEBUG_TRACKS ? { debugTracks: [...tracksByPart.values()] } : {},
       pass,
@@ -38494,9 +38693,19 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
     await frames.return(void 0);
   }
 }
-function videoHints(rows, ious, figure, parts, count, fps) {
+function videoHints(rows, ious, figure, parts, count, fps, mirrored = []) {
   const failed = (prefix) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);
   const hints = [];
+  const groups = [];
+  for (const m of [...mirrored].sort((a, b) => a.frames[0] - b.frames[0])) {
+    const g = groups.find((g2) => Math.abs(g2.frames[0] - m.frames[0]) <= 3 && Math.abs(g2.frames[1] - m.frames[1]) <= 3);
+    if (g)
+      g.parts.push(m.part);
+    else
+      groups.push({ frames: m.frames, parts: [m.part] });
+  }
+  for (const g of groups)
+    hints.push(`drawn mirrored (left-right) in the reference on frames ${g.frames[0]}-${g.frames[1]}: ${g.parts.join(", ")}`);
   if (ious.length < count)
     hints.push(`the reference video ends after ${ious.length} of ${count} frames; only those were compared`);
   if (failed("V1")) {
@@ -38716,7 +38925,7 @@ var descriptions = {
   autospine_optimize_motion: "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
   autospine_merge_plans: "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose: "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
-  autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs. The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
+  autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
   autospine_review_video: "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval."
 };
 var writingTools = /* @__PURE__ */ new Set([

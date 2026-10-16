@@ -14,6 +14,8 @@ import {
   lagAndAmplitude,
   loadSkeleton,
   matchPart,
+  mirrorSimilarity,
+  mirroredRun,
   partTemplate,
   plainBorder,
   pose,
@@ -169,6 +171,15 @@ describe("video acceptance measures (ADR-034)", () => {
     expect(Math.abs(hit.dx - 5)).toBeLessThan(1);
     expect(Math.abs(hit.dy + 3)).toBeLessThan(1);
     expect(Math.abs(hit.angle - 20)).toBeLessThanOrEqual(5);
+    expect(hit.mirrored).toBe(false);
+    // Drawn the other way round: found mirrored when mirroring is allowed.
+    const flipped = { w, h, g: new Float32Array(w * h) };
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < w; x++) flipped.g[y * w + x] = first.g[y * w + (80 - x)] ?? 30;
+    expect(matchPart(flipped, tpl, 10, undefined, true)).toMatchObject({ mirrored: true });
+    expect(mirrorSimilarity(first, tpl)).toBeLessThan(0.8);
+    expect(mirroredRun([false, null, true, true, null, true, false, true], 3)).toEqual([2, 5]);
+    expect(mirroredRun([true, false, true], 2)).toBeNull();
     // A flat patch has nothing to match.
     expect(partTemplate({ w, h, g: new Float32Array(w * h).fill(90) }, owned)).toBeNull();
   });

@@ -23,6 +23,7 @@ Decision:
   - `<animation>/compare.mp4`: reference | build | difference ×4, captioned when a font is found (Microsoft JhengHei on Windows, `--font` elsewhere), at most 1800 px wide.
   - `<animation>/report.json`: rows, `hints`, per-part scores (median, p90, lag, size and correlation), `notJudged` parts and the silhouette overlap per frame.
   - `summary.json`.
+- **Mirrored parts** (added with ADR-035): the part search also tries each part flipped left to right, and `report.json` lists the parts drawn mirrored in the reference for a stretch of frames, as a hint.
 - **Hints** say the failed rows in words for the requester: the worst outline frame, the whole figure later or earlier, too small or too big, and the worst parts. A part's lag and size are given only where its motion and the reference's correlate at 0.6 or more; otherwise it reads "moving differently".
 - **Why matching instead of tracking**: the first version tracked texture patches through each video separately. On the fixture the arm drifted (p90 8 % comparing a video with itself), because its patch turned and the body behind it changed. Matching the build's own part pixels into each reference frame has no drift and leaves covered pixels out. Searching turns removed the bias that placed a turned limb nearer its root.
 

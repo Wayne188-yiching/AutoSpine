@@ -565,13 +565,6 @@ export const MotionPlanSchema = Type.Object(
             ),
           ),
           /**
-           * Key poses (ADR-033): a pose layer keyed on frames, eased between them and added to every
-           * bone timeline like a `pose` that changes over time, so the plan's follows and waves stay
-           * on top. A bone missing from a key has no offset there. Frame 0 has no offset unless a
-           * key sits there; a one-shot holds its last key, a loop returns to frame 0. `fit-pose`
-           * measures them from reference pictures (storyboard or video frames).
-           */
-          /**
            * Reference video (ADR-034): the motion this animation should match. `video` is relative
            * to the plan file; `start` is the time in the video, in seconds, of the animation's
            * frame 0. `compare-video` and `deliver` compare the build with it.
@@ -585,6 +578,13 @@ export const MotionPlanSchema = Type.Object(
               strict,
             ),
           ),
+          /**
+           * Key poses (ADR-033): a pose layer keyed on frames, eased between them and added to every
+           * bone timeline like a `pose` that changes over time, so the plan's follows and waves stay
+           * on top. A bone missing from a key has no offset there. Frame 0 has no offset unless a
+           * key sits there; a one-shot holds its last key, a loop returns to frame 0. `fit-pose`
+           * measures them from reference pictures (storyboard or video frames).
+           */
           keyposes: Type.Optional(
             Type.Array(
               Type.Object(
@@ -607,6 +607,29 @@ export const MotionPlanSchema = Type.Object(
                 strict,
               ),
               { minItems: 1, maxItems: 256 },
+            ),
+          ),
+          /**
+           * Mirror (ADR-035): `bone` and everything under it flipped left to right on the frames of
+           * each range (inclusive): it flips on a range's first frame and back after its last. `keep`
+           * bones under it keep their drawing the right way round while they ride along (a head
+           * that keeps facing the viewer's way). For a body that turns the other way for a while,
+           * such as a walk; `compare-video` reports parts drawn mirrored in a reference video.
+           */
+          mirror: Type.Optional(
+            Type.Object(
+              {
+                bone: IdSchema,
+                keep: Type.Optional(Type.Array(IdSchema, { maxItems: 64 })),
+                frames: Type.Array(
+                  Type.Tuple([
+                    Type.Integer({ minimum: 0, maximum: 3600 }),
+                    Type.Integer({ minimum: 0, maximum: 3600 }),
+                  ]),
+                  { minItems: 1, maxItems: 32 },
+                ),
+              },
+              strict,
             ),
           ),
         },

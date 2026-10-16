@@ -63,6 +63,8 @@ import {
   matchPart,
   partTemplate,
   plainBorder,
+  mirrorSimilarity,
+  mirroredRun,
   VIDEO_ACCEPTANCE,
   type LoadedSkeleton,
   type PartScore,
@@ -1335,7 +1337,10 @@ async function compareOneVideo(
     const slotNames = sk.skeleton.slots.map((slot) => slot.data.name);
     const tracksByPart = new Map<string, PartTrack>();
     const owner = new Int16Array(W * H);
-    const lastHit = new Map<string, { dx: number; dy: number; angle: number }>();
+    const lastHit = new Map<string, { dx: number; dy: number; angle: number; mirrored: boolean }>();
+    // Which way round each part shows in the reference, and how symmetric it is in the build.
+    const mirroredByPart = new Map<string, (boolean | null)[]>();
+    const symmetryByPart = new Map<string, number[]>();
     // Half-size pixels: parts more than 8% of the height away are not found.
     const radius = Math.max(6, Math.ceil((0.08 * figureHeight) / 2));
     const labels = ["參考 Reference", "AutoSpine", "差異 Difference x4"];
@@ -1394,13 +1399,22 @@ async function compareOneVideo(
           );
         const mine = pixels.get(slotNames.indexOf(name));
         const tpl = mine && partTemplate(gb, mine);
-        const hit = tpl && matchPart(gr, tpl, radius, lastHit.get(name));
+        const hit = tpl && matchPart(gr, tpl, radius, lastHit.get(name), true);
         if (hit && hit.score >= 0.6) lastHit.set(name, hit);
         else lastHit.delete(name);
+        let flips = mirroredByPart.get(name);
+        if (!flips) mirroredByPart.set(name, (flips = Array<boolean | null>(f).fill(null)));
         if (!mine || !tpl || !hit || hit.score < 0.6) {
           track.ref.push(null);
           track.build.push(null);
+          flips.push(null);
           continue;
+        }
+        flips.push(hit.mirrored);
+        if (f % 8 === 0) {
+          const sym = symmetryByPart.get(name) ?? [];
+          sym.push(mirrorSimilarity(gb, tpl));
+          symmetryByPart.set(name, sym);
         }
         let sx = 0,
           sy = 0;
@@ -1462,7 +1476,16 @@ async function compareOneVideo(
     ).sort((x, y) => (y.median || 0) - (x.median || 0));
     const rows = checkVideoAcceptance({ iou: ious, parts, figure, seam });
     const pass = rows.every((r) => r.ok);
-    const hints = videoHints(rows, ious, figure, parts, count, fps);
+    // Parts drawn the other way round in the reference: asymmetric parts mirrored for a stretch.
+    const median = (v: number[]) => [...v].sort((a, b) => a - b)[v.length >> 1] ?? 1;
+    const mirrored = [...mirroredByPart]
+      .filter(([part]) => median(symmetryByPart.get(part) ?? []) < 0.8)
+      .map(([part, flags]) => ({
+        part,
+        frames: mirroredRun(flags, Math.max(4, Math.round(count / 10))),
+      }))
+      .filter((m): m is { part: string; frames: [number, number] } => m.frames !== null);
+    const hints = videoHints(rows, ious, figure, parts, count, fps, mirrored);
     const report = join(dir, "report.json");
     await writeFile(
       report,
@@ -1473,6 +1496,7 @@ async function compareOneVideo(
         fps,
         frames: { compared: ious.length, animation: count },
         registration: { iou: +reg.iou.toFixed(3), pixelsPerUnit: +view.scale.toFixed(4) },
+        mirrored,
         notJudged: parts
           .filter((p) => !judgedParts([p], ious.length).length)
           .map((p) => ({ part: p.part, frames: p.frames })),
@@ -1507,9 +1531,23 @@ function videoHints(
   parts: PartScore[],
   count: number,
   fps: number,
+  mirrored: { part: string; frames: [number, number] }[] = [],
 ): string[] {
   const failed = (prefix: string) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);
   const hints: string[] = [];
+  // Parts flipped over the same stretch are reported together, earliest first.
+  const groups: { frames: [number, number]; parts: string[] }[] = [];
+  for (const m of [...mirrored].sort((a, b) => a.frames[0] - b.frames[0])) {
+    const g = groups.find(
+      (g) => Math.abs(g.frames[0] - m.frames[0]) <= 3 && Math.abs(g.frames[1] - m.frames[1]) <= 3,
+    );
+    if (g) g.parts.push(m.part);
+    else groups.push({ frames: m.frames, parts: [m.part] });
+  }
+  for (const g of groups)
+    hints.push(
+      `drawn mirrored (left-right) in the reference on frames ${g.frames[0]}-${g.frames[1]}: ${g.parts.join(", ")}`,
+    );
   if (ious.length < count)
     hints.push(
       `the reference video ends after ${ious.length} of ${count} frames; only those were compared`,
