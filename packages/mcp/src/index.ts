@@ -35,6 +35,7 @@ import { advertisedSchema } from "./api-schema.js";
 import {
   buildCharacterFiles,
   compareReferenceFiles,
+  compareVideoFiles,
   lintPlanFile,
   optimizeMotionFiles,
   reviewVideoFiles,
@@ -244,6 +245,17 @@ const toolSchemas = {
     },
     strict,
   ),
+  autospine_compare_video: Type.Object(
+    {
+      planPath: WorkspacePath,
+      buildDir: WorkspacePath,
+      videoPath: WorkspacePath,
+      outputDir: WorkspacePath,
+      animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
+      start: Type.Optional(Type.Number({ minimum: 0, maximum: 3600 })),
+    },
+    strict,
+  ),
   autospine_merge_plans: Type.Object(
     {
       planPaths: Type.Array(WorkspacePath, { minItems: 2, maxItems: 64 }),
@@ -336,6 +348,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose:
     "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
+  autospine_compare_video:
+    "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds — outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs. The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
   autospine_review_video:
     "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
@@ -346,6 +360,7 @@ const writingTools = new Set<string>([
   "autospine_compare_reference",
   "autospine_optimize_motion",
   "autospine_review_video",
+  "autospine_compare_video",
   "autospine_fit_pose",
   "autospine_merge_plans",
 ]);
@@ -745,6 +760,29 @@ export class AutoSpineMcpServer {
           return result({
             ...video,
             output: relative(root, output),
+            artistQualityAccepted: false,
+          });
+        }
+        case "autospine_compare_video": {
+          if (!Value.Check(toolSchemas.autospine_compare_video, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const build = await guardDirectory(root, args.buildDir);
+          const video = await guardFile(root, args.videoPath, 2 * 1024 * 1024 * 1024);
+          const output = await guardOutput(root, args.outputDir, true);
+          const check = await compareVideoFiles(plan, build, output, {
+            video,
+            ...(args.animation === undefined ? {} : { animation: args.animation }),
+            ...(args.start === undefined ? {} : { start: args.start }),
+          }).catch(characterFailure);
+          return result({
+            pass: check.pass,
+            animations: check.animations.map((a) => ({
+              ...a,
+              video: relative(root, a.video),
+              output: relative(root, a.output),
+              report: relative(root, a.report),
+            })),
+            outputDir: relative(root, output),
             artistQualityAccepted: false,
           });
         }

@@ -45,8 +45,33 @@ import {
   premultiply,
   prepareReference,
   stripToImagesOnly,
+  borderColor,
+  checkVideoAcceptance,
+  drawList,
+  flatten,
+  foregroundMask,
+  frameTime,
+  halfGray,
+  judgedParts,
+  iou,
+  lagAndAmplitude,
+  maskStats,
+  pose,
+  registerMasks,
+  render,
+  scoreParts,
+  matchPart,
+  partTemplate,
+  plainBorder,
+  VIDEO_ACCEPTANCE,
+  type LoadedSkeleton,
+  type PartScore,
+  type PartTrack,
+  type RgbFrame,
   type SearchState,
   type Texture,
+  type VideoCheckRow,
+  type View,
 } from "@autospine/reference";
 
 const sha256 = (data: string | Uint8Array) => createHash("sha256").update(data).digest("hex");
@@ -866,6 +891,8 @@ export interface DeliverOptions {
   force?: boolean;
   /** Render the review video (default true). */
   video?: boolean;
+  /** Compare with the plan's reference videos (default true; ADR-034). */
+  reference?: boolean;
 }
 /**
  * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the project folder gets only
@@ -894,7 +921,19 @@ export async function deliverFiles(
     json: join(out, `${name}.json`),
     video: join(out, `${name}.mp4`),
   };
-  const present = Object.values(target).filter((p) => existsSync(p));
+  // One comparison video per animation with a reference (ADR-034); named by animation when several.
+  const referenced = plan.motion.animations.filter((a) => a.reference);
+  const vsName = (animation: string) =>
+    plan.motion.animations.length > 1
+      ? `${name}-${safeFileName(animation)}-vs-reference.mp4`
+      : `${name}-vs-reference.mp4`;
+  const compared = [
+    `${name}-vs-reference.mp4`,
+    ...plan.motion.animations.map((a) => vsName(a.name)),
+  ]
+    .map((f) => join(out, f))
+    .filter((f, i, all) => all.indexOf(f) === i);
+  const present = [...Object.values(target), ...compared].filter((p) => existsSync(p));
   if (present.length && !opts.replace)
     throw new Error(
       `CLI_OUTPUT_EXISTS: ${present.join(", ")} already delivered; pass --replace to swap in this build (the old files move into the build folder)`,
@@ -912,6 +951,20 @@ export async function deliverFiles(
   if (opts.video !== false) {
     staged = join(resolve(buildDir), `delivery-${stamp()}.mp4`);
     await reviewVideoFiles(planPath, buildDir, artistPath, staged);
+  }
+  // Then the reference comparison, also in the build folder. It reports; it never blocks delivery.
+  let reference: Awaited<ReturnType<typeof compareVideoFiles>> | undefined;
+  let referenceError: string | undefined;
+  if (opts.video !== false && opts.reference !== false && referenced.length) {
+    try {
+      reference = await compareVideoFiles(
+        planPath,
+        buildDir,
+        join(resolve(buildDir), `video-check-${stamp()}`),
+      );
+    } catch (e) {
+      referenceError = e instanceof Error ? e.message : String(e);
+    }
   }
   let replaced: string | undefined;
   if (present.length) {
@@ -932,6 +985,18 @@ export async function deliverFiles(
     images: string;
     replaced: string | null;
     spineError?: string;
+    reference?: {
+      pass: boolean;
+      animations: {
+        animation: string;
+        pass: boolean;
+        video: string;
+        report: string;
+        rows: VideoCheckRow[];
+        hints: string[];
+      }[];
+    };
+    referenceError?: string;
     stray?: string[];
   } = {
     spine: null,
@@ -961,7 +1026,531 @@ export async function deliverFiles(
     await moveFile(staged, target.video);
     result.video = target.video;
   }
+  if (reference) {
+    const animations = [];
+    for (const r of reference.animations) {
+      const video = join(out, vsName(r.animation));
+      await moveFile(r.output, video);
+      animations.push({
+        animation: r.animation,
+        pass: r.pass,
+        video,
+        report: r.report,
+        rows: r.rows,
+        hints: r.hints,
+      });
+    }
+    result.reference = { pass: reference.pass, animations };
+  }
+  if (referenceError) result.referenceError = referenceError;
   // Anything else at the top level belongs in _work/ (reported, never moved by the engine).
   result.stray = strayEntries(await readdir(out));
   return result;
+}
+
+/** A video's frame size, from ffmpeg's stream summary. */
+async function videoSize(path: string): Promise<{ width: number; height: number }> {
+  if (!existsSync(path)) throw new Error(`CLI_VIDEO: ${path} not found`);
+  const info = await new Promise<string>((ok, fail) => {
+    const p = spawn("ffmpeg", ["-hide_banner", "-i", path], {
+      stdio: ["ignore", "ignore", "pipe"],
+    });
+    let err = "";
+    p.stderr.on("data", (d: Buffer) => (err += d.toString()));
+    p.on("error", (e) =>
+      fail(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for video comparison (${e.message})`)),
+    );
+    p.on("close", () => ok(err));
+  });
+  const m = /Video:.*?\b(\d{2,5})x(\d{2,5})\b/.exec(info);
+  if (!m) throw new Error(`CLI_VIDEO: cannot read the frame size of ${path}`);
+  return { width: Number(m[1]), height: Number(m[2]) };
+}
+/** Frames of a video from `start` seconds, resampled to `fps`, as 8-bit RGB. */
+async function* videoFrames(
+  path: string,
+  start: number,
+  fps: number,
+  count: number,
+  width: number,
+  height: number,
+): AsyncGenerator<RgbFrame> {
+  const p = spawn(
+    "ffmpeg",
+    [
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-ss",
+      String(start),
+      "-i",
+      path,
+      "-vf",
+      `fps=${fps}`,
+      "-frames:v",
+      String(count),
+      "-f",
+      "rawvideo",
+      "-pix_fmt",
+      "rgb24",
+      "-",
+    ],
+    { stdio: ["ignore", "pipe", "ignore"] },
+  );
+  const size = width * height * 3;
+  let frame = new Uint8Array(size),
+    filled = 0;
+  try {
+    for await (const chunk of p.stdout as AsyncIterable<Buffer>) {
+      let off = 0;
+      while (off < chunk.length) {
+        const n = Math.min(size - filled, chunk.length - off);
+        frame.set(chunk.subarray(off, off + n), filled);
+        filled += n;
+        off += n;
+        if (filled === size) {
+          yield { width, height, rgb: frame };
+          frame = new Uint8Array(size);
+          filled = 0;
+        }
+      }
+    }
+  } finally {
+    p.kill();
+  }
+}
+/** Raw RGB frames in, H.264 out. */
+function videoWriter(outPath: string, width: number, height: number, fps: number, filter: string) {
+  const p = spawn(
+    "ffmpeg",
+    [
+      "-y",
+      "-loglevel",
+      "error",
+      "-f",
+      "rawvideo",
+      "-pix_fmt",
+      "rgb24",
+      "-s",
+      `${width}x${height}`,
+      "-r",
+      String(fps),
+      "-i",
+      "-",
+      "-vf",
+      filter,
+      "-c:v",
+      "libx264",
+      "-preset",
+      "medium",
+      "-crf",
+      "20",
+      "-pix_fmt",
+      "yuv420p",
+      "-movflags",
+      "+faststart",
+      resolve(outPath),
+    ],
+    { stdio: ["pipe", "ignore", "pipe"] },
+  );
+  let stderr = "";
+  p.stderr.on("data", (d: Buffer) => (stderr += d.toString()));
+  const done = new Promise<number>((ok, fail) => {
+    p.on("error", (e) =>
+      fail(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for video comparison (${e.message})`)),
+    );
+    p.on("close", (code) => ok(code ?? 1));
+  });
+  return {
+    write: (b: Uint8Array) =>
+      new Promise<void>((ok) => (p.stdin.write(b) ? ok() : p.stdin.once("drain", ok))),
+    close: async () => {
+      p.stdin.end();
+      const code = await done;
+      if (code !== 0) throw new Error(`CLI_FFMPEG: ffmpeg failed (${code}): ${stderr.slice(-400)}`);
+    },
+  };
+}
+
+export interface CompareVideoOptions {
+  /** Only this animation (with --video: the animation the video shows). */
+  animation?: string;
+  /** A reference video instead of the plan's `motion.animations[].reference`. */
+  video?: string;
+  /** Seconds into the video of the animation's frame 0 (overrides the plan's). */
+  start?: number;
+  /** Caption font; default Microsoft JhengHei on Windows, none elsewhere. */
+  font?: string;
+}
+export interface VideoComparison {
+  animation: string;
+  video: string;
+  start: number;
+  pass: boolean;
+  rows: VideoCheckRow[];
+  /** Plain-language reading of the failed rows, worst first, for the person reviewing. */
+  hints: string[];
+  /** The three-panel comparison: reference | build | difference. */
+  output: string;
+  report: string;
+}
+/**
+ * compare-video <plan.json> <build-dir> <new-output-dir> (ADR-034): every animation with a
+ * reference video (or the one given) is rendered over the video's own framing and compared frame by
+ * frame. Writes `<animation>/compare.mp4` (reference | build | difference x4), `<animation>/report.json`
+ * and `summary.json`. Needs ffmpeg. The reference should show the figure on a plain background,
+ * starting at the animation's frame 0.
+ */
+export async function compareVideoFiles(
+  planPath: string,
+  buildDir: string,
+  outDir: string,
+  opts: CompareVideoOptions = {},
+) {
+  const plan = await readPlan(planPath);
+  const fps = plan.motion.fps ?? 30;
+  const animations = plan.motion.animations;
+  const jobs = opts.video
+    ? [
+        {
+          name: opts.animation ?? (animations.length === 1 ? animations[0]!.name : undefined),
+          video: resolve(opts.video),
+          start: opts.start ?? 0,
+        },
+      ]
+    : animations
+        .filter((a) => a.reference && (!opts.animation || a.name === opts.animation))
+        .map((a) => ({
+          name: a.name,
+          video: resolve(dirname(planPath), a.reference!.video),
+          start: opts.start ?? a.reference!.start ?? 0,
+        }));
+  if (jobs.some((j) => !j.name))
+    throw new Error("CLI_VIDEO: the plan has several animations; name one with --animation");
+  if (!jobs.length)
+    throw new Error(
+      "CLI_VIDEO: no reference video; pass --video, or set motion.animations[].reference in the plan",
+    );
+  await newDirectory(outDir);
+  const sk = loadSkeleton(
+    JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as unknown,
+  );
+  const tex = textures(planPaths(planPath, plan).images);
+  const font =
+    opts.font ?? (process.platform === "win32" ? "C:/Windows/Fonts/msjh.ttc" : undefined);
+  const results: VideoComparison[] = [];
+  for (const job of jobs) {
+    const entry = animations.find((a) => a.name === job.name);
+    if (!entry) throw new Error(`CLI_VIDEO: no animation ${job.name} in the plan`);
+    const dir = join(outDir, safeFileName(job.name!));
+    await mkdir(dir, { recursive: true });
+    results.push(
+      await compareOneVideo(sk, tex.texture, entry.name, entry.loop !== false, fps, job, dir, font),
+    );
+  }
+  const summary = { pass: results.every((r) => r.pass), animations: results };
+  await writeFile(join(outDir, "summary.json"), json(summary));
+  return summary;
+}
+
+async function compareOneVideo(
+  sk: LoadedSkeleton,
+  texture: (path: string) => Texture,
+  animation: string,
+  loop: boolean,
+  fps: number,
+  job: { video: string; start: number },
+  dir: string,
+  font: string | undefined,
+): Promise<VideoComparison> {
+  const { width: W, height: H } = await videoSize(job.video);
+  const clip = sk.data.findAnimation(animation);
+  if (!clip) throw new Error(`CLI_VIDEO: the build has no animation ${animation}`);
+  const D = clip.duration,
+    N = Math.round(D * fps);
+  const count = loop ? N : N + 1;
+  const frames = videoFrames(job.video, job.start, fps, count, W, H);
+  try {
+    const first = await frames.next();
+    if (first.done) throw new Error(`CLI_VIDEO: ${job.video} has no frames after ${job.start}s`);
+    const ref0 = first.value;
+    const bg = borderColor(ref0),
+      bgUnit: [number, number, number] = [bg[0] / 255, bg[1] / 255, bg[2] / 255];
+    const plain = plainBorder(ref0, bg);
+    if (plain < 0.75)
+      throw new Error(
+        `CLI_VIDEO: ${job.video} does not have a plain background (only ${Math.round(plain * 100)}% of its edge is one colour); export the reference on a single colour`,
+      );
+    const refMask0 = foregroundMask(ref0, bg);
+    const rs = maskStats(refMask0, W, H);
+    if (rs.area < 64)
+      throw new Error(
+        `CLI_VIDEO: no figure found in ${job.video}; the reference needs a plain background`,
+      );
+    const figureHeight = rs.maxY - rs.minY + 1;
+    // Probe placement: the build's frame-0 bounds on the figure's bounds; then fine registration.
+    pose(sk, animation, 0);
+    let minX = Infinity,
+      maxX = -Infinity,
+      minY = Infinity,
+      maxY = -Infinity;
+    for (const d of drawList(sk))
+      for (let i = 0; i < d.verts.length; i += 2) {
+        minX = Math.min(minX, d.verts[i]!);
+        maxX = Math.max(maxX, d.verts[i]!);
+        minY = Math.min(minY, d.verts[i + 1]!);
+        maxY = Math.max(maxY, d.verts[i + 1]!);
+      }
+    const s0 = figureHeight / Math.max(1e-6, maxY - minY);
+    const probe: View = {
+      x0: (minX + maxX) / 2 - (rs.minX + rs.maxX) / 2 / s0,
+      y0: (minY + maxY) / 2 + (rs.minY + rs.maxY) / 2 / s0,
+      scale: s0,
+      width: W,
+      height: H,
+    };
+    const alphaMask = (canvas: Float32Array) => {
+      const m = new Uint8Array(W * H);
+      for (let i = 0; i < m.length; i++) m[i] = canvas[i * 4 + 3]! > 0.5 ? 1 : 0;
+      return m;
+    };
+    const reg = registerMasks(refMask0, alphaMask(render(sk, texture, probe)), W, H);
+    const k = reg.scale;
+    const view: View = {
+      x0: probe.x0 - (reg.cx * (1 - k) + reg.dx) / (k * s0),
+      y0: probe.y0 + (reg.cy * (1 - k) + reg.dy) / (k * s0),
+      scale: k * s0,
+      width: W,
+      height: H,
+    };
+    pose(sk, animation, frameTime(0, N, D, fps));
+    const build0: RgbFrame = {
+      width: W,
+      height: H,
+      rgb: flatten(render(sk, texture, view), W, H, bgUnit),
+    };
+    const gRef0 = halfGray(ref0),
+      gBuild0 = halfGray(build0);
+    // Each part is found in the reference frame by its look in the build frame (visible pixels only).
+    const slotNames = sk.skeleton.slots.map((slot) => slot.data.name);
+    const tracksByPart = new Map<string, PartTrack>();
+    const owner = new Int16Array(W * H);
+    const lastHit = new Map<string, { dx: number; dy: number; angle: number }>();
+    // Half-size pixels: parts more than 8% of the height away are not found.
+    const radius = Math.max(6, Math.ceil((0.08 * figureHeight) / 2));
+    const labels = ["參考 Reference", "AutoSpine", "差異 Difference x4"];
+    const captions = font && existsSync(font);
+    const filter =
+      (captions
+        ? labels
+            .map(
+              (l, i) =>
+                `drawtext=fontfile='${drawtextValue(font!)}':text='${drawtextValue(l)}':x=${i * W + 14}:y=12:fontsize=${Math.max(16, Math.round(H / 30))}:fontcolor=white:box=1:boxcolor=black@0.5:boxborderw=6`,
+            )
+            .join(",") + ","
+        : "") + "scale=w=trunc(min(1800\\,iw)/2)*2:h=-2";
+    await mkdir(dir, { recursive: true });
+    const output = join(dir, "compare.mp4");
+    const writer = videoWriter(output, 3 * W, H, fps, filter);
+    const ious: number[] = [],
+      refC: [number, number][] = [],
+      buildC: [number, number][] = [];
+    let ref: RgbFrame | undefined = ref0,
+      f = 0;
+    const row = new Uint8Array(3 * W * H * 3);
+    while (ref && f < count) {
+      pose(sk, animation, frameTime(f, N, D, fps));
+      const canvas = render(sk, texture, view, owner);
+      const build = f === 0 ? build0 : { width: W, height: H, rgb: flatten(canvas, W, H, bgUnit) };
+      const rm = foregroundMask(ref, bg),
+        bm = alphaMask(canvas);
+      ious.push(iou(rm, bm));
+      const a = maskStats(rm, W, H),
+        b = maskStats(bm, W, H);
+      refC.push([a.cx, a.cy]);
+      buildC.push([b.cx, b.cy]);
+      const gr = f === 0 ? gRef0 : halfGray(ref),
+        gb = f === 0 ? gBuild0 : halfGray(build);
+      const hw = gb.w,
+        hh = gb.h;
+      const pixels = new Map<number, number[]>();
+      for (let y = 0; y < hh; y++)
+        for (let x = 0; x < hw; x++) {
+          const id = owner[2 * y * W + 2 * x]!;
+          if (id < 0) continue;
+          let list = pixels.get(id);
+          if (!list) pixels.set(id, (list = []));
+          list.push(y * hw + x);
+        }
+      for (const name of new Set([
+        ...tracksByPart.keys(),
+        ...[...pixels.keys()].map((i) => slotNames[i]!),
+      ])) {
+        let track = tracksByPart.get(name);
+        if (!track)
+          tracksByPart.set(
+            name,
+            (track = { part: name, ref: Array(f).fill(null), build: Array(f).fill(null) }),
+          );
+        const mine = pixels.get(slotNames.indexOf(name));
+        const tpl = mine && partTemplate(gb, mine);
+        const hit = tpl && matchPart(gr, tpl, radius, lastHit.get(name));
+        if (hit && hit.score >= 0.6) lastHit.set(name, hit);
+        else lastHit.delete(name);
+        if (!mine || !tpl || !hit || hit.score < 0.6) {
+          track.ref.push(null);
+          track.build.push(null);
+          continue;
+        }
+        let sx = 0,
+          sy = 0;
+        for (const q of mine) {
+          sx += q % hw;
+          sy += Math.floor(q / hw);
+        }
+        const k = mine.length;
+        const at: [number, number] = [(2 * sx) / k, (2 * sy) / k];
+        track.build.push(at);
+        track.ref.push([at[0] + 2 * hit.dx, at[1] + 2 * hit.dy]);
+      }
+      for (let y = 0; y < H; y++) {
+        const o = y * W * 3,
+          out = y * 3 * W * 3;
+        row.set(ref.rgb.subarray(o, o + W * 3), out);
+        row.set(build.rgb.subarray(o, o + W * 3), out + W * 3);
+        for (let x = 0; x < W * 3; x++)
+          row[out + 2 * W * 3 + x] = Math.min(
+            255,
+            4 * Math.abs(ref.rgb[o + x]! - build.rgb[o + x]!),
+          );
+      }
+      await writer.write(row);
+      f++;
+      const next = await frames.next();
+      ref = next.done ? undefined : next.value;
+    }
+    await writer.close();
+    let seam: number | null = null;
+    if (loop) {
+      pose(sk, animation, frameTime(N, N, D, fps));
+      const last = flatten(render(sk, texture, view), W, H, bgUnit);
+      let sum = 0;
+      for (let i = 0; i < last.length; i++) sum += Math.abs(last[i]! - build0.rgb[i]!);
+      seam = sum / last.length / 255;
+    }
+    // Whole-figure timing and size along the reference's busier axis.
+    const sd = (v: number[]) => {
+      const m = v.reduce((x, y) => x + y, 0) / v.length;
+      return Math.sqrt(v.reduce((x, y) => x + (y - m) ** 2, 0) / v.length);
+    };
+    const axis = sd(refC.map((c) => c[0])) > sd(refC.map((c) => c[1])) ? 0 : 1;
+    const la = lagAndAmplitude(
+      refC.map((c) => c[axis]),
+      buildC.map((c) => c[axis]),
+      loop && ious.length === count,
+    );
+    const figure = {
+      axis: axis ? "vertical" : "horizontal",
+      lag: la.lag,
+      amplitude: +la.amplitude.toFixed(3),
+      motion: +(sd(refC.map((c) => c[axis])) / figureHeight).toFixed(5),
+    };
+    const parts = scoreParts(
+      [...tracksByPart.values()],
+      figureHeight,
+      loop && ious.length === count,
+    ).sort((x, y) => (y.median || 0) - (x.median || 0));
+    const rows = checkVideoAcceptance({ iou: ious, parts, figure, seam });
+    const pass = rows.every((r) => r.ok);
+    const hints = videoHints(rows, ious, figure, parts, count, fps);
+    const report = join(dir, "report.json");
+    await writeFile(
+      report,
+      json({
+        animation,
+        video: job.video,
+        start: job.start,
+        fps,
+        frames: { compared: ious.length, animation: count },
+        registration: { iou: +reg.iou.toFixed(3), pixelsPerUnit: +view.scale.toFixed(4) },
+        notJudged: parts
+          .filter((p) => !judgedParts([p], ious.length).length)
+          .map((p) => ({ part: p.part, frames: p.frames })),
+        ...(process.env.AUTOSPINE_DEBUG_TRACKS ? { debugTracks: [...tracksByPart.values()] } : {}),
+        pass,
+        rows,
+        hints,
+        figure,
+        parts: parts.map((p) => ({
+          ...p,
+          median: +(p.median * 100).toFixed(2),
+          p90: +(p.p90 * 100).toFixed(2),
+          amplitude: p.amplitude === null ? null : +p.amplitude.toFixed(2),
+          correlation: p.correlation === null ? null : +p.correlation.toFixed(2),
+        })),
+        units: "part errors in % of figure height; lag in frames, positive = the build is late",
+        silhouette: ious.map((v) => +v.toFixed(3)),
+        note: "Thresholds are proposals (ADR-034). Look at compare.mp4; the numbers do not replace it.",
+      }),
+    );
+    return { animation, video: job.video, start: job.start, pass, rows, hints, output, report };
+  } finally {
+    await frames.return(undefined);
+  }
+}
+
+/** The failed rows in words: where the build differs from the reference, worst first. */
+function videoHints(
+  rows: VideoCheckRow[],
+  ious: number[],
+  figure: { lag: number; amplitude: number; motion: number },
+  parts: PartScore[],
+  count: number,
+  fps: number,
+): string[] {
+  const failed = (prefix: string) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);
+  const hints: string[] = [];
+  if (ious.length < count)
+    hints.push(
+      `the reference video ends after ${ious.length} of ${count} frames; only those were compared`,
+    );
+  if (failed("V1")) {
+    const worst = ious.reduce((w, v, i) => (v < ious[w]! ? i : w), 0);
+    hints.push(
+      `outline differs most at frame ${worst} (${(worst / fps).toFixed(2)}s, overlap ${ious[worst]!.toFixed(2)}): pose, placement or size`,
+    );
+  }
+  if (failed("V3")) {
+    if (Math.abs(figure.lag) > VIDEO_ACCEPTANCE.maxLagFrames)
+      hints.push(
+        `the whole figure moves ${Math.abs(figure.lag)} frames ${figure.lag > 0 ? "later" : "earlier"} than the reference`,
+      );
+    if (
+      figure.amplitude < VIDEO_ACCEPTANCE.amplitudeLow ||
+      figure.amplitude > VIDEO_ACCEPTANCE.amplitudeHigh
+    )
+      hints.push(
+        `the whole figure moves ${figure.amplitude.toFixed(2)}x as far as the reference (${figure.amplitude < 1 ? "too small" : "too big"})`,
+      );
+  }
+  if (failed("V2"))
+    for (const p of judgedParts(parts, ious.length)
+      .filter((p) => p.median > VIDEO_ACCEPTANCE.partMedian)
+      .slice(0, 4)) {
+      const notes = [`off by ${(p.median * 100).toFixed(1)}% of the height`];
+      // Timing and size only where the two motions have the same shape.
+      if ((p.correlation ?? 0) < 0.6) {
+        hints.push(`${p.part}: ${notes[0]}, moving differently`);
+        continue;
+      }
+      if (p.lag !== null && Math.abs(p.lag) > VIDEO_ACCEPTANCE.maxLagFrames)
+        notes.push(`${Math.abs(p.lag)} frames ${p.lag > 0 ? "late" : "early"}`);
+      if (p.amplitude !== null && p.amplitude < VIDEO_ACCEPTANCE.amplitudeLow)
+        notes.push(`moves ${p.amplitude.toFixed(2)}x (too small)`);
+      if (p.amplitude !== null && p.amplitude > VIDEO_ACCEPTANCE.amplitudeHigh)
+        notes.push(`moves ${p.amplitude.toFixed(2)}x (too big)`);
+      hints.push(`${p.part}: ${notes.join(", ")}`);
+    }
+  if (failed("V4")) hints.push("the loop's last frame does not match its first: a visible jump");
+  return hints;
 }

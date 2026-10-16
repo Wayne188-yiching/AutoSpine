@@ -6,3 +6,4 @@ export * from "./criteria.js";
 export * from "./optimize.js";
 export * from "./review.js";
 export * from "./pose-fit.js";
+export * from "./video.js";

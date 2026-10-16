@@ -5,6 +5,7 @@ import { buildJobFile } from "./build.js";
 import {
   buildCharacterFiles,
   compareReferenceFiles,
+  compareVideoFiles,
   deliverFiles,
   initProjectFolder,
   lintPlanFile,
@@ -90,7 +91,8 @@ const characterUsage = `Character commands (ADR-017):
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
   autospine init-project <project-dir>
-  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video]`;
+  autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
+  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
     args
@@ -183,6 +185,31 @@ async function characterCommand(args: string[]): Promise<boolean> {
       );
       return true;
     }
+    case "compare-video": {
+      if (p.length !== 4) throw new Error(characterUsage);
+      known("animation", "video", "start", "font");
+      const opts = {
+        animation: flags.get("animation") || undefined,
+        video: flags.get("video") || undefined,
+        start: numberFlag("start"),
+        font: flags.get("font") || undefined,
+      };
+      const check = await compareVideoFiles(
+        p[1]!,
+        p[2]!,
+        p[3]!,
+        Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined)),
+      );
+      for (const a of check.animations) {
+        console.log(`${a.animation}: ${a.output}`);
+        for (const r of a.rows)
+          console.log(`  ${r.ok ? "PASS" : "FAIL"} ${r.id}  ${JSON.stringify(r.value)}`);
+        for (const h of a.hints) console.log(`  - ${h}`);
+      }
+      console.log(check.pass ? "MATCHES THE REFERENCE VIDEO" : "NOT PASSED");
+      if (!check.pass) process.exitCode = 2;
+      return true;
+    }
     case "init-project":
       if (p.length !== 2) throw new Error(characterUsage);
       known();
@@ -190,7 +217,7 @@ async function characterCommand(args: string[]): Promise<boolean> {
       return true;
     case "deliver": {
       if (p.length !== 4 && p.length !== 5) throw new Error(characterUsage);
-      known("name", "images", "spine", "replace", "force", "no-video");
+      known("name", "images", "spine", "replace", "force", "no-video", "no-reference");
       const opts = {
         name: flags.get("name") || undefined,
         images: flags.get("images") || undefined,
@@ -198,6 +225,7 @@ async function characterCommand(args: string[]): Promise<boolean> {
         replace: flags.has("replace"),
         force: flags.has("force"),
         video: !flags.has("no-video"),
+        reference: !flags.has("no-reference"),
       };
       console.log(JSON.stringify(await deliverFiles(p[1]!, p[2]!, p[3]!, p[4], opts)));
       return true;
