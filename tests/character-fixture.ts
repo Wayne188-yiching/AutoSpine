@@ -11,7 +11,7 @@ import type { CharacterLayout, CharacterPart } from "@autospine/character";
  * body, one arm, a round head with a face dome and an eye strip. Every image is drawn here, so
  * the fixture carries no private art.
  */
-interface Image {
+export interface Image {
   width: number;
   height: number;
   /** Spine world centre (y up). */
@@ -20,7 +20,7 @@ interface Image {
   color: [number, number, number];
   inside: (u: number, v: number) => boolean;
 }
-const ellipse = (u: number, v: number) => (2 * u - 1) ** 2 + (2 * v - 1) ** 2 <= 1;
+export const ellipse = (u: number, v: number) => (2 * u - 1) ** 2 + (2 * v - 1) ** 2 <= 1;
 const capsule = (w: number, h: number) => (u: number, v: number) => {
   const px = u * w,
     py = v * h,
@@ -92,20 +92,25 @@ export function fixtureTextures(): Map<
   { width: number; height: number; rgba: Uint8Array }
 > {
   return new Map(
-    Object.entries(FIXTURE_IMAGES).map(([name, im], n) => {
-      const rgba = new Uint8Array(im.width * im.height * 4);
-      for (let y = 0; y < im.height; y++)
-        for (let x = 0; x < im.width; x++) {
-          if (!im.inside((x + 0.5) / im.width, (y + 0.5) / im.height)) continue;
-          const k = 0.35 + 0.65 * noise(x + 97 * n, y + 53 * n);
-          rgba.set(
-            [im.color[0] * k, im.color[1] * (1.2 - k / 2), im.color[2] * k, 255],
-            (y * im.width + x) * 4,
-          );
-        }
-      return [name, { width: im.width, height: im.height, rgba }];
-    }),
+    Object.entries(FIXTURE_IMAGES).map(([name, im], n) => [name, texturedRgba(im, n)]),
   );
+}
+/** One image with the fixture's value noise; `n` picks its own noise (one per image). */
+export function texturedRgba(
+  im: Image,
+  n: number,
+): { width: number; height: number; rgba: Uint8Array } {
+  const rgba = new Uint8Array(im.width * im.height * 4);
+  for (let y = 0; y < im.height; y++)
+    for (let x = 0; x < im.width; x++) {
+      if (!im.inside((x + 0.5) / im.width, (y + 0.5) / im.height)) continue;
+      const k = 0.35 + 0.65 * noise(x + 97 * n, y + 53 * n);
+      rgba.set(
+        [im.color[0] * k, im.color[1] * (1.2 - k / 2), im.color[2] * k, 255],
+        (y * im.width + x) * 4,
+      );
+    }
+  return { width: im.width, height: im.height, rgba };
 }
 
 /** The images-only Spine 4.0 document: one root bone, one region per slot. */

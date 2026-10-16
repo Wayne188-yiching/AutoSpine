@@ -72,7 +72,7 @@ Evidence:
   - **Not captured**:
     - The tongue: the artist's three tongue bones turn 66° and scale 1.33; our tongue is a region without bones.
     - The expression deforms: face plate, eyes, nose, pupils.
-    - The head tilt itself: when the expression changes, the head's 13 face parts out-vote its fur and ears, so the head is not placed on frames 8, 14 and 44. Ignoring them places it on frame 14, but the neck and head then turn hard against each other, and D1 drops to 6/16.
+    - The head tilt itself: when the expression changes, the head's 13 face parts out-vote its fur and ears, so the head is not placed on frames 8, 14 and 44. Ignoring them places it on frame 14, but the neck and head then turn hard against each other, and D1 drops to 6/16. ADR-034 places the head on all three frames.
     - The artist's hand translations, and the scale keys.
   - **Hidden parts**: the chest's parts (body, shirt) are under the fur and hands and never match.
   - **Seam**: the right shoulder (`Cloth_01/Arm1_1`) drifts 22–26 px, because the torso leans while the hands stay.
@@ -80,7 +80,7 @@ Evidence:
 Consequences:
 
 - A requester can drive a one-shot with a few pictures instead of a name. The pictures carry the main pose changes; the plan keeps its breath, follows and waves.
-- Key poses turn the plan's joints and move the hips and IK targets. Expressions, mesh deforms, scale, detached hands and hidden parts stay out, as for a rest pose. When the head's expression changes, ask for the expression as swaps or deforms; the pose fit will not place that head.
+- Key poses turn the plan's joints and move the hips and IK targets. Expressions, mesh deforms, scale, detached hands and hidden parts stay out, as for a rest pose. When the head's expression changes, ask for the expression as swaps or deforms. The pose fit places that head by its other parts (ADR-034), but not the expression.
 - Follows still follow the main beat, not the key poses: a head does not lag a fitted body rise. Feeding the main bone's key poses into the main control is a follow-up.
 - A sum of two moving tracks is a fitted curve, within 0.1 degree or px, not the exact sum.
 - Rollback: drop `keyposes`, `addTracks`, `fitKeyPoses` and the picture options. `fit-pose` returns to one picture and the seam QA to stepped channels.

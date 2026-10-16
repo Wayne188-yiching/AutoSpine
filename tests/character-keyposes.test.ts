@@ -10,7 +10,7 @@ import {
   lintCharacterPlan,
   type Keyposes,
 } from "@autospine/character";
-import { buildCharacterFiles } from "@autospine/cli/character";
+import { buildCharacterFiles, fitPoseFiles } from "@autospine/cli/character";
 import {
   addTracks,
   easeCurve,
@@ -21,11 +21,15 @@ import {
 } from "@autospine/motion";
 import { drawList, loadSkeleton, pose, premultiply, render } from "@autospine/reference";
 import {
+  ellipse,
   FIXTURE_ORDER,
+  fixtureImagesOnly,
   fixtureLayout,
   fixturePlan,
   fixtureTextures,
   fixtureWorkspace,
+  texturedRgba,
+  type Image,
 } from "./character-fixture.js";
 
 const clone = <T>(v: T): T => structuredClone(v);
@@ -316,4 +320,82 @@ describe("key poses from reference pictures (ADR-033)", () => {
       ).stderr,
     ).toMatch(/two pictures for frame 10/);
   }, 240_000);
+
+  it("places a turned head whose picture shows another expression (ADR-034)", async () => {
+    // A face of five parts on the head (eyes, brows, nose, mouth, cheeks). The picture turns the
+    // head 12 degrees and redraws every face part: they hold more of the head's say than its dome,
+    // body and hair, which keep their drawing.
+    const FACE: Record<string, Image> = {
+      Brows: { width: 44, height: 8, x: 0, y: 271, color: [70, 50, 40], inside: ellipse },
+      Nose: { width: 12, height: 12, x: 0, y: 248, color: [200, 120, 120], inside: ellipse },
+      Mouth: { width: 36, height: 12, x: 0, y: 234, color: [170, 60, 70], inside: ellipse },
+      Cheeks: {
+        width: 64,
+        height: 14,
+        x: 0,
+        y: 244,
+        color: [240, 150, 150],
+        inside: (u, v) =>
+          ((u - 0.12) * 64) ** 2 + ((v - 0.5) * 14) ** 2 <= 49 ||
+          ((u - 0.88) * 64) ** 2 + ((v - 0.5) * 14) ** 2 <= 49,
+      },
+    };
+    const ws = await fixtureWorkspace();
+    const textures = fixtureTextures();
+    Object.entries(FACE).forEach(([name, im], i) =>
+      textures.set(name, texturedRgba(im, FIXTURE_ORDER.length + i)),
+    );
+    for (const [name, im] of textures) {
+      const png = new PNG({ width: im.width, height: im.height });
+      png.data.set(im.rgba);
+      await writeFile(join(ws, "images", `${name}.png`), PNG.sync.write(png));
+    }
+    const imagesOnly = fixtureImagesOnly();
+    for (const [name, im] of Object.entries(FACE)) {
+      imagesOnly.slots.push({ name, bone: "root", attachment: name });
+      imagesOnly.skins[0]!.attachments[name] = {
+        [name]: { x: im.x, y: im.y, width: im.width, height: im.height },
+      };
+    }
+    await writeFile(join(ws, "imagesOnly.json"), JSON.stringify(imagesOnly));
+    const plan: CharacterPlan = { ...fixturePlan(), qa: { ...fixturePlan().qa!, view: VIEW } };
+    plan.regions = { ...plan.regions, Brows: "eyes", Nose: "eyes", Mouth: "eyes", Cheeks: "eyes" };
+    const target = clone(plan);
+    target.motion.animations[0]!.keyposes = [{ frame: 30, pose: { head: { rotate: 12 } } }];
+    await writeFile(join(ws, "plan.json"), JSON.stringify(plan));
+    await writeFile(join(ws, "target.json"), JSON.stringify(target));
+    await buildCharacterFiles(join(ws, "plan.json"), join(ws, "base"));
+    await buildCharacterFiles(join(ws, "target.json"), join(ws, "target"));
+    const targetDoc = JSON.parse(
+      await readFile(join(ws, "target", "fixture_character.json"), "utf8"),
+    ) as unknown;
+    const expression = new Map(textures);
+    for (const name of ["Eyes", ...Object.keys(FACE)]) {
+      const im = textures.get(name)!,
+        rgba = im.rgba.slice();
+      for (let i = 0; i < rgba.length; i += 4) if (rgba[i + 3]) rgba.set([250, 245, 235], i);
+      expression.set(name, { ...im, rgba });
+    }
+    await writeFile(join(ws, "f30.png"), PNG.sync.write(picture(targetDoc, 30, expression)));
+    await fitPoseFiles(
+      join(ws, "plan.json"),
+      join(ws, "base"),
+      [{ frame: 30, path: join(ws, "f30.png") }],
+      join(ws, "face.json"),
+      { window: 40 },
+    );
+    const written = JSON.parse(await readFile(join(ws, "face.json"), "utf8")) as {
+      keyposes: Keyposes;
+      frames: { accepted: boolean; parts: { slot: string; used: boolean }[] }[];
+    };
+    // The better-matching half of the head's say (dome, body, hair) places it; the redrawn face
+    // parts are left out of the solve.
+    expect(written.frames[0]!.accepted).toBe(true);
+    expect(
+      written.frames[0]!.parts.filter((p) => !p.used)
+        .map((p) => p.slot)
+        .sort(),
+    ).toEqual(["Brows", "Cheeks", "Eyes", "Mouth", "Nose"]);
+    expect(Math.abs(written.keyposes[0]!.pose.head!.rotate! - 12)).toBeLessThan(1.5);
+  }, 120_000);
 });

@@ -1,3 +1,4 @@
+import { premultiply, render, type Texture } from "./render.js";
 import { frameTime, loadSkeleton, pose, type LoadedSkeleton } from "./runtime.js";
 
 /** Straight (not premultiplied) 8-bit RGBA. */
@@ -13,7 +14,8 @@ export interface PoseFitOptions {
   slots?: readonly string[];
   /**
    * Slots not to match: parts whose drawing changes, such as an expression's mouth, eyes and
-   * tongue (ADR-033). A head with many face parts is placed by its fur and ears instead.
+   * tongue (ADR-033). Without it, such parts are left out when the rest of their bone's parts place
+   * it: a bone is judged on the better-matching half of its say (ADR-034).
    */
   ignore?: readonly string[];
   /**
@@ -35,7 +37,10 @@ export interface PoseFitOptions {
   window?: number;
   /** Largest part rotation searched, degrees (default 30). */
   maxRotate?: number;
-  /** Bone matches scoring below this are not used (default 0.35; a score is the mean colour match). */
+  /**
+   * Bone matches scoring below this are not used (default 0.35). A bone's score is the mean colour
+   * match of the better-matching half of its parts' say, over the texels the build shows (ADR-034).
+   */
   minScore?: number;
   /**
    * Animation time posed under the reference, seconds (default 0: the rest pose). The fitted
@@ -57,7 +62,10 @@ export interface Placement {
 export interface PoseFitPart {
   slot: string;
   samples: number;
-  /** Fraction of the part's sampled texels found in the reference at the best placement. */
+  /**
+   * Fraction of the part's sampled texels found in the reference at the best placement, each
+   * counted as much as the build's own picture shows it (ADR-034).
+   */
   score: number;
   /** Best rigid placement: world translation and rotation (degrees, counter-clockwise). */
   dx: number;
@@ -85,8 +93,41 @@ interface Sample {
   bary: [number, number, number];
   w0: [number, number];
   rgb: [number, number, number];
+  /** How well the build's own picture shows this texel at the posed time (0: covered). */
+  shown: number;
 }
 type Item = { slot: string; verts: number[]; tris: number[] };
+
+/** The skeleton as posed, rendered over `view` at the reference's size: straight 8-bit RGBA. */
+function ownPicture(
+  sk: LoadedSkeleton,
+  image: (path: string) => FitImage,
+  view: PoseFitOptions["view"],
+  width: number,
+  height: number,
+): Uint8Array {
+  const textures = new Map<string, Texture>();
+  const canvas = render(
+    sk,
+    (path) => {
+      let t = textures.get(path);
+      if (!t) {
+        const im = image(path);
+        textures.set(path, (t = premultiply(im.width, im.height, im.rgba)));
+      }
+      return t;
+    },
+    { x0: view.x, y0: view.y, scale: width / view.width, width, height },
+  );
+  const out = new Uint8Array(canvas.length);
+  for (let i = 0; i < canvas.length; i += 4) {
+    const a = Math.min(1, canvas[i + 3]!);
+    out[i + 3] = Math.round(a * 255);
+    for (let k = 0; k < 3; k++)
+      out[i + k] = a > 0 ? Math.round(Math.min(1, canvas[i + k]! / a) * 255) : 0;
+  }
+  return out;
+}
 
 /** World vertices of the given slots' current attachments (regions and meshes). */
 function worldVertices(sk: LoadedSkeleton, slots: readonly string[]): Map<string, Item> {
@@ -127,9 +168,10 @@ const at = (item: Item, s: Sample): [number, number] => {
 /**
  * Fits a rest pose to a reference image (ADR-024). Each drawn part is matched rigidly (translation
  * and rotation about its centroid) by the fraction of its opaque texels whose colour the reference
- * shows there, so overlapping parts still match on their visible share. The free bones' setup
- * offsets are then solved by damped least squares on the official runtime pose, so IK and
- * transform constraints carry their effect, and returned as plan offsets.
+ * shows there. Texels count as much as the build's own picture shows them, so a part is judged on
+ * what is not under other parts, and a bone on the better-matching half of its parts (ADR-034). The
+ * free bones' setup offsets are then solved by damped least squares on the official runtime pose,
+ * so IK and transform constraints carry their effect, and returned as plan offsets.
  */
 export function fitRestPose(
   document: unknown,
@@ -174,16 +216,20 @@ export function fitRestPose(
     return (py * reference.width + px) * 4;
   };
   // 1 for the same colour, falling linearly to 0 at a channel difference of 64; 0 off the figure.
-  const hit = (s: Sample, x: number, y: number) => {
+  const match = (rgba: ArrayLike<number>, s: Sample, x: number, y: number) => {
     const i = refAt(x, y);
-    if (i < 0 || reference.rgba[i + 3]! < 128) return 0;
+    if (i < 0 || rgba[i + 3]! < 128) return 0;
     const d = Math.max(
-      Math.abs(reference.rgba[i]! - s.rgb[0]),
-      Math.abs(reference.rgba[i + 1]! - s.rgb[1]),
-      Math.abs(reference.rgba[i + 2]! - s.rgb[2]),
+      Math.abs(rgba[i]! - s.rgb[0]),
+      Math.abs(rgba[i + 1]! - s.rgb[1]),
+      Math.abs(rgba[i + 2]! - s.rgb[2]),
     );
     return Math.max(0, 1 - d / 64);
   };
+  const hit = (s: Sample, x: number, y: number) => match(reference.rgba, s, x, y);
+  // The build's own picture at this pose (ADR-034): a texel another part covers there cannot match
+  // in the reference either, so a part is judged on the texels the build shows.
+  const own = ownPicture(sk, image, view, reference.width, reference.height);
 
   // ---- samples: opaque texels with their triangle, barycentrics and setup world position
   const samples = new Map<string, Sample[]>();
@@ -251,8 +297,10 @@ export function fitRestPose(
             bary: [l0, l1, l2],
             w0: [0, 0],
             rgb: mean(x, y),
+            shown: 0,
           };
           s.w0 = at(item, s);
+          s.shown = match(own, s, s.w0[0], s.w0[1]);
           list.push(s);
           break;
         }
@@ -358,13 +406,41 @@ export function fitRestPose(
         Math.sin(a) * u + Math.cos(a) * v + c[1] + dy,
       ];
     };
+    // A texel counts as much as the build's own picture shows it (ADR-034): one another part covers
+    // cannot match in the reference either.
     const score = (sub: typeof set, rot: number, dx: number, dy: number) => {
-      let n = 0;
+      let n = 0,
+        w = 0;
       for (const x of sub) {
         const q = place(rot, dx, dy, x.p);
-        n += hit(x.s, q[0], q[1]);
+        n += x.s.shown * hit(x.s, q[0], q[1]);
+        w += x.s.shown;
       }
-      return n / sub.length;
+      return w > 0 ? n / w : 0;
+    };
+    // Up to half a bone's say may be parts whose drawing changed, such as an expression's mouth, eyes
+    // and tongue on a head (ADR-034): the bone is judged on the better-matching half of its say,
+    // each part's say being the texels the build shows of it.
+    const halfScore = (rot: number, dx: number, dy: number) => {
+      const per = new Map<string, { n: number; w: number }>();
+      for (const x of set) {
+        const q = place(rot, dx, dy, x.p),
+          e = per.get(x.slot) ?? { n: 0, w: 0 };
+        e.n += x.s.shown * hit(x.s, q[0], q[1]);
+        e.w += x.s.shown;
+        per.set(x.slot, e);
+      }
+      const list = [...per.values()].filter((e) => e.w > 0).sort((a, b) => b.n / b.w - a.n / a.w);
+      const half = list.reduce((m, e) => m + e.w, 0) / 2;
+      let n = 0,
+        w = 0;
+      for (const e of list) {
+        const take = Math.min(e.w, half - w);
+        if (take <= 0) break;
+        n += (e.n / e.w) * take;
+        w += take;
+      }
+      return w > 0 ? n / w : 0;
     };
     const subset = (n: number) => {
       const k = Math.max(1, Math.floor(set.length / n));
@@ -404,7 +480,8 @@ export function fitRestPose(
     let best = search(subset(200), [[0, 0, 0, 0]], turnSpan, 5, moveSpan, coarse, 8);
     best = search(subset(600), best, 5, 1, coarse, coarse / 4, 3);
     best = search(set, best, 1, 0.25, coarse / 4, Math.max(0.5, coarse / 16), 1);
-    const [boneScore, rot, dx, dy] = best[0]!;
+    const [, rot, dx, dy] = best[0]!;
+    const boneScore = halfScore(rot, dx, dy);
     // Composite: x -> place(D0 x).
     const a = (rot * Math.PI) / 180,
       Rc: [number, number] = [
@@ -428,11 +505,13 @@ export function fitRestPose(
     for (const slot of slots) {
       const list = samples.get(slot)!;
       const mine = set.filter((x) => x.slot === slot);
-      const partScore =
-        mine.reduce((n, x) => {
-          const q = move(D, x.s.w0);
-          return n + hit(x.s, q[0], q[1]);
-        }, 0) / mine.length;
+      const shown = mine.reduce((n, x) => n + x.s.shown, 0);
+      const partScore = shown
+        ? mine.reduce((n, x) => {
+            const q = move(D, x.s.w0);
+            return n + x.s.shown * hit(x.s, q[0], q[1]);
+          }, 0) / shown
+        : 0;
       const centre = list.reduce<[number, number]>(
         (m, s) => [m[0] + s.w0[0] / list.length, m[1] + s.w0[1] / list.length],
         [0, 0],
@@ -632,8 +711,9 @@ export interface KeyPoseFitResult {
 
 /**
  * Fits key poses (ADR-033): each picture is fitted like a rest pose (ADR-024), on the animation's
- * pose at its frame, so the offsets add to the motion already there. A picture that shows what the
- * bones cannot (a scaled part, another expression) covers too little and gives no key pose.
+ * pose at its frame, so the offsets add to the motion already there. Parts drawn differently (another
+ * expression) are left out; a picture that shows too much the bones cannot (scaled parts, many
+ * changed drawings) covers too little and gives no key pose.
  */
 export function fitKeyPoses(
   document: unknown,
