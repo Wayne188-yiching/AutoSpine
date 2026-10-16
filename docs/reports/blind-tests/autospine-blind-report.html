@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="AutoSpine 盲測報告：只給圖片，自動做出 Spine 骨架、網格與動作，和美術原檔比對；工作流、工具、盲測影片與人工接手。">
+<title>AutoSpine 盲測報告</title>
+<style>
+:root {
+  color-scheme: dark;
+  /* 60 / 30 / 10：墨色主場、深藍資訊面、暖橘強調 */
+  --base-60: #08131b;
+  --panel: #0e1f2b;
+  --surface-30: #15334a;
+  --accent-10: #ff9a5c;
+  --ink: #f3f6f7;
+  --muted: #a9bcc3;
+  --line: rgba(169, 188, 195, .22);
+  --soft-accent: rgba(255, 154, 92, .12);
+  --hi: #4fd39a; --mid: #f2c14e; --lo: #ff7a6b;
+  --max: 1180px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font: "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Segoe UI", sans-serif;
+  --mono: ui-monospace, "Cascadia Mono", Consolas, "Roboto Mono", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--base-60); color: var(--ink); font: 400 17px/1.7 var(--font); overflow-x: hidden; }
+a { color: inherit; }
+code, .tag { font-family: var(--mono); }
+img { display: block; max-width: 100%; }
+.wrap { width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
+
+/* header */
+.top { position: sticky; top: 0; z-index: 10; background: rgba(8, 19, 27, .88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 16px; height: 60px; }
+.brand { font-weight: 800; letter-spacing: -.01em; white-space: nowrap; text-decoration: none; }
+.brand b { color: var(--accent-10); }
+.top nav { display: flex; gap: 4px; margin-left: auto; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.top nav::-webkit-scrollbar { display: none; }
+.top nav a { color: var(--muted); text-decoration: none; font-weight: 700; font-size: 15px; padding: 6px 10px; border-radius: var(--radius-sm); }
+.top nav a:hover, .top nav a:focus-visible { color: var(--ink); background: var(--soft-accent); outline: none; }
+.ver { font: 700 13px/1 var(--mono); color: var(--muted); white-space: nowrap; }
+@media (max-width: 560px) { .ver { display: none; } .top nav a { padding: 6px 7px; } }
+
+/* sections */
+section { padding: clamp(56px, 9vw, 104px) 0; scroll-margin-top: 60px; }
+section + section { border-top: 1px solid var(--line); }
+.kicker { display: inline-block; margin: 0 0 10px; font: 700 14px/1 var(--mono); letter-spacing: .12em; color: var(--accent-10); }
+h1, h2, h3 { margin: 0; letter-spacing: -.02em; }
+h2 { font-size: clamp(1.9rem, 4.2vw, 3rem); font-weight: 900; line-height: 1.16; }
+h3 { font-size: 1.2rem; font-weight: 800; line-height: 1.35; }
+.lead { margin: 14px 0 0; color: var(--muted); font-size: 18px; max-width: 46em; }
+.block { margin-top: clamp(36px, 5vw, 56px); }
+.block > h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 16px; }
+.block > h3 small { font-size: 14px; font-weight: 700; color: var(--muted); }
+
+/* hero */
+.hero { padding-top: clamp(64px, 11vw, 128px); }
+.hero h1 { font-size: clamp(2.5rem, 6.4vw, 4.8rem); font-weight: 900; line-height: 1.08; }
+.hero h1 em { font-style: normal; color: var(--accent-10); }
+.hero .lead { font-size: clamp(18px, 2vw, 21px); color: var(--ink); opacity: .86; }
+.pipe { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: 12px; margin-top: clamp(36px, 6vw, 60px); }
+.pipe .node { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+.pipe .node small { display: block; font: 700 12px/1 var(--mono); letter-spacing: .12em; color: var(--muted); }
+.pipe .node strong { display: block; margin-top: 8px; font-size: 20px; font-weight: 800; }
+.pipe .node span { display: block; margin-top: 2px; font-size: 15px; color: var(--muted); }
+.pipe .node.out { border-color: rgba(255, 154, 92, .55); background: linear-gradient(180deg, rgba(255,154,92,.09), var(--panel)); }
+.pipe .arrow { align-self: center; color: var(--accent-10); font: 700 22px/1 var(--mono); }
+@media (max-width: 760px) { .pipe { grid-template-columns: 1fr; } .pipe .arrow { justify-self: center; transform: rotate(90deg); } }
+
+/* results */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: clamp(32px, 5vw, 48px); }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+.stat b { display: block; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.1; }
+.stat b em { font-style: normal; color: var(--accent-10); }
+.stat b small { font-size: .45em; }
+.stat span { display: block; margin-top: 6px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+@media (max-width: 860px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bars { display: grid; gap: 10px; }
+.bar { display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr) 4.2em; gap: 16px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; }
+.bar strong { display: block; font-weight: 800; }
+.bar small { display: block; color: var(--muted); font-size: 14px; line-height: 1.45; }
+.bar .track { height: 12px; border-radius: 99px; background: rgba(169,188,195,.14); overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 99px; }
+.bar .fill.hi { background: var(--hi); } .bar .fill.mid { background: var(--mid); } .bar .fill.lo { background: var(--lo); }
+.bar .num { font: 800 18px/1 var(--mono); text-align: right; }
+@media (max-width: 680px) { .bar { grid-template-columns: 1fr 3.6em; } .bar .track { grid-column: 1 / -1; grid-row: 2; } }
+.agent { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: center; background: var(--surface-30); border-radius: var(--radius); padding: clamp(20px, 3vw, 28px); }
+.agent + .agent { margin-top: 12px; }
+.agent .badge { font: 800 14px/1 var(--mono); letter-spacing: .08em; color: var(--base-60); background: var(--accent-10); border-radius: var(--radius-sm); padding: 10px 12px; white-space: nowrap; text-align: center; min-width: 7.5em; }
+.agent p { margin: 0; }
+.agent p + p { margin-top: 4px; color: var(--muted); font-size: 15px; }
+@media (max-width: 560px) { .agent { grid-template-columns: 1fr; } .agent .badge { justify-self: start; } }
+
+/* workflow */
+.flow { margin: clamp(32px, 5vw, 56px) 0 0; padding: 0; }
+.step { list-style: none; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(20px, 4vw, 48px); align-items: start; padding: clamp(24px, 4vw, 40px) 0; border-top: 1px solid var(--line); }
+.step:first-child { border-top: 0; padding-top: 0; }
+.step .num { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-10); color: var(--base-60); font: 900 20px/1 var(--font); }
+.step .where { margin: 16px 0 4px; font: 700 13px/1 var(--mono); letter-spacing: .12em; color: var(--muted); }
+.step h3 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 900; }
+.step p { margin: 10px 0 0; }
+.step .sub { margin: 12px 0 0; padding: 0; counter-reset: sub; }
+.step .sub li { list-style: none; position: relative; padding: 4px 0 4px 34px; }
+.step .sub li::before { counter-increment: sub; content: counter(sub); position: absolute; left: 0; top: 7px; display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid rgba(255,154,92,.6); border-radius: 50%; font: 700 12px/1 var(--mono); color: var(--accent-10); }
+.step .out { margin-top: 14px; font-size: 15px; color: var(--muted); }
+.step .out code { color: var(--accent-10); font-weight: 700; }
+.shot { margin: 0; }
+.shot .pic { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); }
+.shot .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.shot.two .pic { aspect-ratio: 4 / 5; }
+.shot.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.shot figcaption { grid-column: 1 / -1; margin-top: 8px; font-size: 14px; color: var(--muted); }
+@media (max-width: 860px) { .step { grid-template-columns: 1fr; } }
+.loop { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 8px; padding: 18px 22px; border: 1px dashed rgba(255,154,92,.5); border-radius: var(--radius); }
+.loop strong { color: var(--accent-10); }
+
+/* tools */
+.tags { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin: 0; padding: 0; }
+.tags li { list-style: none; display: flex; flex-direction: column; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+.tags .step-name { font: 700 12px/1 var(--mono); letter-spacing: .12em; color: var(--muted); }
+.tags .codes { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 13px; font-weight: 700; color: var(--accent-10); background: var(--soft-accent); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+.tags li > span:last-child { font-weight: 700; }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 4vw, 48px); }
+@media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+.cols h3 { margin-bottom: 8px; }
+.list { margin: 0; padding: 0; }
+.list.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(24px, 4vw, 48px); }
+@media (max-width: 760px) { .list.two { grid-template-columns: 1fr; } }
+.list li { list-style: none; position: relative; padding: 12px 0 12px 22px; border-bottom: 1px solid var(--line); }
+.list li::before { content: ""; position: absolute; left: 2px; top: 1.28em; width: 8px; height: 8px; border-radius: 2px; background: var(--accent-10); }
+.list li b { font-weight: 800; }
+.list li span { color: var(--muted); }
+
+/* videos */
+.cases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 3vw, 28px); margin-top: clamp(32px, 5vw, 56px); }
+@media (max-width: 860px) { .cases { grid-template-columns: 1fr; } }
+.case { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(16px, 2.4vw, 24px); }
+.case header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 14px; }
+.case header .no { font: 800 14px/1 var(--mono); color: var(--accent-10); }
+.case header h3 { font-size: clamp(1.2rem, 2.2vw, 1.5rem); font-weight: 900; }
+.case header .pill { margin-left: auto; }
+.case header p { margin: 0; color: var(--muted); flex-basis: 100%; font-size: 15px; }
+.sides { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 0 0 14px; font-size: 15px; }
+.sides dt { font: 700 12px/1.9 var(--mono); letter-spacing: .06em; color: var(--accent-10); white-space: nowrap; }
+.sides dd { margin: 0; color: var(--muted); }
+video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #050d12; border-radius: var(--radius-sm); }
+.pill { font: 800 13px/1 var(--mono); padding: 5px 9px; border-radius: 99px; color: var(--base-60); white-space: nowrap; }
+.pill.hi { background: var(--hi); } .pill.mid { background: var(--mid); } .pill.lo { background: var(--lo); }
+.group { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); margin-top: 10px; }
+.group summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; }
+.group summary::-webkit-details-marker { display: none; }
+.group summary::before { content: "+"; font: 800 18px/1 var(--mono); color: var(--accent-10); width: 1em; }
+.group[open] summary::before { content: "–"; }
+.group .gname { font-weight: 800; margin-right: auto; }
+.group .gmeta { color: var(--muted); font-size: 14px; font-family: var(--mono); white-space: nowrap; }
+.vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; padding: 0 20px 20px; }
+.vcard { margin: 0; }
+.vcard figcaption { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; }
+.vname { font-weight: 700; font-size: 15px; overflow-wrap: anywhere; }
+.vfail { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; color: var(--muted); font-size: 13px; }
+.phase { margin: clamp(32px, 5vw, 48px) 0 4px; font: 700 14px/1 var(--mono); letter-spacing: .1em; color: var(--muted); }
+
+/* handover */
+.map { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.map .row { display: grid; grid-template-columns: 3em auto minmax(0, 1fr); align-items: center; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+.map .what { font-weight: 700; }
+.map .to { color: var(--accent-10); font-family: var(--mono); }
+.map .how strong { display: block; font-weight: 800; }
+.map .how span { display: block; font-size: 14px; color: var(--muted); line-height: 1.5; }
+@media (max-width: 760px) { .map { grid-template-columns: 1fr; } }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 16px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 15px; }
+.legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 8px; vertical-align: -2px; }
+.projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.project { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+.project strong { display: block; font-weight: 800; }
+.project .n { font: 900 26px/1.1 var(--mono); color: var(--accent-10); margin-top: 6px; }
+.project .n small { font: 700 13px var(--font); color: var(--muted); margin-left: 4px; }
+.project span { display: block; color: var(--muted); font-size: 13px; margin-top: 4px; font-family: var(--mono); }
+.doc { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(18px, 3vw, 26px); }
+.doc-title { margin: 0; font-weight: 900; font-size: 1.15rem; }
+.doc-intro { margin: 6px 0 16px; color: var(--muted); font-size: 15px; }
+.doc-more { margin: 14px 0 0; color: var(--muted); font-size: 14px; }
+.doc code { font-size: 12.5px; color: var(--ink); background: rgba(169,188,195,.12); border-radius: 4px; padding: 1px 5px; margin: 1px 2px 1px 0; display: inline-block; }
+.tablewrap { overflow-x: auto; }
+.bonetable { width: 100%; border-collapse: collapse; font-size: 14px; }
+.bonetable th { text-align: left; font: 700 12px/1 var(--mono); letter-spacing: .1em; color: var(--muted); padding: 0 12px 10px 0; border-bottom: 1px solid var(--line); }
+.bonetable td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.bonetable tr:last-child td { border-bottom: 0; }
+.bonetable td:first-child { white-space: nowrap; font-weight: 800; }
+.bonetable td:nth-child(2) { color: var(--muted); min-width: 16em; }
+.bonetable .bones { min-width: 18em; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+
+/* gaps */
+.bottlenecks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: clamp(32px, 5vw, 56px); }
+.bottleneck { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(20px, 3vw, 28px); }
+.bottleneck p { margin: 12px 0 0; color: var(--muted); }
+.note { margin-top: 20px; padding: clamp(20px, 3vw, 28px); border: 1px solid rgba(255,154,92,.55); border-radius: var(--radius); background: linear-gradient(110deg, rgba(255,154,92,.13), var(--panel)); }
+.note h3 { color: var(--accent-10); }
+.note p { margin: 8px 0 0; }
+@media (max-width: 860px) { .bottlenecks { grid-template-columns: 1fr; } }
+
+footer { border-top: 1px solid var(--line); padding: 32px 0 48px; color: var(--muted); font-size: 15px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+footer .sp { margin-left: auto; font-family: var(--mono); }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">AutoSpine <b>盲測報告</b></a>
+    <nav aria-label="章節">
+      <a href="#results">成績</a>
+      <a href="#workflow">工作流</a>
+      <a href="#tools">工具</a>
+      <a href="#videos">影片</a>
+      <a href="#handover">人工接手</a>
+      <a href="#gaps">差距</a>
+    </nav>
+    <span class="ver" translate="no">4ec4c1f</span>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <p class="kicker">IMAGES → SPINE</p>
+    <h1>只給圖片<br><em>自動做出 Spine 動畫</em></h1>
+    <p class="lead">從美術的 Spine 檔只取出圖片和擺位，自動建好骨架、網格與動作；做出來的是一般的 Spine 專案，美術可以直接接手修改。</p>
+    <div class="pipe" aria-label="流程">
+      <div class="node"><small>INPUT</small><strong>純圖片</strong><span>圖片 ＋ 擺位</span></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="node"><small>AUTOSPINE</small><strong>自動製作</strong><span>骨架 ・ 網格 ・ 動作</span></div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="node out"><small>SPINE</small><strong>Spine 專案</strong><span>全部動畫 ＋ 接手說明</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <p class="kicker">01 · RESULTS</p>
+    <h2>盲測成績</h2>
+    <p class="lead">用從沒看過的美術檔，只依動畫名稱、長度和要顯示的部件做出來，再和美術原檔比對。</p>
+    <div class="stats">
+      <div class="stat"><b>73</b><span>段盲測動畫：循環、進場、退場、勝利、特效</span></div>
+      <div class="stat"><b><em>98%</em></b><span>結構項通過：擺位、接縫、變形、動到的部件</span></div>
+      <div class="stat"><b>15</b><span>個角色各合成一個 Spine 專案</span></div>
+      <div class="stat"><b>≤ 0.13<small> px</small></b><span>官方編輯器匯入再匯出的最大誤差</span></div>
+    </div>
+    <div class="block">
+      <h3>各項通過率 <small>批次 68 段，預先登記的自動驗收項</small></h3>
+      <div class="bars">
+        <div class="bar"><div><strong>擺位與循環接縫</strong><small>每張圖放對位置、循環頭尾接得上</small></div><div class="track"><div class="fill hi" style="width:100%"></div></div><span class="num">100%</span></div>
+        <div class="bar"><div><strong>網格變形</strong><small>沒有翻面、拉伸不超過美術</small></div><div class="track"><div class="fill hi" style="width:96%"></div></div><span class="num">96%</span></div>
+        <div class="bar"><div><strong>動到對的部件</strong><small>美術有動的我們也有動，反之亦然</small></div><div class="track"><div class="fill hi" style="width:96%"></div></div><span class="num">96%</span></div>
+        <div class="bar"><div><strong>起始姿勢</strong><small>第 0 幀的姿勢和美術一致</small></div><div class="track"><div class="fill mid" style="width:51%"></div></div><span class="num">51%</span></div>
+        <div class="bar"><div><strong>動作風格</strong><small>節奏、延遲、幅度落在美術範圍內</small></div><div class="track"><div class="fill lo" style="width:17%"></div></div><span class="num">17%</span></div>
+      </div>
+    </div>
+    <div class="block">
+      <div class="agent"><span class="badge">盲測規則</span><div><p>方案只依需求寫 → 建好先鎖定（記下雜湊）→ 才打開美術檔比對。</p><p>比對後不改方案、不改門檻；之後的改進另外標為「樣本內」。</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="workflow">
+  <div class="wrap">
+    <p class="kicker">02 · WORKFLOW</p>
+    <h2>工作流</h2>
+    <ol class="flow">
+      <li class="step">
+        <div>
+          <span class="num">1</span>
+          <p class="where">SPINE 原檔</p>
+          <h3>準備圖片</h3>
+          <p>從美術的 Spine 檔只取出圖片和擺位，骨架、網格、動畫全部拿掉。</p>
+          <p class="out">產出：<code>純圖片版</code></p>
+        </div>
+        <figure class="shot"><div class="pic"><img src="report-assets/flow-1-images.jpg" alt="純圖片版：只剩圖片與擺位"></div><figcaption>純圖片版：只剩圖片與擺位</figcaption></figure>
+      </li>
+      <li class="step">
+        <div>
+          <span class="num">2</span>
+          <p class="where">需求</p>
+          <h3>說明要做什麼</h3>
+          <ol class="sub">
+            <li>動畫名稱與長度</li>
+            <li>這段動畫顯示哪些部件</li>
+            <li>有姿勢圖就附上（可選）</li>
+          </ol>
+        </div>
+        <figure class="shot"><div class="pic"><img src="report-assets/flow-2-pose.jpg" alt="姿勢圖：動畫第 0 幀的樣子"></div><figcaption>姿勢圖：動畫第 0 幀的樣子</figcaption></figure>
+      </li>
+      <li class="step">
+        <div>
+          <span class="num">3</span>
+          <p class="where">AUTOSPINE</p>
+          <h3>自動製作</h3>
+          <ol class="sub">
+            <li>AI 依技能寫出方案</li>
+            <li>建出骨架、網格、動作，對齊姿勢圖</li>
+            <li>輸出檢查影片：佈線 → 骨架 → 動作</li>
+          </ol>
+          <p class="out">產出：<code>Spine JSON</code> ＋ <code>檢查影片</code></p>
+        </div>
+        <figure class="shot two"><div class="pic"><img src="report-assets/flow-3-mesh.jpg" alt="自動佈線"></div><div class="pic"><img src="report-assets/flow-3-bones.jpg" alt="自動骨架"></div><figcaption>左：自動佈線　右：自動骨架</figcaption></figure>
+      </li>
+      <li class="step">
+        <div>
+          <span class="num">4</span>
+          <p class="where">SPINE 專案</p>
+          <h3>交付</h3>
+          <ol class="sub">
+            <li>同一角色的動畫合成一個專案</li>
+            <li>附接手說明 HANDOVER.md</li>
+            <li>有美術版時，自動比對出分數與並排影片</li>
+          </ol>
+          <p class="out">產出：<code>.spine</code> ＋ <code>HANDOVER.md</code></p>
+        </div>
+        <figure class="shot"><div class="pic"><img src="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-02_Idle-review.jpg" alt="並排比對：左美術、右 AutoSpine"></div><figcaption>並排比對：左美術、右 AutoSpine</figcaption></figure>
+      </li>
+    </ol>
+    <div class="loop"><strong>可重複執行</strong><span>改需求或方案後重跑 3 → 4，就是新的專案。</span></div>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="wrap">
+    <p class="kicker">03 · TOOLS</p>
+    <h2>一個 Skill ＋ 一個 MCP</h2>
+    <p class="lead">AI 照 Skill 的步驟，呼叫同一個 MCP 伺服器裡的工具；每個步驟一個工具。</p>
+    <div class="block">
+      <div class="agent"><span class="badge">SKILL</span><div><p><b>autospine</b>：操作手冊</p><p>告訴 AI 先問清楚什麼、骨架怎麼排、照什麼順序做。</p></div></div>
+      <div class="agent"><span class="badge">MCP</span><div><p><b>AutoSpine MCP</b>：一個伺服器</p><p>提供下面這些工具；AI 依步驟呼叫，只讀的工具不需要寫入權限。</p></div></div>
+    </div>
+    <div class="block">
+      <h3>依步驟分組的工具</h3>
+      <ul class="tags">
+        <li><span class="step-name">步驟 3 · 寫方案</span><span class="codes"><span class="tag">lint_character_plan</span></span><span>檢查方案</span></li>
+        <li><span class="step-name">步驟 3 · 製作</span><span class="codes"><span class="tag">build_character</span><span class="tag">fit_pose</span></span><span>建出 Spine 檔、對齊姿勢圖</span></li>
+        <li><span class="step-name">步驟 3 · 檢查</span><span class="codes"><span class="tag">review_video</span></span><span>佈線 → 骨架 → 動作影片</span></li>
+        <li><span class="step-name">步驟 4 · 交付</span><span class="codes"><span class="tag">merge_plans</span></span><span>同一角色合成一個專案</span></li>
+        <li><span class="step-name">步驟 4 · 驗收</span><span class="codes"><span class="tag">compare_reference</span></span><span>和美術原檔比對</span></li>
+        <li><span class="step-name">外部</span><span class="codes"><span class="tag">Spine 4.0.64</span><span class="tag">ffmpeg</span></span><span>匯出／匯入專案、輸出影片</span></li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>背後的想法</h3>
+      <ul class="list two">
+        <li><b>只看像素</b> <span>關節由部件的端點、重疊、質心決定</span></li>
+        <li><b>有邏輯的骨架</b> <span>每根骨從自己的關節指向下一個關節</span></li>
+        <li><b>人工密度的網格</b> <span>點數比照美術習慣，權重依用途選</span></li>
+        <li><b>稀疏關鍵幀</b> <span>主動作加規則推出的次要動作，不烘焙逐格</span></li>
+      </ul>
+    </div>
+    </div>
+  </div>
+</section>
+
+<section id="videos">
+  <div class="wrap">
+    <p class="kicker">04 · VIDEOS</p>
+    <h2>盲測影片</h2>
+    <p class="lead">每支影片依序是佈線 → 骨架 → 完整動態；左邊美術原檔，右邊 AutoSpine。兩邊比的是同一段動畫，但 AutoSpine 只看得到名稱與長度，動作是推測的；精選案例分別寫出兩邊各做了什麼。分數是自動驗收項，結構過了不代表動作像，請看影片。</p>
+    <div class="cases">
+      <article class="case"><header><span class="no">CASE 01</span><h3>大野狼 idle</h3><span class="pill hi">11/12</span></header>
+        <dl class="sides"><dt>美術</dt><dd>頭轉向一側、瞇眼斜看，身體微蹲。</dd><dt>AutoSpine</dt><dd>只依名稱與長度推成呼吸起伏，尾巴、耳朵擺動，頭保持正面。</dd></dl>
+        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-02_Idle-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-02_Idle-review.mp4"></video>
+        <p class="vfail">未過 <span class="tag">D1</span></p></article>
+      <article class="case"><header><span class="no">CASE 02</span><h3>麋鹿 idle</h3><span class="pill hi">11/12</span></header>
+        <dl class="sides"><dt>美術</dt><dd>浮在空中上下飄，頭微傾，耳朵擺動，中途眨眼。</dd><dt>AutoSpine</dt><dd>一樣浮動並眨眼（setup 隱藏的眼皮換圖），但動得多的是五官，耳朵擺動偏小。</dd></dl>
+        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-Idle-review.jpg" src="2026-10-14-batch/moose/video/moose-Idle-review.mp4"></video>
+        <p class="vfail">未過 <span class="tag">D1</span></p></article>
+      <article class="case"><header><span class="no">CASE 03</span><h3>獎盃 Wind</h3><span class="pill hi">11/12</span></header>
+        <dl class="sides"><dt>美術</dt><dd>獎盃不動，只有星星在不同位置閃爍。</dd><dt>AutoSpine</dt><dd>星星依序閃爍，另外多做了獎盃輕擺與光暈呼吸。</dd></dl>
+        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Gold_video_trophy_Gold-Wind-review.jpg" src="2026-10-14-batch/trophy_Gold/video/trophy_Gold-Wind-review.mp4"></video>
+        <p class="vfail">未過 <span class="tag">D1</span></p></article>
+      <article class="case"><header><span class="no">CASE 04</span><h3>大野狼勝利 Win</h3><span class="pill hi">10/11</span></header>
+        <dl class="sides"><dt>美術</dt><dd>吐舌頭、頭左右歪，身體在原地小幅晃動（舌頭是網格變形）。</dd><dt>AutoSpine</dt><dd>依名稱「Win」套用跳躍模板：下蹲、起跳、落地、回彈，沒有吐舌。</dd></dl>
+        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Win-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Win-review.mp4"></video>
+        <p class="vfail">未過 <span class="tag">D1</span></p></article>
+    </div>
+    <p class="phase">第一階段 · 循環動畫（23 段）</p>
+<details class="group"><summary><span class="gname">三隻小豬世足：大野狼</span><span class="gmeta">3 段 · 29/36 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-02_Idle-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-02_Idle-review.mp4"></video>
+  <figcaption><span class="vname">02_Idle</span><span class="pill hi">11/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-06_Idle-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-06_Idle-review.mp4"></video>
+  <figcaption><span class="vname">06_Idle</span><span class="pill mid">10/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-04_Blow_Loop-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-04_Blow_Loop-review.mp4"></video>
+  <figcaption><span class="vname">04_Blow_Loop</span><span class="pill lo">8/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C3</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">三隻小豬世足：老鷹、美洲豹、麋鹿</span><span class="gmeta">3 段 · 31/36 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_eagle_video_eagle-Idle-review.jpg" src="2026-10-14-batch/eagle/video/eagle-Idle-review.mp4"></video>
+  <figcaption><span class="vname">老鷹 Idle</span><span class="pill mid">10/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_jaguar_video_jaguar-Idle-review.jpg" src="2026-10-14-batch/jaguar/video/jaguar-Idle-review.mp4"></video>
+  <figcaption><span class="vname">美洲豹 Idle</span><span class="pill mid">10/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-Idle-review.jpg" src="2026-10-14-batch/moose/video/moose-Idle-review.mp4"></video>
+  <figcaption><span class="vname">麋鹿 Idle</span><span class="pill hi">11/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">大野狼走路 LV1–3</span><span class="gmeta">6 段 · 54/72 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV1-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV1-review.mp4"></video>
+  <figcaption><span class="vname">大野狼走路 Walk_LV1</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV2-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV2-review.mp4"></video>
+  <figcaption><span class="vname">大野狼走路 Walk_LV2</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV3-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV3-review.mp4"></video>
+  <figcaption><span class="vname">大野狼走路 Walk_LV3</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV1-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV1-review.mp4"></video>
+  <figcaption><span class="vname">大野狼世足走路 Walk_LV1</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV2-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV2-review.mp4"></video>
+  <figcaption><span class="vname">大野狼世足走路 Walk_LV2</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV3-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV3-review.mp4"></video>
+  <figcaption><span class="vname">大野狼世足走路 Walk_LV3</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">龍鯉爺循環</span><span class="gmeta">3 段 · 26/36 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha02_PrayLoop-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha02_PrayLoop-review.mp4"></video>
+  <figcaption><span class="vname">Buddha02_PrayLoop</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha04_DanceLoop-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha04_DanceLoop-review.mp4"></video>
+  <figcaption><span class="vname">Buddha04_DanceLoop</span><span class="pill lo">8/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C2</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha06_DigLoop-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha06_DigLoop-review.mp4"></video>
+  <figcaption><span class="vname">Buddha06_DigLoop</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C2</span><span class="tag">D1</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">Portal 符號</span><span class="gmeta">2 段 · 20/24 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_portal_maitreya_video_portal_maitreya-idle-review.jpg" src="2026-10-14-batch/portal_maitreya/video/portal_maitreya-idle-review.mp4"></video>
+  <figcaption><span class="vname">龍鯉爺 portal</span><span class="pill mid">10/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_portal_3pig_video_portal_3pig-idle-review.jpg" src="2026-10-14-batch/portal_3pig/video/portal_3pig-idle-review.mp4"></video>
+  <figcaption><span class="vname">三隻小豬 portal</span><span class="pill mid">10/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">大廳道具與宣告</span><span class="gmeta">6 段 · 62/72 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Bronze_video_trophy_Bronze-Wind-review.jpg" src="2026-10-14-batch/trophy_Bronze/video/trophy_Bronze-Wind-review.mp4"></video>
+  <figcaption><span class="vname">獎盃（銅） Wind</span><span class="pill hi">11/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Gold_video_trophy_Gold-Wind-review.jpg" src="2026-10-14-batch/trophy_Gold/video/trophy_Gold-Wind-review.mp4"></video>
+  <figcaption><span class="vname">獎盃（金） Wind</span><span class="pill hi">11/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Silver_video_trophy_Silver-Wind-review.jpg" src="2026-10-14-batch/trophy_Silver/video/trophy_Silver-Wind-review.mp4"></video>
+  <figcaption><span class="vname">獎盃（銀） Wind</span><span class="pill hi">11/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerball_video_soccerball-loop-review.jpg" src="2026-10-14-batch/soccerball/video/soccerball-loop-review.mp4"></video>
+  <figcaption><span class="vname">足球 loop</span><span class="pill mid">10/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_powershot_video_powershot-Loop-review.jpg" src="2026-10-14-batch/powershot/video/powershot-Loop-review.mp4"></video>
+  <figcaption><span class="vname">強力射門 Loop</span><span class="pill mid">10/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">C3</span><span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_award_video_award-loop-review.jpg" src="2026-10-14-batch/award/video/award-loop-review.mp4"></video>
+  <figcaption><span class="vname">WC_Award loop</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+    <p class="phase">第二階段 · 單次動畫與特效（45 段）</p>
+<details class="group"><summary><span class="gname">大野狼：進場、吹氣、退場、變身、勝利</span><span class="gmeta">7 段 · 61/77 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-01_In-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-01_In-review.mp4"></video>
+  <figcaption><span class="vname">01_In</span><span class="pill hi">10/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-03_Blow_Start-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-03_Blow_Start-review.mp4"></video>
+  <figcaption><span class="vname">03_Blow_Start</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-05_Blow_End-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-05_Blow_End-review.mp4"></video>
+  <figcaption><span class="vname">05_Blow_End</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-07_Out-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-07_Out-review.mp4"></video>
+  <figcaption><span class="vname">07 Out</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Change-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Change-review.mp4"></video>
+  <figcaption><span class="vname">Change</span><span class="pill lo">6/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C2</span><span class="tag">C3</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Win-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Win-review.mp4"></video>
+  <figcaption><span class="vname">Win</span><span class="pill hi">10/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Win_2-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Win_2-review.mp4"></video>
+  <figcaption><span class="vname">Win_2</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">動物：跳躍抽獎、蓄力</span><span class="gmeta">6 段 · 54/66 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_eagle_video_eagle-__JumpDraw-review.jpg" src="2026-10-14-batch/eagle/video/eagle-__JumpDraw-review.mp4"></video>
+  <figcaption><span class="vname">老鷹 @_JumpDraw</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_eagle_video_eagle-PoolEnergy-review.jpg" src="2026-10-14-batch/eagle/video/eagle-PoolEnergy-review.mp4"></video>
+  <figcaption><span class="vname">老鷹 PoolEnergy</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_jaguar_video_jaguar-__JumpDraw-review.jpg" src="2026-10-14-batch/jaguar/video/jaguar-__JumpDraw-review.mp4"></video>
+  <figcaption><span class="vname">美洲豹 @_JumpDraw</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_jaguar_video_jaguar-PoolEnergy-review.jpg" src="2026-10-14-batch/jaguar/video/jaguar-PoolEnergy-review.mp4"></video>
+  <figcaption><span class="vname">美洲豹 PoolEnergy</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-__JumpDraw-review.jpg" src="2026-10-14-batch/moose/video/moose-__JumpDraw-review.mp4"></video>
+  <figcaption><span class="vname">麋鹿 @_JumpDraw</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-PoolEnergy-review.jpg" src="2026-10-14-batch/moose/video/moose-PoolEnergy-review.mp4"></video>
+  <figcaption><span class="vname">麋鹿 PoolEnergy</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">大野狼走路：升級轉場、張望</span><span class="gmeta">6 段 · 48/66 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV1-LV2-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV1-LV2-review.mp4"></video>
+  <figcaption><span class="vname">大野狼走路 Walk_LV1-LV2</span><span class="pill lo">7/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">B1</span><span class="tag">B3</span><span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV2-LV3-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV2-LV3-review.mp4"></video>
+  <figcaption><span class="vname">大野狼走路 Walk_LV2-LV3</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-History__Look-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-History__Look-review.mp4"></video>
+  <figcaption><span class="vname">大野狼走路 History/_Look</span><span class="pill lo">6/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">B1</span><span class="tag">B3</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV1-LV2-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV1-LV2-review.mp4"></video>
+  <figcaption><span class="vname">大野狼世足走路 Walk_LV1-LV2</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV2-LV3-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV2-LV3-review.mp4"></video>
+  <figcaption><span class="vname">大野狼世足走路 Walk_LV2-LV3</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-History__Look-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-History__Look-review.mp4"></video>
+  <figcaption><span class="vname">大野狼世足走路 History/_Look</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">龍鯉爺單次動作</span><span class="gmeta">10 段 · 87/110 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha01_Pray-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha01_Pray-review.mp4"></video>
+  <figcaption><span class="vname">Buddha01_Pray</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha03_LuckyBagAppear-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha03_LuckyBagAppear-review.mp4"></video>
+  <figcaption><span class="vname">Buddha03_LuckyBagAppear</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha05_ReadyToDig-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha05_ReadyToDig-review.mp4"></video>
+  <figcaption><span class="vname">Buddha05_ReadyToDig</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha07_DigOut_01-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha07_DigOut_01-review.mp4"></video>
+  <figcaption><span class="vname">Buddha07_DigOut_01</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha07_DigOut_02-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha07_DigOut_02-review.mp4"></video>
+  <figcaption><span class="vname">Buddha07_DigOut_02</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha08_Carp-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha08_Carp-review.mp4"></video>
+  <figcaption><span class="vname">Buddha08_Carp</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha09_GoldenDragon-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha09_GoldenDragon-review.mp4"></video>
+  <figcaption><span class="vname">Buddha09_GoldenDragon</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha10_ReadyToPray-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha10_ReadyToPray-review.mp4"></video>
+  <figcaption><span class="vname">Buddha10_ReadyToPray</span><span class="pill hi">10/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha11_Coin-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha11_Coin-review.mp4"></video>
+  <figcaption><span class="vname">Buddha11_Coin</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha12_RainbowDragon-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha12_RainbowDragon-review.mp4"></video>
+  <figcaption><span class="vname">Buddha12_RainbowDragon</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">道具與宣告：倒下、進場、按壓、退場</span><span class="gmeta">9 段 · 81/99 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Bronze_video_trophy_Bronze-Collapse-review.jpg" src="2026-10-14-batch/trophy_Bronze/video/trophy_Bronze-Collapse-review.mp4"></video>
+  <figcaption><span class="vname">獎盃（銅） Collapse</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Gold_video_trophy_Gold-Collapse-review.jpg" src="2026-10-14-batch/trophy_Gold/video/trophy_Gold-Collapse-review.mp4"></video>
+  <figcaption><span class="vname">獎盃（金） Collapse</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Silver_video_trophy_Silver-Collapse-review.jpg" src="2026-10-14-batch/trophy_Silver/video/trophy_Silver-Collapse-review.mp4"></video>
+  <figcaption><span class="vname">獎盃（銀） Collapse</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerball_video_soccerball-In-review.jpg" src="2026-10-14-batch/soccerball/video/soccerball-In-review.mp4"></video>
+  <figcaption><span class="vname">足球 In</span><span class="pill hi">10/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerball_video_soccerball-Press-review.jpg" src="2026-10-14-batch/soccerball/video/soccerball-Press-review.mp4"></video>
+  <figcaption><span class="vname">足球 Press</span><span class="pill hi">10/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_powershot_video_powershot-In-review.jpg" src="2026-10-14-batch/powershot/video/powershot-In-review.mp4"></video>
+  <figcaption><span class="vname">強力射門 In</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_powershot_video_powershot-Out-review.jpg" src="2026-10-14-batch/powershot/video/powershot-Out-review.mp4"></video>
+  <figcaption><span class="vname">強力射門 Out</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_award_video_award-into-review.jpg" src="2026-10-14-batch/award/video/award-into-review.mp4"></video>
+  <figcaption><span class="vname">WC_Award into</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_award_video_award-out-review.jpg" src="2026-10-14-batch/award/video/award-out-review.mp4"></video>
+  <figcaption><span class="vname">WC_Award out</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
+</figure></div></details>
+<details class="group"><summary><span class="gname">特效檔</span><span class="gmeta">7 段 · 60/78 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_goal_video_goal-animation-review.jpg" src="2026-10-14-batch/goal/video/goal-animation-review.mp4"></video>
+  <figcaption><span class="vname">WC_Goal</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_bg4_video_bg4-Jump-review.jpg" src="2026-10-14-batch/bg4/video/bg4-Jump-review.mp4"></video>
+  <figcaption><span class="vname">BG4 Jump</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_bg4_video_bg4-PoolEnergy-review.jpg" src="2026-10-14-batch/bg4/video/bg4-PoolEnergy-review.mp4"></video>
+  <figcaption><span class="vname">BG4 PoolEnergy</span><span class="pill lo">6/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">B3</span><span class="tag">C2</span><span class="tag">C3</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wcfx_video_wcfx-FX-review.jpg" src="2026-10-14-batch/wcfx/video/wcfx-FX-review.mp4"></video>
+  <figcaption><span class="vname">WC_FX</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolffx_video_wolffx-FX_Blow_Start-review.jpg" src="2026-10-14-batch/wolffx/video/wolffx-FX_Blow_Start-review.mp4"></video>
+  <figcaption><span class="vname">大野狼特效 FX_Blow_Start</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolffx_video_wolffx-FX_Blow_Loop-review.jpg" src="2026-10-14-batch/wolffx/video/wolffx-FX_Blow_Loop-review.mp4"></video>
+  <figcaption><span class="vname">大野狼特效 FX_Blow_Loop</span><span class="pill mid">9/12</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolffx_video_wolffx-FX_Blow_End-review.jpg" src="2026-10-14-batch/wolffx/video/wolffx-FX_Blow_End-review.mp4"></video>
+  <figcaption><span class="vname">大野狼特效 FX_Blow_End</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
+</figure></div></details>
+    <p class="phase">先前的端到端盲測（5 段）</p>
+<details class="group"><summary><span class="gname">馬年魚、BaShouEnn、YoLu、薑餅人、搖錢樹</span><span class="gmeta">5 段 · 45/55 項</span></summary>
+<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-horse-e2e_video_horse-idle-review.jpg" src="2026-10-14-horse-e2e/video/horse-idle-review.mp4"></video>
+  <figcaption><span class="vname">馬年魚 L_[IDLE]</span><span class="pill hi">10/11</span></figcaption>
+  <p class="vfail">未過 <span class="tag">A1</span></p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-13-bashouenn-e2e_video_bashouenn-blind-review.jpg" src="2026-10-13-bashouenn-e2e/video/bashouenn-blind-review.mp4"></video>
+  <figcaption><span class="vname">BaShouEnn idle</span><span class="pill lo">8/11</span></figcaption>
+  <p class="vfail">全部通過</p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-yolu-e2e_video_yolu-blind-review.jpg" src="2026-10-14-yolu-e2e/video/yolu-blind-review.mp4"></video>
+  <figcaption><span class="vname">YoLu idle</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">全部通過</p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-gingerbread-e2e_video_gingerbread-blind2-review.jpg" src="2026-10-14-gingerbread-e2e/video/gingerbread-blind2-review.mp4"></video>
+  <figcaption><span class="vname">薑餅人（第二輪）</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">全部通過</p>
+</figure>
+<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-goldtree-e2e_video_goldtree-idle-compare.jpg" src="2026-10-14-goldtree-e2e/video/goldtree-idle-compare.mp4"></video>
+  <figcaption><span class="vname">超級搖錢樹</span><span class="pill mid">9/11</span></figcaption>
+  <p class="vfail">全部通過</p>
+</figure></div></details>
+  </div>
+</section>
+
+<section id="handover">
+  <div class="wrap">
+    <p class="kicker">05 · HANDOVER</p>
+    <h2>美術可以直接接手</h2>
+    <p class="lead">產出就是一般的 Spine 專案，只用 Spine 的標準功能，打開就能改。</p>
+    <div class="block">
+      <div class="map">
+        <div class="row"><span class="what">專案</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>一個角色一個 .spine</strong><span>循環與單次動畫都在同一個專案裡</span></span></div>
+        <div class="row"><span class="what">骨架</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>依用途上色</strong><span>骨名就是部位名，看顏色就知道用途</span></span></div>
+        <div class="row"><span class="what">網格</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>人工密度</strong><span>點數與權重比照美術習慣</span></span></div>
+        <div class="row"><span class="what">動作</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>稀疏關鍵幀＋曲線</strong><span>可以直接拖關鍵幀、調曲線</span></span></div>
+        <div class="row"><span class="what">約束</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>標準 IK、Transform</strong><span>沒有外掛，沒有逐格烘焙</span></span></div>
+        <div class="row"><span class="what">說明</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>HANDOVER.md</strong><span>每根骨的用途、每段動畫打了什麼、要改去哪裡</span></span></div>
+      </div>
+      <ul class="legend">
+        <li><i style="background:#4080ff"></i>主骨：動作主控</li>
+        <li><i style="background:#ff4040"></i>控制骨：沒有圖片，只驅動</li>
+        <li><i style="background:#ffa040"></i>跟隨骨：五官與圖層</li>
+        <li><i style="background:#40c040"></i>骨鏈：頭髮、尾巴、飾品</li>
+        <li><i style="background:#9aa0a6"></i>關節骨</li>
+      </ul>
+    </div>
+    <div class="block">
+      <h3>15 個角色，15 個專案 <small>官方 Spine 4.0.64 匯入再匯出，骨、slot、動畫都不變</small></h3>
+      <div class="projects">
+        <div class="project"><strong>龍鯉爺</strong><div class="n">13<small>段動畫</small></div><span>8 骨 · 144 slot</span><span>來回誤差 0.11 px</span></div>
+        <div class="project"><strong>大野狼</strong><div class="n">10<small>段動畫</small></div><span>48 骨 · 52 slot</span><span>來回誤差 0.11 px</span></div>
+        <div class="project"><strong>大野狼世足走路</strong><div class="n">6<small>段動畫</small></div><span>35 骨 · 34 slot</span><span>來回誤差 0.10 px</span></div>
+        <div class="project"><strong>大野狼走路</strong><div class="n">6<small>段動畫</small></div><span>35 骨 · 40 slot</span><span>來回誤差 0.09 px</span></div>
+        <div class="project"><strong>WC_Award 宣告</strong><div class="n">3<small>段動畫</small></div><span>33 骨 · 163 slot</span><span>來回誤差 0.13 px</span></div>
+        <div class="project"><strong>老鷹</strong><div class="n">3<small>段動畫</small></div><span>26 骨 · 122 slot</span><span>來回誤差 0.04 px</span></div>
+        <div class="project"><strong>美洲豹</strong><div class="n">3<small>段動畫</small></div><span>27 骨 · 102 slot</span><span>來回誤差 0.02 px</span></div>
+        <div class="project"><strong>麋鹿</strong><div class="n">3<small>段動畫</small></div><span>27 骨 · 98 slot</span><span>來回誤差 0.03 px</span></div>
+        <div class="project"><strong>強力射門 Logo</strong><div class="n">3<small>段動畫</small></div><span>5 骨 · 5 slot</span><span>來回誤差 0.10 px</span></div>
+        <div class="project"><strong>足球</strong><div class="n">3<small>段動畫</small></div><span>3 骨 · 8 slot</span><span>來回誤差 0.01 px</span></div>
+        <div class="project"><strong>大野狼特效</strong><div class="n">3<small>段動畫</small></div><span>3 骨 · 79 slot</span><span>來回誤差 0.02 px</span></div>
+        <div class="project"><strong>BG4 特效</strong><div class="n">2<small>段動畫</small></div><span>3 骨 · 8 slot</span><span>來回誤差 0.01 px</span></div>
+        <div class="project"><strong>獎盃（銅）</strong><div class="n">2<small>段動畫</small></div><span>4 骨 · 5 slot</span><span>來回誤差 0.01 px</span></div>
+        <div class="project"><strong>獎盃（金）</strong><div class="n">2<small>段動畫</small></div><span>7 骨 · 8 slot</span><span>來回誤差 0.01 px</span></div>
+        <div class="project"><strong>獎盃（銀）</strong><div class="n">2<small>段動畫</small></div><span>5 骨 · 6 slot</span><span>來回誤差 0.01 px</span></div>
+      </div>
+    </div>
+    <div class="block">
+      <h3>接手說明節錄 <small>大野狼，10 段動畫一個專案（HANDOVER.md 的骨架段落）</small></h3>
+      <div class="doc">
+        <p class="doc-title">接手說明：ThreePigWC wolf (all animations)</p>
+        <p class="doc-intro">AutoSpine 依方案 <code>wolf3p_all</code> 自動產生。在 Spine 4.0.64 用 Import Data 匯入 <code>wolf3p_all.json</code>（圖片在 <code>images/</code>）。之後可以直接在 Spine 裡修改；手動修改不會回寫方案，要重新產生請改方案後再建置到新資料夾。</p>
+        <div class="tablewrap"><table class="bonetable"><thead><tr><th>類型</th><th>用途</th><th>骨</th></tr></thead><tbody>
+<tr><td><span class="dot" style="background:#4080ff"></span>主骨</td><td>動作的主控：呼吸、下沉的位移都打在這裡</td><td class="bones"><code>body</code></td></tr>
+<tr><td><span class="dot" style="background:#ff4040"></span>控制骨</td><td>沒有圖片，只用來驅動：臉部視差（face_ctl 等）、IK 目標、壓縮腿部的站姿骨</td><td class="bones"><code>face_base</code> <code>face_ctl</code> <code>face_counter</code></td></tr>
+<tr><td><span class="dot" style="background:#ffa040"></span>跟隨骨</td><td>臉部五官與 2.5D 圖層，透過 transform 約束跟著臉部控制骨；<code>*_frame</code> 是對齊方向的載體</td><td class="bones"><code>eyes_frame</code> <code>eyes</code> <code>brows_frame</code> <code>brows</code> <code>muzzle_frame</code> <code>muzzle</code> <code>earL_frame</code> <code>earL</code> <code>earR_frame</code> <code>earR</code></td></tr>
+<tr><td><span class="dot" style="background:#40c040"></span>骨鏈</td><td>頭髮、尾巴、耳朵、鬍子、吊飾等軟部件的骨鏈，擺動打在這些骨的旋轉上</td><td class="bones"><code>ear_l_1</code> <code>ear_l_2</code> <code>ear_r_1</code> <code>ear_r_2</code> <code>tail_1</code> <code>tail_2</code> <code>tail_3</code></td></tr>
+<tr><td><span class="dot" style="background:#9aa0a6"></span>關節骨</td><td>身體關節：軀幹、頸、頭、四肢、手指；有關鍵幀的上層骨帶著單次動畫的整體位移與縮放</td><td class="bones"><code>root</code> <code>move</code> <code>base</code> <code>spine</code> <code>chest</code> <code>neck</code> <code>head</code> <code>upperarm_l</code> <code>forearm_l</code> <code>hand_l</code> <code>upperarm_r</code> <code>forearm_r</code> <code>hand_r</code> <code>finger1_l</code> <code>finger2_l</code> <code>finger3_l</code> <code>finger4_l</code> <code>finger1_r</code> <code>finger2_r</code> <code>finger3_r</code> <code>finger4_r</code> <code>thigh_l</code> <code>calf_l</code> <code>foot_l</code> <code>thigh_r</code> <code>calf_r</code> <code>foot_r</code></td></tr>
+        </tbody></table></div>
+        <p class="doc-more">後面還有：約束、每個部件的網格與權重、每段動畫打了哪些關鍵幀、常見調整。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="wrap">
+    <p class="kicker">06 · GAPS</p>
+    <h2>目前的差距</h2>
+    <p class="lead">結構已經穩定，差距集中在「動得像不像美術」。</p>
+    <div class="bottlenecks">
+      <article class="bottleneck"><h3>動作風格</h3><p>節奏與幅度和美術差很多：循環的身體起伏常常太大，跳躍、蓄力又太小；單次動畫只能依名稱推測。</p></article>
+      <article class="bottleneck"><h3>起始姿勢</h3><p>進場第 0 幀常是透明、縮小或換了部件組，姿勢圖對不上，只能用 setup 姿勢。</p></article>
+      <article class="bottleneck"><h3>特效</h3><p>龍、金幣、粒子這類大量部件飛行的段落，純圖片沒有軌跡資訊，只能播序列與淡入淡出。</p></article>
+    </div>
+    <aside class="note"><h3>分數不等於美術認可</h3><p>自動驗收只看結構與量化指標；動作好不好看，請以影片和美術判斷為準。</p></aside>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span translate="no">AutoSpine</span>
+    <span>詳細數據：<code>2026-10-14-batch/*-RESULTS.md</code>、<code>INDEX.md</code></span>
+    <span class="sp" translate="no">4ec4c1f</span>
+  </div>
+</footer>
+<script>
+// One video at a time.
+document.addEventListener("play", (e) => {
+  for (const v of document.querySelectorAll("video")) if (v !== e.target) v.pause();
+}, true);
+</script>
+</body>
+</html>
