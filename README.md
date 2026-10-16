@@ -2,7 +2,7 @@
 
 AutoSpine 用來製作 Spine 角色的骨架與動畫。提供已拆圖、擺好位置的 Spine 專案和動作需求，透過 Claude 或 Codex 操作，產出可繼續編輯的 Spine 專案與檢查影片。
 
-[安裝指南](docs/INSTALL.html) · [使用說明](docs/USER_GUIDE.md)
+[安裝指南](docs/INSTALL.html) · [使用說明](docs/USER_GUIDE.md) · [盲測報告與影片](docs/reports/blind-tests/README.md)
 
 ## 開始使用
 

@@ -8,6 +8,8 @@ _season3_materials2/
 $out/
 fixtures/spine/minimal/export/*.json
 docs/local-reviews/
+# Preserve the exported blind report exactly as supplied.
+docs/reports/blind-tests/autospine-blind-report.html
 # Preserve exact submitted bytes referenced by the recorded Jev response hash.
 docs/reviews/GATE_3_2_DESIGN_REQUEST.json
 docs/reviews/GATE_4_PNG_TARGET_DESIGN_REQUEST.json

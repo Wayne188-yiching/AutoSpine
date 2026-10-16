@@ -8,3 +8,5 @@ docs/reviews/gate-4-resume/chain-rig.json -text
 plugin/skills/autospine/scripts/** -text
 plugin/skills/autospine/references/** -text
 plugin/skills/autospine/assets/** -text
+# Keep the blind report HTML identical to the local report snapshot.
+docs/reports/blind-tests/autospine-blind-report.html -text
