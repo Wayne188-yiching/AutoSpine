@@ -135,8 +135,11 @@ describe("key poses from reference pictures (ADR-033)", () => {
   });
 
   it("layers key poses over the plan's motion: follows stay, eases are kept", () => {
-    const base = buildCharacter(fixturePlan(), fixtureLayout());
-    const plan = clone(fixturePlan());
+    // The layering itself, to a thousandth of a degree: without the key cleanup (ADR-038).
+    const exact = clone(fixturePlan());
+    exact.motion.keyTolerance = 0;
+    const base = buildCharacter(exact, fixtureLayout());
+    const plan = clone(exact);
     plan.motion.animations[0]!.keyposes = LAYERED;
     const posed = buildCharacter(plan, fixtureLayout());
     const [b, p] = [base.animations[0]!, posed.animations[0]!];

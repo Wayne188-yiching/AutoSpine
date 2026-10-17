@@ -6,6 +6,7 @@ import {
   buildCharacterFiles,
   compareReferenceFiles,
   compareVideoFiles,
+  fitVideoFiles,
   deliverFiles,
   initProjectFolder,
   lintPlanFile,
@@ -92,6 +93,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
+  autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--font=file]
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
@@ -208,6 +210,47 @@ async function characterCommand(args: string[]): Promise<boolean> {
       }
       console.log(check.pass ? "MATCHES THE REFERENCE VIDEO" : "NOT PASSED");
       if (!check.pass) process.exitCode = 2;
+      return true;
+    }
+    case "fit-video": {
+      if (p.length !== 4) throw new Error(characterUsage);
+      known("animation", "video", "start", "rounds", "every", "ignore", "no-zero", "font");
+      const opts = {
+        animation: flags.get("animation") || undefined,
+        video: flags.get("video") || undefined,
+        start: numberFlag("start"),
+        rounds: numberFlag("rounds"),
+        every: numberFlag("every"),
+        ignore: flags.get("ignore")?.split(",").filter(Boolean),
+        zero: flags.has("no-zero") ? false : undefined,
+        font: flags.get("font") || undefined,
+      };
+      let fit: Awaited<ReturnType<typeof fitVideoFiles>>;
+      try {
+        fit = await fitVideoFiles(p[1]!, p[2]!, p[3]!, {
+          ...Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== undefined)),
+          log: (line: string) => console.error(line),
+        });
+      } catch (e) {
+        // Refused before fitting (ADR-036): the video cannot drive this build.
+        if (e instanceof Error && e.message.startsWith("CLI_FIT_VIDEO")) {
+          console.error(e.message);
+          process.exitCode = 2;
+          return true;
+        }
+        throw e;
+      }
+      for (const r of fit.rounds) {
+        console.log(
+          `round ${r.round}: penalty ${r.penalty}, ${r.keys.frames} key frames (${r.keys.perSecond}/s, ${r.keys.prior.category} ${r.keys.prior.perSecond}/s), ${r.seconds}s`,
+        );
+        for (const row of r.rows)
+          console.log(`  ${row.ok ? "PASS" : "FAIL"} ${row.id}  ${JSON.stringify(row.value)}`);
+      }
+      for (const h of fit.hints) console.log(`  - ${h}`);
+      console.log(`best: round ${fit.best.round} -> ${fit.best.dir}`);
+      console.log(fit.pass ? "MATCHES THE REFERENCE VIDEO (reference-fitted)" : "NOT PASSED");
+      if (!fit.pass) process.exitCode = 2;
       return true;
     }
     case "init-project":

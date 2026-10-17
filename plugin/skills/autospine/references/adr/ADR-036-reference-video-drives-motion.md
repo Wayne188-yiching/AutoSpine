@@ -2,7 +2,7 @@
 
 # ADR-036 — a reference video drives the motion
 
-Status: Proposed (design only; nothing implemented)
+Status: Accepted; implemented 2026-10-17 with the deviations under Implementation. The judging window (decision 2) still needs the art lead's agreement.
 Date: 2026-10-17
 
 ## Context
@@ -22,7 +22,7 @@ Date: 2026-10-17
   7. **Keys**: the 30 fps plan writes a key pose on every frame: 3,791 keys. Artists key an idle about every 20 frames (ADR-032).
   8. **fps**: the studio standard is 30 fps. The plan had to move off 24.
 
-## Decision (proposed)
+## Decision
 
 One command, `fit-video`, runs the loop. It reuses the engines above. The new code is the glue: frames to pictures, period and fold, key reduction, rounds.
 
@@ -121,7 +121,7 @@ One command, `fit-video`, runs the loop. It reuses the engines above. The new co
   - Con: each evaluation is a full comparison (29–46 s on the reindeer), and parameters cannot make poses the plan does not have.
   - Possible later for V3 size alone, with a silhouette-only objective.
 
-## Evidence to produce
+## Evidence planned
 
 - **Units**:
   - The period of a 5.75-frame sine with 4 % drift gives L = 23, and the folded bounce keeps at least 95 % of its amplitude (the 2026-10-16 regression).
@@ -143,6 +143,44 @@ One command, `fit-video`, runs the loop. It reuses the engines above. The new co
 - The fit still cannot see expressions, mesh deforms, scale or redrawn parts. The summary names them, so the requester knows what is left to do by hand.
 - This depends on the uncommitted `review-video --reference-video` change: its tile placement becomes the shared function.
 - Rollback: drop `fit-video`, the MCP tool, `reference.use` and the compare window. ADR-034 then reports only, as before.
+
+## Implementation (2026-10-17)
+
+Code: `fitVideoFiles` (CLI `fit-video`, `packages/cli/src/character.ts`), MCP `autospine_fit_video`, `deliver` with `reference.use: "fit"`; the track maths in `@autospine/motion` (`video-tracks.ts`: `sharedPeriod`, `foldTracks`, `reduceKeys`, `cyclesIn`, `wholeCycleLength`, `keyGapPrior`); `videoPenalty` in `@autospine/reference`.
+
+What the steps do, and where they differ from the design above:
+
+- **Placement**: `placeOnVideo` is the one shared function; `compare-video` uses it. The uncommitted `review-video --reference-video` tiles should switch to it when they are committed (they are not in the repository).
+- **Pictures** are written once to `pictures/` (they are the same every round), at the video's resolution up to 1024 px over `qa.view`. A loop reads at most three times its length of video; a one-shot its own frames.
+- **Base**: depth 0, and also `rise` 0 and `holdDepth` 0 (a settle adds `holdDepth` px at the hold). The motion compiler now accepts a main without depth: the face slide and squash it derives are 0 (they divided by the depth).
+- **The main bone is fitted** even when it hangs on the root: fit-pose holds the bones on the root fixed (a rest pose does not move the ground), but the base took the main's motion out, so the video must give it back. Without this the fixture's bob was not fitted at all.
+- **Period**: lone bad frames are replaced by their neighbours' median and gaps bridged before the autocorrelation; the shared peak is the first that reaches 0.85 of the highest. The first two cycles give the starting tempo (a clip that speeds up starts slower than its mean); each later cycle joins while it is in step at the period so far, and every folded cycle stays in step at the refined period. Drift is followed cycle by cycle. No period over two cycles, and a clip as long as the loop: its first frames are taken as one loop (hinted). Shorter: refused.
+- **Loop length**: the animation keeps the plan's length, since its cycle, waves and periods divide it. The fold is in phase on the real period, so a period that does not divide the length is never cancelled; the length holds `round(frames / period)` cycles, and the stretch is reported with the shortest length that holds whole cycles. That length uses a 1 % tolerance: with 2 % the design's own example, 5.75 frames, would give 17, not 23.
+- **Key reduction**: the fewest shared key frames by dynamic programming over the frames (best named ease per segment), not worst-frame insertion; the cap is binding more often than the design expected, and insertion spent keys there. A channel's tolerance is 0.5 degree or px, or twice its own fit noise (the fold's robust residual) when that is larger. The cap is twice the category's key density (decision 3) or four keys a folded cycle, whichever allows more: an idle's 20-frame spacing cannot hold a 6-frame bounce. When the cap holds, the tolerance is relaxed until it fits and a segment still past it gets its own key curve; the error reached is reported in tolerances.
+- **Rounds**: the bad frames are those whose median part error (`frameError`, now always in `report.json`) passes 0.6 % inside the judged frames. Waves are rescaled (ratio clamped to 0.25-4) and shifted by the part's lag when it correlates at 0.6; a chain whose part moves differently gets its root freed, and that round refits every frame. A round with nothing to refit and no wave to change ends the loop.
+- **compare-video** gained `window` (judge only the first frames, the fold's cycles; `wholeRows` keeps the rest) and per-frame `frameError`; the hints say when a window was used.
+- **deliver** fits each `use: "fit"` animation in turn, and delivers the last best build; a fit that cannot run is `fitError` and the build as given is delivered.
+- Refusals (frame 0 covering under 0.6, a clip too short) are `CLI_FIT_VIDEO` (exit 2) or `MCP_FIT_VIDEO`, before any round.
+
+Known limits, seen on the fixture:
+
+- **Motion that only follows the main** is 0 in the base: sink scales (legs that shorten), the face slide, follows and wave roots driven by the main's offset. Fitted bones get it back from the video; fixed bones (the face rig, chains) and scales do not. The fixture's scale-sinking legs were bent instead of shortened. Feeding the fitted main track into the main control (ADR-033's follow-up) would cover these.
+- **Spurious turns**: the fit can trade a degree of hips turn against the legs; under a tight cap that degree decides where the keys go.
+
+## Evidence (produced)
+
+- `tests/video-tracks.test.ts`:
+  - A 5.75-frame bounce whose tempo rises 4 % over 96 frames: the period is found within 0.25 frame and at least 14 of its 16 cycles stay in step; the folded bounce keeps over 95 % of its height. 5.75 frames gives 23 (four cycles within 1 %), 7.5 gives 15; 24 frames hold 4 cycles at 4.35 % stretch.
+  - A clip that speeds up 30 %: only the first cycles are folded, the bounce keeps over 90 %, and the last cycle is reported early.
+  - A limb that swings once per two bobs moves the shared period to the stride; a drift gives no period.
+  - Gaps and one 8x outlier: the period within 0.05 frame, and the fold within 0.6 of the true value.
+  - Three phase-shifted 150-frame sines: within 0.5 on every frame, keys at least 2 frames apart and at most one per 6 frames. A step one-shot keeps its first and last frames; a cap of 3 binds and is reported.
+- `tests/character-fit-video.test.ts` (fixture, value-noise art, 300 x 360 H.264 at 30 fps):
+  - **Fitted idle**: the fixture plan guesses a settle cycle of depth 5; the video shows two loops of a 40-frame idle whose hips bob 3 px twice while the spine sways and the arm swings (key poses on frames 10, 20 and 30). Every other frame was fitted (`every: 2`, 41 pictures, all accepted; frame 0 covers 1.0). Period 40.09 over 2 folded cycles. **Round 1 passes**: V1 0.977 / 0.959, V2 0.22 % / 0.60 %, V3 lag 0 and size 0.90, V4 0. Four key frames (the cap: twice the idle density), 34 bone keys, within 2.1 tolerances; uncapped, six key frames would be within 0.95. The bones come back within 1.33 degrees and the hips within a pixel; the plan file is unchanged. About 65 s, nearly all of it the dense fit.
+  - **Negative**: the same figure in inverted colours stops at frame 0 (`CLI_FIT_VIDEO`, exit 2; `MCP_FIT_VIDEO` without paths) and writes no round.
+  - **deliver** with `use: "fit"` and no `qa.view`: `fitError`, and the build as given is delivered.
+  - `videoPenalty` sums how far each row is past its threshold.
+- **Not yet run**: BlanketOfficeWorker Idle, the red-robed reindeer Idle and the ThreePigWC wolf `Win`. Their files are on the requester's computer, not in the repository; those comparisons are still to be made there.
 
 ## Decisions (requester, 2026-10-17)
 
