@@ -95,9 +95,9 @@ describe("plugin package (Claude and Codex)", () => {
     const codexMcp = (await json(join(plugin, ".codex-mcp.json"))) as {
       mcpServers: Record<string, { command: string; args: string[]; cwd: string }>;
     };
-    const fromClaude = claudeMcp.mcpServers.autospine!.args[0]!.replace(
-      "${CLAUDE_PLUGIN_ROOT}",
-      plugin,
+    // resolve() normalises the separators: the config writes "/" and Windows paths use "\".
+    const fromClaude = resolve(
+      claudeMcp.mcpServers.autospine!.args[0]!.replace("${CLAUDE_PLUGIN_ROOT}", plugin),
     );
     const fromCodex = resolve(
       plugin,

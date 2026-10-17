@@ -232,6 +232,11 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
         add(
           `- 換圖：\`${sw.slot}\` 在 ${sw.keys[a.name]!.map((k) => k.frame).join("、")} 幀切換附件（例如眨眼）。`,
         );
+    for (const d of plan.motion.deforms ?? [])
+      if (d.keys[a.name])
+        add(
+          `- 網格變形 \`${d.id}\`：${d.parts.map((p) => `\`${p}\``).join("、")} 在 ${d.keys[a.name]!.map((k) => k.frame).join("、")} 幀變形（控制點 ${Object.keys(d.points).join("、")}）；在 Spine 選該附件的 Deform 關鍵幀修改。`,
+        );
     add(`- 共 ${moved.size} 根骨有關鍵幀，都是稀疏關鍵幀加貝茲曲線，可以直接拖動。`);
     add();
   });

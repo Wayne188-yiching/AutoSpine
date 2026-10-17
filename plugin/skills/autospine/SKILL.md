@@ -116,7 +116,7 @@ Then ask what to change. Feedback such as "the cane should follow the hand" or "
 
 ## 6. Limits
 
-- Expressions (a smile to a closed mouth) are not generated; colours are not checked automatically.
+- Expressions (a smile to a closed mouth) are not generated or fitted. A shape the art lacks can be keyed by hand as control-point mesh deforms (`motion.deforms`, with `meshing.parts` for vertex counts; ADR-037), or drawn and swapped (ADR-027). Colours are not checked automatically.
 - Mesh deforms, scaling and hands moved off their arms are not fitted from pictures.
 - Numeric acceptance is not artist approval; the editor round trip and an artist's review stay separate.
 

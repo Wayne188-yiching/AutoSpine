@@ -17,6 +17,7 @@ export {
   type MotionContext,
 } from "./motion.js";
 export { buildColorTimelines, shownOpaque, type ColorTimeline } from "./colors.js";
+export { buildDeformTimelines, mlsAffine, type DeformTimeline } from "./deforms.js";
 export { buildAttachmentTimelines, type AttachmentTimeline } from "./visibility.js";
 export { addKeyposes, applyKeyposes, applyRestPose, type Keyposes, type RestPose } from "./pose.js";
 export { boneRoles, colorBones, handoverNotes, ROLE_COLORS, type BoneRole } from "./handover.js";
