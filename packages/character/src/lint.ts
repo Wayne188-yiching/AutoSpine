@@ -237,6 +237,14 @@ function lintOne(
       errors.push(`regions.${p}: no slot ${p} in the images-only layout`);
     bone(b, `regions.${p}`);
   }
+  // meshing.parts (ADR-037): region parts meshed with their own vertex counts.
+  for (const p of Object.keys(plan.meshing?.parts ?? {})) {
+    part(p, `meshing.parts.${p}`);
+    if (meshed.has(p) || meshed.has(p.split("#")[0]!))
+      errors.push(`meshing.parts.${p}: the part is also in meshes`);
+    if (!plan.regions?.[p.split("#")[0]!])
+      errors.push(`meshing.parts.${p}: needs a region bone (regions)`);
+  }
   // Every placed image needs a mesh (by key or slot) or a region bone (by slot).
   if (parts)
     for (const key of parts) {
@@ -332,6 +340,48 @@ function lintOne(
         if (!known.has(name)) errors.push(`motion.swaps ${sw.slot}: unknown animation ${name}`);
       } else if (keys.some((k) => k.frame > a.frames))
         errors.push(`motion.swaps ${sw.slot}: a key is past the end of ${name}`);
+    }
+  }
+  // Deforms (ADR-037): meshed parts, known animations and points, frames inside the animation.
+  const deformed = new Map<string, string>();
+  for (const d of m.deforms ?? []) {
+    const where = `motion.deforms ${d.id}`;
+    const meshedPart = (p: string) => {
+      const slot = p.split("#")[0]!;
+      return (
+        meshed.has(p) ||
+        meshed.has(slot) ||
+        p in (plan.meshing?.parts ?? {}) ||
+        (!!plan.meshing?.all && !!plan.regions?.[slot])
+      );
+    };
+    for (const p of d.parts) {
+      part(p, where);
+      if (!meshedPart(p))
+        errors.push(`${where}: ${p} is not a mesh; add it to meshes or meshing.parts`);
+    }
+    const points = Object.keys(d.points).length;
+    if (!points) errors.push(`${where}: needs control points`);
+    else if (points < 3)
+      warnings.push(`${where}: fewer than three points only translate the parts`);
+    for (const [name, keys] of Object.entries(d.keys)) {
+      const a = m.animations.find((x) => x.name === name);
+      if (!a) {
+        if (!known.has(name)) errors.push(`${where}: unknown animation ${name}`);
+        continue;
+      }
+      if (keys.some((k) => k.frame > a.frames))
+        errors.push(`${where}: a key is past the end of ${name}`);
+      if (new Set(keys.map((k) => k.frame)).size !== keys.length)
+        errors.push(`${where}: two keys on one frame of ${name}`);
+      for (const k of keys)
+        for (const n of Object.keys(k.move))
+          if (!(n in d.points)) errors.push(`${where}: frame ${k.frame} moves unknown point ${n}`);
+      for (const p of d.parts) {
+        const prev = deformed.get(name + "\u0000" + p);
+        if (prev) errors.push(`${where}: ${p} is also deformed by ${prev} in ${name}`);
+        deformed.set(name + "\u0000" + p, d.id);
+      }
     }
   }
   for (const a of m.animations)
