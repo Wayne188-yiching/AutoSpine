@@ -1,5 +1,5 @@
 import type { AnimationSpec, CharacterPlan, KeyposeSpec, RigSpec } from "@autospine/schemas";
-import { buildKeyposeAnimation, sampleAnimation } from "@autospine/motion";
+import { buildKeyposeAnimation, sampleAnimation, simplifyAnimation } from "@autospine/motion";
 import { failStage } from "@autospine/rig";
 import { compileCharacterSpine40, type CharacterSpineInput } from "@autospine/spine";
 import { measureDeformation, measureOverlapDrift, skinVertices } from "@autospine/weights";
@@ -267,6 +267,8 @@ export interface CharacterAnimations {
   colorTimelines: ColorTimeline[];
 }
 /** Motion only, for a parameter point: the optimizer's inner step. */
+/** Degrees or px a cleaned-up timeline may play from the compiled motion (ADR-038). */
+export const KEY_TOLERANCE = 0.25;
 export function animateCharacter(
   rigging: CharacterRigging,
   params: Params = {},
@@ -281,12 +283,17 @@ export function animateCharacter(
   const setupColors = new Map(rigging.slots.map((s) => [s.name, s.color ?? "ffffffff"]));
   return {
     specs,
-    // The rest pose and the key poses (ADR-024, ADR-033) are offsets over the compiled motion.
+    // The rest pose and the key poses (ADR-024, ADR-033) are offsets over the compiled motion;
+    // the key cleanup (ADR-038) then keeps as few keys as play within the tolerance.
     animations: specs.map((s, i) =>
-      applyKeyposes(
-        applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s), plan.animations[i]!.pose),
-        plan.animations[i]!.keyposes,
+      simplifyAnimation(
+        applyKeyposes(
+          applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s), plan.animations[i]!.pose),
+          plan.animations[i]!.keyposes,
+          s.fps,
+        ),
         s.fps,
+        plan.keyTolerance ?? KEY_TOLERANCE,
       ),
     ),
     // Shown transparent slots are judged over the whole plan, not per animation.

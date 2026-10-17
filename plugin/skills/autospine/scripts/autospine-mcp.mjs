@@ -25987,11 +25987,14 @@ var MeshPlanSchema = Type.Object(
           edgeLength: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
           minHoleFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
           /**
-           * Vertex budget (ADR-024). `artist`: s = sqrt(image width x height) px, hull round(sqrt s)
-           * clamped to 6..40, interior 0 below s 100 else round(s / 80) (median of 423 artist
-           * character meshes). Explicit counts override it; a budget covers holes.
+           * Vertex budget (ADR-024, ADR-038). The default: the artist budget, s = sqrt(image width x
+           * height) px, hull round(sqrt s) clamped to 6..40, interior 0 below s 100 else
+           * round(s / 80) (median of 423 artist character meshes), with enclosed holes kept as
+           * rings. `artist` names that budget but covers holes (as `meshing.all` does). `fine`, or
+           * an explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
+           * whatever the size). Explicit counts override the budget.
            */
-          density: Type.Optional(Type.Literal("artist")),
+          density: Type.Optional(Type.Union([Type.Literal("artist"), Type.Literal("fine")])),
           hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
           interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 }))
         },
@@ -26339,6 +26342,12 @@ var MotionPlanSchema = Type.Object(
   {
     cycle: Type.Integer({ minimum: 4, maximum: 3600 }),
     fps: Type.Optional(Type.Integer({ minimum: 1, maximum: 60 })),
+    /**
+     * Key cleanup (ADR-038): every bone timeline is re-keyed with the fewest keys that play within
+     * this many degrees or px (scale: hundredths) of the compiled motion. Default 0.25; 0 keeps
+     * every compiled key.
+     */
+    keyTolerance: Type.Optional(Type.Number({ minimum: 0, maximum: 5 })),
     params: Type.Record(Type.String({ pattern: "^[A-Za-z_][A-Za-z0-9_]*$" }), Type.Number()),
     search: Type.Optional(Type.Record(Type.String(), SearchRangeSchema)),
     animations: Type.Array(
@@ -29772,7 +29781,7 @@ function generateFeatureMesh(part, alpha, options = {}) {
     width,
     height
   ) : loop(filled);
-  const rings = holes.filter((hole) => !budget && hole.length >= minHoleFraction * foreground).map((hole) => {
+  const rings = holes.filter((hole) => (!budget || options.keepHoles) && hole.length >= minHoleFraction * foreground).map((hole) => {
     const region2 = new Uint8Array(width * height);
     for (const i of hole) region2[i] = 255;
     return loop(region2);
@@ -30898,7 +30907,7 @@ function keyGapPrior(name, loop) {
 }
 var NAMED_EASES = ["linear", "sine", "ease", "out", "in", "drift"];
 function reduceKeys(targets, tolerance, opts) {
-  const length = Math.max(0, ...targets.map((t) => t.length)), last = length - 1, minGap = Math.max(1, opts.minGap ?? 2), maxKeys = Math.max(1, Math.min(256, opts.maxKeys ?? 256)), maxSpan = Math.max(minGap, opts.maxSpan ?? 240);
+  const length = Math.max(0, ...targets.map((t) => t.length)), last = length - 1, minGap = Math.max(1, opts.minGap ?? 2), maxKeys = Math.max(1, opts.maxKeys ?? 256), maxSpan = Math.max(minGap, opts.maxSpan ?? 240);
   if (length < 2 || last < minGap)
     return { frames: [0], eases: ["linear"], error: 0, capped: false };
   const tables = /* @__PURE__ */ new Map();
@@ -30938,7 +30947,26 @@ function reduceKeys(targets, tolerance, opts) {
     return { error: errors[id], ease: eases[id] };
   };
   const node = (g) => g === 0 || g === last || g >= minGap && g <= last - minGap;
-  const solve3 = (scale) => {
+  const reach = (scale) => {
+    const path2 = [0];
+    let error2 = 0;
+    while (path2.at(-1) < last) {
+      const a = path2.at(-1);
+      let best = -1, bestError = 0, misses = 0;
+      for (let b = a + minGap; b <= Math.min(last, a + maxSpan); b++) {
+        if (!node(b)) continue;
+        const e = segment2(a, b).error;
+        if (e <= scale) [best, bestError, misses] = [b, e, 0];
+        else if (++misses >= 8 && e > 4 * scale) break;
+      }
+      if (best < 0) return null;
+      path2.push(best);
+      error2 = Math.max(error2, bestError);
+    }
+    return { path: path2, error: error2 };
+  };
+  const solve3 = (scale) => opts.greedy ? reach(scale) : exact(scale);
+  const exact = (scale) => {
     const cost = new Int32Array(length).fill(1 << 30), worst = new Float64Array(length).fill(Infinity), prev = new Int32Array(length).fill(-1);
     cost[0] = 1;
     worst[0] = 0;
@@ -31029,6 +31057,71 @@ function reduceKeys(targets, tolerance, opts) {
     error: +error.toFixed(3),
     capped
   };
+}
+
+// packages/motion/src/simplify.ts
+function sampleKeys(keys, read, times) {
+  const channels = read(keys[0]).map(() => []);
+  let i = 0;
+  for (const t of times) {
+    while (i < keys.length - 2 && keys[i + 1].time <= t) i++;
+    const a = keys[i], b = keys[Math.min(i + 1, keys.length - 1)];
+    const u = b.time > a.time ? keyFraction(a.curve, (t - a.time) / (b.time - a.time)) : 0;
+    const va = read(a), vb = read(b);
+    const value = t <= keys[0].time ? read(keys[0]) : t >= keys.at(-1).time ? read(keys.at(-1)) : va.map((v, j) => v + (vb[j] - v) * u);
+    value.forEach((v, j) => channels[j].push(v));
+  }
+  return channels;
+}
+function simplifyKeys(keys, read, write, duration, fps, tolerance) {
+  if (keys.length <= 2 || keys.some((k) => k.curve?.type === "stepped")) return [...keys];
+  const frames = Math.round(duration * fps);
+  if (frames < 2) return [...keys];
+  const times = Array.from({ length: frames + 1 }, (_, g) => g === frames ? duration : g / fps);
+  const channels = sampleKeys(keys, read, times);
+  const reduced = reduceKeys(
+    channels,
+    channels.map(() => tolerance),
+    { loop: false, minGap: 1, maxKeys: frames + 1, greedy: true }
+  );
+  if (reduced.frames.length >= keys.length) return [...keys];
+  return reduced.frames.map((g, i) => {
+    const next = reduced.eases[i + 1];
+    const curve = next === void 0 ? void 0 : typeof next === "string" ? easeCurve(next) : next;
+    return write(
+      times[g],
+      channels.map((c) => +c[g].toFixed(4)),
+      i < reduced.frames.length - 1 ? curve : void 0
+    );
+  });
+}
+function simplifyAnimation(animation, fps, tolerance) {
+  if (!(tolerance > 0)) return animation;
+  const out = structuredClone(animation);
+  const d = animation.duration;
+  for (const t of out.rotationTimelines ?? [])
+    t.keys = simplifyKeys(
+      t.keys,
+      (k) => [k.degrees],
+      (time, [degrees], curve) => ({ time, degrees, ...curve ? { curve } : {} }),
+      d,
+      fps,
+      tolerance
+    );
+  for (const [list, scale] of [
+    [out.translationTimelines ?? [], tolerance],
+    [out.scaleTimelines ?? [], tolerance / 100]
+  ])
+    for (const t of list)
+      t.keys = simplifyKeys(
+        t.keys,
+        (k) => [k.x, k.y],
+        (time, [x, y], curve) => ({ time, x, y, ...curve ? { curve } : {} }),
+        d,
+        fps,
+        scale
+      );
+  return out;
 }
 
 // packages/motion/src/index.ts
@@ -33335,14 +33428,16 @@ function planAttachments(plan, index, rigged, regionBone) {
     switch (spec.type) {
       case "feature": {
         const asset = assetFor(p, id);
-        const budget = spec.density === "artist" ? artistBudget(p.width, p.height) : void 0;
+        const fine = spec.density === "fine" || spec.spacing !== void 0 || spec.edgeLength !== void 0;
+        const budget = fine ? void 0 : artistBudget(p.width, p.height);
         const hullVertices = spec.hullVertices ?? budget?.hull, interiorVertices = spec.interiorVertices ?? budget?.interior;
         const options = {
           ...spec.spacing !== void 0 ? { spacing: spec.spacing } : {},
           ...spec.edgeLength !== void 0 ? { edgeLength: spec.edgeLength } : {},
           ...spec.minHoleFraction !== void 0 ? { minHoleFraction: spec.minHoleFraction } : {},
           ...hullVertices !== void 0 ? { hullVertices } : {},
-          ...interiorVertices !== void 0 ? { interiorVertices } : {}
+          ...interiorVertices !== void 0 ? { interiorVertices } : {},
+          ...hullVertices !== void 0 && spec.density !== "artist" ? { keepHoles: true } : {}
         };
         const r = generateFeatureMesh(asset.parts[0], p.alpha, options);
         return { asset, mesh: toWorldMesh(r.mesh, p, id), rings: r.rings };
@@ -35009,6 +35104,7 @@ function setupBend(rig, boneIds) {
   if (!child) failStage("constraints", "PLAN_IK", `IK bone ${boneIds[1]} is not planned`);
   return (child.rotation ?? 0) < 0;
 }
+var KEY_TOLERANCE = 0.25;
 function animateCharacter(rigging, params = {}) {
   const plan = rigging.plan.motion;
   const own = plan.animations.map((a) => {
@@ -35019,12 +35115,17 @@ function animateCharacter(rigging, params = {}) {
   const setupColors = new Map(rigging.slots.map((s2) => [s2.name, s2.color ?? "ffffffff"]));
   return {
     specs,
-    // The rest pose and the key poses (ADR-024, ADR-033) are offsets over the compiled motion.
+    // The rest pose and the key poses (ADR-024, ADR-033) are offsets over the compiled motion;
+    // the key cleanup (ADR-038) then keeps as few keys as play within the tolerance.
     animations: specs.map(
-      (s2, i) => applyKeyposes(
-        applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s2), plan.animations[i].pose),
-        plan.animations[i].keyposes,
-        s2.fps
+      (s2, i) => simplifyAnimation(
+        applyKeyposes(
+          applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s2), plan.animations[i].pose),
+          plan.animations[i].keyposes,
+          s2.fps
+        ),
+        s2.fps,
+        plan.keyTolerance ?? KEY_TOLERANCE
       )
     ),
     // Shown transparent slots are judged over the whole plan, not per animation.
@@ -37157,6 +37258,38 @@ function bandDistance(f, fps) {
   if (/HoldFraction$/.test(f.metric)) return Math.abs(f.value - bound) / 0.15;
   return Math.abs(Math.log(Math.max(1e-6, f.value) / Math.max(1e-6, bound))) / Math.log(1.5);
 }
+var triangleArea = (v, a, b, c) => (v[2 * b] - v[2 * a]) * (v[2 * c + 1] - v[2 * a + 1]) - (v[2 * b + 1] - v[2 * a + 1]) * (v[2 * c] - v[2 * a]);
+function meshDeformation(t, frames) {
+  const out = { inversions: 0, stretch: 0, seam: 0 };
+  const v0 = t.verts[0];
+  if (!v0) return out;
+  const tris = t.tris;
+  for (let f = 1; f <= frames; f += 2) {
+    const v = t.verts[f];
+    if (!v || v.length !== v0.length) continue;
+    for (let k = 0; k < tris.length; k += 3) {
+      const [x, y, z] = [tris[k], tris[k + 1], tris[k + 2]];
+      const A0 = triangleArea(v0, x, y, z), A1 = triangleArea(v, x, y, z);
+      if (Math.abs(A0) > 1e-6 && A1 / A0 < 0) out.inversions++;
+      for (const [p, q] of [
+        [x, y],
+        [y, z],
+        [z, x]
+      ]) {
+        const l0 = Math.hypot(v0[2 * q] - v0[2 * p], v0[2 * q + 1] - v0[2 * p + 1]);
+        if (l0 > 2)
+          out.stretch = Math.max(
+            out.stretch,
+            Math.abs(Math.hypot(v[2 * q] - v[2 * p], v[2 * q + 1] - v[2 * p + 1]) / l0 - 1)
+          );
+      }
+    }
+  }
+  const vN = t.verts[frames];
+  if (vN)
+    for (let i = 0; i < vN.length; i++) out.seam = Math.max(out.seam, Math.abs(vN[i] - v0[i]));
+  return out;
+}
 function makeObjective(rigging, reference, options) {
   const fps = reference.fps, U = reference.unit;
   const profiles = Object.fromEntries(
@@ -37174,7 +37307,15 @@ function makeObjective(rigging, reference, options) {
   const trajectoryParts = options.trajectoryParts ?? [...new Set(probeParts)];
   const exclude = (options.deformExclude ?? []).map((p) => new RegExp(p));
   const tw = options.trajectoryWeight ?? 20, dw = options.deformWeight ?? 2;
-  const area3 = (v, a, b, c) => (v[2 * b] - v[2 * a]) * (v[2 * c + 1] - v[2 * a + 1]) - (v[2 * b + 1] - v[2 * a + 1]) * (v[2 * c] - v[2 * a]);
+  const isCharacter = (slot, t) => !exclude.some((re) => re.test(slot)) && (t.tris?.length ?? 0) >= 6;
+  const artistStretch = Math.max(
+    0,
+    ...reference.animations.flatMap((a) => {
+      const A = reference.tracks[a];
+      return Object.entries(A.tr).filter(([slot, t]) => isCharacter(slot, t)).map(([, t]) => meshDeformation(t, A.frames).stretch);
+    })
+  );
+  const stretchLimit = 1.5 * Math.max(artistStretch, ...Object.values(reference.maxCharacterStretch));
   return (params) => {
     const { animations, colorTimelines } = animateCharacter(rigging, params);
     const doc = compileCharacter(rigging, animations, options.bend, colorTimelines);
@@ -37228,7 +37369,7 @@ function makeObjective(rigging, reference, options) {
         const t = g.tr[slot];
         if (!t) continue;
         const mg = slotMotion(t);
-        const character = !exclude.some((re) => re.test(slot)) && (t.tris?.length ?? 0) >= 6;
+        const character = isCharacter(slot, t);
         if (dw && character && (ma.deformPx ?? 0) > 2) {
           const e = Math.abs(Math.log(((mg.deformPx ?? 0) + 1) / (ma.deformPx + 1)));
           out.deformError += e;
@@ -37245,36 +37386,10 @@ function makeObjective(rigging, reference, options) {
           }
         }
         if (!character) continue;
-        const v0 = t.verts[0];
-        if (!v0) continue;
-        for (let f = 1; f <= g.frames; f += 2) {
-          const v = t.verts[f];
-          if (!v || v.length !== v0.length) continue;
-          const tris = t.tris;
-          for (let k = 0; k < tris.length; k += 3) {
-            const [x, y, z] = [tris[k], tris[k + 1], tris[k + 2]];
-            const A0 = area3(v0, x, y, z), A1 = area3(v, x, y, z);
-            if (Math.abs(A0) > 1e-6 && A1 / A0 < 0) out.inversions++;
-            for (const [p, q] of [
-              [x, y],
-              [y, z],
-              [z, x]
-            ]) {
-              const l0 = Math.hypot(v0[2 * q] - v0[2 * p], v0[2 * q + 1] - v0[2 * p + 1]);
-              if (l0 > 2)
-                out.stretch = Math.max(
-                  out.stretch,
-                  Math.abs(
-                    Math.hypot(v[2 * q] - v[2 * p], v[2 * q + 1] - v[2 * p + 1]) / l0 - 1
-                  )
-                );
-            }
-          }
-        }
-        const vN = t.verts[g.frames];
-        if (vN)
-          for (let i = 0; i < vN.length; i++)
-            out.loopSeam = Math.max(out.loopSeam, Math.abs(vN[i] - v0[i]));
+        const m = meshDeformation(t, g.frames);
+        out.inversions += m.inversions;
+        out.stretch = Math.max(out.stretch, m.stretch);
+        out.loopSeam = Math.max(out.loopSeam, m.seam);
       }
       out.amplitude[a] = ampRows ? +(amp / ampRows).toFixed(3) : 0;
       out.recall[a] = +(both / Math.max(1, artMoving)).toFixed(3);
@@ -37282,7 +37397,6 @@ function makeObjective(rigging, reference, options) {
       if (out.amplitude[a] < 0.6) penalty += 20 * (0.6 - out.amplitude[a]) + 5;
       if (out.recall[a] < 0.8 || out.precision[a] < 0.7) penalty += 20;
     }
-    const stretchLimit = 1.5 * Math.max(...Object.values(reference.maxCharacterStretch));
     if (out.inversions) penalty += 50 + out.inversions;
     if (out.stretch > stretchLimit) penalty += 50;
     if (out.loopSeam > 0.5) penalty += 50;

@@ -23,6 +23,11 @@ export interface FeatureMeshOptions {
   hullVertices?: number;
   /** Interior lattice points: the spacing is searched to give about this many (0: none). */
   interiorVertices?: number;
+  /**
+   * With a budget: enclosed holes of at least `minHoleFraction` keep their rings as without one
+   * (eye sockets in a face plate, ADR-038) instead of being covered.
+   */
+  keepHoles?: boolean;
 }
 export interface FeatureMesh {
   mesh: MeshSpec;
@@ -489,7 +494,7 @@ export function generateFeatureMesh(
       )
     : loop(filled);
   const rings = holes
-    .filter((hole) => !budget && hole.length >= minHoleFraction * foreground)
+    .filter((hole) => (!budget || options.keepHoles) && hole.length >= minHoleFraction * foreground)
     .map((hole) => {
       const region = new Uint8Array(width * height);
       for (const i of hole) region[i] = 255;

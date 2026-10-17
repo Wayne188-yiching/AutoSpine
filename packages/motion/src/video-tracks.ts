@@ -410,12 +410,19 @@ export interface KeyReduction {
 export function reduceKeys(
   targets: readonly (readonly number[])[],
   tolerance: readonly number[],
-  opts: { loop: boolean; minGap?: number; maxKeys?: number; maxSpan?: number },
+  opts: {
+    loop: boolean;
+    minGap?: number;
+    maxKeys?: number;
+    maxSpan?: number;
+    /** Reach as far as each key can instead of the exact fewest keys: near the fewest, far faster. */
+    greedy?: boolean;
+  },
 ): KeyReduction {
   const length = Math.max(0, ...targets.map((t) => t.length)),
     last = length - 1,
     minGap = Math.max(1, opts.minGap ?? 2),
-    maxKeys = Math.max(1, Math.min(256, opts.maxKeys ?? 256)),
+    maxKeys = Math.max(1, opts.maxKeys ?? 256),
     maxSpan = Math.max(minGap, opts.maxSpan ?? 240);
   if (length < 2 || last < minGap)
     return { frames: [0], eases: ["linear"], error: 0, capped: false };
@@ -465,7 +472,28 @@ export function reduceKeys(
   };
   // A key may sit on frame 0, on the last frame (a loop's wrap end), or minGap from both.
   const node = (g: number) => g === 0 || g === last || (g >= minGap && g <= last - minGap);
-  const solve = (scale: number) => {
+  const reach = (scale: number) => {
+    const path = [0];
+    let error = 0;
+    while (path.at(-1)! < last) {
+      const a = path.at(-1)!;
+      let best = -1,
+        bestError = 0,
+        misses = 0;
+      for (let b = a + minGap; b <= Math.min(last, a + maxSpan); b++) {
+        if (!node(b)) continue;
+        const e = segment(a, b).error;
+        if (e <= scale) [best, bestError, misses] = [b, e, 0];
+        else if (++misses >= 8 && e > 4 * scale) break;
+      }
+      if (best < 0) return null;
+      path.push(best);
+      error = Math.max(error, bestError);
+    }
+    return { path, error };
+  };
+  const solve = (scale: number) => (opts.greedy ? reach(scale) : exact(scale));
+  const exact = (scale: number) => {
     const cost = new Int32Array(length).fill(1 << 30),
       worst = new Float64Array(length).fill(Infinity),
       prev = new Int32Array(length).fill(-1);
