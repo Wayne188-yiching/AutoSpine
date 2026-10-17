@@ -26570,6 +26570,44 @@ var MotionPlanSchema = Type.Object(
         ),
         { maxItems: 64 }
       )
+    ),
+    /**
+     * Mesh deform keys per animation (ADR-037): a shape the art has no image for (a clenched mouth,
+     * a squash). `points` are named control points in the setup pose, IR world like every plan
+     * coordinate (x right, y down; Spine world with y negated); a key moves some of them by
+     * [dx, dy] in the same units and the rest stay where they are.
+     * Every vertex of every listed part follows the points by moving least squares (affine; one
+     * moved point or points in a line only translate), and the offsets ride the parts' bones. Frame
+     * 0 is the setup shape unless keyed; a loop closes on frame 0 and a one-shot holds its last key.
+     * A key's ease shapes the segment arriving at it. The parts must be meshes (`meshes`, or
+     * `meshing.parts` for region parts).
+     */
+    deforms: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            id: IdSchema,
+            parts: Type.Array(PartNameSchema, { minItems: 1, maxItems: 32 }),
+            points: Type.Record(IdSchema, Vector2Schema),
+            keys: Type.Record(
+              NameSchema,
+              Type.Array(
+                Type.Object(
+                  {
+                    frame: Type.Integer({ minimum: 0, maximum: 3600 }),
+                    move: Type.Record(IdSchema, Vector2Schema),
+                    ease: Type.Optional(KeyposeEaseSchema)
+                  },
+                  strict2
+                ),
+                { minItems: 1, maxItems: 256 }
+              )
+            )
+          },
+          strict2
+        ),
+        { maxItems: 64 }
+      )
     )
   },
   strict2
@@ -26602,9 +26640,29 @@ var CharacterPlanSchema = Type.Object(
     /**
      * ADR-024. `all`: every region part an animation shows (all of them when no animation has
      * `show`) is meshed at artist density and weighted rigidly to its region bone. Collapsed and
-     * sheared placements keep their region or quad.
+     * sheared placements keep their region or quad. `parts` gives chosen region parts their own
+     * vertex counts (a mouth that deforms, ADR-037) and meshes them even without `all`.
      */
-    meshing: Type.Optional(Type.Object({ all: Type.Optional(Type.Boolean()) }, strict2)),
+    meshing: Type.Optional(
+      Type.Object(
+        {
+          all: Type.Optional(Type.Boolean()),
+          parts: Type.Optional(
+            Type.Record(
+              PartNameSchema,
+              Type.Object(
+                {
+                  hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
+                  interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 }))
+                },
+                strict2
+              )
+            )
+          )
+        },
+        strict2
+      )
+    ),
     constraints: Type.Optional(
       Type.Object(
         {
@@ -31986,27 +32044,27 @@ var CharacterSpineInputSchema = Type.Object(
   strict4
 );
 function compileCharacterSpine40(input) {
-  const fail4 = (reason) => failStage("spine", "SPINE_CHARACTER", reason);
+  const fail5 = (reason) => failStage("spine", "SPINE_CHARACTER", reason);
   const invalid = value_exports2.Errors(CharacterSpineInputSchema, input).First();
-  if (invalid) fail4(`Strict character input required: ${invalid.path || "/"}: ${invalid.message}`);
+  if (invalid) fail5(`Strict character input required: ${invalid.path || "/"}: ${invalid.message}`);
   const { rig, slots, animations } = input;
   const bones = orderBones(rig.bones), byId = new Map(bones.map((b) => [b.id, b]));
   if (bones.length > 256 || !input.imagesPath.endsWith("/"))
-    fail4("Bounded rig and trailing image slash required");
+    fail5("Bounded rig and trailing image slash required");
   const frames = evaluateRig(rig);
   const unique = (names) => new Set(names).size === names.length;
   if (!unique(slots.map((s2) => s2.name)) || !unique(animations.map((a) => a.name)))
-    fail4("Unique slots and animations required");
-  const name = (id) => byId.get(id)?.name ?? fail4("Missing bone reference");
+    fail5("Unique slots and animations required");
+  const name = (id) => byId.get(id)?.name ?? fail5("Missing bone reference");
   const ik = (input.ik ?? []).map((c) => {
     if (!unique(c.boneIds) || c.boneIds.some((id) => !byId.has(id) || byId.get(id).length <= 0))
-      fail4("IK deform bones must be unique and positive-length");
+      fail5("IK deform bones must be unique and positive-length");
     name(c.targetId);
     if (c.boneIds.length === 2 && byId.get(c.boneIds[1]).parentId !== c.boneIds[0])
-      fail4("Two-bone IK must be a parent-child chain");
+      fail5("Two-bone IK must be a parent-child chain");
     let ancestor = c.targetId;
     while (ancestor) {
-      if (c.boneIds.includes(ancestor)) fail4("IK target cannot descend from its constrained chain");
+      if (c.boneIds.includes(ancestor)) fail5("IK target cannot descend from its constrained chain");
       ancestor = byId.get(ancestor).parentId;
     }
     return {
@@ -32021,15 +32079,15 @@ function compileCharacterSpine40(input) {
     };
   });
   if (!unique(ik.map((c) => c.name)) || !unique(ik.map((c) => String(c.order))))
-    fail4("Unique IK names and update orders required");
+    fail5("Unique IK names and update orders required");
   const transform = (input.transform ?? []).map((c) => {
-    if (!unique(c.boneIds)) fail4("Unique transform bones required");
+    if (!unique(c.boneIds)) fail5("Unique transform bones required");
     c.boneIds.forEach(name);
     name(c.targetId);
     let ancestor = c.targetId;
     while (ancestor) {
       if (c.boneIds.includes(ancestor))
-        fail4("Transform target cannot descend from constrained bones");
+        fail5("Transform target cannot descend from constrained bones");
       ancestor = byId.get(ancestor).parentId;
     }
     return {
@@ -32055,7 +32113,7 @@ function compileCharacterSpine40(input) {
   });
   const constraints = [...input.ik ?? [], ...input.transform ?? []];
   if (!unique(constraints.map((c) => c.name)) || !unique(constraints.map((c) => String(c.order))))
-    fail4("Unique constraint names and update orders required");
+    fail5("Unique constraint names and update orders required");
   for (const c of constraints)
     for (const id of [
       c.targetId,
@@ -32065,7 +32123,7 @@ function compileCharacterSpine40(input) {
       while (ancestor) {
         for (const dependency of constraints)
           if (dependency !== c && dependency.boneIds.includes(ancestor) && dependency.order >= c.order)
-            fail4("Constraint dependencies must be acyclic and precede consumers");
+            fail5("Constraint dependencies must be acyclic and precede consumers");
         ancestor = byId.get(ancestor).parentId;
       }
     }
@@ -32131,14 +32189,14 @@ function compileCharacterSpine40(input) {
   for (const slot of slots) {
     name(slot.boneId);
     if (!unique(slot.attachments.map((a) => a.name)) || slot.attachment !== void 0 && !slot.attachments.some((a) => a.name === slot.attachment))
-      fail4("Unique attachments and valid setup selection required");
+      fail5("Unique attachments and valid setup selection required");
     attachments[slot.name] = {};
     for (const a of slot.attachments) {
       if (a.kind === "clipping") {
         if (a.boneId !== slot.boneId || !slots.some((s2) => s2.name === a.endSlotName))
-          fail4("Clipping requires its slot bone and an existing end slot");
+          fail5("Clipping requires its slot bone and an existing end slot");
         if (slots.findIndex((s2) => s2.name === a.endSlotName) < slots.indexOf(slot))
-          fail4("Clipping end slot must follow the mask in draw order");
+          fail5("Clipping end slot must follow the mask in draw order");
         const inv = inverseAffine(frames.get(a.boneId));
         const points = a.worldVertices.map((p) => {
           const q = multiplyAffine(inv, [1, 0, 0, 1, ...p]);
@@ -32149,14 +32207,14 @@ function compileCharacterSpine40(input) {
           return (q[0] - p[0]) * (r[1] - q[1]) - (q[1] - p[1]) * (r[0] - q[0]);
         });
         if (crosses.some((v) => Math.abs(v) < 1e-8) || !(crosses.every((v) => v > 0) || crosses.every((v) => v < 0)))
-          fail4("Clipping mask must be strictly convex and nondegenerate");
+          fail5("Clipping mask must be strictly convex and nondegenerate");
         const side = (a2, b, c) => (b[0] - a2[0]) * (c[1] - a2[1]) - (b[1] - a2[1]) * (c[0] - a2[0]);
         for (let i = 0; i < points.length; i++)
           for (let j = i + 2; j < points.length; j++) {
             if (i === 0 && j === points.length - 1) continue;
             const p = points[i], q = points[(i + 1) % points.length], r = points[j], s2 = points[(j + 1) % points.length];
             if (side(p, q, r) * side(p, q, s2) <= 0 && side(r, s2, p) * side(r, s2, q) <= 0)
-              fail4("Clipping mask must be simple, without crossing edges");
+              fail5("Clipping mask must be simple, without crossing edges");
           }
         attachments[slot.name][a.name] = {
           type: "clipping",
@@ -32179,13 +32237,13 @@ function compileCharacterSpine40(input) {
           ...a.color === void 0 ? {} : { color: a.color }
         };
       } else {
-        if (a.boneId !== slot.boneId) fail4("Region bone must match slot bone");
+        if (a.boneId !== slot.boneId) fail5("Region bone must match slot bone");
         const local = multiplyAffine(
-          inverseAffine(frames.get(a.boneId) ?? fail4("Region bone missing")),
+          inverseAffine(frames.get(a.boneId) ?? fail5("Region bone missing")),
           a.world
         );
         if (Math.abs(local[0] * local[3] - local[1] * local[2]) < 1e-12) {
-          if (![local[4], local[5]].every(Number.isFinite)) fail4("Region position must be finite");
+          if (![local[4], local[5]].every(Number.isFinite)) fail5("Region position must be finite");
           attachments[slot.name][a.name] = {
             path: a.path,
             x: local[4],
@@ -32203,7 +32261,7 @@ function compileCharacterSpine40(input) {
         const sx = Math.hypot(local[0], local[1]);
         const sy = (local[0] * local[3] - local[1] * local[2]) / sx;
         if (Math.abs(local[0] * local[2] + local[1] * local[3]) > 1e-7 * sx * Math.hypot(local[2], local[3]))
-          fail4("A sheared region requires a mesh or explicit attachment bone");
+          fail5("A sheared region requires a mesh or explicit attachment bone");
         attachments[slot.name][a.name] = {
           path: a.path,
           x: local[4],
@@ -32228,7 +32286,7 @@ function compileCharacterSpine40(input) {
     if (!animation || !slot || seenChannels.has(key) || t.keys[0].time !== 0 || t.keys.at(-1).time !== animation.duration || t.keys.some(
       (k, i) => i > 0 && k.time <= t.keys[i - 1].time || k.name !== null && !slot.attachments.some((a) => a.name === k.name)
     ))
-      fail4(
+      fail5(
         "Attachment channels require unique valid references and strictly increasing keys spanning duration"
       );
     seenChannels.add(key);
@@ -32241,7 +32299,7 @@ function compileCharacterSpine40(input) {
     const animation = animations.find((a) => a.name === animationName), slot = slots.find((s2) => s2.name === slotName);
     const key = animationName + "\0" + slotName + "\0" + channel;
     if (!animation || !slot || seenChannels.has(key) || keys[0].time !== 0 || keys.at(-1).time !== animation.duration || keys.some((k, i) => i > 0 && k.time <= keys[i - 1].time) || keys.at(-1).curve !== void 0)
-      fail4(
+      fail5(
         "Animation channels require unique references, strictly increasing keys spanning duration and no final-key curve"
       );
     seenChannels.add(key);
@@ -32274,11 +32332,11 @@ function compileCharacterSpine40(input) {
       t.keys
     );
     const a = slot.attachments.find((a2) => a2.name === t.attachmentName);
-    if (!a || a.kind !== "mesh") fail4("Deform target must be an existing weighted mesh");
-    if (a.kind !== "mesh") fail4("Mesh required");
+    if (!a || a.kind !== "mesh") fail5("Deform target must be an existing weighted mesh");
+    if (a.kind !== "mesh") fail5("Mesh required");
     const part = a;
     if (t.keys.some((k) => k.offsets.length !== part.mesh.vertices.length))
-      fail4("Deform offset count must match mesh vertices");
+      fail5("Deform offset count must match mesh vertices");
     const order = [
       ...part.mesh.hull,
       ...part.mesh.vertices.map((_, i) => i).filter((i) => !part.mesh.hull.includes(i))
@@ -32320,15 +32378,15 @@ function compileCharacterSpine40(input) {
 // packages/spine/src/images-only.ts
 var isNum = (v) => typeof v === "number" && Number.isFinite(v);
 function readImagesOnlyLayout(document2) {
-  const fail4 = (reason) => failStage("spine", "IMAGES_ONLY_LAYOUT", reason);
+  const fail5 = (reason) => failStage("spine", "IMAGES_ONLY_LAYOUT", reason);
   const doc = document2;
   const bones = doc.bones;
   if (!Array.isArray(bones) || bones.length !== 1 || bones[0]?.name !== "root" || Object.keys(bones[0]).length !== 1)
-    fail4("An images-only document has exactly one untransformed root bone");
+    fail5("An images-only document has exactly one untransformed root bone");
   const slotsRaw = doc.slots;
   const skins = doc.skins;
   if (!Array.isArray(slotsRaw) || !Array.isArray(skins) || skins.length !== 1)
-    fail4("Slots and exactly one (default) skin are required");
+    fail5("Slots and exactly one (default) skin are required");
   const atts = skins[0].attachments ?? {};
   const layout = { slots: [], attachments: [], skeleton: {} };
   const sk = doc.skeleton ?? {};
@@ -32336,7 +32394,7 @@ function readImagesOnlyLayout(document2) {
     if (isNum(sk[k])) layout.skeleton[k] = sk[k];
   slotsRaw.forEach((s2, index) => {
     const name = s2.name;
-    if (typeof name !== "string" || s2.bone !== "root") fail4(`Slot ${String(name)} must be on root`);
+    if (typeof name !== "string" || s2.bone !== "root") fail5(`Slot ${String(name)} must be on root`);
     const own = atts[name] ?? {};
     layout.slots.push({
       name,
@@ -32349,16 +32407,16 @@ function readImagesOnlyLayout(document2) {
     });
     for (const [attName, a] of Object.entries(own)) {
       if (!isNum(a.width) || !isNum(a.height) || a.width <= 0 || a.height <= 0)
-        fail4(`${name}/${attName} needs its image width and height`);
+        fail5(`${name}/${attName} needs its image width and height`);
       const w = a.width, h = a.height;
       const sheared = a.type === "mesh";
       if (a.type !== void 0 && a.type !== "region" && !sheared)
-        fail4(`${name}/${attName}: only regions and quads`);
+        fail5(`${name}/${attName}: only regions and quads`);
       let affine;
       if (sheared) {
         const v = a.vertices;
         if (!Array.isArray(v) || v.length !== 8 || !v.every(isNum))
-          fail4(`${name}/${attName}: a quad has 4 root-space corners`);
+          fail5(`${name}/${attName}: a quad has 4 root-space corners`);
         const p0 = [v[0], -v[1]], p1 = [v[2], -v[3]], p3 = [v[6], -v[7]];
         affine = [
           (p1[0] - p0[0]) / w,
@@ -32723,20 +32781,20 @@ function num(value, params, where) {
 function evaluateExpression(source, lookup, where) {
   const tokens = source.match(/\$[A-Za-z_][A-Za-z0-9_]*|\d+(?:\.\d+)?|\.\d+|[-+*/()]|\S/g) ?? [];
   let i = 0;
-  const fail4 = () => failStage("animation", "PLAN_EXPRESSION", `${where}: cannot parse expression "${source}"`);
+  const fail5 = () => failStage("animation", "PLAN_EXPRESSION", `${where}: cannot parse expression "${source}"`);
   const factor = () => {
     const t = tokens[i++];
-    if (t === void 0) return fail4();
+    if (t === void 0) return fail5();
     if (t === "-") return -factor();
     if (t === "+") return factor();
     if (t === "(") {
       const v2 = expr();
-      if (tokens[i++] !== ")") fail4();
+      if (tokens[i++] !== ")") fail5();
       return v2;
     }
     if (t.startsWith("$")) return lookup(t.slice(1));
     if (/^(\d+(\.\d+)?|\.\d+)$/.test(t)) return Number(t);
-    return fail4();
+    return fail5();
   };
   const term = () => {
     let v2 = factor();
@@ -32751,7 +32809,7 @@ function evaluateExpression(source, lookup, where) {
     return v2;
   };
   const v = expr();
-  if (i !== tokens.length) fail4();
+  if (i !== tokens.length) fail5();
   return v;
 }
 function val(value, params, where) {
@@ -33242,6 +33300,16 @@ function planAttachments(plan, index, rigged, regionBone) {
       }
     }
     meshes.set(m.part, { ...built, weights });
+  }
+  const chosen = plan.meshing?.parts ?? {};
+  for (const key of Object.keys(chosen)) {
+    const p = index.part(key);
+    if (meshes.has(p.key) || meshes.has(p.slot))
+      failStage("mesh", "PLAN_MESH_DUPLICATE", `Part ${key} has a mesh plan and meshing.parts`);
+    const bone = regionBone(p.slot);
+    if (!bone) failStage("rig", "PLAN_REGION", `meshing.parts ${key} needs a region bone`);
+    const built = shape({ type: "feature", density: "artist", ...chosen[key] }, p);
+    meshes.set(p.key, { ...built, weights: rigidWeights(built.mesh, rig, bone) });
   }
   for (const p of index.parts.values()) {
     if (!p.sheared || meshes.has(p.key) || meshes.has(p.slot)) continue;
@@ -33762,6 +33830,111 @@ function buildColorTimelines(motion, rawSetupColors, params, plan = motion) {
   return out;
 }
 
+// packages/character/src/deforms.ts
+var fail4 = (code, reason) => failStage("animation", code, reason);
+function mlsAffine(p, q, v) {
+  let sw = 0, ps = [0, 0], qs = [0, 0];
+  const w = p.map(([x, y]) => 1 / ((x - v[0]) ** 2 + (y - v[1]) ** 2));
+  const on = w.findIndex((x) => !Number.isFinite(x));
+  if (on >= 0) return [v[0] + q[on][0] - p[on][0], v[1] + q[on][1] - p[on][1]];
+  w.forEach((wi, i) => {
+    sw += wi;
+    ps = [ps[0] + wi * p[i][0], ps[1] + wi * p[i][1]];
+    qs = [qs[0] + wi * q[i][0], qs[1] + wi * q[i][1]];
+  });
+  ps = [ps[0] / sw, ps[1] / sw];
+  qs = [qs[0] / sw, qs[1] / sw];
+  let a11 = 0, a12 = 0, a22 = 0, b11 = 0, b12 = 0, b21 = 0, b22 = 0;
+  w.forEach((wi, i) => {
+    const px = p[i][0] - ps[0], py = p[i][1] - ps[1], qx = q[i][0] - qs[0], qy = q[i][1] - qs[1];
+    a11 += wi * px * px;
+    a12 += wi * px * py;
+    a22 += wi * py * py;
+    b11 += wi * px * qx;
+    b12 += wi * px * qy;
+    b21 += wi * py * qx;
+    b22 += wi * py * qy;
+  });
+  const det = a11 * a22 - a12 * a12;
+  if (!(det > 1e-6 * (a11 + a22) ** 2)) return [v[0] + qs[0] - ps[0], v[1] + qs[1] - ps[1]];
+  const m11 = (a22 * b11 - a12 * b21) / det, m12 = (a22 * b12 - a12 * b22) / det, m21 = (a11 * b21 - a12 * b11) / det, m22 = (a11 * b22 - a12 * b12) / det;
+  const dx = v[0] - ps[0], dy = v[1] - ps[1];
+  return [dx * m11 + dy * m21 + qs[0], dx * m12 + dy * m22 + qs[1]];
+}
+function meshOf(slots, part, id) {
+  const i = part.indexOf("#"), name = i >= 0 ? part.slice(0, i) : part;
+  const slot = slots.find((s2) => s2.name === name);
+  if (!slot) return fail4("PLAN_MOTION_SLOT", `${id}: unknown part ${part}`);
+  const attachment = i >= 0 ? part.slice(i + 1) : slot.attachment ?? slot.attachments[0].name;
+  const a = slot.attachments.find((x) => x.name === attachment);
+  if (!a) return fail4("PLAN_MOTION_SLOT", `${id}: slot ${name} has no attachment ${attachment}`);
+  if (a.kind !== "mesh")
+    return fail4(
+      "PLAN_DEFORM_MESH",
+      `${id}: ${part} is a region; mesh it (meshes, or meshing.parts) to deform it`
+    );
+  return { slotName: name, attachmentName: attachment, vertices: a.mesh.vertices };
+}
+function buildDeformTimelines(plan, slots, durations) {
+  const fps = plan.motion.fps ?? 30;
+  const out = [];
+  const owner = /* @__PURE__ */ new Map();
+  for (const d of plan.motion.deforms ?? []) {
+    const names = Object.keys(d.points), at2 = names.map((n) => d.points[n]);
+    const parts = d.parts.map((part) => meshOf(slots, part, d.id));
+    for (const anim of plan.motion.animations) {
+      const list = d.keys[anim.name];
+      if (!list) continue;
+      for (const part of d.parts) {
+        const prev = owner.get(anim.name + "\0" + part);
+        if (prev)
+          fail4("PLAN_MOTION_CONTROL", `${part} is deformed by ${prev} and ${d.id} in ${anim.name}`);
+        owner.set(anim.name + "\0" + part, d.id);
+      }
+      const duration = durations.get(anim.name), frames = anim.frames, loop = anim.loop !== false;
+      const keyed = [...list].sort((a, b) => a.frame - b.frame).map((k) => {
+        for (const n of Object.keys(k.move))
+          if (!(n in d.points)) fail4("PLAN_MOTION_VALUE", `${d.id}: unknown point ${n}`);
+        return {
+          frame: k.frame,
+          ...k.ease !== void 0 ? { ease: k.ease } : {},
+          to: names.map((n, i) => {
+            const m = k.move[n] ?? [0, 0];
+            return [at2[i][0] + m[0], at2[i][1] + m[1]];
+          })
+        };
+      });
+      if (keyed.some((k, i) => i > 0 && k.frame === keyed[i - 1].frame))
+        fail4("PLAN_MOTION_TIMING", `${d.id}: two keys on one frame of ${anim.name}`);
+      if (keyed.at(-1).frame > frames)
+        fail4("PLAN_MOTION_TIMING", `${d.id}: a key lies after ${anim.name} ends`);
+      if (keyed[0].frame !== 0) keyed.unshift({ frame: 0, to: at2 });
+      if (keyed.at(-1).frame !== frames)
+        keyed.push({ frame: frames, to: loop ? keyed[0].to : keyed.at(-1).to });
+      for (const part of parts)
+        out.push({
+          animationName: anim.name,
+          slotName: part.slotName,
+          attachmentName: part.attachmentName,
+          keys: keyed.map((k, i) => {
+            const next = keyed[i + 1];
+            const curve = next ? easeCurve(next.ease ?? "ease") : void 0;
+            return {
+              // The last key sits exactly on the compiled duration (the compiler checks it).
+              time: next ? k.frame / fps : duration,
+              offsets: part.vertices.map((v) => {
+                const f = mlsAffine(at2, k.to, v);
+                return [+(f[0] - v[0]).toFixed(3), +(f[1] - v[1]).toFixed(3)];
+              }),
+              ...curve ? { curve } : {}
+            };
+          })
+        });
+    }
+  }
+  return out;
+}
+
 // packages/character/src/visibility.ts
 var splitPart = (part) => {
   const i = part.indexOf("#");
@@ -34155,6 +34328,11 @@ function handoverNotes(rigging, animations) {
         add(
           `- \u63DB\u5716\uFF1A\`${sw.slot}\` \u5728 ${sw.keys[a.name].map((k) => k.frame).join("\u3001")} \u5E40\u5207\u63DB\u9644\u4EF6\uFF08\u4F8B\u5982\u7728\u773C\uFF09\u3002`
         );
+    for (const d of plan.motion.deforms ?? [])
+      if (d.keys[a.name])
+        add(
+          `- \u7DB2\u683C\u8B8A\u5F62 \`${d.id}\`\uFF1A${d.parts.map((p) => `\`${p}\``).join("\u3001")} \u5728 ${d.keys[a.name].map((k) => k.frame).join("\u3001")} \u5E40\u8B8A\u5F62\uFF08\u63A7\u5236\u9EDE ${Object.keys(d.points).join("\u3001")}\uFF09\uFF1B\u5728 Spine \u9078\u8A72\u9644\u4EF6\u7684 Deform \u95DC\u9375\u5E40\u4FEE\u6539\u3002`
+        );
     add(`- \u5171 ${moved.size} \u6839\u9AA8\u6709\u95DC\u9375\u5E40\uFF0C\u90FD\u662F\u7A00\u758F\u95DC\u9375\u5E40\u52A0\u8C9D\u8332\u66F2\u7DDA\uFF0C\u53EF\u4EE5\u76F4\u63A5\u62D6\u52D5\u3002`);
     add();
   });
@@ -34297,6 +34475,7 @@ function mergePlans(plans, options = {}) {
   const keyed = [];
   const swaps = [];
   const colors = [];
+  const deforms = [];
   for (const p of plans) {
     for (const a of p.motion.animations) {
       if (names.has(a.name)) conflicts.push(`animation ${a.name}: in more than one plan`);
@@ -34340,6 +34519,17 @@ function mergePlans(plans, options = {}) {
         notes.push(`colors ${c.id} of ${p.id}: renamed ${id}`);
       }
     }
+    for (const d of p.motion.deforms ?? []) {
+      const have = deforms.find((x) => x.id === d.id);
+      if (!have) deforms.push({ ...d, keys: { ...d.keys } });
+      else if (same(have.parts, d.parts) && same(have.points, d.points))
+        Object.assign(have.keys, d.keys);
+      else {
+        const id = `${d.id}_${p.id}`.slice(0, 64);
+        deforms.push({ ...d, id, keys: { ...d.keys } });
+        notes.push(`deforms ${d.id} of ${p.id}: renamed ${id}`);
+      }
+    }
   }
   if (conflicts.length)
     failStage("build", "PLAN_MERGE", `Plans do not merge:
@@ -34358,11 +34548,25 @@ function mergePlans(plans, options = {}) {
     animations,
     ...keyed.length ? { keyed } : { keyed: void 0 },
     ...swaps.length ? { swaps } : { swaps: void 0 },
-    ...colors.length ? { colors } : { colors: void 0 }
+    ...colors.length ? { colors } : { colors: void 0 },
+    ...deforms.length ? { deforms } : { deforms: void 0 }
   };
-  for (const k of ["keyed", "swaps", "colors"])
+  for (const k of ["keyed", "swaps", "colors", "deforms"])
     if (motion[k] === void 0) delete motion[k];
-  const meshing = plans.some((p) => p.meshing?.all) ? { meshing: { all: true } } : {};
+  const parts = {};
+  for (const p of plans)
+    for (const [k, v] of Object.entries(p.meshing?.parts ?? {})) {
+      if (k in parts && !same(parts[k], v))
+        failStage("build", "PLAN_MERGE", `meshing.parts.${k}: the plans give different counts`);
+      parts[k] = v;
+    }
+  const meshAll = plans.some((p) => p.meshing?.all);
+  const meshing = meshAll || Object.keys(parts).length ? {
+    meshing: {
+      ...meshAll ? { all: true } : {},
+      ...Object.keys(parts).length ? { parts } : {}
+    }
+  } : {};
   const plan = {
     ...first,
     id: options.id ?? `${first.id}_all`.slice(0, 64),
@@ -34662,6 +34866,12 @@ function compileCharacter(rigging, animations, bend = {}, colorTimelines = []) {
       rigging.slots,
       new Map(animations.map((a) => [a.name, a.duration]))
     ),
+    // Mesh deform keys (ADR-037) depend only on the plan, the meshes and the durations.
+    deformTimelines: buildDeformTimelines(
+      rigging.plan,
+      rigging.slots,
+      new Map(animations.map((a) => [a.name, a.duration]))
+    ),
     ik: rigging.ik.map((c) => c.name in bend ? { ...c, bendPositive: bend[c.name] } : c),
     transform: rigging.transform
   });
@@ -34931,6 +35141,13 @@ function lintOne(plan, partNames, knownAnimations) {
       errors.push(`regions.${p}: no slot ${p} in the images-only layout`);
     bone(b, `regions.${p}`);
   }
+  for (const p of Object.keys(plan.meshing?.parts ?? {})) {
+    part(p, `meshing.parts.${p}`);
+    if (meshed.has(p) || meshed.has(p.split("#")[0]))
+      errors.push(`meshing.parts.${p}: the part is also in meshes`);
+    if (!plan.regions?.[p.split("#")[0]])
+      errors.push(`meshing.parts.${p}: needs a region bone (regions)`);
+  }
   if (parts)
     for (const key of parts) {
       const slot = key.split("#")[0];
@@ -35017,6 +35234,42 @@ function lintOne(plan, partNames, knownAnimations) {
         if (!known.has(name)) errors.push(`motion.swaps ${sw.slot}: unknown animation ${name}`);
       } else if (keys.some((k) => k.frame > a.frames))
         errors.push(`motion.swaps ${sw.slot}: a key is past the end of ${name}`);
+    }
+  }
+  const deformed = /* @__PURE__ */ new Map();
+  for (const d of m.deforms ?? []) {
+    const where = `motion.deforms ${d.id}`;
+    const meshedPart = (p) => {
+      const slot = p.split("#")[0];
+      return meshed.has(p) || meshed.has(slot) || p in (plan.meshing?.parts ?? {}) || !!plan.meshing?.all && !!plan.regions?.[slot];
+    };
+    for (const p of d.parts) {
+      part(p, where);
+      if (!meshedPart(p))
+        errors.push(`${where}: ${p} is not a mesh; add it to meshes or meshing.parts`);
+    }
+    const points = Object.keys(d.points).length;
+    if (!points) errors.push(`${where}: needs control points`);
+    else if (points < 3)
+      warnings.push(`${where}: fewer than three points only translate the parts`);
+    for (const [name, keys] of Object.entries(d.keys)) {
+      const a = m.animations.find((x) => x.name === name);
+      if (!a) {
+        if (!known.has(name)) errors.push(`${where}: unknown animation ${name}`);
+        continue;
+      }
+      if (keys.some((k) => k.frame > a.frames))
+        errors.push(`${where}: a key is past the end of ${name}`);
+      if (new Set(keys.map((k) => k.frame)).size !== keys.length)
+        errors.push(`${where}: two keys on one frame of ${name}`);
+      for (const k of keys)
+        for (const n of Object.keys(k.move))
+          if (!(n in d.points)) errors.push(`${where}: frame ${k.frame} moves unknown point ${n}`);
+      for (const p of d.parts) {
+        const prev = deformed.get(name + "\0" + p);
+        if (prev) errors.push(`${where}: ${p} is also deformed by ${prev} in ${name}`);
+        deformed.set(name + "\0" + p, d.id);
+      }
     }
   }
   for (const a of m.animations)
@@ -38578,8 +38831,8 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
   ], { stdio: ["pipe", "ignore", "pipe"] });
   let stderr = "";
   ffmpeg.stderr.on("data", (d) => stderr += d.toString());
-  const done = new Promise((ok, fail4) => {
-    ffmpeg.on("error", (e) => fail4(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for review videos (${e.message})`)));
+  const done = new Promise((ok, fail5) => {
+    ffmpeg.on("error", (e) => fail5(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for review videos (${e.message})`)));
     ffmpeg.on("close", (code2) => ok(code2 ?? 1));
   });
   const write = (b) => new Promise((ok) => ffmpeg.stdin.write(b) ? ok() : ffmpeg.stdin.once("drain", ok));
@@ -38764,13 +39017,13 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
 async function videoSize(path) {
   if (!existsSync2(path))
     throw new Error(`CLI_VIDEO: ${path} not found`);
-  const info = await new Promise((ok, fail4) => {
+  const info = await new Promise((ok, fail5) => {
     const p = spawn("ffmpeg", ["-hide_banner", "-i", path], {
       stdio: ["ignore", "ignore", "pipe"]
     });
     let err = "";
     p.stderr.on("data", (d) => err += d.toString());
-    p.on("error", (e) => fail4(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for video comparison (${e.message})`)));
+    p.on("error", (e) => fail5(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for video comparison (${e.message})`)));
     p.on("close", () => ok(err));
   });
   const m = /Video:.*?\b(\d{2,5})x(\d{2,5})\b/.exec(info);
@@ -38849,8 +39102,8 @@ function videoWriter(outPath, width, height, fps, filter) {
   ], { stdio: ["pipe", "ignore", "pipe"] });
   let stderr = "";
   p.stderr.on("data", (d) => stderr += d.toString());
-  const done = new Promise((ok, fail4) => {
-    p.on("error", (e) => fail4(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for video comparison (${e.message})`)));
+  const done = new Promise((ok, fail5) => {
+    p.on("error", (e) => fail5(new Error(`CLI_FFMPEG: ffmpeg is needed on PATH for video comparison (${e.message})`)));
     p.on("close", (code) => ok(code ?? 1));
   });
   return {

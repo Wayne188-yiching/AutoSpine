@@ -7,6 +7,7 @@ type Animation = MotionPlan["animations"][number];
 type Keyed = NonNullable<MotionPlan["keyed"]>[number];
 type Colors = NonNullable<MotionPlan["colors"]>[number];
 type Swap = NonNullable<MotionPlan["swaps"]>[number];
+type Deform = NonNullable<MotionPlan["deforms"]>[number];
 
 /** Motion blocks an animation can carry for itself (ADR-031). */
 const BLOCKS = [
@@ -177,6 +178,7 @@ export function mergePlans(
   const keyed: Keyed[] = [];
   const swaps: Swap[] = [];
   const colors: Colors[] = [];
+  const deforms: Deform[] = [];
   for (const p of plans) {
     for (const a of p.motion.animations) {
       if (names.has(a.name)) conflicts.push(`animation ${a.name}: in more than one plan`);
@@ -220,6 +222,17 @@ export function mergePlans(
         notes.push(`colors ${c.id} of ${p.id}: renamed ${id}`);
       }
     }
+    for (const d of p.motion.deforms ?? []) {
+      const have = deforms.find((x) => x.id === d.id);
+      if (!have) deforms.push({ ...d, keys: { ...d.keys } });
+      else if (same(have.parts, d.parts) && same(have.points, d.points))
+        Object.assign(have.keys, d.keys);
+      else {
+        const id = `${d.id}_${p.id}`.slice(0, 64);
+        deforms.push({ ...d, id, keys: { ...d.keys } });
+        notes.push(`deforms ${d.id} of ${p.id}: renamed ${id}`);
+      }
+    }
   }
 
   if (conflicts.length)
@@ -246,11 +259,29 @@ export function mergePlans(
     ...(keyed.length ? { keyed } : { keyed: undefined }),
     ...(swaps.length ? { swaps } : { swaps: undefined }),
     ...(colors.length ? { colors } : { colors: undefined }),
+    ...(deforms.length ? { deforms } : { deforms: undefined }),
   } as MotionPlan;
-  for (const k of ["keyed", "swaps", "colors"] as const)
+  for (const k of ["keyed", "swaps", "colors", "deforms"] as const)
     if (motion[k] === undefined) delete motion[k];
 
-  const meshing = plans.some((p) => p.meshing?.all) ? { meshing: { all: true } } : {};
+  // Vertex counts per part (ADR-037) join; one part counted two ways does not merge.
+  const parts: NonNullable<NonNullable<CharacterPlan["meshing"]>["parts"]> = {};
+  for (const p of plans)
+    for (const [k, v] of Object.entries(p.meshing?.parts ?? {})) {
+      if (k in parts && !same(parts[k], v))
+        failStage("build", "PLAN_MERGE", `meshing.parts.${k}: the plans give different counts`);
+      parts[k] = v;
+    }
+  const meshAll = plans.some((p) => p.meshing?.all);
+  const meshing =
+    meshAll || Object.keys(parts).length
+      ? {
+          meshing: {
+            ...(meshAll ? { all: true } : {}),
+            ...(Object.keys(parts).length ? { parts } : {}),
+          },
+        }
+      : {};
   const plan: CharacterPlan = {
     ...first,
     id: options.id ?? `${first.id}_all`.slice(0, 64),

@@ -17,6 +17,7 @@ import {
 } from "./motion.js";
 import { buildColorTimelines, type ColorTimeline } from "./colors.js";
 import { buildAttachmentTimelines } from "./visibility.js";
+import { buildDeformTimelines } from "./deforms.js";
 import { applyKeyposes, applyRestPose } from "./pose.js";
 import { boneRoles, colorBones } from "./handover.js";
 import { applyMirrors } from "./mirror.js";
@@ -314,6 +315,12 @@ export function compileCharacter(
     colorTimelines,
     attachmentTimelines: buildAttachmentTimelines(
       rigging.plan.motion,
+      rigging.slots,
+      new Map(animations.map((a) => [a.name, a.duration])),
+    ),
+    // Mesh deform keys (ADR-037) depend only on the plan, the meshes and the durations.
+    deformTimelines: buildDeformTimelines(
+      rigging.plan,
       rigging.slots,
       new Map(animations.map((a) => [a.name, a.duration])),
     ),

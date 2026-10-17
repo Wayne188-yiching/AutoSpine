@@ -734,6 +734,44 @@ export const MotionPlanSchema = Type.Object(
         { maxItems: 64 },
       ),
     ),
+    /**
+     * Mesh deform keys per animation (ADR-037): a shape the art has no image for (a clenched mouth,
+     * a squash). `points` are named control points in the setup pose, IR world like every plan
+     * coordinate (x right, y down; Spine world with y negated); a key moves some of them by
+     * [dx, dy] in the same units and the rest stay where they are.
+     * Every vertex of every listed part follows the points by moving least squares (affine; one
+     * moved point or points in a line only translate), and the offsets ride the parts' bones. Frame
+     * 0 is the setup shape unless keyed; a loop closes on frame 0 and a one-shot holds its last key.
+     * A key's ease shapes the segment arriving at it. The parts must be meshes (`meshes`, or
+     * `meshing.parts` for region parts).
+     */
+    deforms: Type.Optional(
+      Type.Array(
+        Type.Object(
+          {
+            id: IdSchema,
+            parts: Type.Array(PartNameSchema, { minItems: 1, maxItems: 32 }),
+            points: Type.Record(IdSchema, Vector2Schema),
+            keys: Type.Record(
+              NameSchema,
+              Type.Array(
+                Type.Object(
+                  {
+                    frame: Type.Integer({ minimum: 0, maximum: 3600 }),
+                    move: Type.Record(IdSchema, Vector2Schema),
+                    ease: Type.Optional(KeyposeEaseSchema),
+                  },
+                  strict,
+                ),
+                { minItems: 1, maxItems: 256 },
+              ),
+            ),
+          },
+          strict,
+        ),
+        { maxItems: 64 },
+      ),
+    ),
   },
   strict,
 );
@@ -766,9 +804,29 @@ export const CharacterPlanSchema = Type.Object(
     /**
      * ADR-024. `all`: every region part an animation shows (all of them when no animation has
      * `show`) is meshed at artist density and weighted rigidly to its region bone. Collapsed and
-     * sheared placements keep their region or quad.
+     * sheared placements keep their region or quad. `parts` gives chosen region parts their own
+     * vertex counts (a mouth that deforms, ADR-037) and meshes them even without `all`.
      */
-    meshing: Type.Optional(Type.Object({ all: Type.Optional(Type.Boolean()) }, strict)),
+    meshing: Type.Optional(
+      Type.Object(
+        {
+          all: Type.Optional(Type.Boolean()),
+          parts: Type.Optional(
+            Type.Record(
+              PartNameSchema,
+              Type.Object(
+                {
+                  hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
+                  interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 })),
+                },
+                strict,
+              ),
+            ),
+          ),
+        },
+        strict,
+      ),
+    ),
     constraints: Type.Optional(
       Type.Object(
         {

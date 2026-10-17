@@ -292,6 +292,17 @@ export function planAttachments(
     }
     meshes.set(m.part, { ...built, weights });
   }
+  // ADR-037: `meshing.parts` gives chosen region parts their own vertex counts, even without `all`.
+  const chosen = plan.meshing?.parts ?? {};
+  for (const key of Object.keys(chosen)) {
+    const p = index.part(key);
+    if (meshes.has(p.key) || meshes.has(p.slot))
+      failStage("mesh", "PLAN_MESH_DUPLICATE", `Part ${key} has a mesh plan and meshing.parts`);
+    const bone = regionBone(p.slot);
+    if (!bone) failStage("rig", "PLAN_REGION", `meshing.parts ${key} needs a region bone`);
+    const built = shape({ type: "feature", density: "artist", ...chosen[key] }, p);
+    meshes.set(p.key, { ...built, weights: rigidWeights(built.mesh, rig, bone) });
+  }
   // Sheared placements cannot be regions: rigid quads on the region's bone.
   for (const p of index.parts.values()) {
     if (!p.sheared || meshes.has(p.key) || meshes.has(p.slot)) continue;
