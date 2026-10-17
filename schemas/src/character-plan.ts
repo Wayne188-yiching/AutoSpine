@@ -567,13 +567,16 @@ export const MotionPlanSchema = Type.Object(
           /**
            * Reference video (ADR-034): the motion this animation should match. `video` is relative
            * to the plan file; `start` is the time in the video, in seconds, of the animation's
-           * frame 0. `compare-video` and `deliver` compare the build with it.
+           * frame 0. `compare-video` and `deliver` compare the build with it. `use` (ADR-036):
+           * "check" (default) only compares; "fit" makes `deliver` take the motion from the video
+           * with `fit-video` first. A generated clip that redraws the figure stays "check".
            */
           reference: Type.Optional(
             Type.Object(
               {
                 video: Type.String({ minLength: 1, maxLength: 4096 }),
                 start: Type.Optional(Type.Number({ minimum: 0, maximum: 3600 })),
+                use: Type.Optional(Type.Union([Type.Literal("check"), Type.Literal("fit")])),
               },
               strict,
             ),

@@ -180,11 +180,14 @@ export function buildMotionSpecs(
       else if (s.kind === "face") {
         // A breath slides the face with the body either way; a settle lifts it by upRatio.
         const slide = faceSlide.get(s.id)!;
-        const fy = breath
-          ? (slide * y) / Math.abs(depth)
-          : y >= 0
-            ? (slide * y) / depth
-            : (s.upRatio ?? 2 / 3) * y;
+        // A main without depth (ADR-036: a fit takes the motion from a video) slides nothing.
+        const fy = !depth
+          ? 0
+          : breath
+            ? (slide * y) / Math.abs(depth)
+            : y >= 0
+              ? (slide * y) / depth
+              : (s.upRatio ?? 2 / 3) * y;
         out[s.id] = [r3(n(s.x, "face.x") * fy), r3(fy)];
       } else if (s.track) {
         if (s.amount !== undefined)
@@ -196,7 +199,8 @@ export function buildMotionSpecs(
       } else {
         if (s.amount === undefined)
           failStage("animation", "PLAN_MOTION_SQUASH", `${s.id}: give amount or track`);
-        out[s.id] = [+(1 - (n(s.amount, `${s.id}.amount`) * y) / depth).toFixed(4), 1];
+        const amount = n(s.amount, `${s.id}.amount`);
+        out[s.id] = [depth ? +(1 - (amount * y) / depth).toFixed(4) : 1, 1];
       }
     }
     return out;

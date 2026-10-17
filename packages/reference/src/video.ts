@@ -753,3 +753,32 @@ export function checkVideoAcceptance(m: VideoMeasurements): VideoCheckRow[] {
     });
   return rows;
 }
+
+/**
+ * How far a comparison is from passing (ADR-036): over the rows, how far each value is past its
+ * threshold, as a fraction of the threshold. 0 when every row passes; rounds of a fit are ranked by
+ * it. A V2 row that tracked no part counts 1.
+ */
+export function videoPenalty(rows: readonly VideoCheckRow[]): number {
+  const A = VIDEO_ACCEPTANCE;
+  const over = (v: number, limit: number) => Math.max(0, v - limit) / limit,
+    under = (v: number, limit: number) => Math.max(0, limit - v) / limit;
+  let penalty = 0;
+  for (const { id, value } of rows) {
+    const v = Array.isArray(value) ? (value as unknown[]) : [value];
+    const n = (i: number) => (typeof v[i] === "number" ? (v[i] as number) : NaN);
+    if (id.startsWith("V1") && Number.isFinite(n(0)))
+      penalty += under(n(0), A.silhouetteMean) + under(n(1), A.silhouetteMin);
+    else if (id.startsWith("V2"))
+      penalty += Number.isFinite(n(0))
+        ? over(n(0) / 100, A.partMedian) + over(n(1) / 100, A.partP90)
+        : 1;
+    else if (id.startsWith("V3") && Number.isFinite(n(0)))
+      penalty +=
+        over(Math.abs(n(0)), A.maxLagFrames) +
+        under(n(1), A.amplitudeLow) +
+        over(n(1), A.amplitudeHigh);
+    else if (id.startsWith("V4") && Number.isFinite(n(0))) penalty += over(n(0), A.seam);
+  }
+  return +penalty.toFixed(4);
+}
