@@ -9,7 +9,7 @@
       "name": "autospine",
       "source": "./plugin",
       "description": "Rig and animate Spine 4.0 characters from an images-only Spine file, with a review video, handover notes and an optional artist comparison.",
-      "version": "0.4.0"
+      "version": "0.5.0"
     }
   ]
 }

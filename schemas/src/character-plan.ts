@@ -136,11 +136,14 @@ export const MeshPlanSchema = Type.Object(
           edgeLength: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
           minHoleFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
           /**
-           * Vertex budget (ADR-024). `artist`: s = sqrt(image width x height) px, hull round(sqrt s)
-           * clamped to 6..40, interior 0 below s 100 else round(s / 80) (median of 423 artist
-           * character meshes). Explicit counts override it; a budget covers holes.
+           * Vertex budget (ADR-024, ADR-038). The default: the artist budget, s = sqrt(image width x
+           * height) px, hull round(sqrt s) clamped to 6..40, interior 0 below s 100 else
+           * round(s / 80) (median of 423 artist character meshes), with enclosed holes kept as
+           * rings. `artist` names that budget but covers holes (as `meshing.all` does). `fine`, or
+           * an explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
+           * whatever the size). Explicit counts override the budget.
            */
-          density: Type.Optional(Type.Literal("artist")),
+          density: Type.Optional(Type.Union([Type.Literal("artist"), Type.Literal("fine")])),
           hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
           interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 })),
         },
@@ -504,6 +507,12 @@ export const MotionPlanSchema = Type.Object(
   {
     cycle: Type.Integer({ minimum: 4, maximum: 3600 }),
     fps: Type.Optional(Type.Integer({ minimum: 1, maximum: 60 })),
+    /**
+     * Key cleanup (ADR-038): every bone timeline is re-keyed with the fewest keys that play within
+     * this many degrees or px (scale: hundredths) of the compiled motion. Default 0.25; 0 keeps
+     * every compiled key.
+     */
+    keyTolerance: Type.Optional(Type.Number({ minimum: 0, maximum: 5 })),
     params: Type.Record(Type.String({ pattern: "^[A-Za-z_][A-Za-z0-9_]*$" }), Type.Number()),
     search: Type.Optional(Type.Record(Type.String(), SearchRangeSchema)),
     animations: Type.Array(
