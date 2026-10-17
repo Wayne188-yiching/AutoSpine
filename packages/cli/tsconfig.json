@@ -10,6 +10,7 @@
   "references": [
     { "path": "../character" },
     { "path": "../reference" },
+    { "path": "../motion" },
     { "path": "../spine" },
     { "path": "../assets" },
     { "path": "../mesh" },

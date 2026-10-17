@@ -139,7 +139,11 @@ export function planAttachments(
     switch (spec.type) {
       case "feature": {
         const asset = assetFor(p, id);
-        const budget = spec.density === "artist" ? artistBudget(p.width, p.height) : undefined;
+        // ADR-038: the artist budget unless the plan asks for the engine's fine lattice; a
+        // default budget keeps hole rings (eye sockets), `density: "artist"` covers them (ADR-024).
+        const fine =
+          spec.density === "fine" || spec.spacing !== undefined || spec.edgeLength !== undefined;
+        const budget = fine ? undefined : artistBudget(p.width, p.height);
         const hullVertices = spec.hullVertices ?? budget?.hull,
           interiorVertices = spec.interiorVertices ?? budget?.interior;
         const options = {
@@ -148,6 +152,7 @@ export function planAttachments(
           ...(spec.minHoleFraction !== undefined ? { minHoleFraction: spec.minHoleFraction } : {}),
           ...(hullVertices !== undefined ? { hullVertices } : {}),
           ...(interiorVertices !== undefined ? { interiorVertices } : {}),
+          ...(hullVertices !== undefined && spec.density !== "artist" ? { keepHoles: true } : {}),
         };
         const r = generateFeatureMesh(asset.parts[0]!, p.alpha, options);
         return { asset, mesh: toWorldMesh(r.mesh as Mesh2D, p, id), rings: r.rings };

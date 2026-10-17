@@ -75,6 +75,43 @@ function bandDistance(
   return Math.abs(Math.log(Math.max(1e-6, f.value) / Math.max(1e-6, bound))) / Math.log(1.5);
 }
 
+const triangleArea = (v: number[], a: number, b: number, c: number) =>
+  (v[2 * b]! - v[2 * a]!) * (v[2 * c + 1]! - v[2 * a + 1]!) -
+  (v[2 * b + 1]! - v[2 * a + 1]!) * (v[2 * c]! - v[2 * a]!);
+/** One mesh's inverted triangles, largest edge stretch and loop seam against frame 0 (every second frame). */
+function meshDeformation(t: Tracks["tr"][string], frames: number) {
+  const out = { inversions: 0, stretch: 0, seam: 0 };
+  const v0 = t.verts[0];
+  if (!v0) return out;
+  const tris = t.tris!;
+  for (let f = 1; f <= frames; f += 2) {
+    const v = t.verts[f];
+    if (!v || v.length !== v0.length) continue;
+    for (let k = 0; k < tris.length; k += 3) {
+      const [x, y, z] = [tris[k]!, tris[k + 1]!, tris[k + 2]!];
+      const A0 = triangleArea(v0, x, y, z),
+        A1 = triangleArea(v, x, y, z);
+      if (Math.abs(A0) > 1e-6 && A1 / A0 < 0) out.inversions++;
+      for (const [p, q] of [
+        [x, y],
+        [y, z],
+        [z, x],
+      ] as [number, number][]) {
+        const l0 = Math.hypot(v0[2 * q]! - v0[2 * p]!, v0[2 * q + 1]! - v0[2 * p + 1]!);
+        if (l0 > 2)
+          out.stretch = Math.max(
+            out.stretch,
+            Math.abs(Math.hypot(v[2 * q]! - v[2 * p]!, v[2 * q + 1]! - v[2 * p + 1]!) / l0 - 1),
+          );
+      }
+    }
+  }
+  const vN = t.verts[frames];
+  if (vN)
+    for (let i = 0; i < vN.length; i++) out.seam = Math.max(out.seam, Math.abs(vN[i]! - v0[i]!));
+  return out;
+}
+
 /**
  * Objective of the motion search (ADR-017): the critic's distance outside the artist bands, plus
  * how far each probe part's path and each part's in-mesh deformation are from the artist's, with
@@ -103,9 +140,22 @@ export function makeObjective(
   const exclude = (options.deformExclude ?? []).map((p) => new RegExp(p));
   const tw = options.trajectoryWeight ?? 20,
     dw = options.deformWeight ?? 2;
-  const area = (v: number[], a: number, b: number, c: number) =>
-    (v[2 * b]! - v[2 * a]!) * (v[2 * c + 1]! - v[2 * a + 1]!) -
-    (v[2 * b + 1]! - v[2 * a + 1]!) * (v[2 * c]! - v[2 * a]!);
+  const isCharacter = (slot: string, t: Tracks["tr"][string]) =>
+    !exclude.some((re) => re.test(slot)) && (t.tris?.length ?? 0) >= 6;
+  // The artist's stretch measured as the build's is (against frame 0, every second frame): the
+  // reference's own measure is against the setup pose, so a build compared with itself could
+  // exceed its own limit (ADR-038). The limit is never tighter than that measure gave.
+  const artistStretch = Math.max(
+    0,
+    ...reference.animations.flatMap((a) => {
+      const A = reference.tracks[a]!;
+      return Object.entries(A.tr)
+        .filter(([slot, t]) => isCharacter(slot, t))
+        .map(([, t]) => meshDeformation(t, A.frames).stretch);
+    }),
+  );
+  const stretchLimit =
+    1.5 * Math.max(artistStretch, ...Object.values(reference.maxCharacterStretch));
   return (params: Params): Evaluation => {
     const { animations, colorTimelines } = animateCharacter(rigging, params);
     const doc = compileCharacter(rigging, animations, options.bend, colorTimelines);
@@ -169,7 +219,7 @@ export function makeObjective(
         const t = g.tr[slot];
         if (!t) continue;
         const mg = slotMotion(t);
-        const character = !exclude.some((re) => re.test(slot)) && (t.tris?.length ?? 0) >= 6;
+        const character = isCharacter(slot, t);
         if (dw && character && (ma.deformPx ?? 0) > 2) {
           const e = Math.abs(Math.log(((mg.deformPx ?? 0) + 1) / (ma.deformPx! + 1)));
           out.deformError += e;
@@ -187,37 +237,10 @@ export function makeObjective(
         }
         // inversions, stretch and loop seam on character meshes
         if (!character) continue;
-        const v0 = t.verts[0];
-        if (!v0) continue;
-        for (let f = 1; f <= g.frames; f += 2) {
-          const v = t.verts[f];
-          if (!v || v.length !== v0.length) continue;
-          const tris = t.tris!;
-          for (let k = 0; k < tris.length; k += 3) {
-            const [x, y, z] = [tris[k]!, tris[k + 1]!, tris[k + 2]!];
-            const A0 = area(v0, x, y, z),
-              A1 = area(v, x, y, z);
-            if (Math.abs(A0) > 1e-6 && A1 / A0 < 0) out.inversions++;
-            for (const [p, q] of [
-              [x, y],
-              [y, z],
-              [z, x],
-            ] as [number, number][]) {
-              const l0 = Math.hypot(v0[2 * q]! - v0[2 * p]!, v0[2 * q + 1]! - v0[2 * p + 1]!);
-              if (l0 > 2)
-                out.stretch = Math.max(
-                  out.stretch,
-                  Math.abs(
-                    Math.hypot(v[2 * q]! - v[2 * p]!, v[2 * q + 1]! - v[2 * p + 1]!) / l0 - 1,
-                  ),
-                );
-            }
-          }
-        }
-        const vN = t.verts[g.frames];
-        if (vN)
-          for (let i = 0; i < vN.length; i++)
-            out.loopSeam = Math.max(out.loopSeam, Math.abs(vN[i]! - v0[i]!));
+        const m = meshDeformation(t, g.frames);
+        out.inversions += m.inversions;
+        out.stretch = Math.max(out.stretch, m.stretch);
+        out.loopSeam = Math.max(out.loopSeam, m.seam);
       }
       out.amplitude[a] = ampRows ? +(amp / ampRows).toFixed(3) : 0;
       out.recall[a] = +(both / Math.max(1, artMoving)).toFixed(3);
@@ -225,7 +248,7 @@ export function makeObjective(
       if (out.amplitude[a]! < 0.6) penalty += 20 * (0.6 - out.amplitude[a]!) + 5;
       if (out.recall[a]! < 0.8 || out.precision[a]! < 0.7) penalty += 20;
     }
-    const stretchLimit = 1.5 * Math.max(...Object.values(reference.maxCharacterStretch));
+
     if (out.inversions) penalty += 50 + out.inversions;
     if (out.stretch > stretchLimit) penalty += 50;
     if (out.loopSeam > 0.5) penalty += 50;

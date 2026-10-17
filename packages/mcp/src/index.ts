@@ -40,6 +40,7 @@ import {
   optimizeMotionFiles,
   reviewVideoFiles,
   fitPoseFiles,
+  fitVideoFiles,
   mergePlanFiles,
 } from "@autospine/cli/character";
 import { lintCharacterPlan } from "@autospine/character";
@@ -304,6 +305,23 @@ const toolSchemas = {
     },
     strict,
   ),
+  autospine_fit_video: Type.Object(
+    {
+      planPath: WorkspacePath,
+      buildDir: WorkspacePath,
+      videoPath: WorkspacePath,
+      outputDir: WorkspacePath,
+      animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
+      start: Type.Optional(Type.Number({ minimum: 0, maximum: 3600 })),
+      rounds: Type.Optional(Type.Integer({ minimum: 1, maximum: 10 })),
+      every: Type.Optional(Type.Integer({ minimum: 1, maximum: 30 })),
+      ignore: Type.Optional(
+        Type.Array(Type.String({ minLength: 1, maxLength: 128 }), { maxItems: 512 }),
+      ),
+      zero: Type.Optional(Type.Boolean()),
+    },
+    strict,
+  ),
 };
 const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_compile_character:
@@ -350,6 +368,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
   autospine_compare_video:
     "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds — outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
+  autospine_fit_video:
+    "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
   autospine_review_video:
     "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
@@ -362,6 +382,7 @@ const writingTools = new Set<string>([
   "autospine_review_video",
   "autospine_compare_video",
   "autospine_fit_pose",
+  "autospine_fit_video",
   "autospine_merge_plans",
 ]);
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
@@ -486,6 +507,9 @@ function characterFailure(error: unknown): never {
     FIT_SLOTS: "ignore names a slot the layout does not have",
   };
   if (code && fit[code]) throw new Error(`MCP_${code}: ${fit[code]}`);
+  // A video that cannot drive the build (ADR-036); these messages name no paths.
+  if (code === "FIT_VIDEO")
+    throw new Error(`MCP_FIT_VIDEO: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
   if (code === "PLAN_QA" || code === "PLAN_SEARCH")
     throw new Error(`MCP_${code}: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
   // Engine failures carry a validation report (stage, code, reason) that safeFailure passes on.
@@ -830,6 +854,34 @@ export class AutoSpineMcpServer {
             ...(args.zeroFrame === undefined ? {} : { zeroFrame: args.zeroFrame }),
           }).catch(characterFailure);
           return result({ ...fit, output: relative(root, output), artistQualityAccepted: false });
+        }
+        case "autospine_fit_video": {
+          if (!Value.Check(toolSchemas.autospine_fit_video, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const build = await guardDirectory(root, args.buildDir);
+          const video = await guardFile(root, args.videoPath, 2 * 1024 * 1024 * 1024);
+          const output = await guardOutput(root, args.outputDir, true);
+          const fit = await fitVideoFiles(plan, build, output, {
+            video,
+            ...(args.animation === undefined ? {} : { animation: args.animation }),
+            ...(args.start === undefined ? {} : { start: args.start }),
+            ...(args.rounds === undefined ? {} : { rounds: args.rounds }),
+            ...(args.every === undefined ? {} : { every: args.every }),
+            ...(args.ignore === undefined ? {} : { ignore: args.ignore }),
+            ...(args.zero === undefined ? {} : { zero: args.zero }),
+          }).catch(characterFailure);
+          return result({
+            ...fit,
+            video: relative(root, fit.video),
+            best: {
+              round: fit.best.round,
+              dir: relative(root, fit.best.dir),
+              plan: relative(root, fit.best.plan),
+              build: relative(root, fit.best.build),
+            },
+            outputDir: relative(root, output),
+            artistQualityAccepted: false,
+          });
         }
         case "autospine_apply_correction": {
           if (!Value.Check(toolSchemas.autospine_apply_correction, args)) break;
