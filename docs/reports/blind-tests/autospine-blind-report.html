@@ -232,9 +232,9 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
   <div class="wrap">
     <p class="kicker">IMAGES → SPINE</p>
     <h1>只給圖片<br><em>自動做出 Spine 動畫</em></h1>
-    <p class="lead">從美術的 Spine 檔只取出圖片和擺位，自動建好骨架、網格、權重與動作；做出來的是一般的 Spine 專案，美術可以直接接手修改。</p>
+    <p class="lead">從 PSD 匯入 Spine、只有圖片和擺位的檔案開始，自動建好骨架、網格、權重與動作；做出來的是一般的 Spine 專案，美術可以直接接手修改。</p>
     <div class="pipe" aria-label="流程">
-      <div class="node"><small>INPUT</small><strong>純圖片</strong><span>圖片 ＋ 擺位</span></div>
+      <div class="node"><small>INPUT</small><strong>PSD 匯入檔</strong><span>圖片 ＋ 擺位</span></div>
       <div class="arrow" aria-hidden="true">→</div>
       <div class="node"><small>AUTOSPINE</small><strong>自動製作</strong><span>骨架 ・ 網格 ・ 權重 ・ 動作</span></div>
       <div class="arrow" aria-hidden="true">→</div>
@@ -278,12 +278,13 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
       <li class="step">
         <div>
           <span class="num">1</span>
-          <p class="where">SPINE 原檔</p>
-          <h3>準備圖片</h3>
-          <p>從美術的 Spine 檔只取出圖片和擺位，骨架、網格、動畫全部拿掉。</p>
-          <p class="out">產出：<code>純圖片版</code></p>
+          <p class="where">PSD → SPINE</p>
+          <h3>匯入 PSD</h3>
+          <p>美術把 PSD 匯入 Spine，部件拆好、擺好位置即可；骨架、佈線、權重、動作都還不用做。</p>
+          <p>盲測時是把美術的 Spine 檔拿掉這些，模擬這一步。</p>
+          <p class="out">產出：<code>只有圖片與擺位的 .spine</code></p>
         </div>
-        <figure class="shot"><div class="pic"><img src="report-assets/flow-1-images.jpg" alt="純圖片版：只剩圖片與擺位"></div><figcaption>純圖片版：只剩圖片與擺位</figcaption></figure>
+        <figure class="shot"><div class="pic"><img src="report-assets/flow-1-images.jpg" alt="PSD 匯入後：只有圖片與擺位"></div><figcaption>PSD 匯入後：只有圖片與擺位</figcaption></figure>
       </li>
       <li class="step">
         <div>
@@ -319,10 +320,10 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
           <h3>交付</h3>
           <ol class="sub">
             <li>同一角色的動畫合成一個專案</li>
-            <li>附接手說明 HANDOVER.md</li>
+            <li>附接手說明 HANDOVER.md，交付時在對話中摘要</li>
             <li>有美術版時，自動比對出分數與並排影片</li>
           </ol>
-          <p class="out">產出：<code>.spine</code> ＋ <code>HANDOVER.md</code></p>
+          <p class="out">產出：<code>.spine</code> ＋ <code>檢查影片</code> ＋ <code>HANDOVER.md</code>（在 <code>_work/builds/</code>）</p>
         </div>
         <figure class="shot"><div class="pic"><img src="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-02_Idle-review.jpg" alt="並排比對：左美術、右 AutoSpine"></div><figcaption>並排比對：左美術、右 AutoSpine</figcaption></figure>
       </li>
@@ -368,333 +369,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
   <div class="wrap">
     <p class="kicker">04 · VIDEOS</p>
     <h2>盲測影片</h2>
-    <p class="lead">每支影片依序是佈線 → 骨架 → 完整動態；左邊美術原檔，右邊 AutoSpine。兩邊比的是同一段動畫，但 AutoSpine 只看得到名稱與長度，動作是推測的；精選案例分別寫出兩邊各做了什麼。分數是自動驗收項，結構過了不代表動作像，請看影片。</p>
-    <div class="cases">
-      <article class="case"><header><span class="no">CASE 01</span><h3>大野狼 idle</h3><span class="pill hi">11/12</span></header>
-        <dl class="sides"><dt>美術</dt><dd>頭轉向一側、瞇眼斜看，身體微蹲。</dd><dt>AutoSpine</dt><dd>只依名稱與長度推成呼吸起伏，尾巴、耳朵擺動，頭保持正面。</dd></dl>
-        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-02_Idle-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-02_Idle-review.mp4"></video>
-        <p class="vfail">未過 <span class="tag">D1</span></p></article>
-      <article class="case"><header><span class="no">CASE 02</span><h3>麋鹿 idle</h3><span class="pill hi">11/12</span></header>
-        <dl class="sides"><dt>美術</dt><dd>浮在空中上下飄，頭微傾，耳朵擺動，中途眨眼。</dd><dt>AutoSpine</dt><dd>一樣浮動並眨眼（setup 隱藏的眼皮換圖），但動得多的是五官，耳朵擺動偏小。</dd></dl>
-        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-Idle-review.jpg" src="2026-10-14-batch/moose/video/moose-Idle-review.mp4"></video>
-        <p class="vfail">未過 <span class="tag">D1</span></p></article>
-      <article class="case"><header><span class="no">CASE 03</span><h3>獎盃 Wind</h3><span class="pill hi">11/12</span></header>
-        <dl class="sides"><dt>美術</dt><dd>獎盃不動，只有星星在不同位置閃爍。</dd><dt>AutoSpine</dt><dd>星星依序閃爍，另外多做了獎盃輕擺與光暈呼吸。</dd></dl>
-        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Gold_video_trophy_Gold-Wind-review.jpg" src="2026-10-14-batch/trophy_Gold/video/trophy_Gold-Wind-review.mp4"></video>
-        <p class="vfail">未過 <span class="tag">D1</span></p></article>
-      <article class="case"><header><span class="no">CASE 04</span><h3>大野狼勝利 Win</h3><span class="pill hi">10/11</span></header>
-        <dl class="sides"><dt>美術</dt><dd>吐舌頭、頭左右歪，身體在原地小幅晃動（舌頭是網格變形）。</dd><dt>AutoSpine</dt><dd>依名稱「Win」套用跳躍模板：下蹲、起跳、落地、回彈，沒有吐舌。</dd></dl>
-        <video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Win-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Win-review.mp4"></video>
-        <p class="vfail">未過 <span class="tag">D1</span></p></article>
-    </div>
-    <p class="phase">第一階段 · 循環動畫（23 段）</p>
-<details class="group"><summary><span class="gname">三隻小豬世足：大野狼</span><span class="gmeta">3 段 · 29/36 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-02_Idle-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-02_Idle-review.mp4"></video>
-  <figcaption><span class="vname">02_Idle</span><span class="pill hi">11/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-06_Idle-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-06_Idle-review.mp4"></video>
-  <figcaption><span class="vname">06_Idle</span><span class="pill mid">10/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-04_Blow_Loop-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-04_Blow_Loop-review.mp4"></video>
-  <figcaption><span class="vname">04_Blow_Loop</span><span class="pill lo">8/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C3</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">三隻小豬世足：老鷹、美洲豹、麋鹿</span><span class="gmeta">3 段 · 31/36 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_eagle_video_eagle-Idle-review.jpg" src="2026-10-14-batch/eagle/video/eagle-Idle-review.mp4"></video>
-  <figcaption><span class="vname">老鷹 Idle</span><span class="pill mid">10/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_jaguar_video_jaguar-Idle-review.jpg" src="2026-10-14-batch/jaguar/video/jaguar-Idle-review.mp4"></video>
-  <figcaption><span class="vname">美洲豹 Idle</span><span class="pill mid">10/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-Idle-review.jpg" src="2026-10-14-batch/moose/video/moose-Idle-review.mp4"></video>
-  <figcaption><span class="vname">麋鹿 Idle</span><span class="pill hi">11/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">大野狼走路 LV1–3</span><span class="gmeta">6 段 · 54/72 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV1-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV1-review.mp4"></video>
-  <figcaption><span class="vname">大野狼走路 Walk_LV1</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV2-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV2-review.mp4"></video>
-  <figcaption><span class="vname">大野狼走路 Walk_LV2</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV3-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV3-review.mp4"></video>
-  <figcaption><span class="vname">大野狼走路 Walk_LV3</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV1-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV1-review.mp4"></video>
-  <figcaption><span class="vname">大野狼世足走路 Walk_LV1</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV2-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV2-review.mp4"></video>
-  <figcaption><span class="vname">大野狼世足走路 Walk_LV2</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV3-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV3-review.mp4"></video>
-  <figcaption><span class="vname">大野狼世足走路 Walk_LV3</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">龍鯉爺循環</span><span class="gmeta">3 段 · 26/36 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha02_PrayLoop-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha02_PrayLoop-review.mp4"></video>
-  <figcaption><span class="vname">Buddha02_PrayLoop</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha04_DanceLoop-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha04_DanceLoop-review.mp4"></video>
-  <figcaption><span class="vname">Buddha04_DanceLoop</span><span class="pill lo">8/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C2</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha06_DigLoop-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha06_DigLoop-review.mp4"></video>
-  <figcaption><span class="vname">Buddha06_DigLoop</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C2</span><span class="tag">D1</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">Portal 符號</span><span class="gmeta">2 段 · 20/24 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_portal_maitreya_video_portal_maitreya-idle-review.jpg" src="2026-10-14-batch/portal_maitreya/video/portal_maitreya-idle-review.mp4"></video>
-  <figcaption><span class="vname">龍鯉爺 portal</span><span class="pill mid">10/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_portal_3pig_video_portal_3pig-idle-review.jpg" src="2026-10-14-batch/portal_3pig/video/portal_3pig-idle-review.mp4"></video>
-  <figcaption><span class="vname">三隻小豬 portal</span><span class="pill mid">10/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">大廳道具與宣告</span><span class="gmeta">6 段 · 62/72 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Bronze_video_trophy_Bronze-Wind-review.jpg" src="2026-10-14-batch/trophy_Bronze/video/trophy_Bronze-Wind-review.mp4"></video>
-  <figcaption><span class="vname">獎盃（銅） Wind</span><span class="pill hi">11/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Gold_video_trophy_Gold-Wind-review.jpg" src="2026-10-14-batch/trophy_Gold/video/trophy_Gold-Wind-review.mp4"></video>
-  <figcaption><span class="vname">獎盃（金） Wind</span><span class="pill hi">11/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Silver_video_trophy_Silver-Wind-review.jpg" src="2026-10-14-batch/trophy_Silver/video/trophy_Silver-Wind-review.mp4"></video>
-  <figcaption><span class="vname">獎盃（銀） Wind</span><span class="pill hi">11/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerball_video_soccerball-loop-review.jpg" src="2026-10-14-batch/soccerball/video/soccerball-loop-review.mp4"></video>
-  <figcaption><span class="vname">足球 loop</span><span class="pill mid">10/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_powershot_video_powershot-Loop-review.jpg" src="2026-10-14-batch/powershot/video/powershot-Loop-review.mp4"></video>
-  <figcaption><span class="vname">強力射門 Loop</span><span class="pill mid">10/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">C3</span><span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_award_video_award-loop-review.jpg" src="2026-10-14-batch/award/video/award-loop-review.mp4"></video>
-  <figcaption><span class="vname">WC_Award loop</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-    <p class="phase">第二階段 · 單次動畫與特效（45 段）</p>
-<details class="group"><summary><span class="gname">大野狼：進場、吹氣、退場、變身、勝利</span><span class="gmeta">7 段 · 61/77 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-01_In-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-01_In-review.mp4"></video>
-  <figcaption><span class="vname">01_In</span><span class="pill hi">10/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-03_Blow_Start-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-03_Blow_Start-review.mp4"></video>
-  <figcaption><span class="vname">03_Blow_Start</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-05_Blow_End-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-05_Blow_End-review.mp4"></video>
-  <figcaption><span class="vname">05_Blow_End</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-07_Out-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-07_Out-review.mp4"></video>
-  <figcaption><span class="vname">07 Out</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Change-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Change-review.mp4"></video>
-  <figcaption><span class="vname">Change</span><span class="pill lo">6/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">C2</span><span class="tag">C3</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Win-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Win-review.mp4"></video>
-  <figcaption><span class="vname">Win</span><span class="pill hi">10/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolf3p_video_wolf3p-Win_2-review.jpg" src="2026-10-14-batch/wolf3p/video/wolf3p-Win_2-review.mp4"></video>
-  <figcaption><span class="vname">Win_2</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">動物：跳躍抽獎、蓄力</span><span class="gmeta">6 段 · 54/66 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_eagle_video_eagle-__JumpDraw-review.jpg" src="2026-10-14-batch/eagle/video/eagle-__JumpDraw-review.mp4"></video>
-  <figcaption><span class="vname">老鷹 @_JumpDraw</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_eagle_video_eagle-PoolEnergy-review.jpg" src="2026-10-14-batch/eagle/video/eagle-PoolEnergy-review.mp4"></video>
-  <figcaption><span class="vname">老鷹 PoolEnergy</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_jaguar_video_jaguar-__JumpDraw-review.jpg" src="2026-10-14-batch/jaguar/video/jaguar-__JumpDraw-review.mp4"></video>
-  <figcaption><span class="vname">美洲豹 @_JumpDraw</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_jaguar_video_jaguar-PoolEnergy-review.jpg" src="2026-10-14-batch/jaguar/video/jaguar-PoolEnergy-review.mp4"></video>
-  <figcaption><span class="vname">美洲豹 PoolEnergy</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-__JumpDraw-review.jpg" src="2026-10-14-batch/moose/video/moose-__JumpDraw-review.mp4"></video>
-  <figcaption><span class="vname">麋鹿 @_JumpDraw</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_moose_video_moose-PoolEnergy-review.jpg" src="2026-10-14-batch/moose/video/moose-PoolEnergy-review.mp4"></video>
-  <figcaption><span class="vname">麋鹿 PoolEnergy</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">大野狼走路：升級轉場、張望</span><span class="gmeta">6 段 · 48/66 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV1-LV2-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV1-LV2-review.mp4"></video>
-  <figcaption><span class="vname">大野狼走路 Walk_LV1-LV2</span><span class="pill lo">7/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">B1</span><span class="tag">B3</span><span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-Walk_LV2-LV3-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-Walk_LV2-LV3-review.mp4"></video>
-  <figcaption><span class="vname">大野狼走路 Walk_LV2-LV3</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wildwolf_video_wildwolf-History__Look-review.jpg" src="2026-10-14-batch/wildwolf/video/wildwolf-History__Look-review.mp4"></video>
-  <figcaption><span class="vname">大野狼走路 History/_Look</span><span class="pill lo">6/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">B1</span><span class="tag">B3</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV1-LV2-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV1-LV2-review.mp4"></video>
-  <figcaption><span class="vname">大野狼世足走路 Walk_LV1-LV2</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-Walk_LV2-LV3-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-Walk_LV2-LV3-review.mp4"></video>
-  <figcaption><span class="vname">大野狼世足走路 Walk_LV2-LV3</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerwolf_video_soccerwolf-History__Look-review.jpg" src="2026-10-14-batch/soccerwolf/video/soccerwolf-History__Look-review.mp4"></video>
-  <figcaption><span class="vname">大野狼世足走路 History/_Look</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">龍鯉爺單次動作</span><span class="gmeta">10 段 · 87/110 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha01_Pray-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha01_Pray-review.mp4"></video>
-  <figcaption><span class="vname">Buddha01_Pray</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha03_LuckyBagAppear-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha03_LuckyBagAppear-review.mp4"></video>
-  <figcaption><span class="vname">Buddha03_LuckyBagAppear</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha05_ReadyToDig-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha05_ReadyToDig-review.mp4"></video>
-  <figcaption><span class="vname">Buddha05_ReadyToDig</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha07_DigOut_01-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha07_DigOut_01-review.mp4"></video>
-  <figcaption><span class="vname">Buddha07_DigOut_01</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha07_DigOut_02-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha07_DigOut_02-review.mp4"></video>
-  <figcaption><span class="vname">Buddha07_DigOut_02</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha08_Carp-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha08_Carp-review.mp4"></video>
-  <figcaption><span class="vname">Buddha08_Carp</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha09_GoldenDragon-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha09_GoldenDragon-review.mp4"></video>
-  <figcaption><span class="vname">Buddha09_GoldenDragon</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha10_ReadyToPray-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha10_ReadyToPray-review.mp4"></video>
-  <figcaption><span class="vname">Buddha10_ReadyToPray</span><span class="pill hi">10/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha11_Coin-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha11_Coin-review.mp4"></video>
-  <figcaption><span class="vname">Buddha11_Coin</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_buddha_video_buddha-Buddha12_RainbowDragon-review.jpg" src="2026-10-14-batch/buddha/video/buddha-Buddha12_RainbowDragon-review.mp4"></video>
-  <figcaption><span class="vname">Buddha12_RainbowDragon</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">道具與宣告：倒下、進場、按壓、退場</span><span class="gmeta">9 段 · 81/99 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Bronze_video_trophy_Bronze-Collapse-review.jpg" src="2026-10-14-batch/trophy_Bronze/video/trophy_Bronze-Collapse-review.mp4"></video>
-  <figcaption><span class="vname">獎盃（銅） Collapse</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Gold_video_trophy_Gold-Collapse-review.jpg" src="2026-10-14-batch/trophy_Gold/video/trophy_Gold-Collapse-review.mp4"></video>
-  <figcaption><span class="vname">獎盃（金） Collapse</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_trophy_Silver_video_trophy_Silver-Collapse-review.jpg" src="2026-10-14-batch/trophy_Silver/video/trophy_Silver-Collapse-review.mp4"></video>
-  <figcaption><span class="vname">獎盃（銀） Collapse</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerball_video_soccerball-In-review.jpg" src="2026-10-14-batch/soccerball/video/soccerball-In-review.mp4"></video>
-  <figcaption><span class="vname">足球 In</span><span class="pill hi">10/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_soccerball_video_soccerball-Press-review.jpg" src="2026-10-14-batch/soccerball/video/soccerball-Press-review.mp4"></video>
-  <figcaption><span class="vname">足球 Press</span><span class="pill hi">10/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_powershot_video_powershot-In-review.jpg" src="2026-10-14-batch/powershot/video/powershot-In-review.mp4"></video>
-  <figcaption><span class="vname">強力射門 In</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_powershot_video_powershot-Out-review.jpg" src="2026-10-14-batch/powershot/video/powershot-Out-review.mp4"></video>
-  <figcaption><span class="vname">強力射門 Out</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_award_video_award-into-review.jpg" src="2026-10-14-batch/award/video/award-into-review.mp4"></video>
-  <figcaption><span class="vname">WC_Award into</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_award_video_award-out-review.jpg" src="2026-10-14-batch/award/video/award-out-review.mp4"></video>
-  <figcaption><span class="vname">WC_Award out</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span></p>
-</figure></div></details>
-<details class="group"><summary><span class="gname">特效檔</span><span class="gmeta">7 段 · 60/78 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_goal_video_goal-animation-review.jpg" src="2026-10-14-batch/goal/video/goal-animation-review.mp4"></video>
-  <figcaption><span class="vname">WC_Goal</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_bg4_video_bg4-Jump-review.jpg" src="2026-10-14-batch/bg4/video/bg4-Jump-review.mp4"></video>
-  <figcaption><span class="vname">BG4 Jump</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_bg4_video_bg4-PoolEnergy-review.jpg" src="2026-10-14-batch/bg4/video/bg4-PoolEnergy-review.mp4"></video>
-  <figcaption><span class="vname">BG4 PoolEnergy</span><span class="pill lo">6/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">B3</span><span class="tag">C2</span><span class="tag">C3</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wcfx_video_wcfx-FX-review.jpg" src="2026-10-14-batch/wcfx/video/wcfx-FX-review.mp4"></video>
-  <figcaption><span class="vname">WC_FX</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolffx_video_wolffx-FX_Blow_Start-review.jpg" src="2026-10-14-batch/wolffx/video/wolffx-FX_Blow_Start-review.mp4"></video>
-  <figcaption><span class="vname">大野狼特效 FX_Blow_Start</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolffx_video_wolffx-FX_Blow_Loop-review.jpg" src="2026-10-14-batch/wolffx/video/wolffx-FX_Blow_Loop-review.mp4"></video>
-  <figcaption><span class="vname">大野狼特效 FX_Blow_Loop</span><span class="pill mid">9/12</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A6</span><span class="tag">D1</span><span class="tag">D2</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-batch_wolffx_video_wolffx-FX_Blow_End-review.jpg" src="2026-10-14-batch/wolffx/video/wolffx-FX_Blow_End-review.mp4"></video>
-  <figcaption><span class="vname">大野狼特效 FX_Blow_End</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">D1</span><span class="tag">D2</span></p>
-</figure></div></details>
-    <p class="phase">先前的端到端盲測（5 段）</p>
-<details class="group"><summary><span class="gname">馬年魚、BaShouEnn、YoLu、薑餅人、搖錢樹</span><span class="gmeta">5 段 · 45/55 項</span></summary>
-<div class="vgrid"><figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-horse-e2e_video_horse-idle-review.jpg" src="2026-10-14-horse-e2e/video/horse-idle-review.mp4"></video>
-  <figcaption><span class="vname">馬年魚 L_[IDLE]</span><span class="pill hi">10/11</span></figcaption>
-  <p class="vfail">未過 <span class="tag">A1</span></p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-13-bashouenn-e2e_video_bashouenn-blind-review.jpg" src="2026-10-13-bashouenn-e2e/video/bashouenn-blind-review.mp4"></video>
-  <figcaption><span class="vname">BaShouEnn idle</span><span class="pill lo">8/11</span></figcaption>
-  <p class="vfail">全部通過</p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-yolu-e2e_video_yolu-blind-review.jpg" src="2026-10-14-yolu-e2e/video/yolu-blind-review.mp4"></video>
-  <figcaption><span class="vname">YoLu idle</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">全部通過</p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-gingerbread-e2e_video_gingerbread-blind2-review.jpg" src="2026-10-14-gingerbread-e2e/video/gingerbread-blind2-review.mp4"></video>
-  <figcaption><span class="vname">薑餅人（第二輪）</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">全部通過</p>
-</figure>
-<figure class="vcard"><video controls preload="none" poster="report-assets/posters/2026-10-14-goldtree-e2e_video_goldtree-idle-compare.jpg" src="2026-10-14-goldtree-e2e/video/goldtree-idle-compare.mp4"></video>
-  <figcaption><span class="vname">超級搖錢樹</span><span class="pill mid">9/11</span></figcaption>
-  <p class="vfail">全部通過</p>
-</figure></div></details>
+    <p class="lead">對照影片先下架：多數段落的動作和人工版差很多（批次 68 段只有 1 段動作風格與幅度都通過）。改進後重新盲測，再放上新影片。</p>
   </div>
 </section>
 
@@ -710,7 +385,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
         <div class="row"><span class="what">網格</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>人工密度</strong><span>點數與權重比照美術習慣</span></span></div>
         <div class="row"><span class="what">動作</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>稀疏關鍵幀＋曲線</strong><span>可以直接拖關鍵幀、調曲線</span></span></div>
         <div class="row"><span class="what">約束</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>標準 IK、Transform</strong><span>沒有外掛，沒有逐格烘焙</span></span></div>
-        <div class="row"><span class="what">說明</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>HANDOVER.md</strong><span>每根骨的用途、每段動畫打了什麼、要改去哪裡</span></span></div>
+        <div class="row"><span class="what">說明</span><span class="to" aria-hidden="true">→</span><span class="how"><strong>HANDOVER.md</strong><span>在 _work/builds/，用文字編輯器開；寫每根骨的用途、每段動畫打了什麼、要改去哪裡</span></span></div>
       </div>
       <ul class="legend">
         <li><i style="background:#4080ff"></i>主骨：動作主控</li>
