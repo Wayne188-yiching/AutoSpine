@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="AutoSpine 盲測報告：只給圖片，自動做出 Spine 骨架、網格與動作，和美術原檔比對；工作流、工具、盲測影片與人工接手。">
+<meta name="description" content="AutoSpine 盲測報告：只給圖片，自動做出 Spine 骨架、網格、權重與動作，和美術原檔比對；工作流、工具、盲測影片與人工接手。">
 <title>AutoSpine 盲測報告</title>
 <style>
 :root {
@@ -232,11 +232,11 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
   <div class="wrap">
     <p class="kicker">IMAGES → SPINE</p>
     <h1>只給圖片<br><em>自動做出 Spine 動畫</em></h1>
-    <p class="lead">從美術的 Spine 檔只取出圖片和擺位，自動建好骨架、網格與動作；做出來的是一般的 Spine 專案，美術可以直接接手修改。</p>
+    <p class="lead">從美術的 Spine 檔只取出圖片和擺位，自動建好骨架、網格、權重與動作；做出來的是一般的 Spine 專案，美術可以直接接手修改。</p>
     <div class="pipe" aria-label="流程">
       <div class="node"><small>INPUT</small><strong>純圖片</strong><span>圖片 ＋ 擺位</span></div>
       <div class="arrow" aria-hidden="true">→</div>
-      <div class="node"><small>AUTOSPINE</small><strong>自動製作</strong><span>骨架 ・ 網格 ・ 動作</span></div>
+      <div class="node"><small>AUTOSPINE</small><strong>自動製作</strong><span>骨架 ・ 網格 ・ 權重 ・ 動作</span></div>
       <div class="arrow" aria-hidden="true">→</div>
       <div class="node out"><small>SPINE</small><strong>Spine 專案</strong><span>全部動畫 ＋ 接手說明</span></div>
     </div>
@@ -305,7 +305,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
           <h3>自動製作</h3>
           <ol class="sub">
             <li>AI 依技能寫出方案</li>
-            <li>建出骨架、網格、動作，對齊姿勢圖</li>
+            <li>建出骨架、網格、權重、動作，對齊姿勢圖</li>
             <li>輸出檢查影片：佈線 → 骨架 → 動作</li>
           </ol>
           <p class="out">產出：<code>Spine JSON</code> ＋ <code>檢查影片</code></p>
