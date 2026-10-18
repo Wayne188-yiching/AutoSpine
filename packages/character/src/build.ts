@@ -291,6 +291,7 @@ export function animateCharacter(
           applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s), plan.animations[i]!.pose),
           plan.animations[i]!.keyposes,
           s.fps,
+          plan.animations[i]!.keyposeLag,
         ),
         s.fps,
         plan.keyTolerance ?? KEY_TOLERANCE,

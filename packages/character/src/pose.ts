@@ -1,5 +1,5 @@
 import type { AnimationSpec, CharacterPlan, KeyCurve, KeyposeEase } from "@autospine/schemas";
-import { addTracks, poseTrack, trackValue, type TrackKey } from "@autospine/motion";
+import { addTracks, poseTrack, shiftTrack, trackValue, type TrackKey } from "@autospine/motion";
 
 export type RestPose = NonNullable<CharacterPlan["motion"]["animations"][number]["pose"]>;
 
@@ -114,11 +114,14 @@ type Timeline = { boneId: string; keys: { time: number; curve?: KeyCurve }[] };
  * Adds key poses (ADR-033): per bone and channel, a layer keyed on the key frames and eased between
  * them (no offset on frame 0 unless a key sits there; a one-shot holds its last key, a loop returns
  * to frame 0) is added to the animation's timeline, so follows and waves stay on top of the poses.
+ * `lag` plays a bone's layer that many frames later, or earlier when negative (ADR-040): a loop
+ * wraps, a one-shot holds its first and last values.
  */
 export function applyKeyposes(
   animation: AnimationSpec,
   keyposes: Keyposes | undefined,
   fps: number,
+  lag: Readonly<Record<string, number>> = {},
 ): AnimationSpec {
   if (!keyposes?.length) return animation;
   const out = structuredClone(animation),
@@ -134,7 +137,12 @@ export function applyKeyposes(
   }
   for (const { boneId, rotate } of channels) {
     const rest = rotate ? [0] : [0, 0],
-      layer = layerTrack(sorted, boneId, rotate, frames, animation.loop);
+      layer = shiftTrack(
+        layerTrack(sorted, boneId, rotate, frames, animation.loop),
+        lag[boneId] ?? 0,
+        frames,
+        animation.loop,
+      );
     const list = (rotate
       ? (out.rotationTimelines ??= [])
       : (out.translationTimelines ??= [])) as unknown as Timeline[];
