@@ -1,0 +1,37 @@
+{
+  "method": "Reference-conditioned UV-field fitting onto AutoSpine-generated topology; new rig, meshes and weights. Sampled geometry/colors/attachment visibility/draw order. Source bones, weights and timelines are not copied.",
+  "engine": "C:/Wayne/Codex/AutoSpine/packages/cli/dist/index.js",
+  "plan": "plan-07.json",
+  "sourceRigCopied": false,
+  "sourceTopologyCopied": false,
+  "referenceGeometrySampled": true,
+  "referenceConditioned": true,
+  "blind": false,
+  "frameRate": 30,
+  "boneCount": 51,
+  "parts": 46,
+  "deformTimelines": 139,
+  "animationNames": [
+    "final",
+    "idle",
+    "idle_slow",
+    "wild",
+    "win"
+  ],
+  "officialDeliverySource": "checks/roundtrip-07/Panda_AutoSpine_All5.json",
+  "quantization": {
+    "setup": 2,
+    "translate": 2,
+    "rotate": 2,
+    "scale": 3
+  },
+  "motionIsDenseReferenceSampled": true,
+  "artistQualityAccepted": false,
+  "engineFeatureMeshesGenerated": true,
+  "independentBlindTest": false,
+  "scripts": {
+    "panda-tools.mjs": "4895b87b2db2bcf421baa3551895f3318ffed74a032cc9800bb164c155181fff",
+    "build-imitation.mjs": "895474e6b7296e24074e5884bf5f1f5175a08e3a6af8c8a88a115e40ff21c671",
+    "prepare-refinement.mjs": "454ea76c0ae307490222698d90b9dfe17a3f95747d0b3c4a1ef4660bfbd24e4a"
+  }
+}

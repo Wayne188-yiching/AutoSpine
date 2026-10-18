@@ -1,0 +1,20 @@
+{
+  "method": "Reference-video imitation. AutoSpine 0.5.0 built the rig (joints, bones, meshes, weights, IK) from the images-only placements; the rest pose was fitted to the clip's frame 0 (fit-pose). fit-video fitted all 155 frames but found no shared period in this generated clip (parts drift between 14.4 and 14.9 frames per beat), so the dense per-frame tracks were folded by script (robust 3-harmonic Fourier fit, joint period 14.89 frames at 30 fps) onto a 15-frame beat, 10 beats in 150 frames (0.7 % stretch), and written as plan key poses. The reaching arm (sleeve redrawn in the clip, not fitted) is driven from the hand's pixel centroid in the clip. Blink: closed-eye images swapped in on frames 19-26, timed from the clip (24 fps frames 15-21). Hair and tie: procedural waves. Review round (plan-13): the briefcase was static while the fitted IK target moved, so the hand slid along the handle; in the clip the case sways about 11 px sideways with the fist. The case now carries the hand: its x sway is measured from the clip (case left edge) and folded the same way, and the IK target has no keys of its own. fit-video had swapped the two shoes where they cross, so its leg tracks followed whichever shoe was on top (two humps per beat, the foot counter-rotating so the shoe barely turned). The legs are now a scripted alternating flutter kick: each leg up once per beat, half a beat apart, upper leg up at frame 6 of the 15-frame beat, foot trailing the thigh by 1.5 frames, with per-bone ranges chosen so both shoes reach about the same top and bottom as the clip despite different hip heights in the art. Second review (plan-15): the holding arm twitched once a beat. Its IK reach hovered at full extension (0.99-1.02 of the arm length), so each time the swaying case came within reach the elbow snapped from straight to bent. The IK target now sits 8 units further from the shoulder, so the reach stays at 1.02-1.04 and the arm stays straight; the fist still rides on the handle (fist-handle gap 46-50 px in the 600 px panel) and the arm jerk dropped from 54-70 to 6.7 deg per frame squared.",
+  "engine": "autospine plugin 0.5.0 (skills/autospine/scripts/autospine.mjs); comparison video rendered with packages/cli/dist review-video --reference-video",
+  "referenceFitted": true,
+  "blind": false,
+  "sourceRigCopied": false,
+  "artistVersionSeen": false,
+  "plans": "Spine/AutoSpine/Idle/_work/plans/plan-01..15.json (plan-15 delivered)",
+  "scripts": [
+    "_work/notes/fold.mjs",
+    "_work/notes/arm.mjs",
+    "_work/notes/case-track.cjs",
+    "_work/notes/case-legs.mjs",
+    "_work/notes/arm-probe.cjs",
+    "_work/notes/roundtrip.cjs"
+  ],
+  "animationNames": [
+    "Idle"
+  ]
+}

@@ -1,0 +1,437 @@
+{
+ "rows": [
+  {
+   "id": "A1 imagesOnly fit (shown slots) <= 2 px",
+   "ok": false,
+   "value": 13.473
+  },
+  {
+   "id": "A2 setup placement <= 0.5 px",
+   "ok": true,
+   "value": 0.008
+  },
+  {
+   "id": "A4 loop seam idle <= 0.5 px",
+   "ok": true,
+   "value": 0.002
+  },
+  {
+   "id": "A6 rest pose appear: median <= 0.03, p90 <= 0.1 hw",
+   "ok": true,
+   "value": "0.0006 / 0.0019"
+  },
+  {
+   "id": "A6 rest pose idle: median <= 0.03, p90 <= 0.1 hw",
+   "ok": true,
+   "value": "0.0006 / 0.0019"
+  },
+  {
+   "id": "A6 rest pose win1: median <= 0.03, p90 <= 0.1 hw",
+   "ok": true,
+   "value": "0.0006 / 0.0019"
+  },
+  {
+   "id": "A6 rest pose win2: median <= 0.03, p90 <= 0.1 hw",
+   "ok": true,
+   "value": "0.0006 / 0.0019"
+  },
+  {
+   "id": "A6 rest pose win3: median <= 0.03, p90 <= 0.1 hw",
+   "ok": true,
+   "value": "0.0006 / 0.0019"
+  },
+  {
+   "id": "A6 rest pose win4: median <= 0.03, p90 <= 0.1 hw",
+   "ok": true,
+   "value": "0.0006 / 0.0019"
+  },
+  {
+   "id": "A6 rest pose win5: median <= 0.03, p90 <= 0.1 hw",
+   "ok": true,
+   "value": "0.0006 / 0.0019"
+  },
+  {
+   "id": "B1 visible inversions appear = 0",
+   "ok": false,
+   "value": {
+    "1_tail": 3,
+    "1_string": 6,
+    "1_Nose": 2,
+    "1_leaves": 1,
+    "1_ear_L3": 2,
+    "1_lash copy": 1
+   }
+  },
+  {
+   "id": "B1 visible inversions idle = 0",
+   "ok": false,
+   "value": {
+    "1_tail": 3,
+    "1_string": 8,
+    "1_Nose": 1,
+    "1_ear_L3": 3
+   }
+  },
+  {
+   "id": "B1 visible inversions win1 = 0",
+   "ok": false,
+   "value": {
+    "1_tail": 3,
+    "1_string": 8,
+    "1_Nose": 48,
+    "1_ear_L3": 4,
+    "1_face": 2,
+    "1_leaves": 4,
+    "1_hair3": 4,
+    "1_body": 2,
+    "1_lash copy": 5,
+    "1_ear2": 10,
+    "2_string": 9,
+    "2_hand_L": 8,
+    "2_hair": 2,
+    "2_ear_L": 18,
+    "2_bod": 4,
+    "2_leaves": 23,
+    "2_thong": 13,
+    "1_leg_R1": 10,
+    "1_Head": 1,
+    "1_lashes": 3,
+    "1_mouth": 23,
+    "2_ear_R": 2,
+    "2_head": 1,
+    "1_toga": 2,
+    "1_brows": 51,
+    "2_Leg_L1": 5,
+    "2_leg_R1": 2,
+    "2_wing_L": 3,
+    "1_hair2": 3
+   }
+  },
+  {
+   "id": "B1 visible inversions win2 = 0",
+   "ok": false,
+   "value": {
+    "1_tail": 3,
+    "1_string": 8,
+    "1_Nose": 48,
+    "1_ear_L3": 4,
+    "1_face": 2,
+    "1_leaves": 4,
+    "1_hair3": 4,
+    "1_body": 2,
+    "1_lash copy": 5,
+    "1_ear2": 10,
+    "2_string": 9,
+    "2_hand_L": 8,
+    "2_hair": 2,
+    "2_ear_L": 18,
+    "2_bod": 4,
+    "2_leaves": 23,
+    "2_thong": 13,
+    "1_leg_R1": 10,
+    "1_Head": 1,
+    "1_lashes": 3,
+    "1_mouth": 23,
+    "2_ear_R": 2,
+    "2_head": 1,
+    "1_toga": 2,
+    "1_brows": 51,
+    "2_Leg_L1": 5,
+    "2_leg_R1": 2,
+    "2_wing_L": 3,
+    "1_hair2": 3
+   }
+  },
+  {
+   "id": "B1 visible inversions win3 = 0",
+   "ok": false,
+   "value": {
+    "1_tail": 3,
+    "1_string": 8,
+    "1_Nose": 48,
+    "1_ear_L3": 4,
+    "1_face": 2,
+    "1_leaves": 4,
+    "1_hair3": 4,
+    "1_body": 2,
+    "1_lash copy": 5,
+    "1_ear2": 10,
+    "2_string": 9,
+    "2_hand_L": 8,
+    "2_hair": 2,
+    "2_ear_L": 18,
+    "2_bod": 4,
+    "2_leaves": 23,
+    "2_thong": 13,
+    "1_leg_R1": 10,
+    "1_Head": 1,
+    "1_lashes": 3,
+    "1_mouth": 23,
+    "2_ear_R": 2,
+    "2_head": 1,
+    "1_toga": 2,
+    "1_brows": 51,
+    "2_Leg_L1": 5,
+    "2_leg_R1": 2,
+    "2_wing_L": 3,
+    "1_hair2": 3
+   }
+  },
+  {
+   "id": "B1 visible inversions win4 = 0",
+   "ok": false,
+   "value": {
+    "1_tail": 3,
+    "1_string": 8,
+    "1_Nose": 48,
+    "1_ear_L3": 4,
+    "1_face": 2,
+    "1_leaves": 4,
+    "1_hair3": 4,
+    "1_body": 2,
+    "1_lash copy": 5,
+    "1_ear2": 10,
+    "2_string": 9,
+    "2_hand_L": 8,
+    "2_hair": 2,
+    "2_ear_L": 18,
+    "2_bod": 4,
+    "2_leaves": 23,
+    "2_thong": 13,
+    "1_leg_R1": 10,
+    "1_Head": 1,
+    "1_lashes": 3,
+    "1_mouth": 23,
+    "2_ear_R": 2,
+    "2_head": 1,
+    "1_toga": 2,
+    "1_brows": 51,
+    "2_Leg_L1": 5,
+    "2_leg_R1": 2,
+    "2_wing_L": 3,
+    "1_hair2": 3
+   }
+  },
+  {
+   "id": "B1 visible inversions win5 = 0",
+   "ok": false,
+   "value": {
+    "1_tail": 3,
+    "1_string": 8,
+    "1_Nose": 48,
+    "1_ear_L3": 4,
+    "1_face": 2,
+    "1_leaves": 4,
+    "1_hair3": 4,
+    "1_body": 2,
+    "1_lash copy": 5,
+    "1_ear2": 10,
+    "2_string": 9,
+    "2_hand_L": 8,
+    "2_hair": 2,
+    "2_ear_L": 18,
+    "2_bod": 4,
+    "2_leaves": 23,
+    "2_thong": 13,
+    "1_leg_R1": 10,
+    "1_Head": 1,
+    "1_lashes": 3,
+    "1_mouth": 23,
+    "2_ear_R": 2,
+    "2_head": 1,
+    "1_toga": 2,
+    "1_brows": 51,
+    "2_Leg_L1": 5,
+    "2_leg_R1": 2,
+    "2_wing_L": 3,
+    "1_hair2": 3
+   }
+  },
+  {
+   "id": "B2 seam drift <= 11 px",
+   "ok": true,
+   "value": 0
+  },
+  {
+   "id": "B3 stretch appear <= 1.5 x artist",
+   "ok": true,
+   "value": "1.782 / 2.527"
+  },
+  {
+   "id": "B3 stretch idle <= 1.5 x artist",
+   "ok": true,
+   "value": "2.2 / 2.691"
+  },
+  {
+   "id": "B3 stretch win1 <= 1.5 x artist",
+   "ok": true,
+   "value": "8.425 / 18.039"
+  },
+  {
+   "id": "B3 stretch win2 <= 1.5 x artist",
+   "ok": true,
+   "value": "8.425 / 18.039"
+  },
+  {
+   "id": "B3 stretch win3 <= 1.5 x artist",
+   "ok": true,
+   "value": "8.428 / 18.053"
+  },
+  {
+   "id": "B3 stretch win4 <= 1.5 x artist",
+   "ok": true,
+   "value": "8.427 / 18.054"
+  },
+  {
+   "id": "B3 stretch win5 <= 1.5 x artist",
+   "ok": true,
+   "value": "8.427 / 18.054"
+  },
+  {
+   "id": "C1 attachments = 69",
+   "ok": true,
+   "value": 69
+  },
+  {
+   "id": "C2 recall appear >= 0.8",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C3 precision appear >= 0.7",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C2 recall idle >= 0.8",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C3 precision idle >= 0.7",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C2 recall win1 >= 0.8",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C3 precision win1 >= 0.7",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C2 recall win2 >= 0.8",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C3 precision win2 >= 0.7",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C2 recall win3 >= 0.8",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C3 precision win3 >= 0.7",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C2 recall win4 >= 0.8",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C3 precision win4 >= 0.7",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C2 recall win5 >= 0.8",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "C3 precision win5 >= 0.7",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "D1 critic appear >= 60%",
+   "ok": true,
+   "value": "12/13"
+  },
+  {
+   "id": "D1 critic idle >= 60%",
+   "ok": true,
+   "value": "8/10"
+  },
+  {
+   "id": "D1 critic win1 >= 60%",
+   "ok": true,
+   "value": "12/13"
+  },
+  {
+   "id": "D1 critic win2 >= 60%",
+   "ok": true,
+   "value": "12/13"
+  },
+  {
+   "id": "D1 critic win3 >= 60%",
+   "ok": true,
+   "value": "12/13"
+  },
+  {
+   "id": "D1 critic win4 >= 60%",
+   "ok": true,
+   "value": "12/13"
+  },
+  {
+   "id": "D1 critic win5 >= 60%",
+   "ok": true,
+   "value": "12/13"
+  },
+  {
+   "id": "D2 amplitude appear >= 60%",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "D2 amplitude idle >= 60%",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "D2 amplitude win1 >= 60%",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "D2 amplitude win2 >= 60%",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "D2 amplitude win3 >= 60%",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "D2 amplitude win4 >= 60%",
+   "ok": true,
+   "value": 1
+  },
+  {
+   "id": "D2 amplitude win5 >= 60%",
+   "ok": true,
+   "value": 1
+  }
+ ],
+ "pass": false
+}

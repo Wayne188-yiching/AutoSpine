@@ -1,0 +1,182 @@
+{
+  "officialSpineVersion": "4.0.64",
+  "originalPreserved": true,
+  "backupFilesVerified": 62,
+  "cleanProject": {
+    "bones": 1,
+    "animations": 0,
+    "constraints": 0
+  },
+  "singleProject": true,
+  "bones": 74,
+  "slots": 74,
+  "animations": [
+    {
+      "name": "appear",
+      "frames": 40,
+      "duration": 1.333299994468689,
+      "samples": 41,
+      "maxVertexDeviationPx": 0.13813637038219895,
+      "maxColorDeviation": 0,
+      "changedAttachments": 0,
+      "worst": {
+        "slot": "1_wing2",
+        "frame": 8,
+        "vertex": 0,
+        "before": [
+          91.93352644409438,
+          393.1744176181888
+        ],
+        "after": [
+          92.00692361430497,
+          393.05739406403217
+        ]
+      }
+    },
+    {
+      "name": "idle",
+      "frames": 72,
+      "duration": 2.4000000953674316,
+      "samples": 73,
+      "maxVertexDeviationPx": 0.04757984573640622,
+      "maxColorDeviation": 0.0009993451418404352,
+      "changedAttachments": 0,
+      "worst": {
+        "slot": "1_wing",
+        "frame": 46,
+        "vertex": 0,
+        "before": [
+          164.71311253886944,
+          816.3968315245456
+        ],
+        "after": [
+          164.66905201829377,
+          816.4147901505204
+        ]
+      }
+    },
+    {
+      "name": "win1",
+      "frames": 162,
+      "duration": 5.400000095367432,
+      "samples": 163,
+      "maxVertexDeviationPx": 0.5786121973019902,
+      "maxColorDeviation": 0.0009993551431387582,
+      "changedAttachments": 0,
+      "worst": {
+        "slot": "1_bow",
+        "frame": 32,
+        "vertex": 25,
+        "before": [
+          459.6812268020668,
+          131.3828813219031
+        ],
+        "after": [
+          459.7574745937079,
+          131.9564476643052
+        ]
+      }
+    },
+    {
+      "name": "win2",
+      "frames": 162,
+      "duration": 5.400000095367432,
+      "samples": 163,
+      "maxVertexDeviationPx": 0.5786121973019902,
+      "maxColorDeviation": 0.0009993551431387582,
+      "changedAttachments": 0,
+      "worst": {
+        "slot": "1_bow",
+        "frame": 32,
+        "vertex": 25,
+        "before": [
+          459.6812268020668,
+          131.3828813219031
+        ],
+        "after": [
+          459.7574745937079,
+          131.9564476643052
+        ]
+      }
+    },
+    {
+      "name": "win3",
+      "frames": 162,
+      "duration": 5.400000095367432,
+      "samples": 163,
+      "maxVertexDeviationPx": 0.61535127659303,
+      "maxColorDeviation": 0.0009993551431387582,
+      "changedAttachments": 0,
+      "worst": {
+        "slot": "1_bow",
+        "frame": 32,
+        "vertex": 25,
+        "before": [
+          459.7311893198098,
+          131.26607359016714
+        ],
+        "after": [
+          459.79092209244703,
+          131.87851884443705
+        ]
+      }
+    },
+    {
+      "name": "win4",
+      "frames": 162,
+      "duration": 5.400000095367432,
+      "samples": 163,
+      "maxVertexDeviationPx": 0.6878204425343583,
+      "maxColorDeviation": 0.0009993551431387582,
+      "changedAttachments": 0,
+      "worst": {
+        "slot": "1_bow",
+        "frame": 32,
+        "vertex": 45,
+        "before": [
+          83.65848204158257,
+          -89.05465193982623
+        ],
+        "after": [
+          84.30658098580491,
+          -89.28500974773829
+        ]
+      }
+    },
+    {
+      "name": "win5",
+      "frames": 162,
+      "duration": 5.400000095367432,
+      "samples": 163,
+      "maxVertexDeviationPx": 0.6878204425343583,
+      "maxColorDeviation": 0.0009993551431387582,
+      "changedAttachments": 0,
+      "worst": {
+        "slot": "1_bow",
+        "frame": 32,
+        "vertex": 45,
+        "before": [
+          83.65848204158257,
+          -89.05465193982623
+        ],
+        "after": [
+          84.30658098580491,
+          -89.28500974773829
+        ]
+      }
+    }
+  ],
+  "officialImportExportSucceeded": true,
+  "roundtripStructurePassed": true,
+  "roundtripPrecisionUnder0_5px": false,
+  "artistQualityAccepted": false,
+  "referenceConditioned": true,
+  "limitations": [
+    "Official roundtrip maximum vertex deviation is approximately 0.69 px; the 0.5 px precision target is not met by the five win animations.",
+    "A1 initial images-only fit exceeds 2 px; sampled shape keys correct the animation pose but do not make the strip metric pass.",
+    "B1 mesh inversion checks fail in all seven animations.",
+    "The engine does not reproduce animated draw-order or clipping; visual layering differs at turns.",
+    "B2 seams were not configured and have not been accepted.",
+    "Reference-assisted retargeting and art-region conditioning are not an unseen-source blind test."
+  ]
+}

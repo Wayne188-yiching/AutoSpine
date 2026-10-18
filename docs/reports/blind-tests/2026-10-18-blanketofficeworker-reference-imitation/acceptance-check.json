@@ -1,0 +1,500 @@
+{
+  "animation": "Idle",
+  "kind": "reference-video acceptance (ADR-034)",
+  "reference": "Ref/h3_20261001_173738_6e7766e0.mp4 (832x832, 24 fps, 124 frames, 5.17 s)",
+  "build": "plan-15 / build-15, delivered as BlanketOfficeWorker.spine (replaces plan-08 after two reviews: briefcase follows the hand, alternating leg kick, holding arm no longer snaps)",
+  "pass": false,
+  "rows": [
+    {
+      "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+      "ok": true,
+      "value": [
+        0.936,
+        0.908
+      ]
+    },
+    {
+      "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+      "ok": false,
+      "value": [
+        0.69,
+        2.68,
+        "30 parts"
+      ]
+    },
+    {
+      "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+      "ok": false,
+      "value": [
+        2,
+        1.46
+      ]
+    },
+    {
+      "id": "V4 loop seam mean difference <= 0.002",
+      "ok": true,
+      "value": 0
+    }
+  ],
+  "hints": [
+    "the whole figure moves 1.46x as far as the reference (too big)",
+    "shou_3: off by 1.6% of the height, moves 0.25x (too small)",
+    "shoubi_3: off by 1.1% of the height, moving differently",
+    "lingdai: off by 1.1% of the height",
+    "shenti: off by 1.0% of the height, moving differently"
+  ],
+  "figure": {
+    "axis": "horizontal",
+    "lag": 2,
+    "amplitude": 1.46,
+    "motion": 0.00416
+  },
+  "registration": {
+    "iou": 0.954,
+    "pixelsPerUnit": 0.5421
+  },
+  "notJudged": [
+    {
+      "part": "xiezi_2",
+      "frames": 34
+    },
+    {
+      "part": "kuzi_3",
+      "frames": 34
+    },
+    {
+      "part": "kuzi_2",
+      "frames": 20
+    },
+    {
+      "part": "xiezi_1",
+      "frames": 54
+    },
+    {
+      "part": "kuzi_1",
+      "frames": 41
+    },
+    {
+      "part": "biyan_4",
+      "frames": 7
+    },
+    {
+      "part": "biyan_1",
+      "frames": 6
+    },
+    {
+      "part": "biyan_2",
+      "frames": 7
+    },
+    {
+      "part": "biyan_3",
+      "frames": 6
+    },
+    {
+      "part": "yanzhu_2",
+      "frames": 0
+    },
+    {
+      "part": "yanzhu_1",
+      "frames": 0
+    },
+    {
+      "part": "shoubi_4",
+      "frames": 0
+    },
+    {
+      "part": "xiangzi_1",
+      "frames": 0
+    }
+  ],
+  "parts": [
+    {
+      "part": "xiezi_2",
+      "frames": 34,
+      "median": 7.93,
+      "p90": 8.55,
+      "lag": 0,
+      "amplitude": 0.86,
+      "correlation": 0.94
+    },
+    {
+      "part": "kuzi_3",
+      "frames": 34,
+      "median": 5.75,
+      "p90": 8.84,
+      "lag": 0,
+      "amplitude": 0.53,
+      "correlation": 0.65
+    },
+    {
+      "part": "kuzi_2",
+      "frames": 20,
+      "median": 4.5,
+      "p90": 7.34,
+      "lag": 2,
+      "amplitude": 0.35,
+      "correlation": 0.38
+    },
+    {
+      "part": "xiezi_1",
+      "frames": 54,
+      "median": 2.19,
+      "p90": 4.24,
+      "lag": 0,
+      "amplitude": 0.94,
+      "correlation": 0.89
+    },
+    {
+      "part": "kuzi_1",
+      "frames": 41,
+      "median": 1.75,
+      "p90": 3.05,
+      "lag": 0,
+      "amplitude": 0.39,
+      "correlation": 0.43
+    },
+    {
+      "part": "shou_3",
+      "frames": 143,
+      "median": 1.63,
+      "p90": 3.59,
+      "lag": -1,
+      "amplitude": 0.25,
+      "correlation": 0.63
+    },
+    {
+      "part": "shoubi_3",
+      "frames": 131,
+      "median": 1.13,
+      "p90": 3.68,
+      "lag": -12,
+      "amplitude": 0.35,
+      "correlation": 0.18
+    },
+    {
+      "part": "biyan_4",
+      "frames": 7,
+      "median": 1.13,
+      "p90": 1.56,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    },
+    {
+      "part": "biyan_1",
+      "frames": 6,
+      "median": 1.12,
+      "p90": 1.14,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    },
+    {
+      "part": "lingdai",
+      "frames": 149,
+      "median": 1.1,
+      "p90": 2.68,
+      "lag": 0,
+      "amplitude": 0.8,
+      "correlation": 0.65
+    },
+    {
+      "part": "shenti",
+      "frames": 150,
+      "median": 1.02,
+      "p90": 1.83,
+      "lag": -4,
+      "amplitude": 0.18,
+      "correlation": 0.09
+    },
+    {
+      "part": "biyan_2",
+      "frames": 7,
+      "median": 0.93,
+      "p90": 1.27,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    },
+    {
+      "part": "mianbao",
+      "frames": 150,
+      "median": 0.88,
+      "p90": 2.1,
+      "lag": 0,
+      "amplitude": 0.4,
+      "correlation": 0.36
+    },
+    {
+      "part": "hair_tuft_1",
+      "frames": 149,
+      "median": 0.77,
+      "p90": 1.37,
+      "lag": -12,
+      "amplitude": 0.5,
+      "correlation": 0.61
+    },
+    {
+      "part": "hair_side_2",
+      "frames": 149,
+      "median": 0.75,
+      "p90": 1.43,
+      "lag": 2,
+      "amplitude": 0.42,
+      "correlation": 0.57
+    },
+    {
+      "part": "toufa_1",
+      "frames": 150,
+      "median": 0.75,
+      "p90": 1.48,
+      "lag": 3,
+      "amplitude": 0.69,
+      "correlation": 0.56
+    },
+    {
+      "part": "hair_tuft_2",
+      "frames": 150,
+      "median": 0.75,
+      "p90": 1.23,
+      "lag": 3,
+      "amplitude": 0.48,
+      "correlation": 0.66
+    },
+    {
+      "part": "zuiba_1",
+      "frames": 150,
+      "median": 0.74,
+      "p90": 1.94,
+      "lag": 3,
+      "amplitude": 0.3,
+      "correlation": 0.35
+    },
+    {
+      "part": "meimao_2",
+      "frames": 149,
+      "median": 0.73,
+      "p90": 1.35,
+      "lag": 1,
+      "amplitude": 0.42,
+      "correlation": 0.54
+    },
+    {
+      "part": "yanpi_2",
+      "frames": 147,
+      "median": 0.72,
+      "p90": 1.53,
+      "lag": 2,
+      "amplitude": 0.4,
+      "correlation": 0.49
+    },
+    {
+      "part": "yanbai_2",
+      "frames": 140,
+      "median": 0.71,
+      "p90": 1.59,
+      "lag": 1,
+      "amplitude": 0.38,
+      "correlation": 0.48
+    },
+    {
+      "part": "meimao_1",
+      "frames": 150,
+      "median": 0.71,
+      "p90": 1.52,
+      "lag": 3,
+      "amplitude": 0.39,
+      "correlation": 0.43
+    },
+    {
+      "part": "yanpi_1",
+      "frames": 141,
+      "median": 0.69,
+      "p90": 1.59,
+      "lag": 4,
+      "amplitude": 0.36,
+      "correlation": 0.43
+    },
+    {
+      "part": "bizi",
+      "frames": 150,
+      "median": 0.69,
+      "p90": 1.62,
+      "lag": 2,
+      "amplitude": 0.36,
+      "correlation": 0.38
+    },
+    {
+      "part": "toufa_2",
+      "frames": 150,
+      "median": 0.68,
+      "p90": 1.08,
+      "lag": 1,
+      "amplitude": 0.63,
+      "correlation": 0.71
+    },
+    {
+      "part": "hair_side_1",
+      "frames": 149,
+      "median": 0.67,
+      "p90": 1.24,
+      "lag": 1,
+      "amplitude": 0.45,
+      "correlation": 0.61
+    },
+    {
+      "part": "lian",
+      "frames": 150,
+      "median": 0.65,
+      "p90": 1.46,
+      "lag": 3,
+      "amplitude": 0.45,
+      "correlation": 0.37
+    },
+    {
+      "part": "toufa_3",
+      "frames": 149,
+      "median": 0.65,
+      "p90": 1.23,
+      "lag": 0,
+      "amplitude": 0.7,
+      "correlation": 0.3
+    },
+    {
+      "part": "yanbai_1",
+      "frames": 141,
+      "median": 0.65,
+      "p90": 1.48,
+      "lag": 3,
+      "amplitude": 0.35,
+      "correlation": 0.42
+    },
+    {
+      "part": "xiuzi_2",
+      "frames": 150,
+      "median": 0.55,
+      "p90": 0.94,
+      "lag": 1,
+      "amplitude": 0.99,
+      "correlation": 0.82
+    },
+    {
+      "part": "xiuzi_1",
+      "frames": 150,
+      "median": 0.51,
+      "p90": 0.85,
+      "lag": 1,
+      "amplitude": 2,
+      "correlation": 0.8
+    },
+    {
+      "part": "shou_2",
+      "frames": 150,
+      "median": 0.47,
+      "p90": 1.08,
+      "lag": 0,
+      "amplitude": 1.04,
+      "correlation": 0.79
+    },
+    {
+      "part": "shou_1",
+      "frames": 150,
+      "median": 0.47,
+      "p90": 1.06,
+      "lag": 1,
+      "amplitude": 0.99,
+      "correlation": 0.82
+    },
+    {
+      "part": "zhi_3",
+      "frames": 150,
+      "median": 0.43,
+      "p90": 0.99,
+      "lag": 0,
+      "amplitude": 0.69,
+      "correlation": 0.81
+    },
+    {
+      "part": "shoubi_1",
+      "frames": 150,
+      "median": 0.43,
+      "p90": 0.89,
+      "lag": 1,
+      "amplitude": 1,
+      "correlation": 0.8
+    },
+    {
+      "part": "zhi_2",
+      "frames": 150,
+      "median": 0.38,
+      "p90": 0.87,
+      "lag": 0,
+      "amplitude": 0.77,
+      "correlation": 0.81
+    },
+    {
+      "part": "zhi_1",
+      "frames": 150,
+      "median": 0.36,
+      "p90": 0.85,
+      "lag": 1,
+      "amplitude": 0.83,
+      "correlation": 0.81
+    },
+    {
+      "part": "xiangzi_2",
+      "frames": 150,
+      "median": 0.3,
+      "p90": 0.8,
+      "lag": 0,
+      "amplitude": 0.85,
+      "correlation": 0.81
+    },
+    {
+      "part": "biyan_3",
+      "frames": 6,
+      "median": 0.3,
+      "p90": 1.04,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    },
+    {
+      "part": "yanzhu_2",
+      "frames": 0,
+      "median": null,
+      "p90": null,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    },
+    {
+      "part": "yanzhu_1",
+      "frames": 0,
+      "median": null,
+      "p90": null,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    },
+    {
+      "part": "shoubi_4",
+      "frames": 0,
+      "median": null,
+      "p90": null,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    },
+    {
+      "part": "xiangzi_1",
+      "frames": 0,
+      "median": null,
+      "p90": null,
+      "lag": null,
+      "amplitude": null,
+      "correlation": null
+    }
+  ],
+  "note": "Thresholds are proposals (ADR-034). Look at compare.mp4; the numbers do not replace it."
+}

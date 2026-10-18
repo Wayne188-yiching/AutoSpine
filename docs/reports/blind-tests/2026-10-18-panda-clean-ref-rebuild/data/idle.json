@@ -1,0 +1,343 @@
+{
+  "animation": "idle",
+  "video": "C:\\Wayne\\Spine\\Pseudo-3D\\panda\\AutoSpine_Rebuild_20261018\\_work\\input\\Ref\\panda-idle.mov",
+  "start": 0,
+  "fps": 30,
+  "frames": {
+    "compared": 30,
+    "visible": 30,
+    "registrationFrame": 0,
+    "animation": 30
+  },
+  "registration": {
+    "iou": 0.984,
+    "pixelsPerUnit": 1.0918
+  },
+  "mirrored": [],
+  "notJudged": [
+    {
+      "part": "hand_L2",
+      "frames": 14
+    },
+    {
+      "part": "leg_L2",
+      "frames": 14
+    },
+    {
+      "part": "hand_L1",
+      "frames": 13
+    },
+    {
+      "part": "leg_L1",
+      "frames": 14
+    },
+    {
+      "part": "scarf",
+      "frames": 14
+    },
+    {
+      "part": "nose",
+      "frames": 11
+    },
+    {
+      "part": "hand_R3",
+      "frames": 12
+    },
+    {
+      "part": "eyes",
+      "frames": 14
+    },
+    {
+      "part": "tail",
+      "frames": 14
+    },
+    {
+      "part": "ear_R",
+      "frames": 14
+    }
+  ],
+  "pass": true,
+  "rows": [
+    {
+      "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+      "ok": true,
+      "value": [
+        0.967,
+        0.937
+      ]
+    },
+    {
+      "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+      "ok": true,
+      "value": [
+        0.16,
+        0.6,
+        "9 parts"
+      ]
+    },
+    {
+      "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+      "ok": true,
+      "value": [
+        0,
+        1.02
+      ]
+    },
+    {
+      "id": "V4 loop seam mean difference <= 0.002",
+      "ok": true,
+      "value": 0
+    }
+  ],
+  "hints": [],
+  "figure": {
+    "axis": "vertical",
+    "lag": 0,
+    "amplitude": 1.024,
+    "motion": 0.05314
+  },
+  "frameError": [
+    0.133,
+    0.121,
+    0.177,
+    0.225,
+    0.187,
+    0.151,
+    0.208,
+    0.337,
+    0.118,
+    0.146,
+    0.154,
+    0.21,
+    0.193,
+    0.193,
+    0.261,
+    0.204,
+    0.113,
+    0.126,
+    1.823,
+    0.138,
+    0.157,
+    0.127,
+    0.588,
+    0.998,
+    0.156,
+    0.157,
+    0.166,
+    0.146,
+    0.135,
+    0.116
+  ],
+  "parts": [
+    {
+      "part": "hand_L2",
+      "frames": 14,
+      "median": 0.4,
+      "p90": 0.54,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "leg_L2",
+      "frames": 14,
+      "median": 0.29,
+      "p90": 0.33,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "body",
+      "frames": 29,
+      "median": 0.23,
+      "p90": 0.6,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "hand_L1",
+      "frames": 13,
+      "median": 0.23,
+      "p90": 4.93,
+      "lag": 0,
+      "amplitude": 1.07,
+      "correlation": 0.99
+    },
+    {
+      "part": "ear_L",
+      "frames": 22,
+      "median": 0.22,
+      "p90": 0.26,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "hand_L3",
+      "frames": 17,
+      "median": 0.19,
+      "p90": 0.28,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "hat",
+      "frames": 22,
+      "median": 0.17,
+      "p90": 0.24,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "leg_L1",
+      "frames": 14,
+      "median": 0.16,
+      "p90": 0.39,
+      "lag": 0,
+      "amplitude": 1.01,
+      "correlation": 1
+    },
+    {
+      "part": "head",
+      "frames": 23,
+      "median": 0.16,
+      "p90": 0.25,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "scarf",
+      "frames": 14,
+      "median": 0.15,
+      "p90": 0.39,
+      "lag": 0,
+      "amplitude": 1.01,
+      "correlation": 1
+    },
+    {
+      "part": "nose",
+      "frames": 11,
+      "median": 0.15,
+      "p90": 0.22,
+      "lag": 0,
+      "amplitude": 1.1,
+      "correlation": 1
+    },
+    {
+      "part": "leg_R2",
+      "frames": 17,
+      "median": 0.14,
+      "p90": 0.2,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "hand_R2",
+      "frames": 16,
+      "median": 0.12,
+      "p90": 0.26,
+      "lag": 0,
+      "amplitude": 0.99,
+      "correlation": 1
+    },
+    {
+      "part": "leg_R1",
+      "frames": 24,
+      "median": 0.12,
+      "p90": 0.31,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "hand_R3",
+      "frames": 12,
+      "median": 0.12,
+      "p90": 0.23,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "eyes",
+      "frames": 14,
+      "median": 0.11,
+      "p90": 0.34,
+      "lag": 0,
+      "amplitude": 1.01,
+      "correlation": 1
+    },
+    {
+      "part": "hand_R1",
+      "frames": 15,
+      "median": 0.1,
+      "p90": 0.21,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    },
+    {
+      "part": "tail",
+      "frames": 14,
+      "median": 0.08,
+      "p90": 1.09,
+      "lag": 0,
+      "amplitude": 0.99,
+      "correlation": 1
+    },
+    {
+      "part": "ear_R",
+      "frames": 14,
+      "median": 0.07,
+      "p90": 0.16,
+      "lag": 0,
+      "amplitude": 1,
+      "correlation": 1
+    }
+  ],
+  "units": "part errors and frameError in % of figure height; lag in frames, positive = the build is late",
+  "silhouette": [
+    0.985,
+    0.986,
+    0.984,
+    0.981,
+    0.976,
+    0.962,
+    0.976,
+    0.976,
+    0.971,
+    0.978,
+    0.984,
+    0.979,
+    0.976,
+    0.974,
+    0.956,
+    0.947,
+    0.958,
+    0.956,
+    0.937,
+    0.954,
+    0.94,
+    0.958,
+    0.959,
+    0.943,
+    0.968,
+    0.965,
+    0.962,
+    0.965,
+    0.972,
+    0.983
+  ],
+  "note": "Native V1-V4 error limits retained. All original frames are scored. Blank-first clips register once on a visible frame and V2 requires coverage of half the visible frames. For a turn with artwork pose swaps, 1_/2_/3_ slots for the same anatomical part form one continuous track. Raw native reports remain available. Direct video review is required.",
+  "renderSource": {
+    "format": "Official Spine 4.0.64 binary export",
+    "file": "checks/delivery-r5/binary/Panda_Rebuilt.skel"
+  },
+  "semanticPartMapping": "1_/2_/3_ pose-set names of the same anatomical part are one continuous track"
+}

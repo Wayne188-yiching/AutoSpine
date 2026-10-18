@@ -1,0 +1,14 @@
+{
+  "pass": true,
+  "bones": 1,
+  "animations": 0,
+  "constraints": 0,
+  "meshes": 0,
+  "weightedAttachments": 0,
+  "attachments": 46,
+  "engine": "C:/Users/617/Documents/Codex/2026-04-26/new-chat/codex-home-browser-fix/plugins/cache/autospine/autospine/0.5.0/skills/autospine/scripts/autospine.mjs",
+  "engineSha256": "61040e4cd2b3de52c51e7805e38724d08e982b55db03191ac0a2fec819d86076",
+  "humanMotionReadForPlan": false,
+  "previousMotionReadForPlan": false,
+  "referenceGeometrySampled": false
+}

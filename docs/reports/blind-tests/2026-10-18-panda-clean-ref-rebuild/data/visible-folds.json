@@ -1,0 +1,53 @@
+{
+  "source": "checks/delivery-r5/binary/Panda_Rebuilt.skel",
+  "fps": 120,
+  "method": "Official-runtime playback at the recorded fps. Mixed triangle orientation is tested against texture alpha and frontmost rendered slot ownership. A uniform whole-part mirror is not a local fold.",
+  "results": [
+    {
+      "animation": "final",
+      "samples": 361,
+      "candidateFrames": [
+        {
+          "frame60": 96,
+          "triangles": 1
+        }
+      ],
+      "visibleInversions": [],
+      "pass": true
+    },
+    {
+      "animation": "idle",
+      "samples": 121,
+      "candidateFrames": [
+        {
+          "frame60": 96,
+          "triangles": 1
+        }
+      ],
+      "visibleInversions": [],
+      "pass": true
+    },
+    {
+      "animation": "idle_slow",
+      "samples": 141,
+      "candidateFrames": [],
+      "visibleInversions": [],
+      "pass": true
+    },
+    {
+      "animation": "wild",
+      "samples": 241,
+      "candidateFrames": [],
+      "visibleInversions": [],
+      "pass": true
+    },
+    {
+      "animation": "win",
+      "samples": 241,
+      "candidateFrames": [],
+      "visibleInversions": [],
+      "pass": true
+    }
+  ],
+  "pass": true
+}
