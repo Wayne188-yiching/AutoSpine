@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoSpine｜只有圖片與影片的改善方案</title>
+<style>
+:root{color-scheme:light;--ink:#26302d;--muted:#5e6962;--paper:#f3f0e9;--line:#cbd1c7;--green:#315b4b;--warn:#87512e}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.8 system-ui,"Microsoft JhengHei",sans-serif}main{max-width:1120px;margin:auto;padding:48px 28px 80px}small,.eyebrow{font-size:13px;letter-spacing:.09em;color:var(--muted)}h1{font-size:clamp(31px,5vw,49px);line-height:1.25;max-width:850px;margin:20px 0}h2{font-size:27px;line-height:1.4;margin:0 0 18px}h3{font-size:20px;margin:0 0 8px}p{margin:12px 0;max-width:88ch}a{color:var(--green);text-underline-offset:4px}nav{display:flex;gap:12px 24px;flex-wrap:wrap;margin:28px 0 40px;padding:15px 0;border-block:1px solid var(--line)}section{padding:36px 0;border-bottom:1px solid var(--line);scroll-margin-top:20px}.notice{padding:20px 24px;border-left:5px solid var(--green);background:#e5eade}.notice.warn{background:#eee1d2;border-color:var(--warn)}.cards{display:grid;grid-template-columns:1fr 1fr;gap:15px}.card{padding:23px;border:1px solid var(--line);background:#faf8f2}.tag{color:var(--green);font-size:13px;letter-spacing:.06em}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:24px 0}.flow div{border-top:4px solid var(--green);padding:16px 13px;background:#e3e8dd;line-height:1.5}.flow b{display:block;margin-bottom:7px}.flow span{font-size:14px;color:var(--muted)}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;vertical-align:top;padding:15px 12px;border-bottom:1px solid var(--line)}th{color:var(--green);background:#e8ebe1}td:first-child{min-width:110px;font-weight:650}ul,ol{padding-left:24px}li{margin:7px 0}details{border:1px solid var(--line);padding:16px 20px;margin:12px 0;background:#faf8f2}summary{cursor:pointer;font-weight:650}code{font-size:.88em;overflow-wrap:anywhere}.status{display:inline-block;border:1px solid var(--warn);color:var(--warn);padding:3px 12px;border-radius:20px;font-size:13px}footer{font-size:14px;color:var(--muted);padding-top:28px}@media(max-width:720px){main{padding:30px 19px 55px}.cards{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.flow div{border-top:0;border-left:4px solid var(--green)}h2{font-size:24px}}@media print{body{background:white}main{padding:0}nav{display:none}details{break-inside:avoid}section{break-inside:auto}a{color:#222}}
+</style>
+<main>
+<div class="eyebrow">AUTOSPINE · PIG · 2026.10.18</div>
+<h1>讓「只有圖片＋參考影片」<br>成為真正可驗證的製作流程</h1>
+<span class="status">改善方案，尚未實作</span>
+<p>目標是產生可編輯、接縫穩定、動作接近 Ref 的 Spine 4.0.64 專案。成功證據必須來自未讀取該角色人工骨架、權重、動態或逐幀幾何的執行結果。</p>
+<p class="notice">第一個里程碑：只用獨立圖片與 Ref，做出一段通過數據及直接視覺驗收的 Pig idle。完成後再做 appear、單一轉身勝利，最後擴展其餘事件。</p>
+<nav><a href="#cause">這次問題</a><a href="#inputs">輸入界線</a><a href="#pipeline">改善流程</a><a href="#phases">實作順序</a><a href="#acceptance">驗收條件</a><a href="#limits">能力與限制</a><a href="#sources">技術依據</a></nav>
+
+<section id="cause"><h2>先處理已經觀察到的問題</h2>
+<div class="cards">
+<article class="card"><div class="tag">01 · 素材</div><h3>圖片帶有相鄰圖塊殘留</h3><p>目前 PNG 的有效美術邊界不等於圖片矩形。移除原網格後，殘片進入渲染與比對。需要從圖片本身重新產生遮罩，或使用乾淨的原始分層美術。</p></article>
+<article class="card"><div class="tag">02 · 起始姿勢</div><h3>結構清除成功，擺位仍有誤差</h3><p>strip-images 有五項誤差超過 2 px；初次 idle 辨識覆蓋率只有 56.6%。排除表情後提升到 62.6%，只代表足以啟動擬合，尚不代表姿勢正確。</p></article>
+<article class="card"><div class="tag">03 · 追蹤與求解</div><h3>部件錯認被轉成錯誤旋轉</h3><p>idle 已觀察到頭身翻轉、部件分離。對照 V1 平均 0.547、最低 0.426；動作幅度為 Ref 的 1.96 倍。這需要改善部件對應、角度與接觸限制，以及連續畫格的穩定性。</p></article>
+<article class="card"><div class="tag">04 · 事件規劃</div><h3>轉身、換圖與表情沒有完整處理</h3><p>本次方案將正面圖組固定用於七個事件。真正的轉身需要分段處理正／背姿態、可見部件和繪圖順序；六段中立姿勢也不能計作六段完成動畫。</p></article>
+</div>
+<p>目前只完成一輪 idle 擬合，win1／win2 中止、win3–win5 未開始。這足以判定本次交付未完成，尚不足以證明所有改善方法都不可行。</p>
+<p><a href="rebuild-review.html">本次驗收證據與對照影片</a> · <a href="../checks/session-status.json">實際執行狀態</a></p>
+</section>
+
+<section id="inputs"><h2>先把輸入界線做成可檢查的規則</h2>
+<div class="table-wrap"><table><thead><tr><th>允許的輸入</th><th>處理方式</th></tr></thead><tbody>
+<tr><td>原始分層美術</td><td>PSD／圖層 PNG／已清理圖片；保留原圖。若只有散件，首幀擺位從影片與圖像重新建立；有原始美術圖層擺位資料時可明確列為輸入。</td></tr>
+<tr><td>Ref 影片</td><td>記錄幀率、事件起終點、是否循環；保留原片。從影片新標註部件、關鍵姿勢、可見性及接觸關係。</td></tr>
+<tr><td>新建的方案與標註</td><td>每個數值可追溯至圖片、影片時間點或通用規則；少數不確定處由我看片補定位，再重新驗證。</td></tr>
+</tbody></table></div>
+<p class="notice warn">生成流程不得讀取該角色的人工 Spine、人工匯出 JSON、人工網格 UV 遮罩、逐幀頂點、時間軸，以及由它們派生的舊取樣／校正快取。測試輸入副本只放允許的素材，記錄雜湊與每個讀取來源；來源不明即不能列入成功案例。</p>
+<p>這是改善設計；目前的資料夾與程式還沒有提供完整的執行期讀取隔離。後續需要實際落實可讀路徑白名單及驗證紀錄。</p>
+</section>
+
+<section id="pipeline"><h2>把影片分析與 Spine 動畫分層處理</h2>
+<div class="flow" aria-label="改善流程"><div><b>乾淨美術</b><span>獨立遮罩、部件清單、圖層</span></div><div><b>首幀組裝</b><span>位置、比例、正背姿態</span></div><div><b>影片追蹤</b><span>點、輪廓、可見性、節拍</span></div><div><b>受限制的求解</b><span>整體移動→骨架→局部變形</span></div><div><b>Spine 與驗收</b><span>稀疏關鍵幀、逐幀重播、對照</span></div></div>
+<details open><summary>1．先完成乾淨素材與首幀，再生成動作</summary><p>逐部件檢查有效輪廓、孔洞、透明邊、正背圖與重複附件；新遮罩由圖片分析或新標註產生，不能回讀人工 UV。將新組裝的首幀與 Ref 疊圖，檢查頭、身體、翅膀、手與弓的位置。辨識不足的部件明確列出，不靠排除更多部件宣稱首幀通過。</p><p>圖片分割可先用透明度與連通區等簡單方法；有語意混雜時再小規模測試 <a href="https://github.com/facebookresearch/sam2">SAM 2</a> 等影像／影片分割工具。模型本身不會保證分得出這隻卡通角色的所有部件。</p></details>
+<details open><summary>2．持續追蹤部件，保留「追不到」的狀態</summary><p>從影片上的頭、胸、手、弓、腳與翅膀建立錨點及輪廓。追蹤需保留可見性、可信度及失敗畫格；遮擋時暫停量測，重新出現時重新定位。用前後畫格的連續性與回頭追蹤檢查錯誤，避免每幀各自找到相似顏色就轉成骨頭旋轉。</p><p>第一個可驗證方案可評估 <a href="https://docs.opencv.org/4.x/d4/dee/tutorial_optical_flow.html">OpenCV 金字塔光流</a>，搭配新標註的關鍵姿勢。這是候選做法，尚未在 Pig 上測得成功。</p></details>
+<details open><summary>3．依順序求整體移動、骨架動作與局部形變</summary><ol><li>先從角色本體估計整體位移、旋轉與縮放；箭矢和爆炸特效分開處理，避免拉偏角色路徑。</li><li>再求各關節相對動作，加入合理角度、骨長、角度連續性與握持接觸限制；弓與手的接觸一起驗證。</li><li>最後才用少量控制點處理嘴型、臉頰、衣服與透視變形，加入接縫、避免翻折及時間平滑等限制。</li><li>轉身段重新建立部件對應，切換正／背姿態、附件與繪圖順序。表情與特效依影片另外記錄。</li></ol><p>Spine 支援骨架權重與網格 deform，但這些功能仍需要正確的目標資料。官方建議優先使用權重、節制使用 deform，避免資料量與編輯成本過大。<a href="https://eu.esotericsoftware.com/spine-keys">Spine 官方說明</a>。</p></details>
+<details><summary>4．每次求解都重新渲染，再縮減關鍵幀</summary><p>用同一套 Spine 播放結果比較輪廓、部件、位移幅度與時間；將誤差定位到特定部件與畫格。先確認完整動作，再依誤差容許值縮減關鍵幀；縮減後仍要重新檢查中間畫格、循環接點與一次性動作的最後停留。</p><p>技術匯入／匯出、數值驗收與直接視覺驗收分開記錄。影片能播放或檔案有七個名稱，都不能代替動態完成度。</p></details>
+</section>
+
+<section id="phases"><h2>實作順序與停止條件</h2>
+<div class="table-wrap"><table><thead><tr><th>階段</th><th>實際產物</th><th>進入下一階段前</th></tr></thead><tbody>
+<tr><td>P0 · 獨立輸入</td><td>圖片／影片副本、雜湊清單、來源追蹤與可讀路徑限制</td><td>沒有該角色人工骨架、UV 遮罩或取樣快取進入生成資料</td></tr>
+<tr><td>P1 · 美術與首幀</td><td>乾淨部件、新建網格權重、首幀疊圖及差異圖</td><td>殘片與關鍵部件擺位問題已解決；不明部件不能隱藏在總分中</td></tr>
+<tr><td>P2 · 一段 idle</td><td>新的可編輯 Spine、軌跡覆蓋圖、佈線／骨架／動態及 Ref 對照</td><td>原有 V1–V4 與直接視覺檢查通過，沒有翻轉、破口或握持分離</td></tr>
+<tr><td>P3 · appear</td><td>進場位移、縮放、落點及表情時間軸</td><td>起終姿態及移動時間符合 Ref；一次性動作不被強行接成循環</td></tr>
+<tr><td>P4 · 一段轉身勝利</td><td>分段姿態切換、正背可見性、射箭／特效時序</td><td>轉面與遮擋流程有成功證據，缺圖處已補圖或明確確認</td></tr>
+<tr><td>P5 · 擴展與交付</td><td>其餘事件、同一 Spine 專案、每事件一支分階段展示影片</td><td>逐事件通過；備份正式報告後僅替換通過的對應內容</td></tr>
+<tr><td>P6 · 新角色複驗</td><td>另一個沒有人工動畫輸入的角色測試</td><td>分清角色專用調整與可重用能力；單一 Pig 成功不能直接宣稱所有角色可用</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="acceptance"><h2>保留既有門檻，補上完成度檢查</h2>
+<div class="table-wrap"><table><thead><tr><th>檢查</th><th>要求</th></tr></thead><tbody>
+<tr><td>來源獨立</td><td>生成輸入、方案數值及中間快取可追溯；不能讀取目標角色的人工答案</td></tr>
+<tr><td>首幀與追蹤</td><td>清楚可見且影響動作的關鍵部件都有有效對應；未追蹤／被遮擋者逐項列出</td></tr>
+<tr><td>V1 · 輪廓</td><td>平均 IoU ≥ 0.9，最低 ≥ 0.8</td></tr>
+<tr><td>V2 · 部件</td><td>位置誤差中位數 ≤ 身高 0.6%，P90 ≤ 1.5%；一併顯示評估了哪些部件</td></tr>
+<tr><td>V3 · 時序與幅度</td><td>時間差 ≤ 2 幀，動作幅度比 0.75–1.33</td></tr>
+<tr><td>V4 · 循環</td><td>循環接點平均差 ≤ 0.002；非循環事件標示不適用</td></tr>
+<tr><td>動態與編輯品質</td><td>依 Ref 應變化的事件確實有有效動作／換圖／特效；沒有可見翻折、破口、突然翻轉，握持穩定，資料量可編輯</td></tr>
+<tr><td>最終交付</td><td>Spine 4.0.64 往返與圖片路徑檢查，逐事件影片直接檢查，通過後才替換正式報告</td></tr>
+</tbody></table></div>
+<p>上述 V1–V4 是目前外掛的既有比較門檻。部件覆蓋、接縫與可編輯性是需要增加的檢查項目，尚未實作，不能宣稱已通過。</p>
+</section>
+
+<section id="limits"><h2>合理的交付能力邊界</h2>
+<p>影片提供的是畫面中的結果。遮住的部位、影片沒出現的背面，以及原圖沒有的嘴型，不一定有足夠資料可還原。需要補畫圖層、從影片新標註關鍵姿勢，或確認可接受的簡化；這些都不需要先有一份人工 Spine 動畫。</p>
+<p>目前外掛文件明載，影片擬合不涵蓋表情、網格 deform 與縮放等項目。因此要達到 Pig 這種轉面與表情品質，需要擴充影片追蹤與動作求解能力；只修改技能文字或反覆重跑同一組設定，沒有足夠依據保證改善。</p>
+<p class="notice">先採可檢查的半自動流程：我負責從影片選姿勢、標記不確定部位及查看結果，工具處理追蹤、求解、建置與比較。完成小範圍驗證後，再決定哪些步驟值得自動化。</p>
+<p>本頁僅建立改善方案。尚未修改外掛引擎、安裝模型、執行新一輪擬合、使用原人工 UV，或替換正式報告。</p>
+</section>
+
+<section id="sources"><h2>技術依據與本機證據</h2>
+<ul><li><a href="https://docs.opencv.org/4.x/d4/dee/tutorial_optical_flow.html">OpenCV：Optical Flow</a>——金字塔 Lucas–Kanade 等影片特徵追蹤方法；不等同完整角色動作求解。</li><li><a href="https://github.com/facebookresearch/sam2">Meta：SAM 2 官方資料</a>——圖片／影片分割；是否適合此角色需實測。</li><li><a href="https://eu.esotericsoftware.com/spine-meshes">Spine：Mesh attachments</a>、<a href="https://eu.esotericsoftware.com/spine-weights">Weights</a>、<a href="https://eu.esotericsoftware.com/spine-keys">Keys</a>——網格、權重與 deform 的能力及編輯取捨。</li><li><a href="../checks/clean-source-audit.json">本次清除稽核</a>、<a href="../checks/candidate-video-check/idle/report.json">idle 實際比較數據</a>、<a href="../checks/session-status.json">完成／中止狀態</a>。</li></ul>
+</section>
+<footer>本機改善規劃。數值驗收、檔案技術驗證與美術接受度分開記錄。原始素材與既有結果保留。</footer>
+</main>
+</html>

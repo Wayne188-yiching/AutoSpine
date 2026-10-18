@@ -1,0 +1,791 @@
+{
+ "animation": "Hit",
+ "video": "C:\\Wayne\\Spine\\紅袍麋鹿\\Spine\\AutoSpine\\_work\\input\\ref_hit.mp4",
+ "start": 0,
+ "fps": 30,
+ "frames": {
+  "compared": 94,
+  "animation": 94
+ },
+ "registration": {
+  "iou": 0.905,
+  "pixelsPerUnit": 0.683
+ },
+ "mirrored": [
+  {
+   "part": "yachi_1",
+   "frames": [
+    7,
+    19
+   ]
+  },
+  {
+   "part": "yachi_2",
+   "frames": [
+    7,
+    60
+   ]
+  },
+  {
+   "part": "xiaotui_1",
+   "frames": [
+    6,
+    57
+   ]
+  },
+  {
+   "part": "xiaotui_2",
+   "frames": [
+    6,
+    93
+   ]
+  },
+  {
+   "part": "biyan_1",
+   "frames": [
+    8,
+    55
+   ]
+  }
+ ],
+ "notJudged": [
+  {
+   "part": "biyan_1",
+   "frames": 27
+  },
+  {
+   "part": "datui_2",
+   "frames": 39
+  },
+  {
+   "part": "pifeng_6",
+   "frames": 32
+  },
+  {
+   "part": "zuijiao",
+   "frames": 42
+  },
+  {
+   "part": "lian",
+   "frames": 38
+  },
+  {
+   "part": "zuiba_2",
+   "frames": 39
+  },
+  {
+   "part": "yanbai_1",
+   "frames": 37
+  },
+  {
+   "part": "kouqiang",
+   "frames": 39
+  },
+  {
+   "part": "pifeng_7",
+   "frames": 24
+  },
+  {
+   "part": "yanbai_2",
+   "frames": 37
+  },
+  {
+   "part": "yanzhu_2",
+   "frames": 0
+  },
+  {
+   "part": "yanzhu_1",
+   "frames": 0
+  }
+ ],
+ "pass": false,
+ "rows": [
+  {
+   "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+   "ok": false,
+   "value": [
+    0.823,
+    0.667
+   ]
+  },
+  {
+   "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+   "ok": false,
+   "value": [
+    1,
+    7.13,
+    "38 parts"
+   ]
+  },
+  {
+   "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+   "ok": true,
+   "value": [
+    0,
+    0.82
+   ]
+  }
+ ],
+ "hints": [
+  "drawn mirrored (left-right) in the reference on frames 6-57: xiaotui_1, yachi_2, biyan_1",
+  "drawn mirrored (left-right) in the reference on frames 6-93: xiaotui_2",
+  "drawn mirrored (left-right) in the reference on frames 7-19: yachi_1",
+  "outline differs most at frame 69 (2.30s, overlap 0.67): pose, placement or size",
+  "weiba: off by 6.3% of the height, moving differently",
+  "pifeng_4: off by 4.7% of the height, moving differently",
+  "bizi: off by 4.7% of the height, moves 0.59x (too small)",
+  "xiaotui_1: off by 4.5% of the height, moving differently"
+ ],
+ "figure": {
+  "axis": "horizontal",
+  "lag": 0,
+  "amplitude": 0.819,
+  "motion": 0.01874
+ },
+ "frameError": [
+  0.4,
+  0.539,
+  0.576,
+  0.406,
+  0.696,
+  0.571,
+  2.447,
+  2.057,
+  2.293,
+  2.134,
+  2.148,
+  2.223,
+  2.197,
+  1.299,
+  1.115,
+  1.13,
+  1.022,
+  1.065,
+  1.072,
+  1.041,
+  1.061,
+  1.016,
+  1.06,
+  1.061,
+  1.064,
+  1.064,
+  1.185,
+  1.224,
+  1.015,
+  1.013,
+  1.081,
+  1.013,
+  1.013,
+  0.999,
+  1.007,
+  0.938,
+  0.998,
+  1.016,
+  1.009,
+  1.013,
+  1.015,
+  1.015,
+  1.015,
+  1.014,
+  1.032,
+  1.025,
+  1.044,
+  1.047,
+  1.021,
+  1.025,
+  1.021,
+  1.021,
+  1.021,
+  1.024,
+  1.05,
+  1.027,
+  1.754,
+  1.57,
+  1.839,
+  1.514,
+  2.208,
+  1.143,
+  0.664,
+  1.677,
+  1.455,
+  1.894,
+  1.162,
+  1.195,
+  1.327,
+  1.636,
+  1.536,
+  1.72,
+  1.656,
+  1.573,
+  1.473,
+  0.45,
+  0.401,
+  0.379,
+  0.374,
+  0.394,
+  0.393,
+  0.387,
+  0.392,
+  0.401,
+  0.4,
+  0.386,
+  0.381,
+  0.381,
+  0.388,
+  0.388,
+  0.38,
+  0.384,
+  0.398,
+  0.4
+ ],
+ "parts": [
+  {
+   "part": "biyan_1",
+   "frames": 27,
+   "median": 7.45,
+   "p90": 8.2,
+   "lag": 2,
+   "amplitude": 0.14,
+   "correlation": 0.3
+  },
+  {
+   "part": "weiba",
+   "frames": 92,
+   "median": 6.25,
+   "p90": 7.13,
+   "lag": 12,
+   "amplitude": 0.43,
+   "correlation": -0.32
+  },
+  {
+   "part": "pifeng_4",
+   "frames": 69,
+   "median": 4.74,
+   "p90": 6.52,
+   "lag": 1,
+   "amplitude": 1.08,
+   "correlation": 0.57
+  },
+  {
+   "part": "bizi",
+   "frames": 90,
+   "median": 4.69,
+   "p90": 5.08,
+   "lag": 0,
+   "amplitude": 0.59,
+   "correlation": 0.99
+  },
+  {
+   "part": "xiaotui_1",
+   "frames": 92,
+   "median": 4.47,
+   "p90": 4.79,
+   "lag": 5,
+   "amplitude": 0.34,
+   "correlation": 0.19
+  },
+  {
+   "part": "yachi_2",
+   "frames": 88,
+   "median": 4.36,
+   "p90": 4.76,
+   "lag": 0,
+   "amplitude": 0.55,
+   "correlation": 0.99
+  },
+  {
+   "part": "xiabanshen",
+   "frames": 94,
+   "median": 4.3,
+   "p90": 4.84,
+   "lag": 0,
+   "amplitude": 0.78,
+   "correlation": 0.06
+  },
+  {
+   "part": "datui_1",
+   "frames": 93,
+   "median": 4.03,
+   "p90": 5.25,
+   "lag": 12,
+   "amplitude": 1.62,
+   "correlation": -0.3
+  },
+  {
+   "part": "xiaotui_2",
+   "frames": 92,
+   "median": 2.98,
+   "p90": 8.26,
+   "lag": 0,
+   "amplitude": 0.69,
+   "correlation": -0.31
+  },
+  {
+   "part": "biyan_3",
+   "frames": 49,
+   "median": 1.63,
+   "p90": 1.73,
+   "lag": 0,
+   "amplitude": 0.52,
+   "correlation": 0.95
+  },
+  {
+   "part": "meimao_2",
+   "frames": 82,
+   "median": 1.55,
+   "p90": 2.09,
+   "lag": 0,
+   "amplitude": 0.86,
+   "correlation": 0.95
+  },
+  {
+   "part": "meimao_1",
+   "frames": 90,
+   "median": 1.44,
+   "p90": 1.83,
+   "lag": 0,
+   "amplitude": 0.81,
+   "correlation": 0.99
+  },
+  {
+   "part": "pifeng_2",
+   "frames": 92,
+   "median": 1.37,
+   "p90": 2.3,
+   "lag": 0,
+   "amplitude": 0.78,
+   "correlation": 0.96
+  },
+  {
+   "part": "bozi",
+   "frames": 93,
+   "median": 1.26,
+   "p90": 1.82,
+   "lag": 0,
+   "amplitude": 0.79,
+   "correlation": 0.97
+  },
+  {
+   "part": "pifeng_5",
+   "frames": 70,
+   "median": 1.14,
+   "p90": 2.66,
+   "lag": 6,
+   "amplitude": 0.39,
+   "correlation": 0.52
+  },
+  {
+   "part": "shou_2",
+   "frames": 75,
+   "median": 1.08,
+   "p90": 2.32,
+   "lag": 0,
+   "amplitude": 0.9,
+   "correlation": 0.89
+  },
+  {
+   "part": "shangbanshen",
+   "frames": 93,
+   "median": 1.08,
+   "p90": 2.49,
+   "lag": 2,
+   "amplitude": 0.96,
+   "correlation": 0.77
+  },
+  {
+   "part": "jiao_2",
+   "frames": 94,
+   "median": 1.01,
+   "p90": 1.02,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "dabi_1",
+   "frames": 89,
+   "median": 1,
+   "p90": 2.07,
+   "lag": 0,
+   "amplitude": 1.2,
+   "correlation": 0.93
+  },
+  {
+   "part": "kouzi_2",
+   "frames": 91,
+   "median": 1,
+   "p90": 2.28,
+   "lag": 0,
+   "amplitude": 0.88,
+   "correlation": 0.95
+  },
+  {
+   "part": "xiaobi_1",
+   "frames": 87,
+   "median": 0.92,
+   "p90": 2.45,
+   "lag": 0,
+   "amplitude": 1.06,
+   "correlation": 0.98
+  },
+  {
+   "part": "jiao_1",
+   "frames": 94,
+   "median": 0.89,
+   "p90": 0.91,
+   "lag": 0,
+   "amplitude": 0.87,
+   "correlation": 0.98
+  },
+  {
+   "part": "datui_2",
+   "frames": 39,
+   "median": 0.87,
+   "p90": 3.75,
+   "lag": 5,
+   "amplitude": 0.31,
+   "correlation": 0.33
+  },
+  {
+   "part": "xiaobi_2",
+   "frames": 67,
+   "median": 0.79,
+   "p90": 0.83,
+   "lag": 0,
+   "amplitude": 0.92,
+   "correlation": 0.99
+  },
+  {
+   "part": "dabi_2",
+   "frames": 56,
+   "median": 0.76,
+   "p90": 0.84,
+   "lag": 0,
+   "amplitude": 0.88,
+   "correlation": 0.99
+  },
+  {
+   "part": "jijiao_2",
+   "frames": 88,
+   "median": 0.73,
+   "p90": 2.02,
+   "lag": 0,
+   "amplitude": 0.95,
+   "correlation": 1
+  },
+  {
+   "part": "yachi_1",
+   "frames": 48,
+   "median": 0.67,
+   "p90": 8.51,
+   "lag": 1,
+   "amplitude": 0.47,
+   "correlation": 0.86
+  },
+  {
+   "part": "zuiba_1",
+   "frames": 49,
+   "median": 0.65,
+   "p90": 5.09,
+   "lag": 0,
+   "amplitude": 0.6,
+   "correlation": 0.97
+  },
+  {
+   "part": "pifeng_3",
+   "frames": 82,
+   "median": 0.63,
+   "p90": 1.37,
+   "lag": 0,
+   "amplitude": 0.75,
+   "correlation": 0.89
+  },
+  {
+   "part": "erduo_1",
+   "frames": 91,
+   "median": 0.62,
+   "p90": 1.78,
+   "lag": 0,
+   "amplitude": 0.94,
+   "correlation": 0.99
+  },
+  {
+   "part": "pifeng_1",
+   "frames": 88,
+   "median": 0.61,
+   "p90": 1.78,
+   "lag": 0,
+   "amplitude": 0.96,
+   "correlation": 0.95
+  },
+  {
+   "part": "pifeng_6",
+   "frames": 32,
+   "median": 0.59,
+   "p90": 0.67,
+   "lag": 0,
+   "amplitude": 0.98,
+   "correlation": 1
+  },
+  {
+   "part": "quanzhang",
+   "frames": 75,
+   "median": 0.59,
+   "p90": 1.06,
+   "lag": 0,
+   "amplitude": 0.99,
+   "correlation": 1
+  },
+  {
+   "part": "shouzhi_3",
+   "frames": 89,
+   "median": 0.58,
+   "p90": 2.04,
+   "lag": 0,
+   "amplitude": 0.93,
+   "correlation": 0.99
+  },
+  {
+   "part": "zuijiao",
+   "frames": 42,
+   "median": 0.58,
+   "p90": 1.84,
+   "lag": 0,
+   "amplitude": 1.01,
+   "correlation": 0.93
+  },
+  {
+   "part": "shouzhi_1",
+   "frames": 88,
+   "median": 0.55,
+   "p90": 2.13,
+   "lag": 0,
+   "amplitude": 0.94,
+   "correlation": 0.99
+  },
+  {
+   "part": "shou_1",
+   "frames": 90,
+   "median": 0.49,
+   "p90": 2.13,
+   "lag": 0,
+   "amplitude": 0.95,
+   "correlation": 0.99
+  },
+  {
+   "part": "shouzhi_2",
+   "frames": 90,
+   "median": 0.46,
+   "p90": 2.06,
+   "lag": 0,
+   "amplitude": 0.95,
+   "correlation": 0.98
+  },
+  {
+   "part": "lian",
+   "frames": 38,
+   "median": 0.41,
+   "p90": 1.66,
+   "lag": 0,
+   "amplitude": 1.57,
+   "correlation": 0.64
+  },
+  {
+   "part": "kouzi_3",
+   "frames": 84,
+   "median": 0.38,
+   "p90": 10.95,
+   "lag": 9,
+   "amplitude": 0.18,
+   "correlation": 0.32
+  },
+  {
+   "part": "jijiao_1",
+   "frames": 89,
+   "median": 0.38,
+   "p90": 1.53,
+   "lag": 0,
+   "amplitude": 0.98,
+   "correlation": 1
+  },
+  {
+   "part": "kouzi_1",
+   "frames": 93,
+   "median": 0.35,
+   "p90": 2,
+   "lag": 0,
+   "amplitude": 0.91,
+   "correlation": 0.94
+  },
+  {
+   "part": "erduo_2",
+   "frames": 90,
+   "median": 0.35,
+   "p90": 1.72,
+   "lag": 0,
+   "amplitude": 1,
+   "correlation": 0.99
+  },
+  {
+   "part": "zuiba_2",
+   "frames": 39,
+   "median": 0.35,
+   "p90": 1.24,
+   "lag": 2,
+   "amplitude": 1.32,
+   "correlation": 0.61
+  },
+  {
+   "part": "yanbai_1",
+   "frames": 37,
+   "median": 0.25,
+   "p90": 1.73,
+   "lag": 0,
+   "amplitude": 1.67,
+   "correlation": 0.65
+  },
+  {
+   "part": "kouqiang",
+   "frames": 39,
+   "median": 0.24,
+   "p90": 1.44,
+   "lag": 0,
+   "amplitude": 1.63,
+   "correlation": 0.68
+  },
+  {
+   "part": "pifeng_7",
+   "frames": 24,
+   "median": 0.09,
+   "p90": 0.4,
+   "lag": 0,
+   "amplitude": 0.72,
+   "correlation": 0.56
+  },
+  {
+   "part": "yanbai_2",
+   "frames": 37,
+   "median": 0.08,
+   "p90": 1.55,
+   "lag": 0,
+   "amplitude": 1.43,
+   "correlation": 0.73
+  },
+  {
+   "part": "yanzhu_2",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "yanzhu_1",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  }
+ ],
+ "units": "part errors and frameError in % of figure height; lag in frames, positive = the build is late",
+ "silhouette": [
+  0.904,
+  0.897,
+  0.894,
+  0.896,
+  0.877,
+  0.886,
+  0.722,
+  0.751,
+  0.718,
+  0.762,
+  0.741,
+  0.792,
+  0.792,
+  0.8,
+  0.792,
+  0.801,
+  0.798,
+  0.803,
+  0.807,
+  0.798,
+  0.801,
+  0.806,
+  0.809,
+  0.813,
+  0.825,
+  0.828,
+  0.831,
+  0.833,
+  0.835,
+  0.838,
+  0.84,
+  0.841,
+  0.843,
+  0.844,
+  0.846,
+  0.847,
+  0.848,
+  0.849,
+  0.85,
+  0.851,
+  0.852,
+  0.853,
+  0.853,
+  0.854,
+  0.855,
+  0.855,
+  0.856,
+  0.856,
+  0.857,
+  0.857,
+  0.857,
+  0.858,
+  0.858,
+  0.858,
+  0.838,
+  0.845,
+  0.788,
+  0.805,
+  0.773,
+  0.775,
+  0.688,
+  0.786,
+  0.819,
+  0.733,
+  0.729,
+  0.671,
+  0.673,
+  0.681,
+  0.668,
+  0.667,
+  0.678,
+  0.68,
+  0.68,
+  0.716,
+  0.716,
+  0.846,
+  0.851,
+  0.851,
+  0.895,
+  0.895,
+  0.909,
+  0.909,
+  0.909,
+  0.913,
+  0.913,
+  0.906,
+  0.905,
+  0.905,
+  0.903,
+  0.903,
+  0.904,
+  0.905,
+  0.905,
+  0.905
+ ],
+ "note": "Thresholds are proposals (ADR-034). Look at compare.mp4; the numbers do not replace it."
+}

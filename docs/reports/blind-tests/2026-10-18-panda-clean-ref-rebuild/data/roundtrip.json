@@ -1,0 +1,73 @@
+{
+  "source": "builds/build-18-storage/panda_updated_rebuild.json",
+  "exported": "checks/delivery-r5/binary/Panda_Rebuilt.skel",
+  "thresholdPx": 0.5,
+  "sampling": "60 fps, native frameTime +1 microsecond for float32 key boundaries; final frame just before duration",
+  "results": [
+    {
+      "animation": "final",
+      "samples": 181,
+      "vertices": 210745,
+      "maxVertexDeviationPx": 0.0177074939177437,
+      "changedAttachments": 0,
+      "where": {
+        "frame60": 13,
+        "slot": "1_leg_R1",
+        "vertex": 6
+      },
+      "pass": true
+    },
+    {
+      "animation": "idle",
+      "samples": 61,
+      "vertices": 59651,
+      "maxVertexDeviationPx": 0.0177074939177437,
+      "changedAttachments": 0,
+      "where": {
+        "frame60": 13,
+        "slot": "1_leg_R1",
+        "vertex": 6
+      },
+      "pass": true
+    },
+    {
+      "animation": "idle_slow",
+      "samples": 71,
+      "vertices": 70381,
+      "maxVertexDeviationPx": 0.014327718005549968,
+      "changedAttachments": 0,
+      "where": {
+        "frame60": 20,
+        "slot": "1_leg_R1",
+        "vertex": 6
+      },
+      "pass": true
+    },
+    {
+      "animation": "wild",
+      "samples": 121,
+      "vertices": 10994,
+      "maxVertexDeviationPx": 0.011373488891804352,
+      "changedAttachments": 0,
+      "where": {
+        "frame60": 80,
+        "slot": "w_W",
+        "vertex": 47
+      },
+      "pass": true
+    },
+    {
+      "animation": "win",
+      "samples": 121,
+      "vertices": 141291,
+      "maxVertexDeviationPx": 0.012823093875275613,
+      "changedAttachments": 0,
+      "where": {
+        "frame60": 80,
+        "slot": "1_leg_L1",
+        "vertex": 54
+      },
+      "pass": true
+    }
+  ]
+}

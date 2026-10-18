@@ -87,7 +87,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
   autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
   autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]
-  autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]
+  autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file] [--reference-video=file]
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
@@ -168,11 +168,12 @@ async function characterCommand(args: string[]): Promise<boolean> {
     }
     case "review-video": {
       if (p.length !== 4 && p.length !== 5) throw new Error(characterUsage);
-      known("loops", "height", "font");
+      known("loops", "height", "font", "reference-video");
       const opts = {
         loops: numberFlag("loops"),
         height: numberFlag("height"),
         font: flags.get("font"),
+        referenceVideo: flags.get("reference-video") || undefined,
       };
       console.log(
         JSON.stringify(

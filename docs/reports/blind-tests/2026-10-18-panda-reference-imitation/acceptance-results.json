@@ -1,0 +1,5887 @@
+{
+  "structure": {
+    "artist": {
+      "bones": 65,
+      "slots": 44,
+      "attachments": {
+        "mesh": 42,
+        "region": 4
+      },
+      "meshVertices": 683,
+      "meshTriangles": 769,
+      "weightedMeshes": 7,
+      "meanInfluences": 1.7,
+      "ik": 0,
+      "transform": 0,
+      "path": 0,
+      "animations": {
+        "final": {
+          "duration": 3,
+          "boneTimelines": 132,
+          "boneKeys": 798,
+          "movingBoneTimelines": 130,
+          "slotTimelines": 69,
+          "deformTimelines": 41,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 2.041,
+          "movingKeys": 796
+        },
+        "idle": {
+          "duration": 1,
+          "boneTimelines": 100,
+          "boneKeys": 380,
+          "movingBoneTimelines": 97,
+          "slotTimelines": 59,
+          "deformTimelines": 39,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 3.887,
+          "movingKeys": 377
+        },
+        "idle_slow": {
+          "duration": 1.1667,
+          "boneTimelines": 100,
+          "boneKeys": 380,
+          "movingBoneTimelines": 97,
+          "slotTimelines": 57,
+          "deformTimelines": 39,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 3.331,
+          "movingKeys": 377
+        },
+        "wild": {
+          "duration": 2,
+          "boneTimelines": 56,
+          "boneKeys": 102,
+          "movingBoneTimelines": 16,
+          "slotTimelines": 61,
+          "deformTimelines": 13,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 1.938,
+          "movingKeys": 62
+        },
+        "win": {
+          "duration": 2,
+          "boneTimelines": 112,
+          "boneKeys": 476,
+          "movingBoneTimelines": 76,
+          "slotTimelines": 32,
+          "deformTimelines": 29,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 2.895,
+          "movingKeys": 440
+        }
+      }
+    },
+    "generated": {
+      "bones": 51,
+      "slots": 44,
+      "attachments": {
+        "mesh": 46
+      },
+      "meshVertices": 6062,
+      "meshTriangles": 9328,
+      "weightedMeshes": 46,
+      "meanInfluences": 1,
+      "ik": 0,
+      "transform": 0,
+      "path": 0,
+      "animations": {
+        "final": {
+          "duration": 3,
+          "boneTimelines": 139,
+          "boneKeys": 6782,
+          "movingBoneTimelines": 139,
+          "slotTimelines": 88,
+          "deformTimelines": 42,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 16.264,
+          "movingKeys": 6782
+        },
+        "idle": {
+          "duration": 1,
+          "boneTimelines": 127,
+          "boneKeys": 2821,
+          "movingBoneTimelines": 127,
+          "slotTimelines": 88,
+          "deformTimelines": 36,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 22.213,
+          "movingKeys": 2821
+        },
+        "idle_slow": {
+          "duration": 1.1667,
+          "boneTimelines": 127,
+          "boneKeys": 3276,
+          "movingBoneTimelines": 127,
+          "slotTimelines": 88,
+          "deformTimelines": 36,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 22.11,
+          "movingKeys": 3276
+        },
+        "wild": {
+          "duration": 2,
+          "boneTimelines": 118,
+          "boneKeys": 479,
+          "movingBoneTimelines": 118,
+          "slotTimelines": 88,
+          "deformTimelines": 4,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 2.03,
+          "movingKeys": 479
+        },
+        "win": {
+          "duration": 2,
+          "boneTimelines": 116,
+          "boneKeys": 3719,
+          "movingBoneTimelines": 116,
+          "slotTimelines": 88,
+          "deformTimelines": 21,
+          "drawOrder": true,
+          "events": false,
+          "keyDensity": 16.03,
+          "movingKeys": 3719
+        }
+      }
+    }
+  },
+  "engineering": {
+    "A2_setupPlacement": {
+      "maxPx": 0.008,
+      "perSlot": {
+        "2_tail": 0.007,
+        "2_body": 0.007,
+        "1_body": 0.008,
+        "2_leg_R1": 0.007,
+        "1_leg_R1": 0.007,
+        "1_leg_L1": 0.007,
+        "1_leg_R2": 0.007,
+        "1_leg_L2": 0.007,
+        "2_hand_R1": 0.007,
+        "1_hand_R1": 0.007,
+        "1_hand_L1": 0.007,
+        "2_hand_R2": 0.007,
+        "1_hand_R2": 0.007,
+        "1_hand_L2": 0.007,
+        "1_hand_R3": 0.007,
+        "1_hand_L3": 0.007,
+        "2_scarf": 0.006,
+        "1_scarf": 0.007,
+        "2_head": 0.006,
+        "1_head": 0.007,
+        "1_eyes": 0.007,
+        "2_ear_R": 0.006,
+        "1_ear_R": 0.007,
+        "2_ear_L": 0.007,
+        "1_ear_L": 0.007,
+        "1_nose": 0.007,
+        "2_hat": 0.008,
+        "1_hat": 0.006,
+        "3_hand_L1": 0.007,
+        "3_hand_R1": 0.007,
+        "3_hand_R3": 0.007,
+        "3_hand_L3": 0.007,
+        "3_leg_L1": 0.007,
+        "3_leg_L2": 0.007,
+        "3_head": 0.007,
+        "3_body": 0.007,
+        "3_leg_R1": 0.007,
+        "3_leg_R2": 0.007
+      }
+    },
+    "A1_imagesOnlyVsArtistSetup": {
+      "maxPx": 0.005,
+      "worst": [
+        [
+          "1_eyes",
+          0.005
+        ],
+        [
+          "2_tail",
+          0
+        ],
+        [
+          "2_body",
+          0
+        ],
+        [
+          "1_body",
+          0
+        ],
+        [
+          "2_leg_R1",
+          0
+        ],
+        [
+          "1_leg_R1",
+          0
+        ]
+      ],
+      "hiddenMaxPx": 0
+    },
+    "A4_loopSeam": {
+      "idle:artist": 238.175,
+      "idle:generated": 0.01,
+      "idle_slow:artist": 238.175,
+      "idle_slow:generated": 0.011
+    },
+    "A6_restPose": {
+      "final": {
+        "medianHw": 0.0003,
+        "p90Hw": 0.0005,
+        "slots": 23,
+        "worst": [
+          [
+            "1_hand_R3",
+            0.0005
+          ],
+          [
+            "1_hand_L3",
+            0.0005
+          ],
+          [
+            "1_eyes",
+            0.0005
+          ],
+          [
+            "1_nose",
+            0.0005
+          ],
+          [
+            "1_hand_R2",
+            0.0004
+          ],
+          [
+            "1_hand_L2",
+            0.0004
+          ]
+        ]
+      },
+      "idle": {
+        "medianHw": 0.0003,
+        "p90Hw": 0.0005,
+        "slots": 23,
+        "worst": [
+          [
+            "1_hand_R3",
+            0.0005
+          ],
+          [
+            "1_hand_L3",
+            0.0005
+          ],
+          [
+            "1_eyes",
+            0.0005
+          ],
+          [
+            "1_nose",
+            0.0005
+          ],
+          [
+            "1_hand_R2",
+            0.0004
+          ],
+          [
+            "1_hand_L2",
+            0.0004
+          ]
+        ]
+      },
+      "idle_slow": {
+        "medianHw": 0.0002,
+        "p90Hw": 0.0004,
+        "slots": 23,
+        "worst": [
+          [
+            "1_hand_R3",
+            0.0004
+          ],
+          [
+            "1_hand_L3",
+            0.0004
+          ],
+          [
+            "1_eyes",
+            0.0004
+          ],
+          [
+            "1_nose",
+            0.0004
+          ],
+          [
+            "1_hand_R2",
+            0.0003
+          ],
+          [
+            "1_head",
+            0.0003
+          ]
+        ]
+      },
+      "wild": {
+        "medianHw": 0,
+        "p90Hw": 0,
+        "slots": 0,
+        "worst": []
+      },
+      "win": {
+        "medianHw": 0.0002,
+        "p90Hw": 0.0003,
+        "slots": 19,
+        "worst": [
+          [
+            "1_hand_L3",
+            0.0005
+          ],
+          [
+            "1_hand_L2",
+            0.0003
+          ],
+          [
+            "1_eyes",
+            0.0003
+          ],
+          [
+            "1_ear_L",
+            0.0003
+          ],
+          [
+            "1_nose",
+            0.0003
+          ],
+          [
+            "1_hat",
+            0.0003
+          ]
+        ]
+      }
+    },
+    "oneShots": [
+      "final",
+      "wild",
+      "win"
+    ]
+  },
+  "deformation": {
+    "final": {
+      "artist": {
+        "inversions": {
+          "2_hat": 9,
+          "1_body": 5,
+          "1_leg_L1": 5,
+          "1_nose": 8,
+          "1_hat": 7,
+          "3_body": 1,
+          "1_hand_R3": 2,
+          "2_scarf": 28,
+          "3_hand_L1": 1,
+          "1_scarf": 1,
+          "3_head": 1,
+          "1_eyes": 9,
+          "1_ear_R": 1,
+          "1_hand_L3": 17,
+          "1_ear_L": 2,
+          "1_leg_R1": 3
+        },
+        "visibleInversions": {
+          "2_hat": 8,
+          "1_body": 5,
+          "1_leg_L1": 5,
+          "1_nose": 8,
+          "1_hat": 5,
+          "3_body": 1,
+          "1_hand_R3": 2,
+          "2_scarf": 28,
+          "3_hand_L1": 1,
+          "1_scarf": 1,
+          "3_head": 1,
+          "1_eyes": 9,
+          "1_ear_R": 1,
+          "1_hand_L3": 17,
+          "1_ear_L": 2,
+          "1_leg_R1": 3
+        },
+        "maxCharacterStretch": {
+          "slot": "1_nose",
+          "value": 6.111
+        },
+        "topStretch": [
+          [
+            "1_nose",
+            6.111
+          ],
+          [
+            "2_hat",
+            5.649
+          ],
+          [
+            "1_body",
+            4.989
+          ],
+          [
+            "1_leg_R1",
+            2.354
+          ],
+          [
+            "1_hat",
+            2.203
+          ],
+          [
+            "1_eyes",
+            1.867
+          ]
+        ]
+      },
+      "generated": {
+        "inversions": {
+          "2_hat": 40,
+          "1_nose": 44,
+          "1_body": 28,
+          "1_leg_L1": 66,
+          "1_hat": 27,
+          "3_body": 2,
+          "1_hand_R3": 222,
+          "2_scarf": 222,
+          "3_hand_L1": 4,
+          "2_head": 1,
+          "1_scarf": 7,
+          "1_leg_R2": 1,
+          "3_head": 2,
+          "1_hand_R1": 1,
+          "1_eyes": 23,
+          "1_ear_R": 24,
+          "1_hand_L3": 222,
+          "1_ear_L": 29,
+          "1_leg_R1": 42
+        },
+        "visibleInversions": {
+          "2_hat": 33,
+          "1_nose": 44,
+          "1_body": 26,
+          "1_leg_L1": 61,
+          "1_hat": 27,
+          "1_hand_R3": 209,
+          "3_body": 2,
+          "2_scarf": 219,
+          "3_hand_L1": 4,
+          "2_head": 1,
+          "1_scarf": 7,
+          "3_head": 1,
+          "1_eyes": 23,
+          "1_ear_R": 23,
+          "1_hand_L3": 215,
+          "1_ear_L": 27,
+          "1_leg_R1": 40
+        },
+        "maxCharacterStretch": {
+          "slot": "1_hat",
+          "value": 52.38
+        },
+        "topStretch": [
+          [
+            "1_hat",
+            52.38
+          ],
+          [
+            "1_body",
+            6.642
+          ],
+          [
+            "2_hat",
+            5.726
+          ],
+          [
+            "1_nose",
+            3.927
+          ],
+          [
+            "1_leg_R1",
+            2.364
+          ],
+          [
+            "1_leg_L1",
+            1.892
+          ]
+        ]
+      }
+    },
+    "idle": {
+      "artist": {
+        "inversions": {
+          "2_hat": 9,
+          "1_body": 5,
+          "1_leg_L1": 5,
+          "1_nose": 8,
+          "1_hat": 7,
+          "3_body": 1,
+          "1_hand_R3": 1,
+          "2_scarf": 28,
+          "3_hand_L1": 1,
+          "1_scarf": 1,
+          "3_head": 1
+        },
+        "visibleInversions": {
+          "2_hat": 8,
+          "1_body": 5,
+          "1_leg_L1": 5,
+          "1_nose": 8,
+          "1_hat": 5,
+          "3_body": 1,
+          "1_hand_R3": 1,
+          "2_scarf": 28,
+          "3_hand_L1": 1,
+          "1_scarf": 1,
+          "3_head": 1
+        },
+        "maxCharacterStretch": {
+          "slot": "1_nose",
+          "value": 6.111
+        },
+        "topStretch": [
+          [
+            "1_nose",
+            6.111
+          ],
+          [
+            "2_hat",
+            5.649
+          ],
+          [
+            "1_body",
+            4.989
+          ],
+          [
+            "1_hat",
+            2.203
+          ],
+          [
+            "3_head",
+            1.707
+          ],
+          [
+            "3_leg_R1",
+            1.705
+          ]
+        ]
+      },
+      "generated": {
+        "inversions": {
+          "2_hat": 40,
+          "1_nose": 44,
+          "1_body": 28,
+          "1_leg_L1": 66,
+          "1_hat": 27,
+          "3_body": 2,
+          "1_hand_R3": 16,
+          "2_scarf": 222,
+          "3_hand_L1": 4,
+          "2_head": 1,
+          "1_scarf": 7,
+          "1_leg_R2": 1,
+          "3_head": 2,
+          "1_hand_R1": 1,
+          "1_eyes2": 11
+        },
+        "visibleInversions": {
+          "2_hat": 33,
+          "1_nose": 44,
+          "1_body": 26,
+          "1_leg_L1": 61,
+          "1_hat": 27,
+          "1_hand_R3": 7,
+          "3_body": 2,
+          "2_scarf": 219,
+          "3_hand_L1": 4,
+          "2_head": 1,
+          "1_scarf": 7,
+          "3_head": 1,
+          "1_eyes2": 8
+        },
+        "maxCharacterStretch": {
+          "slot": "1_hat",
+          "value": 52.38
+        },
+        "topStretch": [
+          [
+            "1_hat",
+            52.38
+          ],
+          [
+            "1_body",
+            6.642
+          ],
+          [
+            "2_hat",
+            5.726
+          ],
+          [
+            "1_nose",
+            3.927
+          ],
+          [
+            "2_leg_R1",
+            1.752
+          ],
+          [
+            "3_head",
+            1.657
+          ]
+        ]
+      }
+    },
+    "idle_slow": {
+      "artist": {
+        "inversions": {
+          "2_hat": 9,
+          "1_body": 5,
+          "1_leg_L1": 5,
+          "1_nose": 8,
+          "1_hat": 7,
+          "3_body": 1,
+          "1_hand_R3": 1,
+          "2_scarf": 28,
+          "1_scarf": 1,
+          "3_head": 1
+        },
+        "visibleInversions": {
+          "2_hat": 8,
+          "1_body": 5,
+          "1_leg_L1": 5,
+          "1_nose": 8,
+          "1_hat": 5,
+          "3_body": 1,
+          "1_hand_R3": 1,
+          "2_scarf": 28,
+          "1_scarf": 1,
+          "3_head": 1
+        },
+        "maxCharacterStretch": {
+          "slot": "1_nose",
+          "value": 6.132
+        },
+        "topStretch": [
+          [
+            "1_nose",
+            6.132
+          ],
+          [
+            "2_hat",
+            5.603
+          ],
+          [
+            "1_body",
+            4.99
+          ],
+          [
+            "1_hat",
+            2.185
+          ],
+          [
+            "3_leg_R1",
+            1.706
+          ],
+          [
+            "1_eyes",
+            1.573
+          ]
+        ]
+      },
+      "generated": {
+        "inversions": {
+          "2_hat": 40,
+          "1_body": 28,
+          "1_leg_L1": 66,
+          "1_nose": 44,
+          "1_hat": 27,
+          "3_body": 3,
+          "1_hand_R3": 16,
+          "2_scarf": 222,
+          "2_head": 1,
+          "1_scarf": 7,
+          "1_leg_R2": 1,
+          "3_head": 2,
+          "1_hand_R1": 1,
+          "3_hand_L1": 4,
+          "1_eyes2": 11
+        },
+        "visibleInversions": {
+          "2_hat": 33,
+          "1_body": 26,
+          "1_leg_L1": 61,
+          "1_nose": 44,
+          "1_hat": 27,
+          "1_hand_R3": 7,
+          "3_body": 2,
+          "2_scarf": 219,
+          "2_head": 1,
+          "1_scarf": 7,
+          "3_head": 1,
+          "3_hand_L1": 4,
+          "1_eyes2": 8
+        },
+        "maxCharacterStretch": {
+          "slot": "1_hat",
+          "value": 53.231
+        },
+        "topStretch": [
+          [
+            "1_hat",
+            53.231
+          ],
+          [
+            "1_body",
+            6.643
+          ],
+          [
+            "2_hat",
+            5.673
+          ],
+          [
+            "1_nose",
+            3.885
+          ],
+          [
+            "2_leg_R1",
+            1.752
+          ],
+          [
+            "3_leg_R1",
+            1.609
+          ]
+        ]
+      }
+    },
+    "wild": {
+      "artist": {
+        "inversions": {},
+        "visibleInversions": {},
+        "maxCharacterStretch": {
+          "slot": "w_L",
+          "value": 1.027
+        },
+        "topStretch": [
+          [
+            "w_L",
+            1.027
+          ],
+          [
+            "w_D",
+            1.027
+          ],
+          [
+            "w_I",
+            1.027
+          ],
+          [
+            "w_W",
+            1.027
+          ]
+        ]
+      },
+      "generated": {
+        "inversions": {},
+        "visibleInversions": {},
+        "maxCharacterStretch": {
+          "slot": "w_W",
+          "value": 1.027
+        },
+        "topStretch": [
+          [
+            "w_W",
+            1.027
+          ],
+          [
+            "w_D",
+            1.027
+          ],
+          [
+            "w_L",
+            1.027
+          ],
+          [
+            "w_I",
+            1.027
+          ]
+        ]
+      }
+    },
+    "win": {
+      "artist": {
+        "inversions": {
+          "1_hat": 3,
+          "1_nose": 7,
+          "1_eyes": 9,
+          "1_ear_R": 1,
+          "1_hand_R3": 2,
+          "1_hand_L3": 17,
+          "1_ear_L": 2,
+          "1_leg_R1": 3,
+          "1_body": 1
+        },
+        "visibleInversions": {
+          "1_nose": 7,
+          "1_eyes": 9,
+          "1_ear_R": 1,
+          "1_hat": 1,
+          "1_hand_R3": 2,
+          "1_hand_L3": 17,
+          "1_ear_L": 2,
+          "1_leg_R1": 3,
+          "1_body": 1
+        },
+        "maxCharacterStretch": {
+          "slot": "1_nose",
+          "value": 4.709
+        },
+        "topStretch": [
+          [
+            "1_nose",
+            4.709
+          ],
+          [
+            "1_leg_R1",
+            2.312
+          ],
+          [
+            "1_hat",
+            2.003
+          ],
+          [
+            "1_eyes",
+            1.867
+          ],
+          [
+            "1_leg_L1",
+            1.263
+          ],
+          [
+            "1_body",
+            1.237
+          ]
+        ]
+      },
+      "generated": {
+        "inversions": {
+          "1_nose": 25,
+          "1_eyes": 23,
+          "1_ear_R": 24,
+          "1_hat": 9,
+          "1_hand_R3": 222,
+          "1_hand_L3": 222,
+          "1_ear_L": 29,
+          "1_leg_R1": 42,
+          "1_leg_L1": 1
+        },
+        "visibleInversions": {
+          "1_nose": 23,
+          "1_eyes": 23,
+          "1_ear_R": 23,
+          "1_hat": 9,
+          "1_hand_R3": 209,
+          "1_hand_L3": 215,
+          "1_ear_L": 27,
+          "1_leg_R1": 40,
+          "1_leg_L1": 1
+        },
+        "maxCharacterStretch": {
+          "slot": "1_hat",
+          "value": 8.071
+        },
+        "topStretch": [
+          [
+            "1_hat",
+            8.071
+          ],
+          [
+            "1_nose",
+            3.17
+          ],
+          [
+            "1_leg_R1",
+            2.321
+          ],
+          [
+            "1_leg_L1",
+            1.892
+          ],
+          [
+            "1_body",
+            1.504
+          ],
+          [
+            "1_head",
+            1.129
+          ]
+        ]
+      }
+    }
+  },
+  "motion": {
+    "unitHeadWidthPx": 183.6,
+    "final": {
+      "artistMoving": 40,
+      "generatedMoving": 40,
+      "bothMoving": 40,
+      "recall": 1,
+      "precision": 1,
+      "amplitudeWithinX2": 1,
+      "amplitudeRows": 40,
+      "medianRatio": 1,
+      "artistOnly": [],
+      "generatedOnly": [],
+      "rows": [
+        {
+          "slot": "2_tail",
+          "artist": {
+            "visible": true,
+            "peakPx": 168.23,
+            "peakFrame": 27,
+            "deformPx": 74.35,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 171.62,
+            "peakFrame": 27,
+            "deformPx": 71.41,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 41.41,
+            "peakFrame": 16,
+            "deformPx": 43.5,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 44.33,
+            "peakFrame": 16,
+            "deformPx": 45.86,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.07,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 40.87,
+            "peakFrame": 5,
+            "deformPx": 101.16,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 48.18,
+            "peakFrame": 5,
+            "deformPx": 94.06,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.18,
+          "displacementCorrelation": 0.995
+        },
+        {
+          "slot": "2_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 150.46,
+            "peakFrame": 17,
+            "deformPx": 49.3,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 149.12,
+            "peakFrame": 17,
+            "deformPx": 48.03,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 47.77,
+            "peakFrame": 24,
+            "deformPx": 88.31,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 44.41,
+            "peakFrame": 24,
+            "deformPx": 92.7,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.93,
+          "displacementCorrelation": 0.968
+        },
+        {
+          "slot": "1_leg_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 188.75,
+            "peakFrame": 18,
+            "deformPx": 105.87,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 180.92,
+            "peakFrame": 18,
+            "deformPx": 97.17,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.96,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_leg_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 95.63,
+            "peakFrame": 24,
+            "deformPx": 68.44,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 96.78,
+            "peakFrame": 24,
+            "deformPx": 65.89,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.01,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 251.24,
+            "peakFrame": 18,
+            "deformPx": 64.29,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 249.5,
+            "peakFrame": 18,
+            "deformPx": 63.05,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 123.06,
+            "peakFrame": 9,
+            "deformPx": 59.36,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 124.91,
+            "peakFrame": 9,
+            "deformPx": 53.9,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_hand_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 139.82,
+            "peakFrame": 8,
+            "deformPx": 76.45,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 139.31,
+            "peakFrame": 8,
+            "deformPx": 68.2,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 166.27,
+            "peakFrame": 9,
+            "deformPx": 84.1,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 162.36,
+            "peakFrame": 9,
+            "deformPx": 84.99,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 163.9,
+            "peakFrame": 72,
+            "deformPx": 107.37,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 155.88,
+            "peakFrame": 72,
+            "deformPx": 103.8,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.95,
+          "displacementCorrelation": 0.998
+        },
+        {
+          "slot": "1_hand_R3",
+          "artist": {
+            "visible": true,
+            "peakPx": 245.94,
+            "peakFrame": 9,
+            "deformPx": 78.96,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 241.69,
+            "peakFrame": 9,
+            "deformPx": 72.77,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_hand_L3",
+          "artist": {
+            "visible": true,
+            "peakPx": 272.67,
+            "peakFrame": 71,
+            "deformPx": 98.92,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 262.78,
+            "peakFrame": 71,
+            "deformPx": 77.63,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.96,
+          "displacementCorrelation": 0.998
+        },
+        {
+          "slot": "2_scarf",
+          "artist": {
+            "visible": true,
+            "peakPx": 163.07,
+            "peakFrame": 20,
+            "deformPx": 99.03,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 168.97,
+            "peakFrame": 20,
+            "deformPx": 107.85,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.04,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_scarf",
+          "artist": {
+            "visible": true,
+            "peakPx": 79.44,
+            "peakFrame": 5,
+            "deformPx": 53.28,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 65.1,
+            "peakFrame": 5,
+            "deformPx": 53.46,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.82,
+          "displacementCorrelation": 0.995
+        },
+        {
+          "slot": "2_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 182.85,
+            "peakFrame": 19,
+            "deformPx": 78.66,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 178.79,
+            "peakFrame": 9,
+            "deformPx": 70.57,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 189.04,
+            "peakFrame": 8,
+            "deformPx": 74.36,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 185.73,
+            "peakFrame": 8,
+            "deformPx": 73.63,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 0.994
+        },
+        {
+          "slot": "1_eyes2",
+          "artist": {
+            "visible": true,
+            "peakPx": 109.99,
+            "peakFrame": 36,
+            "deformPx": 58.07,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 110.42,
+            "peakFrame": 36,
+            "deformPx": 52.44,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_eyes",
+          "artist": {
+            "visible": true,
+            "peakPx": 271.43,
+            "peakFrame": 8,
+            "deformPx": 50.42,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 265.98,
+            "peakFrame": 8,
+            "deformPx": 49.7,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "2_ear_R",
+          "artist": {
+            "visible": true,
+            "peakPx": 264.23,
+            "peakFrame": 9,
+            "deformPx": 37.7,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 263.3,
+            "peakFrame": 9,
+            "deformPx": 33.04,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_ear_R",
+          "artist": {
+            "visible": true,
+            "peakPx": 117.44,
+            "peakFrame": 4,
+            "deformPx": 37.14,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 117.62,
+            "peakFrame": 4,
+            "deformPx": 33,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_ear_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 289.84,
+            "peakFrame": 9,
+            "deformPx": 42.91,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 287.29,
+            "peakFrame": 9,
+            "deformPx": 43.32,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_ear_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 150.71,
+            "peakFrame": 4,
+            "deformPx": 37.33,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 150.81,
+            "peakFrame": 4,
+            "deformPx": 39.09,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 0.92
+        },
+        {
+          "slot": "1_nose",
+          "artist": {
+            "visible": true,
+            "peakPx": 246.36,
+            "peakFrame": 8,
+            "deformPx": 37.72,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 244.26,
+            "peakFrame": 8,
+            "deformPx": 33.59,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hat",
+          "artist": {
+            "visible": true,
+            "peakPx": 281.63,
+            "peakFrame": 19,
+            "deformPx": 51.29,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 280.05,
+            "peakFrame": 19,
+            "deformPx": 50.38,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hat",
+          "artist": {
+            "visible": true,
+            "peakPx": 311.13,
+            "peakFrame": 9,
+            "deformPx": 34.19,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 311.51,
+            "peakFrame": 9,
+            "deformPx": 180.96,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 143.5,
+            "peakFrame": 29,
+            "deformPx": 76.86,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 140.39,
+            "peakFrame": 29,
+            "deformPx": 81.58,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 81.65,
+            "peakFrame": 29,
+            "deformPx": 69.77,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 83.14,
+            "peakFrame": 29,
+            "deformPx": 68.61,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_R3",
+          "artist": {
+            "visible": true,
+            "peakPx": 164.66,
+            "peakFrame": 29,
+            "deformPx": 66.87,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 164.31,
+            "peakFrame": 29,
+            "deformPx": 66.52,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_L3",
+          "artist": {
+            "visible": true,
+            "peakPx": 211.82,
+            "peakFrame": 29,
+            "deformPx": 82.21,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 209.39,
+            "peakFrame": 29,
+            "deformPx": 70.27,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_leg_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_L2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 125.3,
+            "peakFrame": 29,
+            "deformPx": 101.63,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 115.31,
+            "peakFrame": 29,
+            "deformPx": 97.2,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.92,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 44.9,
+            "peakFrame": 25,
+            "deformPx": 71.1,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 49.27,
+            "peakFrame": 25,
+            "deformPx": 64.26,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.1,
+          "displacementCorrelation": 0.985
+        },
+        {
+          "slot": "3_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 86.86,
+            "peakFrame": 18,
+            "deformPx": 117.19,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 75.66,
+            "peakFrame": 18,
+            "deformPx": 129.21,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.87,
+          "displacementCorrelation": 0.984
+        },
+        {
+          "slot": "3_leg_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 146.34,
+            "peakFrame": 18,
+            "deformPx": 80.4,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 144.56,
+            "peakFrame": 18,
+            "deformPx": 75.37,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "all_shadow",
+          "artist": {
+            "visible": true,
+            "peakPx": 86.34,
+            "peakFrame": 16,
+            "deformPx": 38.94,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 86.29,
+            "peakFrame": 16,
+            "deformPx": 33.37,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_D",
+          "artist": {
+            "visible": true,
+            "peakPx": 225.97,
+            "peakFrame": 73,
+            "deformPx": 76,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 226.01,
+            "peakFrame": 73,
+            "deformPx": 75.94,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 267.4,
+            "peakFrame": 74,
+            "deformPx": 87,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 267.4,
+            "peakFrame": 74,
+            "deformPx": 86.95,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_I",
+          "artist": {
+            "visible": true,
+            "peakPx": 263.47,
+            "peakFrame": 74,
+            "deformPx": 89.03,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 263.5,
+            "peakFrame": 74,
+            "deformPx": 88.98,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_W",
+          "artist": {
+            "visible": true,
+            "peakPx": 299.14,
+            "peakFrame": 76,
+            "deformPx": 136.5,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 299.26,
+            "peakFrame": 76,
+            "deformPx": 136.49,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        }
+      ]
+    },
+    "idle": {
+      "artistMoving": 36,
+      "generatedMoving": 36,
+      "bothMoving": 36,
+      "recall": 1,
+      "precision": 1,
+      "amplitudeWithinX2": 1,
+      "amplitudeRows": 36,
+      "medianRatio": 0.99,
+      "artistOnly": [],
+      "generatedOnly": [],
+      "rows": [
+        {
+          "slot": "2_tail",
+          "artist": {
+            "visible": true,
+            "peakPx": 168.23,
+            "peakFrame": 27,
+            "deformPx": 74.35,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 171.62,
+            "peakFrame": 27,
+            "deformPx": 71.41,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 0.914
+        },
+        {
+          "slot": "2_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 41.41,
+            "peakFrame": 16,
+            "deformPx": 43.5,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 44.33,
+            "peakFrame": 16,
+            "deformPx": 45.86,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.07,
+          "displacementCorrelation": 0.998
+        },
+        {
+          "slot": "1_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 40.87,
+            "peakFrame": 5,
+            "deformPx": 101.16,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 48.18,
+            "peakFrame": 5,
+            "deformPx": 94.06,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.18,
+          "displacementCorrelation": 0.998
+        },
+        {
+          "slot": "2_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 150.46,
+            "peakFrame": 17,
+            "deformPx": 49.3,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 149.12,
+            "peakFrame": 17,
+            "deformPx": 48.03,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 47.77,
+            "peakFrame": 24,
+            "deformPx": 65.72,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 44.41,
+            "peakFrame": 24,
+            "deformPx": 69.79,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.93,
+          "displacementCorrelation": 0.997
+        },
+        {
+          "slot": "1_leg_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 188.75,
+            "peakFrame": 18,
+            "deformPx": 105.87,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 180.92,
+            "peakFrame": 18,
+            "deformPx": 97.17,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.96,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 95.63,
+            "peakFrame": 24,
+            "deformPx": 68.44,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 96.78,
+            "peakFrame": 24,
+            "deformPx": 65.89,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.01,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 251.24,
+            "peakFrame": 18,
+            "deformPx": 64.29,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 249.5,
+            "peakFrame": 18,
+            "deformPx": 63.05,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 123.06,
+            "peakFrame": 9,
+            "deformPx": 59.36,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 124.91,
+            "peakFrame": 9,
+            "deformPx": 53.9,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 139.82,
+            "peakFrame": 8,
+            "deformPx": 51.06,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 139.31,
+            "peakFrame": 8,
+            "deformPx": 49.45,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 166.27,
+            "peakFrame": 9,
+            "deformPx": 82.1,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 162.36,
+            "peakFrame": 9,
+            "deformPx": 84.99,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 146.49,
+            "peakFrame": 5,
+            "deformPx": 33.76,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 118.9,
+            "peakFrame": 4,
+            "deformPx": 27.8,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.81,
+          "displacementCorrelation": 0.996
+        },
+        {
+          "slot": "1_hand_R3",
+          "artist": {
+            "visible": true,
+            "peakPx": 245.94,
+            "peakFrame": 9,
+            "deformPx": 59.09,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 241.69,
+            "peakFrame": 9,
+            "deformPx": 58.61,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_L3",
+          "artist": {
+            "visible": true,
+            "peakPx": 250.78,
+            "peakFrame": 9,
+            "deformPx": 28.98,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 250.26,
+            "peakFrame": 9,
+            "deformPx": 26.87,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_scarf",
+          "artist": {
+            "visible": true,
+            "peakPx": 163.07,
+            "peakFrame": 20,
+            "deformPx": 99.03,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 168.97,
+            "peakFrame": 20,
+            "deformPx": 107.85,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.04,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_scarf",
+          "artist": {
+            "visible": true,
+            "peakPx": 79.44,
+            "peakFrame": 5,
+            "deformPx": 53.28,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 65.1,
+            "peakFrame": 5,
+            "deformPx": 53.46,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.82,
+          "displacementCorrelation": 0.996
+        },
+        {
+          "slot": "2_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 182.85,
+            "peakFrame": 19,
+            "deformPx": 78.66,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 178.79,
+            "peakFrame": 9,
+            "deformPx": 70.57,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 189.04,
+            "peakFrame": 8,
+            "deformPx": 68.53,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 185.73,
+            "peakFrame": 8,
+            "deformPx": 64.55,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_eyes2",
+          "artist": {
+            "visible": true,
+            "peakPx": 87.84,
+            "peakFrame": 30,
+            "deformPx": 50.32,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 72.4,
+            "peakFrame": 29,
+            "deformPx": 34.14,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.82,
+          "displacementCorrelation": 0.795
+        },
+        {
+          "slot": "1_eyes",
+          "artist": {
+            "visible": true,
+            "peakPx": 271.43,
+            "peakFrame": 8,
+            "deformPx": 50.32,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 265.98,
+            "peakFrame": 8,
+            "deformPx": 44.18,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_ear_R",
+          "artist": {
+            "visible": true,
+            "peakPx": 264.23,
+            "peakFrame": 9,
+            "deformPx": 37.7,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 263.3,
+            "peakFrame": 9,
+            "deformPx": 33.04,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_ear_R",
+          "artist": {
+            "visible": true,
+            "peakPx": 117.44,
+            "peakFrame": 4,
+            "deformPx": 17.04,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 117.62,
+            "peakFrame": 4,
+            "deformPx": 15.91,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_ear_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 289.84,
+            "peakFrame": 9,
+            "deformPx": 42.91,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 287.29,
+            "peakFrame": 9,
+            "deformPx": 43.32,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 0.906
+        },
+        {
+          "slot": "1_ear_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 150.71,
+            "peakFrame": 4,
+            "deformPx": 22.24,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 150.81,
+            "peakFrame": 4,
+            "deformPx": 22.14,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 0.88
+        },
+        {
+          "slot": "1_nose",
+          "artist": {
+            "visible": true,
+            "peakPx": 246.36,
+            "peakFrame": 8,
+            "deformPx": 37.72,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 244.26,
+            "peakFrame": 8,
+            "deformPx": 33.59,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hat",
+          "artist": {
+            "visible": true,
+            "peakPx": 281.63,
+            "peakFrame": 19,
+            "deformPx": 51.29,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 280.05,
+            "peakFrame": 19,
+            "deformPx": 50.38,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hat",
+          "artist": {
+            "visible": true,
+            "peakPx": 311.13,
+            "peakFrame": 9,
+            "deformPx": 34.19,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 311.51,
+            "peakFrame": 9,
+            "deformPx": 180.96,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 143.5,
+            "peakFrame": 29,
+            "deformPx": 76.86,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 140.39,
+            "peakFrame": 29,
+            "deformPx": 81.58,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 81.65,
+            "peakFrame": 29,
+            "deformPx": 69.77,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 83.14,
+            "peakFrame": 29,
+            "deformPx": 68.61,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_R3",
+          "artist": {
+            "visible": true,
+            "peakPx": 164.66,
+            "peakFrame": 29,
+            "deformPx": 66.87,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 164.31,
+            "peakFrame": 29,
+            "deformPx": 66.52,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_L3",
+          "artist": {
+            "visible": true,
+            "peakPx": 211.82,
+            "peakFrame": 29,
+            "deformPx": 82.21,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 209.39,
+            "peakFrame": 29,
+            "deformPx": 70.27,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_leg_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_L2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 125.3,
+            "peakFrame": 29,
+            "deformPx": 101.63,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 115.31,
+            "peakFrame": 29,
+            "deformPx": 97.2,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.92,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 44.9,
+            "peakFrame": 25,
+            "deformPx": 71.1,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 49.27,
+            "peakFrame": 25,
+            "deformPx": 64.26,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.1,
+          "displacementCorrelation": 0.979
+        },
+        {
+          "slot": "3_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 86.86,
+            "peakFrame": 18,
+            "deformPx": 117.19,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 75.66,
+            "peakFrame": 18,
+            "deformPx": 129.21,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.87,
+          "displacementCorrelation": 0.974
+        },
+        {
+          "slot": "3_leg_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 146.34,
+            "peakFrame": 18,
+            "deformPx": 80.4,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 144.56,
+            "peakFrame": 18,
+            "deformPx": 75.37,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "all_shadow",
+          "artist": {
+            "visible": true,
+            "peakPx": 86.34,
+            "peakFrame": 16,
+            "deformPx": 0,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 86.29,
+            "peakFrame": 16,
+            "deformPx": 0.01,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_D",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_L",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_I",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_W",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        }
+      ]
+    },
+    "idle_slow": {
+      "artistMoving": 36,
+      "generatedMoving": 36,
+      "bothMoving": 36,
+      "recall": 1,
+      "precision": 1,
+      "amplitudeWithinX2": 1,
+      "amplitudeRows": 36,
+      "medianRatio": 0.99,
+      "artistOnly": [],
+      "generatedOnly": [],
+      "rows": [
+        {
+          "slot": "2_tail",
+          "artist": {
+            "visible": true,
+            "peakPx": 157.23,
+            "peakFrame": 30,
+            "deformPx": 75.32,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 160.55,
+            "peakFrame": 30,
+            "deformPx": 72.26,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 0.918
+        },
+        {
+          "slot": "2_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 53.54,
+            "peakFrame": 18,
+            "deformPx": 44.94,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 56.46,
+            "peakFrame": 18,
+            "deformPx": 47.38,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.05,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 44.36,
+            "peakFrame": 24,
+            "deformPx": 101.23,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 47.85,
+            "peakFrame": 24,
+            "deformPx": 94.05,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.08,
+          "displacementCorrelation": 0.991
+        },
+        {
+          "slot": "2_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 166.41,
+            "peakFrame": 20,
+            "deformPx": 48.9,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 165.05,
+            "peakFrame": 20,
+            "deformPx": 47.56,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 65.43,
+            "peakFrame": 27,
+            "deformPx": 66.05,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 61.9,
+            "peakFrame": 27,
+            "deformPx": 70.15,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.95,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 194.24,
+            "peakFrame": 21,
+            "deformPx": 104.83,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 186.62,
+            "peakFrame": 21,
+            "deformPx": 96.38,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.96,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_leg_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 113.39,
+            "peakFrame": 27,
+            "deformPx": 72.47,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 114.52,
+            "peakFrame": 27,
+            "deformPx": 70.08,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.01,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 256.53,
+            "peakFrame": 21,
+            "deformPx": 61.48,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 254.87,
+            "peakFrame": 21,
+            "deformPx": 62.04,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 105.68,
+            "peakFrame": 11,
+            "deformPx": 59.32,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 107.62,
+            "peakFrame": 11,
+            "deformPx": 53.9,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 127.82,
+            "peakFrame": 11,
+            "deformPx": 52.19,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 121.28,
+            "peakFrame": 10,
+            "deformPx": 50.25,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.95,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 150.73,
+            "peakFrame": 11,
+            "deformPx": 81.97,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 146.69,
+            "peakFrame": 11,
+            "deformPx": 85.07,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.97,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 120.32,
+            "peakFrame": 27,
+            "deformPx": 34.06,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 118.37,
+            "peakFrame": 27,
+            "deformPx": 28.28,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_R3",
+          "artist": {
+            "visible": true,
+            "peakPx": 231.29,
+            "peakFrame": 11,
+            "deformPx": 60.02,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 227.2,
+            "peakFrame": 11,
+            "deformPx": 59.47,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hand_L3",
+          "artist": {
+            "visible": true,
+            "peakPx": 234.79,
+            "peakFrame": 11,
+            "deformPx": 29.42,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 234.34,
+            "peakFrame": 11,
+            "deformPx": 27.53,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_scarf",
+          "artist": {
+            "visible": true,
+            "peakPx": 154.98,
+            "peakFrame": 23,
+            "deformPx": 99.22,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 160.91,
+            "peakFrame": 23,
+            "deformPx": 108.06,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.04,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_scarf",
+          "artist": {
+            "visible": true,
+            "peakPx": 55.86,
+            "peakFrame": 6,
+            "deformPx": 53.85,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 55.6,
+            "peakFrame": 6,
+            "deformPx": 53.84,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "2_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 178.11,
+            "peakFrame": 22,
+            "deformPx": 79.14,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 171.2,
+            "peakFrame": 22,
+            "deformPx": 71.03,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.96,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 175.17,
+            "peakFrame": 10,
+            "deformPx": 68.74,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 171.87,
+            "peakFrame": 10,
+            "deformPx": 64.8,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_eyes2",
+          "artist": {
+            "visible": true,
+            "peakPx": 78.74,
+            "peakFrame": 35,
+            "deformPx": 50.73,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 66.26,
+            "peakFrame": 34,
+            "deformPx": 37.46,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.84,
+          "displacementCorrelation": 0.817
+        },
+        {
+          "slot": "1_eyes",
+          "artist": {
+            "visible": true,
+            "peakPx": 257.53,
+            "peakFrame": 10,
+            "deformPx": 50.73,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 252.12,
+            "peakFrame": 10,
+            "deformPx": 44.67,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_ear_R",
+          "artist": {
+            "visible": true,
+            "peakPx": 247.19,
+            "peakFrame": 11,
+            "deformPx": 38.26,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 246.18,
+            "peakFrame": 11,
+            "deformPx": 33.41,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_ear_R",
+          "artist": {
+            "visible": true,
+            "peakPx": 123.19,
+            "peakFrame": 6,
+            "deformPx": 20.89,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 123.5,
+            "peakFrame": 6,
+            "deformPx": 19.3,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_ear_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 273.04,
+            "peakFrame": 11,
+            "deformPx": 42.96,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 270.5,
+            "peakFrame": 11,
+            "deformPx": 43.26,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 0.91
+        },
+        {
+          "slot": "1_ear_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 160.31,
+            "peakFrame": 6,
+            "deformPx": 27.21,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 160.2,
+            "peakFrame": 6,
+            "deformPx": 26.61,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 0.907
+        },
+        {
+          "slot": "1_nose",
+          "artist": {
+            "visible": true,
+            "peakPx": 232.36,
+            "peakFrame": 10,
+            "deformPx": 37.72,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 230.29,
+            "peakFrame": 10,
+            "deformPx": 33.42,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hat",
+          "artist": {
+            "visible": true,
+            "peakPx": 278.76,
+            "peakFrame": 22,
+            "deformPx": 50.82,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 277.23,
+            "peakFrame": 22,
+            "deformPx": 50.02,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_hat",
+          "artist": {
+            "visible": true,
+            "peakPx": 294.07,
+            "peakFrame": 11,
+            "deformPx": 34.54,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 294.42,
+            "peakFrame": 11,
+            "deformPx": 183.01,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 148.2,
+            "peakFrame": 34,
+            "deformPx": 68.82,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 144.56,
+            "peakFrame": 34,
+            "deformPx": 72.07,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_hand_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 64.16,
+            "peakFrame": 34,
+            "deformPx": 66.58,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 65.39,
+            "peakFrame": 34,
+            "deformPx": 65.59,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "3_hand_R3",
+          "artist": {
+            "visible": true,
+            "peakPx": 145.59,
+            "peakFrame": 34,
+            "deformPx": 72.94,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 144.76,
+            "peakFrame": 34,
+            "deformPx": 73,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "3_hand_L3",
+          "artist": {
+            "visible": true,
+            "peakPx": 213.02,
+            "peakFrame": 34,
+            "deformPx": 79.71,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 210.45,
+            "peakFrame": 34,
+            "deformPx": 67.78,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "3_leg_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_L2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 117.98,
+            "peakFrame": 34,
+            "deformPx": 102.78,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 107.64,
+            "peakFrame": 34,
+            "deformPx": 98.39,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.91,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "3_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 59.02,
+            "peakFrame": 34,
+            "deformPx": 80.83,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 66.81,
+            "peakFrame": 32,
+            "deformPx": 65.1,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.13,
+          "displacementCorrelation": 0.994
+        },
+        {
+          "slot": "3_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 83.3,
+            "peakFrame": 21,
+            "deformPx": 117.51,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 89.35,
+            "peakFrame": 34,
+            "deformPx": 129.56,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1.07,
+          "displacementCorrelation": 0.975
+        },
+        {
+          "slot": "3_leg_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 134.5,
+            "peakFrame": 21,
+            "deformPx": 78.59,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 133.06,
+            "peakFrame": 21,
+            "deformPx": 73.68,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "all_shadow",
+          "artist": {
+            "visible": true,
+            "peakPx": 86.36,
+            "peakFrame": 18,
+            "deformPx": 0,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 86.3,
+            "peakFrame": 18,
+            "deformPx": 0.01,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_D",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_L",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_I",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_W",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        }
+      ]
+    },
+    "wild": {
+      "artistMoving": 4,
+      "generatedMoving": 4,
+      "bothMoving": 4,
+      "recall": 1,
+      "precision": 1,
+      "amplitudeWithinX2": 1,
+      "amplitudeRows": 4,
+      "medianRatio": 1,
+      "artistOnly": [],
+      "generatedOnly": [],
+      "rows": [
+        {
+          "slot": "2_tail",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_body",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_body",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_leg_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_leg_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_leg_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_leg_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_leg_L2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_hand_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_L2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R3",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_L3",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_scarf",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_scarf",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_head",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_head",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_eyes2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_eyes",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_ear_R",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_ear_R",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_ear_L",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_ear_L",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_nose",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_hat",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hat",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_hand_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_hand_R3",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_hand_L3",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_L2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_head",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_body",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "all_shadow",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_D",
+          "artist": {
+            "visible": true,
+            "peakPx": 225.97,
+            "peakFrame": 43,
+            "deformPx": 76,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 226.01,
+            "peakFrame": 43,
+            "deformPx": 75.94,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 267.4,
+            "peakFrame": 44,
+            "deformPx": 87,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 267.4,
+            "peakFrame": 44,
+            "deformPx": 86.95,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_I",
+          "artist": {
+            "visible": true,
+            "peakPx": 263.47,
+            "peakFrame": 44,
+            "deformPx": 89.03,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 263.5,
+            "peakFrame": 44,
+            "deformPx": 88.98,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_W",
+          "artist": {
+            "visible": true,
+            "peakPx": 299.14,
+            "peakFrame": 46,
+            "deformPx": 136.5,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 299.26,
+            "peakFrame": 46,
+            "deformPx": 136.48,
+            "alphaRange": 1,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        }
+      ]
+    },
+    "win": {
+      "artistMoving": 19,
+      "generatedMoving": 19,
+      "bothMoving": 19,
+      "recall": 1,
+      "precision": 1,
+      "amplitudeWithinX2": 1,
+      "amplitudeRows": 19,
+      "medianRatio": 0.99,
+      "artistOnly": [],
+      "generatedOnly": [],
+      "rows": [
+        {
+          "slot": "2_tail",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "2_body",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_body",
+          "artist": {
+            "visible": true,
+            "peakPx": 29.98,
+            "peakFrame": 5,
+            "deformPx": 47.55,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 32.18,
+            "peakFrame": 5,
+            "deformPx": 41.21,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.07,
+          "displacementCorrelation": 0.992
+        },
+        {
+          "slot": "2_leg_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_leg_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 22.53,
+            "peakFrame": 18,
+            "deformPx": 84.62,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 22.9,
+            "peakFrame": 5,
+            "deformPx": 88.2,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.02,
+          "displacementCorrelation": 0.861
+        },
+        {
+          "slot": "1_leg_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 36.43,
+            "peakFrame": 42,
+            "deformPx": 47.78,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 33.12,
+            "peakFrame": 42,
+            "deformPx": 51.58,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.91,
+          "displacementCorrelation": 0.994
+        },
+        {
+          "slot": "1_leg_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 67.97,
+            "peakFrame": 18,
+            "deformPx": 48.82,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 67.65,
+            "peakFrame": 18,
+            "deformPx": 45.9,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "1_leg_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 81.81,
+            "peakFrame": 18,
+            "deformPx": 36.23,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 80.95,
+            "peakFrame": 18,
+            "deformPx": 35.63,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R1",
+          "artist": {
+            "visible": true,
+            "peakPx": 40.45,
+            "peakFrame": 42,
+            "deformPx": 45.68,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 41.71,
+            "peakFrame": 42,
+            "deformPx": 43.65,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.03,
+          "displacementCorrelation": 0.997
+        },
+        {
+          "slot": "1_hand_L1",
+          "artist": {
+            "visible": true,
+            "peakPx": 82.71,
+            "peakFrame": 42,
+            "deformPx": 76.45,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 82.21,
+            "peakFrame": 42,
+            "deformPx": 68.19,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hand_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hand_R2",
+          "artist": {
+            "visible": true,
+            "peakPx": 72.31,
+            "peakFrame": 21,
+            "deformPx": 84.1,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 67.7,
+            "peakFrame": 21,
+            "deformPx": 82.57,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.94,
+          "displacementCorrelation": 0.998
+        },
+        {
+          "slot": "1_hand_L2",
+          "artist": {
+            "visible": true,
+            "peakPx": 163.9,
+            "peakFrame": 42,
+            "deformPx": 110.15,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 155.91,
+            "peakFrame": 42,
+            "deformPx": 104.57,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.95,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_hand_R3",
+          "artist": {
+            "visible": true,
+            "peakPx": 147.96,
+            "peakFrame": 21,
+            "deformPx": 78.96,
+            "alphaRange": 0,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 144.94,
+            "peakFrame": 21,
+            "deformPx": 72.75,
+            "alphaRange": 0,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 0.994
+        },
+        {
+          "slot": "1_hand_L3",
+          "artist": {
+            "visible": true,
+            "peakPx": 272.67,
+            "peakFrame": 41,
+            "deformPx": 98.92,
+            "alphaRange": 0,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 262.85,
+            "peakFrame": 41,
+            "deformPx": 77.63,
+            "alphaRange": 0,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.96,
+          "displacementCorrelation": 0.998
+        },
+        {
+          "slot": "2_scarf",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_scarf",
+          "artist": {
+            "visible": true,
+            "peakPx": 55.16,
+            "peakFrame": 5,
+            "deformPx": 47.88,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 55.21,
+            "peakFrame": 5,
+            "deformPx": 46.15,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 0.998
+        },
+        {
+          "slot": "2_head",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_head",
+          "artist": {
+            "visible": true,
+            "peakPx": 72.31,
+            "peakFrame": 6,
+            "deformPx": 74.36,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 77.71,
+            "peakFrame": 6,
+            "deformPx": 73.63,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.07,
+          "displacementCorrelation": 0.977
+        },
+        {
+          "slot": "1_eyes2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_eyes",
+          "artist": {
+            "visible": true,
+            "peakPx": 105.69,
+            "peakFrame": 6,
+            "deformPx": 50.42,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 101.18,
+            "peakFrame": 6,
+            "deformPx": 49.69,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.96,
+          "displacementCorrelation": 0.997
+        },
+        {
+          "slot": "2_ear_R",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_ear_R",
+          "artist": {
+            "visible": true,
+            "peakPx": 63.67,
+            "peakFrame": 6,
+            "deformPx": 37.14,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 65.47,
+            "peakFrame": 6,
+            "deformPx": 32.99,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1.03,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "2_ear_L",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_ear_L",
+          "artist": {
+            "visible": true,
+            "peakPx": 111.14,
+            "peakFrame": 7,
+            "deformPx": 37.33,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 109.32,
+            "peakFrame": 7,
+            "deformPx": 39.09,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.98,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "1_nose",
+          "artist": {
+            "visible": true,
+            "peakPx": 94.88,
+            "peakFrame": 6,
+            "deformPx": 27.26,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 94.29,
+            "peakFrame": 6,
+            "deformPx": 26.37,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "2_hat",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "1_hat",
+          "artist": {
+            "visible": true,
+            "peakPx": 104.01,
+            "peakFrame": 6,
+            "deformPx": 29.41,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 103.58,
+            "peakFrame": 6,
+            "deformPx": 26.45,
+            "alphaRange": 0,
+            "attachmentSwitch": false,
+            "moves": true
+          },
+          "ratio": 1,
+          "displacementCorrelation": 0.999
+        },
+        {
+          "slot": "3_hand_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_hand_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_hand_R3",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_hand_L3",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_L1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_L2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_head",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_body",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_R1",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "3_leg_R2",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "all_shadow",
+          "artist": {
+            "visible": true,
+            "peakPx": 34.94,
+            "peakFrame": 5,
+            "deformPx": 38.94,
+            "alphaRange": 0.663,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "generated": {
+            "visible": true,
+            "peakPx": 34.66,
+            "peakFrame": 5,
+            "deformPx": 33.36,
+            "alphaRange": 0.663,
+            "attachmentSwitch": true,
+            "moves": true
+          },
+          "ratio": 0.99,
+          "displacementCorrelation": 1
+        },
+        {
+          "slot": "w_D",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_L",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_I",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        },
+        {
+          "slot": "w_W",
+          "artist": {
+            "visible": false
+          },
+          "generated": {
+            "visible": false
+          },
+          "ratio": null,
+          "displacementCorrelation": null
+        }
+      ]
+    }
+  },
+  "performance": {
+    "final": {
+      "profile": {
+        "id": "Panda_-_five_reference-conditioned_animations-final-artist",
+        "fps": 30,
+        "source": "Panda - five reference-conditioned animations artist final (official 4.0 runtime, 30 fps, head widths), n=1",
+        "chain": [
+          "body",
+          "head",
+          "hat"
+        ],
+        "hand": "hand",
+        "targets": {
+          "parallaxRangeX": {
+            "reference": 0.191164,
+            "min": 0.12744266666666668,
+            "max": 0.286746
+          },
+          "parallaxRangeY": {
+            "reference": 0.538847,
+            "min": 0.3592313333333333,
+            "max": 0.8082704999999999
+          },
+          "parallaxHoldFraction": {
+            "reference": 0.955556,
+            "min": 0.8055559999999999,
+            "max": 1
+          },
+          "peakTime:body": {
+            "reference": 0.7,
+            "min": 0.6333333333333333,
+            "max": 0.7666666666666666
+          },
+          "overshoot:body": {
+            "reference": 0.158302,
+            "min": 0.10553466666666667,
+            "max": 0.237453
+          },
+          "peakTime:head": {
+            "reference": 1.6,
+            "min": 1.5333333333333334,
+            "max": 1.6666666666666667
+          },
+          "overshoot:head": {
+            "reference": 0.134403,
+            "min": 0.089602,
+            "max": 0.2016045
+          },
+          "peakTime:hat": {
+            "reference": 1.6,
+            "min": 1.5333333333333334,
+            "max": 1.6666666666666667
+          },
+          "overshoot:hat": {
+            "reference": 0.199875,
+            "min": 0.13325,
+            "max": 0.2998125
+          },
+          "peakDelay:head": {
+            "reference": 0.9,
+            "min": 0.8333333333333334,
+            "max": 0.9666666666666667
+          },
+          "peakDelay:hat": {
+            "reference": 0.9,
+            "min": 0.8333333333333334,
+            "max": 0.9666666666666667
+          },
+          "handVsBodyRange": {
+            "reference": 1.460837,
+            "min": 0.9738913333333333,
+            "max": 2.1912555
+          },
+          "keyDensity": {
+            "reference": 2.041026,
+            "min": 1.360684,
+            "max": 3.061539
+          }
+        }
+      },
+      "artistMetrics": {
+        "parallaxRangeX": 0.191164,
+        "parallaxRangeY": 0.538847,
+        "parallaxHoldFraction": 0.955556,
+        "peakTime:body": 0.7,
+        "overshoot:body": 0.158302,
+        "peakTime:head": 1.6,
+        "overshoot:head": 0.134403,
+        "peakTime:hat": 1.6,
+        "overshoot:hat": 0.199875,
+        "peakDelay:head": 0.9,
+        "peakDelay:hat": 0.9,
+        "handVsBodyRange": 1.460837,
+        "keyDensity": 2.041026
+      },
+      "review": {
+        "profile": "Panda_-_five_reference-conditioned_animations-final-artist",
+        "metrics": {
+          "parallaxRangeX": 0.145102,
+          "parallaxRangeY": 0.530299,
+          "parallaxHoldFraction": 0.955556,
+          "peakTime:body": 0.7,
+          "overshoot:body": 0.174007,
+          "peakTime:head": 1.6,
+          "overshoot:head": 0.13036,
+          "peakTime:hat": 1.6,
+          "overshoot:hat": 0.209235,
+          "peakDelay:head": 0.9,
+          "peakDelay:hat": 0.9,
+          "handVsBodyRange": 1.459722,
+          "keyDensity": 16.263789
+        },
+        "findings": [
+          {
+            "metric": "parallaxRangeX",
+            "value": 0.145102,
+            "reference": 0.191164,
+            "min": 0.12744266666666668,
+            "max": 0.286746,
+            "status": "within"
+          },
+          {
+            "metric": "parallaxRangeY",
+            "value": 0.530299,
+            "reference": 0.538847,
+            "min": 0.3592313333333333,
+            "max": 0.8082704999999999,
+            "status": "within"
+          },
+          {
+            "metric": "parallaxHoldFraction",
+            "value": 0.955556,
+            "reference": 0.955556,
+            "min": 0.8055559999999999,
+            "max": 1,
+            "status": "within"
+          },
+          {
+            "metric": "peakTime:body",
+            "value": 0.7,
+            "reference": 0.7,
+            "min": 0.6333333333333333,
+            "max": 0.7666666666666666,
+            "status": "within"
+          },
+          {
+            "metric": "overshoot:body",
+            "value": 0.174007,
+            "reference": 0.158302,
+            "min": 0.10553466666666667,
+            "max": 0.237453,
+            "status": "within"
+          },
+          {
+            "metric": "peakTime:head",
+            "value": 1.6,
+            "reference": 1.6,
+            "min": 1.5333333333333334,
+            "max": 1.6666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "overshoot:head",
+            "value": 0.13036,
+            "reference": 0.134403,
+            "min": 0.089602,
+            "max": 0.2016045,
+            "status": "within"
+          },
+          {
+            "metric": "peakTime:hat",
+            "value": 1.6,
+            "reference": 1.6,
+            "min": 1.5333333333333334,
+            "max": 1.6666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "overshoot:hat",
+            "value": 0.209235,
+            "reference": 0.199875,
+            "min": 0.13325,
+            "max": 0.2998125,
+            "status": "within"
+          },
+          {
+            "metric": "peakDelay:head",
+            "value": 0.9,
+            "reference": 0.9,
+            "min": 0.8333333333333334,
+            "max": 0.9666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "peakDelay:hat",
+            "value": 0.9,
+            "reference": 0.9,
+            "min": 0.8333333333333334,
+            "max": 0.9666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "handVsBodyRange",
+            "value": 1.459722,
+            "reference": 1.460837,
+            "min": 0.9738913333333333,
+            "max": 2.1912555,
+            "status": "within"
+          },
+          {
+            "metric": "keyDensity",
+            "value": 16.263789,
+            "reference": 2.041026,
+            "min": 1.360684,
+            "max": 3.061539,
+            "status": "high",
+            "hint": "use fewer keyposes instead of baking"
+          }
+        ],
+        "within": 12,
+        "total": 13,
+        "artistQualityAccepted": false
+      }
+    },
+    "idle": {
+      "profile": {
+        "id": "Panda_-_five_reference-conditioned_animations-idle-artist",
+        "fps": 30,
+        "source": "Panda - five reference-conditioned animations artist idle (official 4.0 runtime, 30 fps, head widths), n=1",
+        "chain": [
+          "body",
+          "head",
+          "hat"
+        ],
+        "hand": "hand",
+        "loop": true,
+        "targets": {
+          "parallaxRangeX": {
+            "reference": 0.125781,
+            "min": 0.083854,
+            "max": 0.1886715
+          },
+          "parallaxRangeY": {
+            "reference": 0.490304,
+            "min": 0.32686933333333335,
+            "max": 0.735456
+          },
+          "parallaxHoldFraction": {
+            "reference": 0.866667,
+            "min": 0.7166669999999999,
+            "max": 1
+          },
+          "range:body": {
+            "reference": 0.377267,
+            "min": 0.25151133333333336,
+            "max": 0.5659005
+          },
+          "range:head": {
+            "reference": 0.993145,
+            "min": 0.6620966666666667,
+            "max": 1.4897174999999998
+          },
+          "range:hat": {
+            "reference": 1.645759,
+            "min": 1.0971726666666666,
+            "max": 2.4686385
+          },
+          "lag:head": {
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667
+          },
+          "lag:hat": {
+            "reference": 0.166667,
+            "min": 0.10000033333333334,
+            "max": 0.23333366666666666
+          },
+          "handVsBodyRange": {
+            "reference": 1.317544,
+            "min": 0.8783626666666667,
+            "max": 1.9763160000000002
+          },
+          "keyDensity": {
+            "reference": 3.886598,
+            "min": 2.5910653333333333,
+            "max": 5.829897000000001
+          }
+        }
+      },
+      "artistMetrics": {
+        "parallaxRangeX": 0.125781,
+        "parallaxRangeY": 0.490304,
+        "parallaxHoldFraction": 0.866667,
+        "range:body": 0.377267,
+        "range:head": 0.993145,
+        "range:hat": 1.645759,
+        "lag:head": 0,
+        "lag:hat": 0.166667,
+        "handVsBodyRange": 1.317544,
+        "keyDensity": 3.886598
+      },
+      "review": {
+        "profile": "Panda_-_five_reference-conditioned_animations-idle-artist",
+        "metrics": {
+          "parallaxRangeX": 0.123642,
+          "parallaxRangeY": 0.473973,
+          "parallaxHoldFraction": 0.866667,
+          "range:body": 0.431076,
+          "range:head": 0.974432,
+          "range:hat": 1.651976,
+          "lag:head": 0,
+          "lag:hat": 0.166667,
+          "handVsBodyRange": 1.314512,
+          "keyDensity": 22.212598
+        },
+        "findings": [
+          {
+            "metric": "parallaxRangeX",
+            "value": 0.123642,
+            "reference": 0.125781,
+            "min": 0.083854,
+            "max": 0.1886715,
+            "status": "within"
+          },
+          {
+            "metric": "parallaxRangeY",
+            "value": 0.473973,
+            "reference": 0.490304,
+            "min": 0.32686933333333335,
+            "max": 0.735456,
+            "status": "within"
+          },
+          {
+            "metric": "parallaxHoldFraction",
+            "value": 0.866667,
+            "reference": 0.866667,
+            "min": 0.7166669999999999,
+            "max": 1,
+            "status": "within"
+          },
+          {
+            "metric": "range:body",
+            "value": 0.431076,
+            "reference": 0.377267,
+            "min": 0.25151133333333336,
+            "max": 0.5659005,
+            "status": "within"
+          },
+          {
+            "metric": "range:head",
+            "value": 0.974432,
+            "reference": 0.993145,
+            "min": 0.6620966666666667,
+            "max": 1.4897174999999998,
+            "status": "within"
+          },
+          {
+            "metric": "range:hat",
+            "value": 1.651976,
+            "reference": 1.645759,
+            "min": 1.0971726666666666,
+            "max": 2.4686385,
+            "status": "within"
+          },
+          {
+            "metric": "lag:head",
+            "value": 0,
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "lag:hat",
+            "value": 0.166667,
+            "reference": 0.166667,
+            "min": 0.10000033333333334,
+            "max": 0.23333366666666666,
+            "status": "within"
+          },
+          {
+            "metric": "handVsBodyRange",
+            "value": 1.314512,
+            "reference": 1.317544,
+            "min": 0.8783626666666667,
+            "max": 1.9763160000000002,
+            "status": "within"
+          },
+          {
+            "metric": "keyDensity",
+            "value": 22.212598,
+            "reference": 3.886598,
+            "min": 2.5910653333333333,
+            "max": 5.829897000000001,
+            "status": "high",
+            "hint": "use fewer keyposes instead of baking"
+          }
+        ],
+        "within": 9,
+        "total": 10,
+        "artistQualityAccepted": false
+      }
+    },
+    "idle_slow": {
+      "profile": {
+        "id": "Panda_-_five_reference-conditioned_animations-idle_slow-artist",
+        "fps": 30,
+        "source": "Panda - five reference-conditioned animations artist idle_slow (official 4.0 runtime, 30 fps, head widths), n=1",
+        "chain": [
+          "body",
+          "head",
+          "hat"
+        ],
+        "hand": "hand",
+        "loop": true,
+        "targets": {
+          "parallaxRangeX": {
+            "reference": 0.122425,
+            "min": 0.08161666666666667,
+            "max": 0.1836375
+          },
+          "parallaxRangeY": {
+            "reference": 0.479141,
+            "min": 0.31942733333333334,
+            "max": 0.7187115
+          },
+          "parallaxHoldFraction": {
+            "reference": 0.971429,
+            "min": 0.821429,
+            "max": 1
+          },
+          "range:body": {
+            "reference": 0.349683,
+            "min": 0.23312200000000002,
+            "max": 0.5245245000000001
+          },
+          "range:head": {
+            "reference": 0.913243,
+            "min": 0.6088286666666667,
+            "max": 1.3698645
+          },
+          "range:hat": {
+            "reference": 1.552488,
+            "min": 1.0349920000000001,
+            "max": 2.328732
+          },
+          "lag:head": {
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667
+          },
+          "lag:hat": {
+            "reference": 0.2,
+            "min": 0.13333333333333336,
+            "max": 0.26666666666666666
+          },
+          "handVsBodyRange": {
+            "reference": 1.234899,
+            "min": 0.8232659999999999,
+            "max": 1.8523485
+          },
+          "keyDensity": {
+            "reference": 3.331274,
+            "min": 2.2208493333333332,
+            "max": 4.996911
+          }
+        }
+      },
+      "artistMetrics": {
+        "parallaxRangeX": 0.122425,
+        "parallaxRangeY": 0.479141,
+        "parallaxHoldFraction": 0.971429,
+        "range:body": 0.349683,
+        "range:head": 0.913243,
+        "range:hat": 1.552488,
+        "lag:head": 0,
+        "lag:hat": 0.2,
+        "handVsBodyRange": 1.234899,
+        "keyDensity": 3.331274
+      },
+      "review": {
+        "profile": "Panda_-_five_reference-conditioned_animations-idle_slow-artist",
+        "metrics": {
+          "parallaxRangeX": 0.121319,
+          "parallaxRangeY": 0.470194,
+          "parallaxHoldFraction": 0.971429,
+          "range:body": 0.403294,
+          "range:head": 0.894478,
+          "range:hat": 1.556348,
+          "lag:head": 0,
+          "lag:hat": 0.2,
+          "handVsBodyRange": 1.233719,
+          "keyDensity": 22.109605
+        },
+        "findings": [
+          {
+            "metric": "parallaxRangeX",
+            "value": 0.121319,
+            "reference": 0.122425,
+            "min": 0.08161666666666667,
+            "max": 0.1836375,
+            "status": "within"
+          },
+          {
+            "metric": "parallaxRangeY",
+            "value": 0.470194,
+            "reference": 0.479141,
+            "min": 0.31942733333333334,
+            "max": 0.7187115,
+            "status": "within"
+          },
+          {
+            "metric": "parallaxHoldFraction",
+            "value": 0.971429,
+            "reference": 0.971429,
+            "min": 0.821429,
+            "max": 1,
+            "status": "within"
+          },
+          {
+            "metric": "range:body",
+            "value": 0.403294,
+            "reference": 0.349683,
+            "min": 0.23312200000000002,
+            "max": 0.5245245000000001,
+            "status": "within"
+          },
+          {
+            "metric": "range:head",
+            "value": 0.894478,
+            "reference": 0.913243,
+            "min": 0.6088286666666667,
+            "max": 1.3698645,
+            "status": "within"
+          },
+          {
+            "metric": "range:hat",
+            "value": 1.556348,
+            "reference": 1.552488,
+            "min": 1.0349920000000001,
+            "max": 2.328732,
+            "status": "within"
+          },
+          {
+            "metric": "lag:head",
+            "value": 0,
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "lag:hat",
+            "value": 0.2,
+            "reference": 0.2,
+            "min": 0.13333333333333336,
+            "max": 0.26666666666666666,
+            "status": "within"
+          },
+          {
+            "metric": "handVsBodyRange",
+            "value": 1.233719,
+            "reference": 1.234899,
+            "min": 0.8232659999999999,
+            "max": 1.8523485,
+            "status": "within"
+          },
+          {
+            "metric": "keyDensity",
+            "value": 22.109605,
+            "reference": 3.331274,
+            "min": 2.2208493333333332,
+            "max": 4.996911,
+            "status": "high",
+            "hint": "use fewer keyposes instead of baking"
+          }
+        ],
+        "within": 9,
+        "total": 10,
+        "artistQualityAccepted": false
+      }
+    },
+    "wild": {
+      "profile": {
+        "id": "Panda_-_five_reference-conditioned_animations-wild-artist",
+        "fps": 30,
+        "source": "Panda - five reference-conditioned animations artist wild (official 4.0 runtime, 30 fps, head widths), n=1",
+        "targets": {
+          "keyDensity": {
+            "reference": 1.9375,
+            "min": 1.2916666666666667,
+            "max": 2.90625
+          }
+        }
+      },
+      "artistMetrics": {
+        "keyDensity": 1.9375
+      },
+      "review": {
+        "profile": "Panda_-_five_reference-conditioned_animations-wild-artist",
+        "metrics": {
+          "keyDensity": 2.029661
+        },
+        "findings": [
+          {
+            "metric": "keyDensity",
+            "value": 2.029661,
+            "reference": 1.9375,
+            "min": 1.2916666666666667,
+            "max": 2.90625,
+            "status": "within"
+          }
+        ],
+        "within": 1,
+        "total": 1,
+        "artistQualityAccepted": false
+      }
+    },
+    "win": {
+      "profile": {
+        "id": "Panda_-_five_reference-conditioned_animations-win-artist",
+        "fps": 30,
+        "source": "Panda - five reference-conditioned animations artist win (official 4.0 runtime, 30 fps, head widths), n=1",
+        "chain": [
+          "body",
+          "head",
+          "hat"
+        ],
+        "hand": "hand",
+        "targets": {
+          "parallaxRangeX": {
+            "reference": 0.112138,
+            "min": 0.07475866666666667,
+            "max": 0.168207
+          },
+          "parallaxRangeY": {
+            "reference": 0.30069,
+            "min": 0.20046,
+            "max": 0.451035
+          },
+          "parallaxHoldFraction": {
+            "reference": 0.283333,
+            "min": 0.133333,
+            "max": 0.43333299999999997
+          },
+          "peakTime:body": {
+            "reference": 0.6,
+            "min": 0.5333333333333333,
+            "max": 0.6666666666666666
+          },
+          "overshoot:body": {
+            "reference": 0.083444,
+            "min": 0.055629333333333336,
+            "max": 0.125166
+          },
+          "peakTime:head": {
+            "reference": 0.6,
+            "min": 0.5333333333333333,
+            "max": 0.6666666666666666
+          },
+          "overshoot:head": {
+            "reference": 0.134403,
+            "min": 0.089602,
+            "max": 0.2016045
+          },
+          "peakTime:hat": {
+            "reference": 0.6,
+            "min": 0.5333333333333333,
+            "max": 0.6666666666666666
+          },
+          "overshoot:hat": {
+            "reference": 0.199875,
+            "min": 0.13325,
+            "max": 0.2998125
+          },
+          "peakDelay:head": {
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667
+          },
+          "peakDelay:hat": {
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667
+          },
+          "handVsBodyRange": {
+            "reference": 1.248295,
+            "min": 0.8321966666666666,
+            "max": 1.8724425
+          },
+          "keyDensity": {
+            "reference": 2.894737,
+            "min": 1.9298246666666667,
+            "max": 4.342105500000001
+          }
+        }
+      },
+      "artistMetrics": {
+        "parallaxRangeX": 0.112138,
+        "parallaxRangeY": 0.30069,
+        "parallaxHoldFraction": 0.283333,
+        "peakTime:body": 0.6,
+        "overshoot:body": 0.083444,
+        "peakTime:head": 0.6,
+        "overshoot:head": 0.134403,
+        "peakTime:hat": 0.6,
+        "overshoot:hat": 0.199875,
+        "peakDelay:head": 0,
+        "peakDelay:hat": 0,
+        "handVsBodyRange": 1.248295,
+        "keyDensity": 2.894737
+      },
+      "review": {
+        "profile": "Panda_-_five_reference-conditioned_animations-win-artist",
+        "metrics": {
+          "parallaxRangeX": 0.068395,
+          "parallaxRangeY": 0.237615,
+          "parallaxHoldFraction": 0.55,
+          "peakTime:body": 0.6,
+          "overshoot:body": 0.094565,
+          "peakTime:head": 0.6,
+          "overshoot:head": 0.13036,
+          "peakTime:hat": 0.6,
+          "overshoot:hat": 0.209235,
+          "peakDelay:head": 0,
+          "peakDelay:hat": 0,
+          "handVsBodyRange": 1.137165,
+          "keyDensity": 16.030172
+        },
+        "findings": [
+          {
+            "metric": "parallaxRangeX",
+            "value": 0.068395,
+            "reference": 0.112138,
+            "min": 0.07475866666666667,
+            "max": 0.168207,
+            "status": "low",
+            "hint": "increase face-control travel"
+          },
+          {
+            "metric": "parallaxRangeY",
+            "value": 0.237615,
+            "reference": 0.30069,
+            "min": 0.20046,
+            "max": 0.451035,
+            "status": "within"
+          },
+          {
+            "metric": "parallaxHoldFraction",
+            "value": 0.55,
+            "reference": 0.283333,
+            "min": 0.133333,
+            "max": 0.43333299999999997,
+            "status": "high",
+            "hint": "shorten holds or drift between looks"
+          },
+          {
+            "metric": "peakTime:body",
+            "value": 0.6,
+            "reference": 0.6,
+            "min": 0.5333333333333333,
+            "max": 0.6666666666666666,
+            "status": "within"
+          },
+          {
+            "metric": "overshoot:body",
+            "value": 0.094565,
+            "reference": 0.083444,
+            "min": 0.055629333333333336,
+            "max": 0.125166,
+            "status": "within"
+          },
+          {
+            "metric": "peakTime:head",
+            "value": 0.6,
+            "reference": 0.6,
+            "min": 0.5333333333333333,
+            "max": 0.6666666666666666,
+            "status": "within"
+          },
+          {
+            "metric": "overshoot:head",
+            "value": 0.13036,
+            "reference": 0.134403,
+            "min": 0.089602,
+            "max": 0.2016045,
+            "status": "within"
+          },
+          {
+            "metric": "peakTime:hat",
+            "value": 0.6,
+            "reference": 0.6,
+            "min": 0.5333333333333333,
+            "max": 0.6666666666666666,
+            "status": "within"
+          },
+          {
+            "metric": "overshoot:hat",
+            "value": 0.209235,
+            "reference": 0.199875,
+            "min": 0.13325,
+            "max": 0.2998125,
+            "status": "within"
+          },
+          {
+            "metric": "peakDelay:head",
+            "value": 0,
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "peakDelay:hat",
+            "value": 0,
+            "reference": 0,
+            "min": -0.06666666666666667,
+            "max": 0.06666666666666667,
+            "status": "within"
+          },
+          {
+            "metric": "handVsBodyRange",
+            "value": 1.137165,
+            "reference": 1.248295,
+            "min": 0.8321966666666666,
+            "max": 1.8724425,
+            "status": "within"
+          },
+          {
+            "metric": "keyDensity",
+            "value": 16.030172,
+            "reference": 2.894737,
+            "min": 1.9298246666666667,
+            "max": 4.342105500000001,
+            "status": "high",
+            "hint": "use fewer keyposes instead of baking"
+          }
+        ],
+        "within": 10,
+        "total": 13,
+        "artistQualityAccepted": false
+      }
+    }
+  },
+  "visual": {}
+}

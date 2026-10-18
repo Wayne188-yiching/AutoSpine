@@ -1,0 +1,1295 @@
+{
+  "method": "AutoSpine measureOverlapDrift, frame-0 baseline, visible pairs, 7 poses per animation",
+  "configuredPairs": 7,
+  "samples": [
+    {
+      "animation": "final",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 0.06010155240556691,
+      "meanDrift": 0.04235252606321819
+    },
+    {
+      "animation": "final",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 0.02733101694179242,
+      "meanDrift": 0.013747529596004547
+    },
+    {
+      "animation": "final",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 0.06419039667575256,
+      "meanDrift": 0.03725341715944215
+    },
+    {
+      "animation": "final",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 0.019043278922716317,
+      "meanDrift": 0.00985674396056688
+    },
+    {
+      "animation": "final",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 0.024642302073099726,
+      "meanDrift": 0.01655464605291559
+    },
+    {
+      "animation": "final",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 0.023102069519732392,
+      "meanDrift": 0.012530207050623311
+    },
+    {
+      "animation": "final",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 0.05856729434769809,
+      "meanDrift": 0.03195809159721637
+    },
+    {
+      "animation": "final",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 30.82513159414237,
+      "meanDrift": 18.951071161842748
+    },
+    {
+      "animation": "final",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_hand_L1",
+      "points": 10,
+      "maxDrift": 26.334899670245818,
+      "meanDrift": 12.96233981495789
+    },
+    {
+      "animation": "final",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 24.6912509075099,
+      "meanDrift": 12.093467816447705
+    },
+    {
+      "animation": "final",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 15.598208757093541,
+      "meanDrift": 10.225824209434089
+    },
+    {
+      "animation": "final",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 22.586972238474672,
+      "meanDrift": 13.337749347476867
+    },
+    {
+      "animation": "final",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 28.110868498892685,
+      "meanDrift": 19.722225600141833
+    },
+    {
+      "animation": "final",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 29.365422324051924,
+      "meanDrift": 17.939799046225655
+    },
+    {
+      "animation": "final",
+      "frame": 45,
+      "time": 1.5,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 7.07776128411079,
+      "meanDrift": 5.910819251109896
+    },
+    {
+      "animation": "final",
+      "frame": 45,
+      "time": 1.5,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 17.291265191630487,
+      "meanDrift": 13.21661682593416
+    },
+    {
+      "animation": "final",
+      "frame": 45,
+      "time": 1.5,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 42.54959970064969,
+      "meanDrift": 20.303663235327193
+    },
+    {
+      "animation": "final",
+      "frame": 45,
+      "time": 1.5,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 16.33311450745902,
+      "meanDrift": 10.504481236644203
+    },
+    {
+      "animation": "final",
+      "frame": 45,
+      "time": 1.5,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 30.04066585922249,
+      "meanDrift": 19.71027605777424
+    },
+    {
+      "animation": "final",
+      "frame": 45,
+      "time": 1.5,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 30.208319225548586,
+      "meanDrift": 18.803389508856394
+    },
+    {
+      "animation": "final",
+      "frame": 45,
+      "time": 1.5,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 54.3846651180207,
+      "meanDrift": 32.595815082631134
+    },
+    {
+      "animation": "final",
+      "frame": 54,
+      "time": 1.8,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 5.819827403118391,
+      "meanDrift": 4.594522959683309
+    },
+    {
+      "animation": "final",
+      "frame": 54,
+      "time": 1.8,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 26.439624206175647,
+      "meanDrift": 15.830817887272538
+    },
+    {
+      "animation": "final",
+      "frame": 54,
+      "time": 1.8,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 28.546815626794235,
+      "meanDrift": 19.545465152842443
+    },
+    {
+      "animation": "final",
+      "frame": 54,
+      "time": 1.8,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 2.995973881311631,
+      "meanDrift": 1.5178060752721911
+    },
+    {
+      "animation": "final",
+      "frame": 54,
+      "time": 1.8,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 3.864505162826899,
+      "meanDrift": 2.0205616249193645
+    },
+    {
+      "animation": "final",
+      "frame": 54,
+      "time": 1.8,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 51.56318259660975,
+      "meanDrift": 23.88346630763343
+    },
+    {
+      "animation": "final",
+      "frame": 54,
+      "time": 1.8,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 56.544131609301594,
+      "meanDrift": 32.87516086794393
+    },
+    {
+      "animation": "final",
+      "frame": 72,
+      "time": 2.4,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 56.34605813200526,
+      "meanDrift": 48.966631192014425
+    },
+    {
+      "animation": "final",
+      "frame": 72,
+      "time": 2.4,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 65.43116767161894,
+      "meanDrift": 35.56015407767836
+    },
+    {
+      "animation": "final",
+      "frame": 72,
+      "time": 2.4,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 31.56169343121527,
+      "meanDrift": 25.42520881601886
+    },
+    {
+      "animation": "final",
+      "frame": 72,
+      "time": 2.4,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 23.987900697500837,
+      "meanDrift": 7.5365395408571905
+    },
+    {
+      "animation": "final",
+      "frame": 72,
+      "time": 2.4,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 46.66712917475274,
+      "meanDrift": 15.608769880960473
+    },
+    {
+      "animation": "final",
+      "frame": 72,
+      "time": 2.4,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 53.41548614202413,
+      "meanDrift": 32.31388100466146
+    },
+    {
+      "animation": "final",
+      "frame": 72,
+      "time": 2.4,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 18.365630181637744,
+      "meanDrift": 12.964660754806255
+    },
+    {
+      "animation": "final",
+      "frame": 89,
+      "time": 2.966666666666667,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 1.4793834287341818,
+      "meanDrift": 0.9824367907086311
+    },
+    {
+      "animation": "final",
+      "frame": 89,
+      "time": 2.966666666666667,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 1.194341630280027,
+      "meanDrift": 0.45600528096473075
+    },
+    {
+      "animation": "final",
+      "frame": 89,
+      "time": 2.966666666666667,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 0.4338345563565428,
+      "meanDrift": 0.2187446804772583
+    },
+    {
+      "animation": "final",
+      "frame": 89,
+      "time": 2.966666666666667,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 0.9382070857940757,
+      "meanDrift": 0.7131445483222943
+    },
+    {
+      "animation": "final",
+      "frame": 89,
+      "time": 2.966666666666667,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 1.6606373152926863,
+      "meanDrift": 0.9328349944398123
+    },
+    {
+      "animation": "final",
+      "frame": 89,
+      "time": 2.966666666666667,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 1.8615601416058407,
+      "meanDrift": 1.6191687117094717
+    },
+    {
+      "animation": "final",
+      "frame": 89,
+      "time": 2.966666666666667,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 0.6517665832449795,
+      "meanDrift": 0.42113615700687085
+    },
+    {
+      "animation": "idle",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 0.06010155240556691,
+      "meanDrift": 0.04235252606321819
+    },
+    {
+      "animation": "idle",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 0.02733101694179242,
+      "meanDrift": 0.013747529596004547
+    },
+    {
+      "animation": "idle",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 0.06419039667575256,
+      "meanDrift": 0.03725341715944215
+    },
+    {
+      "animation": "idle",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 0.019043278922716317,
+      "meanDrift": 0.00985674396056688
+    },
+    {
+      "animation": "idle",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 0.024642302073099726,
+      "meanDrift": 0.01655464605291559
+    },
+    {
+      "animation": "idle",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 0.023102069519732392,
+      "meanDrift": 0.012530207050623311
+    },
+    {
+      "animation": "idle",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 0.05856729434769809,
+      "meanDrift": 0.03195809159721637
+    },
+    {
+      "animation": "idle",
+      "frame": 6,
+      "time": 0.2,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 144.8636729990523,
+      "meanDrift": 103.06876116543079
+    },
+    {
+      "animation": "idle",
+      "frame": 6,
+      "time": 0.2,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 71.24311223160376,
+      "meanDrift": 34.050673326009694
+    },
+    {
+      "animation": "idle",
+      "frame": 6,
+      "time": 0.2,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 119.20825315338584,
+      "meanDrift": 75.1000802084682
+    },
+    {
+      "animation": "idle",
+      "frame": 6,
+      "time": 0.2,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 38.2484179237655,
+      "meanDrift": 24.259184876742186
+    },
+    {
+      "animation": "idle",
+      "frame": 6,
+      "time": 0.2,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 74.28061660803985,
+      "meanDrift": 53.15285461142209
+    },
+    {
+      "animation": "idle",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 76.45963134325734,
+      "meanDrift": 46.78207690123035
+    },
+    {
+      "animation": "idle",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_hand_L1",
+      "points": 10,
+      "maxDrift": 69.113827550731,
+      "meanDrift": 59.73366196922625
+    },
+    {
+      "animation": "idle",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 15.300596152903866,
+      "meanDrift": 10.652213754343522
+    },
+    {
+      "animation": "idle",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 71.54086532834091,
+      "meanDrift": 36.26091422867976
+    },
+    {
+      "animation": "idle",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 54.12157486819424,
+      "meanDrift": 39.91484830815631
+    },
+    {
+      "animation": "idle",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 18.15624731479816,
+      "meanDrift": 15.594483106027317
+    },
+    {
+      "animation": "idle",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 34,
+      "maxDrift": 38.13969109331877,
+      "meanDrift": 30.828090702711158
+    },
+    {
+      "animation": "idle",
+      "frame": 29,
+      "time": 0.9666666666666667,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 9.800188550539112,
+      "meanDrift": 7.585299848480592
+    },
+    {
+      "animation": "idle",
+      "frame": 29,
+      "time": 0.9666666666666667,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 16.82216926077796,
+      "meanDrift": 11.395038548718961
+    },
+    {
+      "animation": "idle",
+      "frame": 29,
+      "time": 0.9666666666666667,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 9.596841682812684,
+      "meanDrift": 6.246402321307859
+    },
+    {
+      "animation": "idle",
+      "frame": 29,
+      "time": 0.9666666666666667,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 20.21637741283837,
+      "meanDrift": 10.629889158836836
+    },
+    {
+      "animation": "idle",
+      "frame": 29,
+      "time": 0.9666666666666667,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 15.635719163825945,
+      "meanDrift": 8.871724306753642
+    },
+    {
+      "animation": "idle",
+      "frame": 29,
+      "time": 0.9666666666666667,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 6.462908833182015,
+      "meanDrift": 4.332202885420935
+    },
+    {
+      "animation": "idle",
+      "frame": 29,
+      "time": 0.9666666666666667,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 13.722423350565606,
+      "meanDrift": 6.564417094887723
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 0.051433111728802924,
+      "meanDrift": 0.03712477313757924
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 0.020439670679242572,
+      "meanDrift": 0.010160078445843783
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 0.05212899117504314,
+      "meanDrift": 0.03067109148141552
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 0.01477102250435007,
+      "meanDrift": 0.007482818894764805
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 0.018434023855267077,
+      "meanDrift": 0.01254419350455597
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 29,
+      "maxDrift": 0.016811391079333566,
+      "meanDrift": 0.009154127956900116
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 0.035199091323927116,
+      "meanDrift": 0.018524252828488273
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 7,
+      "time": 0.23333333333333334,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 139.30133694634026,
+      "meanDrift": 98.8931104464861
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 7,
+      "time": 0.23333333333333334,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 55.69217723788749,
+      "meanDrift": 25.90858390647401
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 7,
+      "time": 0.23333333333333334,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 115.64355750198656,
+      "meanDrift": 71.3311627025933
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 7,
+      "time": 0.23333333333333334,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 38.434636196320035,
+      "meanDrift": 26.33379902785959
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 7,
+      "time": 0.23333333333333334,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 67.39242477526389,
+      "meanDrift": 47.07214625247143
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 28,
+      "time": 0.9333333333333333,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 64.78354571721954,
+      "meanDrift": 39.365467265367506
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 28,
+      "time": 0.9333333333333333,
+      "pair": "1_body/1_hand_L1",
+      "points": 10,
+      "maxDrift": 57.776771695761546,
+      "meanDrift": 50.06256798718219
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 28,
+      "time": 0.9333333333333333,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 14.877927374407022,
+      "meanDrift": 10.97618755954117
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 28,
+      "time": 0.9333333333333333,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 70.51130519023947,
+      "meanDrift": 35.83247793695898
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 28,
+      "time": 0.9333333333333333,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 50.02360155624405,
+      "meanDrift": 34.16773896276768
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 28,
+      "time": 0.9333333333333333,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 29,
+      "maxDrift": 17.447452381685885,
+      "meanDrift": 14.516847676240719
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 28,
+      "time": 0.9333333333333333,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 34,
+      "maxDrift": 34.6698201269333,
+      "meanDrift": 28.77714476091684
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 34,
+      "time": 1.1333333333333333,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 6.779507100059768,
+      "meanDrift": 4.432158025571781
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 34,
+      "time": 1.1333333333333333,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 9.37136447669871,
+      "meanDrift": 6.3861750356134115
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 34,
+      "time": 1.1333333333333333,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 4.303981358795253,
+      "meanDrift": 2.591512832920963
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 34,
+      "time": 1.1333333333333333,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 13.397976466016699,
+      "meanDrift": 7.01395118533374
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 34,
+      "time": 1.1333333333333333,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 9.416640960860905,
+      "meanDrift": 5.326962944488481
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 34,
+      "time": 1.1333333333333333,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 29,
+      "maxDrift": 4.318444710826182,
+      "meanDrift": 3.12979460072578
+    },
+    {
+      "animation": "idle_slow",
+      "frame": 34,
+      "time": 1.1333333333333333,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 6.986597567977704,
+      "meanDrift": 3.7675913500362785
+    },
+    {
+      "animation": "win",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 0.009836055142234009,
+      "meanDrift": 0.004858416417316222
+    },
+    {
+      "animation": "win",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 0.026315946631743383,
+      "meanDrift": 0.01890826598194316
+    },
+    {
+      "animation": "win",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_hand_R1",
+      "points": 28,
+      "maxDrift": 0.023379694393063387,
+      "meanDrift": 0.01410366028627516
+    },
+    {
+      "animation": "win",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 0.01406750469519781,
+      "meanDrift": 0.008568880596566334
+    },
+    {
+      "animation": "win",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 0.019155735338304128,
+      "meanDrift": 0.010845731698439984
+    },
+    {
+      "animation": "win",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 0.008434651949959281,
+      "meanDrift": 0.005440441795783644
+    },
+    {
+      "animation": "win",
+      "frame": 0,
+      "time": 0,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 0.01444316712527128,
+      "meanDrift": 0.009054371554598156
+    },
+    {
+      "animation": "win",
+      "frame": 12,
+      "time": 0.4,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 22.159003122995227,
+      "meanDrift": 13.559086324379862
+    },
+    {
+      "animation": "win",
+      "frame": 12,
+      "time": 0.4,
+      "pair": "1_body/1_hand_L1",
+      "points": 10,
+      "maxDrift": 6.080562746669216,
+      "meanDrift": 4.340632383793287
+    },
+    {
+      "animation": "win",
+      "frame": 12,
+      "time": 0.4,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 24.003802857189253,
+      "meanDrift": 15.700284616240587
+    },
+    {
+      "animation": "win",
+      "frame": 12,
+      "time": 0.4,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 13.055760097807951,
+      "meanDrift": 8.133895514102353
+    },
+    {
+      "animation": "win",
+      "frame": 12,
+      "time": 0.4,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 27.08396141905571,
+      "meanDrift": 16.53588076847029
+    },
+    {
+      "animation": "win",
+      "frame": 12,
+      "time": 0.4,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 32.80987950685027,
+      "meanDrift": 21.498104187044216
+    },
+    {
+      "animation": "win",
+      "frame": 12,
+      "time": 0.4,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 49.05521081078496,
+      "meanDrift": 27.83904623905606
+    },
+    {
+      "animation": "win",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 5.873157095333124,
+      "meanDrift": 4.644019570775583
+    },
+    {
+      "animation": "win",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 26.428494247680426,
+      "meanDrift": 15.818164869392943
+    },
+    {
+      "animation": "win",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 31.114235173223438,
+      "meanDrift": 21.418870145453127
+    },
+    {
+      "animation": "win",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 2.9851534039981296,
+      "meanDrift": 1.5038035341797218
+    },
+    {
+      "animation": "win",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 3.8456146438974845,
+      "meanDrift": 2.022792718889465
+    },
+    {
+      "animation": "win",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 51.59400070420371,
+      "meanDrift": 23.79656220088044
+    },
+    {
+      "animation": "win",
+      "frame": 24,
+      "time": 0.8,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 56.59940821659086,
+      "meanDrift": 32.90571559376951
+    },
+    {
+      "animation": "win",
+      "frame": 30,
+      "time": 1,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 22.653107553237188,
+      "meanDrift": 17.35237150201107
+    },
+    {
+      "animation": "win",
+      "frame": 30,
+      "time": 1,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 20.738044634918097,
+      "meanDrift": 15.684665992162696
+    },
+    {
+      "animation": "win",
+      "frame": 30,
+      "time": 1,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 30.190478340503336,
+      "meanDrift": 20.955671156458937
+    },
+    {
+      "animation": "win",
+      "frame": 30,
+      "time": 1,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 12.958788584340764,
+      "meanDrift": 6.347938764955735
+    },
+    {
+      "animation": "win",
+      "frame": 30,
+      "time": 1,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 6.284449322065877,
+      "meanDrift": 5.510786338632109
+    },
+    {
+      "animation": "win",
+      "frame": 30,
+      "time": 1,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 20.059236683613822,
+      "meanDrift": 15.434847566264944
+    },
+    {
+      "animation": "win",
+      "frame": 30,
+      "time": 1,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 17.403963840384375,
+      "meanDrift": 12.247893897000273
+    },
+    {
+      "animation": "win",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 28.848677479186577,
+      "meanDrift": 21.22582246085472
+    },
+    {
+      "animation": "win",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 11.362832060476931,
+      "meanDrift": 9.406405952434584
+    },
+    {
+      "animation": "win",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 18.99111502625282,
+      "meanDrift": 14.04471415742229
+    },
+    {
+      "animation": "win",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 18.030202327382355,
+      "meanDrift": 10.885478791496997
+    },
+    {
+      "animation": "win",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 20.063155730672555,
+      "meanDrift": 5.861012251393576
+    },
+    {
+      "animation": "win",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 33.2099065564165,
+      "meanDrift": 22.61768308869963
+    },
+    {
+      "animation": "win",
+      "frame": 36,
+      "time": 1.2,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 16.81414317935,
+      "meanDrift": 11.841184677421579
+    },
+    {
+      "animation": "win",
+      "frame": 48,
+      "time": 1.6,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 61.696662884459414,
+      "meanDrift": 51.385336474940786
+    },
+    {
+      "animation": "win",
+      "frame": 48,
+      "time": 1.6,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 54.78594058612503,
+      "meanDrift": 33.18186471526007
+    },
+    {
+      "animation": "win",
+      "frame": 48,
+      "time": 1.6,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 17.588519776039416,
+      "meanDrift": 13.748574771563572
+    },
+    {
+      "animation": "win",
+      "frame": 48,
+      "time": 1.6,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 23.778979048634213,
+      "meanDrift": 12.492418052012933
+    },
+    {
+      "animation": "win",
+      "frame": 48,
+      "time": 1.6,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 49.73693557637071,
+      "meanDrift": 19.364160269343017
+    },
+    {
+      "animation": "win",
+      "frame": 48,
+      "time": 1.6,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 68.26001978680802,
+      "meanDrift": 39.79452042981976
+    },
+    {
+      "animation": "win",
+      "frame": 48,
+      "time": 1.6,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 18.578587314978762,
+      "meanDrift": 13.101098122532482
+    },
+    {
+      "animation": "win",
+      "frame": 59,
+      "time": 1.9666666666666666,
+      "pair": "1_body/1_head",
+      "points": 18,
+      "maxDrift": 1.5308433028906603,
+      "meanDrift": 1.0031640386456915
+    },
+    {
+      "animation": "win",
+      "frame": 59,
+      "time": 1.9666666666666666,
+      "pair": "1_body/1_hand_L1",
+      "points": 22,
+      "maxDrift": 1.1912955388459407,
+      "meanDrift": 0.4530482861459277
+    },
+    {
+      "animation": "win",
+      "frame": 59,
+      "time": 1.9666666666666666,
+      "pair": "1_body/1_hand_R1",
+      "points": 15,
+      "maxDrift": 0.4185067083829413,
+      "meanDrift": 0.2120226414506486
+    },
+    {
+      "animation": "win",
+      "frame": 59,
+      "time": 1.9666666666666666,
+      "pair": "1_body/1_leg_L1",
+      "points": 21,
+      "maxDrift": 0.930468061251712,
+      "meanDrift": 0.701738078783636
+    },
+    {
+      "animation": "win",
+      "frame": 59,
+      "time": 1.9666666666666666,
+      "pair": "1_body/1_leg_R1",
+      "points": 24,
+      "maxDrift": 1.761277904611933,
+      "meanDrift": 0.9281718448944271
+    },
+    {
+      "animation": "win",
+      "frame": 59,
+      "time": 1.9666666666666666,
+      "pair": "1_hand_L1/1_hand_L2",
+      "points": 30,
+      "maxDrift": 1.871638796257505,
+      "meanDrift": 1.6174704228140862
+    },
+    {
+      "animation": "win",
+      "frame": 59,
+      "time": 1.9666666666666666,
+      "pair": "1_hand_R1/1_hand_R2",
+      "points": 25,
+      "maxDrift": 0.6811961973773469,
+      "meanDrift": 0.45330273340875527
+    }
+  ],
+  "pass": false,
+  "maxDrift": 144.8636729990523
+}

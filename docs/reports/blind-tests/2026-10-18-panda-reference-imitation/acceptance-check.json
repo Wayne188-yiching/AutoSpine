@@ -1,0 +1,273 @@
+{
+  "rows": [
+    {
+      "id": "A1 imagesOnly fit (shown slots) <= 2 px",
+      "ok": true,
+      "value": 0.005
+    },
+    {
+      "id": "A2 setup placement <= 0.5 px",
+      "ok": true,
+      "value": 0.008
+    },
+    {
+      "id": "A4 loop seam idle <= 0.5 px",
+      "ok": true,
+      "value": 0.01
+    },
+    {
+      "id": "A4 loop seam idle_slow <= 0.5 px",
+      "ok": true,
+      "value": 0.011
+    },
+    {
+      "id": "A6 rest pose final: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0.0003 / 0.0005"
+    },
+    {
+      "id": "A6 rest pose idle: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0.0003 / 0.0005"
+    },
+    {
+      "id": "A6 rest pose idle_slow: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0.0002 / 0.0004"
+    },
+    {
+      "id": "A6 rest pose wild: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0 / 0"
+    },
+    {
+      "id": "A6 rest pose win: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0.0002 / 0.0003"
+    },
+    {
+      "id": "B1 visible inversions final = 0",
+      "ok": false,
+      "value": {
+        "2_hat": 33,
+        "1_nose": 44,
+        "1_body": 26,
+        "1_leg_L1": 61,
+        "1_hat": 27,
+        "1_hand_R3": 209,
+        "3_body": 2,
+        "2_scarf": 219,
+        "3_hand_L1": 4,
+        "2_head": 1,
+        "1_scarf": 7,
+        "3_head": 1,
+        "1_eyes": 23,
+        "1_ear_R": 23,
+        "1_hand_L3": 215,
+        "1_ear_L": 27,
+        "1_leg_R1": 40
+      }
+    },
+    {
+      "id": "B1 visible inversions idle = 0",
+      "ok": false,
+      "value": {
+        "2_hat": 33,
+        "1_nose": 44,
+        "1_body": 26,
+        "1_leg_L1": 61,
+        "1_hat": 27,
+        "1_hand_R3": 7,
+        "3_body": 2,
+        "2_scarf": 219,
+        "3_hand_L1": 4,
+        "2_head": 1,
+        "1_scarf": 7,
+        "3_head": 1,
+        "1_eyes2": 8
+      }
+    },
+    {
+      "id": "B1 visible inversions idle_slow = 0",
+      "ok": false,
+      "value": {
+        "2_hat": 33,
+        "1_body": 26,
+        "1_leg_L1": 61,
+        "1_nose": 44,
+        "1_hat": 27,
+        "1_hand_R3": 7,
+        "3_body": 2,
+        "2_scarf": 219,
+        "2_head": 1,
+        "1_scarf": 7,
+        "3_head": 1,
+        "3_hand_L1": 4,
+        "1_eyes2": 8
+      }
+    },
+    {
+      "id": "B1 visible inversions wild = 0",
+      "ok": true,
+      "value": {}
+    },
+    {
+      "id": "B1 visible inversions win = 0",
+      "ok": false,
+      "value": {
+        "1_nose": 23,
+        "1_eyes": 23,
+        "1_ear_R": 23,
+        "1_hat": 9,
+        "1_hand_R3": 209,
+        "1_hand_L3": 215,
+        "1_ear_L": 27,
+        "1_leg_R1": 40,
+        "1_leg_L1": 1
+      }
+    },
+    {
+      "id": "B2 seam drift <= 11 px",
+      "ok": false,
+      "value": 144.864
+    },
+    {
+      "id": "B3 stretch final <= 1.5 x artist",
+      "ok": false,
+      "value": "52.38 / 9.166"
+    },
+    {
+      "id": "B3 stretch idle <= 1.5 x artist",
+      "ok": false,
+      "value": "52.38 / 9.166"
+    },
+    {
+      "id": "B3 stretch idle_slow <= 1.5 x artist",
+      "ok": false,
+      "value": "53.231 / 9.198"
+    },
+    {
+      "id": "B3 stretch wild <= 1.5 x artist",
+      "ok": true,
+      "value": "1.027 / 1.54"
+    },
+    {
+      "id": "B3 stretch win <= 1.5 x artist",
+      "ok": false,
+      "value": "8.071 / 7.063"
+    },
+    {
+      "id": "C1 attachments = 46",
+      "ok": true,
+      "value": 46
+    },
+    {
+      "id": "C2 recall final >= 0.8",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C3 precision final >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall idle >= 0.8",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C3 precision idle >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall idle_slow >= 0.8",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C3 precision idle_slow >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall wild >= 0.8",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C3 precision wild >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall win >= 0.8",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C3 precision win >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "D1 critic final >= 60%",
+      "ok": true,
+      "value": "12/13"
+    },
+    {
+      "id": "D1 critic idle >= 60%",
+      "ok": true,
+      "value": "9/10"
+    },
+    {
+      "id": "D1 critic idle_slow >= 60%",
+      "ok": true,
+      "value": "9/10"
+    },
+    {
+      "id": "D1 critic wild >= 60%",
+      "ok": true,
+      "value": "1/1"
+    },
+    {
+      "id": "D1 critic win >= 60%",
+      "ok": true,
+      "value": "10/13"
+    },
+    {
+      "id": "D2 amplitude final >= 60%",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "D2 amplitude idle >= 60%",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "D2 amplitude idle_slow >= 60%",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "D2 amplitude wild >= 60%",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "D2 amplitude win >= 60%",
+      "ok": true,
+      "value": 1
+    }
+  ],
+  "pass": false,
+  "seamEvidence": {
+    "samples": 143,
+    "method": "AutoSpine measureOverlapDrift, frame-0 baseline, visible pairs, 7 poses per animation",
+    "maxDrift": 144.8636729990523
+  },
+  "artistQualityAccepted": false,
+  "referenceConditioned": true
+}

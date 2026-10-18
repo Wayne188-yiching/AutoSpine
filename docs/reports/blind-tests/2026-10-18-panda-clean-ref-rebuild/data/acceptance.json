@@ -1,0 +1,583 @@
+{
+  "date": "2026-10-18",
+  "overallPassed": true,
+  "scope": "Measured Ref V1-V4, actual-file precision, 120 FPS visible-fold checks and agent visual review. Reference-fitted, not a blind test or formal artist acceptance.",
+  "artistAccepted": false,
+  "engine": {
+    "version": "0.5.1",
+    "sha256": "fc3748403a751f88ac80f0eafc94baaab51007b60d48be87fda9c3d7425c0939"
+  },
+  "sources": {
+    "count": 79,
+    "originalAndBackupVerified": true,
+    "references": [
+      {
+        "animation": "final",
+        "sha256": "92c2610f731e7f9d0919186af4270ddbca9acf5727f11a1586f7163ba7b2a91a"
+      },
+      {
+        "animation": "idle",
+        "sha256": "8a8773144de7f9483ae3d52e125d8f747bc74c6b1a9db7e8f05465ff8bdafb73"
+      },
+      {
+        "animation": "idle_slow",
+        "sha256": "a2c816168326e6c4387ec5e03f086a043b73a6f728c497d1cc0d58d8683d07e7"
+      },
+      {
+        "animation": "wild",
+        "sha256": "c3bfc04cb0ffc191f21319422cde4ba82a0e464a01f52b05a45ee25fa1f6df63"
+      },
+      {
+        "animation": "win",
+        "sha256": "aaf55c232a8436fc22a69861a013eba1020ececa81e540def95d5770fc970479"
+      }
+    ],
+    "clean": {
+      "bones": 1,
+      "animations": 0,
+      "meshes": 0,
+      "weights": 0,
+      "constraints": 0,
+      "officialRoundtrip": true
+    }
+  },
+  "delivery": {
+    "file": "Panda_Rebuilt.spine",
+    "sha256": "f73d92a6fe32b6792cda8ad14e1aa3a663c97958ebc1c48832e14cdf56040acf",
+    "bones": 61,
+    "meshes": 46,
+    "images": 74,
+    "imagePath": "./images/",
+    "animations": [
+      "final",
+      "idle",
+      "idle_slow",
+      "wild",
+      "win"
+    ],
+    "originalBoneNameOverlap": [
+      "root"
+    ],
+    "binary": "checks/delivery-r5/binary/Panda_Rebuilt.skel",
+    "binarySha256": "cea2330dc38412e800fbb1e2243684ee5f3da5e41537b93d92f2e991c950128b"
+  },
+  "method": "Only source PNG pixels and static images-only placements retained. Newly generated bones, topology and weights; new Ref-pixel transforms, swaps, colours and dense local deformation keys compiled through the bundled native AutoSpine IR compiler. No artist rig, mesh, UV trimming, weights or motion used for fitting.",
+  "roundtrip": {
+    "source": "builds/build-18-storage/panda_updated_rebuild.json",
+    "exported": "checks/delivery-r5/binary/Panda_Rebuilt.skel",
+    "thresholdPx": 0.5,
+    "sampling": "60 fps, native frameTime +1 microsecond for float32 key boundaries; final frame just before duration",
+    "results": [
+      {
+        "animation": "final",
+        "samples": 181,
+        "vertices": 210745,
+        "maxVertexDeviationPx": 0.0177074939177437,
+        "changedAttachments": 0,
+        "where": {
+          "frame60": 13,
+          "slot": "1_leg_R1",
+          "vertex": 6
+        },
+        "pass": true
+      },
+      {
+        "animation": "idle",
+        "samples": 61,
+        "vertices": 59651,
+        "maxVertexDeviationPx": 0.0177074939177437,
+        "changedAttachments": 0,
+        "where": {
+          "frame60": 13,
+          "slot": "1_leg_R1",
+          "vertex": 6
+        },
+        "pass": true
+      },
+      {
+        "animation": "idle_slow",
+        "samples": 71,
+        "vertices": 70381,
+        "maxVertexDeviationPx": 0.014327718005549968,
+        "changedAttachments": 0,
+        "where": {
+          "frame60": 20,
+          "slot": "1_leg_R1",
+          "vertex": 6
+        },
+        "pass": true
+      },
+      {
+        "animation": "wild",
+        "samples": 121,
+        "vertices": 10994,
+        "maxVertexDeviationPx": 0.011373488891804352,
+        "changedAttachments": 0,
+        "where": {
+          "frame60": 80,
+          "slot": "w_W",
+          "vertex": 47
+        },
+        "pass": true
+      },
+      {
+        "animation": "win",
+        "samples": 121,
+        "vertices": 141291,
+        "maxVertexDeviationPx": 0.012823093875275613,
+        "changedAttachments": 0,
+        "where": {
+          "frame60": 80,
+          "slot": "1_leg_L1",
+          "vertex": 54
+        },
+        "pass": true
+      }
+    ]
+  },
+  "mesh": {
+    "source": "checks/delivery-r5/binary/Panda_Rebuilt.skel",
+    "fps": 120,
+    "method": "Official-runtime playback at the recorded fps. Mixed triangle orientation is tested against texture alpha and frontmost rendered slot ownership. A uniform whole-part mirror is not a local fold.",
+    "results": [
+      {
+        "animation": "final",
+        "samples": 361,
+        "candidateFrames": [
+          {
+            "frame60": 96,
+            "triangles": 1
+          }
+        ],
+        "visibleInversions": [],
+        "pass": true
+      },
+      {
+        "animation": "idle",
+        "samples": 121,
+        "candidateFrames": [
+          {
+            "frame60": 96,
+            "triangles": 1
+          }
+        ],
+        "visibleInversions": [],
+        "pass": true
+      },
+      {
+        "animation": "idle_slow",
+        "samples": 141,
+        "candidateFrames": [],
+        "visibleInversions": [],
+        "pass": true
+      },
+      {
+        "animation": "wild",
+        "samples": 241,
+        "candidateFrames": [],
+        "visibleInversions": [],
+        "pass": true
+      },
+      {
+        "animation": "win",
+        "samples": 241,
+        "candidateFrames": [],
+        "visibleInversions": [],
+        "pass": true
+      }
+    ],
+    "pass": true
+  },
+  "comparisons": [
+    {
+      "animation": "final",
+      "pass": true,
+      "frames": {
+        "compared": 91,
+        "visible": 91,
+        "registrationFrame": 0,
+        "animation": 91
+      },
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": true,
+          "value": [
+            0.975,
+            0.937
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": true,
+          "value": [
+            0.18,
+            0.71,
+            "17 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            1
+          ]
+        }
+      ],
+      "note": "Native V1-V4 error limits retained. All original frames are scored. Blank-first clips register once on a visible frame and V2 requires coverage of half the visible frames. For a turn with artwork pose swaps, 1_/2_/3_ slots for the same anatomical part form one continuous track. Raw native reports remain available. Direct video review is required."
+    },
+    {
+      "animation": "idle",
+      "pass": true,
+      "frames": {
+        "compared": 30,
+        "visible": 30,
+        "registrationFrame": 0,
+        "animation": 30
+      },
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": true,
+          "value": [
+            0.967,
+            0.937
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": true,
+          "value": [
+            0.16,
+            0.6,
+            "9 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            1.02
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "note": "Native V1-V4 error limits retained. All original frames are scored. Blank-first clips register once on a visible frame and V2 requires coverage of half the visible frames. For a turn with artwork pose swaps, 1_/2_/3_ slots for the same anatomical part form one continuous track. Raw native reports remain available. Direct video review is required."
+    },
+    {
+      "animation": "idle_slow",
+      "pass": true,
+      "frames": {
+        "compared": 35,
+        "visible": 35,
+        "registrationFrame": 0,
+        "animation": 35
+      },
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": true,
+          "value": [
+            0.961,
+            0.912
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": true,
+          "value": [
+            0.14,
+            0.76,
+            "12 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            1.07
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "note": "Native V1-V4 error limits retained. All original frames are scored. Blank-first clips register once on a visible frame and V2 requires coverage of half the visible frames. For a turn with artwork pose swaps, 1_/2_/3_ slots for the same anatomical part form one continuous track. Raw native reports remain available. Direct video review is required."
+    },
+    {
+      "animation": "wild",
+      "pass": true,
+      "frames": {
+        "compared": 61,
+        "visible": 23,
+        "registrationFrame": 32,
+        "animation": 61
+      },
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": true,
+          "value": [
+            0.99,
+            0.937
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": true,
+          "value": [
+            0.25,
+            0.64,
+            "4 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            1
+          ]
+        }
+      ],
+      "note": "Native V1-V4 error limits retained. All original frames are scored. Blank-first clips register once on a visible frame and V2 requires coverage of half the visible frames. For a turn with artwork pose swaps, 1_/2_/3_ slots for the same anatomical part form one continuous track. Raw native reports remain available. Direct video review is required."
+    },
+    {
+      "animation": "win",
+      "pass": true,
+      "frames": {
+        "compared": 61,
+        "visible": 61,
+        "registrationFrame": 0,
+        "animation": 61
+      },
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": true,
+          "value": [
+            0.982,
+            0.973
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": true,
+          "value": [
+            0.12,
+            0.38,
+            "18 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            1
+          ]
+        }
+      ],
+      "note": "Native V1-V4 error limits retained. All original frames are scored. Blank-first clips register once on a visible frame and V2 requires coverage of half the visible frames. For a turn with artwork pose swaps, 1_/2_/3_ slots for the same anatomical part form one continuous track. Raw native reports remain available. Direct video review is required."
+    }
+  ],
+  "visual": {
+    "pass": true,
+    "reviewer": "Codex agent visual inspection",
+    "sourceBinary": "checks/delivery-r5/binary/Panda_Rebuilt.skel",
+    "method": "Viewed the five final encoded movie-vs-original-Ref contact sheets and all five wireframe/bones/motion stage sheets. Sampling is retained in manifest.json. Numeric acceptance and official-runtime 120 FPS checks are separate records.",
+    "checks": {
+      "allFiveEventsPresent": true,
+      "turnSequenceAndReturn": true,
+      "clapPalmOrientationAndFloatingHat": true,
+      "raisedPalmVisibleAtWin34": true,
+      "loweringHandFrontBackTransition36To42": true,
+      "wildEntryRotationExitIncludingBlankLead": true,
+      "threeStageOverlaysAndNonOverlappingCaptions": true,
+      "constantCameraWithoutCharacterCropping": true
+    },
+    "limits": "This approves motion correspondence and review presentation within the recorded Ref tolerances. Shading, texture perspective and small edge-pixel differences remain; this is not pixel-identical reproduction, an independent blind test, or formal artist acceptance.",
+    "artistAccepted": false
+  },
+  "videos": [
+    {
+      "animation": "final",
+      "file": "checks/final-event-reviews-r5/Panda-final.mp4",
+      "sha256": "c57b14f71c1edb5a345b9ff37b417ba565a89426086fa425c9d0bfc9339aefc4",
+      "bytes": 15099110,
+      "decoded": true,
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 894,
+          "height": 696,
+          "avg_frame_rate": "30/1",
+          "nb_frames": "540"
+        }
+      ],
+      "format": {
+        "duration": "18.000000"
+      },
+      "stages": [
+        {
+          "label": "1 佈線",
+          "start": 0
+        },
+        {
+          "label": "2 骨架",
+          "start": 6
+        },
+        {
+          "label": "3 完整動態",
+          "start": 12
+        }
+      ]
+    },
+    {
+      "animation": "idle",
+      "file": "checks/final-event-reviews-r5/Panda-idle.mp4",
+      "sha256": "0f661c0e6aeed7dcf0690f683427c4f9b8f770fe84592f4c3bf69c2400548e5c",
+      "bytes": 7430733,
+      "decoded": true,
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 688,
+          "height": 696,
+          "avg_frame_rate": "30/1",
+          "nb_frames": "270"
+        }
+      ],
+      "format": {
+        "duration": "9.000000"
+      },
+      "stages": [
+        {
+          "label": "1 佈線",
+          "start": 0
+        },
+        {
+          "label": "2 骨架",
+          "start": 3
+        },
+        {
+          "label": "3 完整動態",
+          "start": 6
+        }
+      ]
+    },
+    {
+      "animation": "idle_slow",
+      "file": "checks/final-event-reviews-r5/Panda-idle_slow.mp4",
+      "sha256": "ab52078b1eb7a40bc603b7f36f845880a3c9a27e995fda30aa0229b923f6289d",
+      "bytes": 9023549,
+      "decoded": true,
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 698,
+          "height": 696,
+          "avg_frame_rate": "30/1",
+          "nb_frames": "315"
+        }
+      ],
+      "format": {
+        "duration": "10.500000"
+      },
+      "stages": [
+        {
+          "label": "1 佈線",
+          "start": 0
+        },
+        {
+          "label": "2 骨架",
+          "start": 3.5
+        },
+        {
+          "label": "3 完整動態",
+          "start": 7
+        }
+      ]
+    },
+    {
+      "animation": "wild",
+      "file": "checks/final-event-reviews-r5/Panda-wild.mp4",
+      "sha256": "821354bfce2a58c382cf04696a8a622e561afd5133503b30ee2ace4e153a9624",
+      "bytes": 2956140,
+      "decoded": true,
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 1210,
+          "height": 696,
+          "avg_frame_rate": "30/1",
+          "nb_frames": "360"
+        }
+      ],
+      "format": {
+        "duration": "12.000000"
+      },
+      "stages": [
+        {
+          "label": "1 佈線",
+          "start": 0
+        },
+        {
+          "label": "2 骨架",
+          "start": 4
+        },
+        {
+          "label": "3 完整動態",
+          "start": 8
+        }
+      ]
+    },
+    {
+      "animation": "win",
+      "file": "checks/final-event-reviews-r5/Panda-win.mp4",
+      "sha256": "04f79028f6f26e84e45300ed6c6ad7b5c783dacd7d174efd194fca7d5d18db62",
+      "bytes": 11346703,
+      "decoded": true,
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "width": 738,
+          "height": 696,
+          "avg_frame_rate": "30/1",
+          "nb_frames": "360"
+        }
+      ],
+      "format": {
+        "duration": "12.000000"
+      },
+      "stages": [
+        {
+          "label": "1 佈線",
+          "start": 0
+        },
+        {
+          "label": "2 骨架",
+          "start": 4
+        },
+        {
+          "label": "3 完整動態",
+          "start": 8
+        }
+      ]
+    }
+  ]
+}

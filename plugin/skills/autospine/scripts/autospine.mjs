@@ -39470,7 +39470,11 @@ var drawtextValue = (v) => v.replace(/\\/g, "\\\\").replace(/:/g, "\\:").replace
 async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = {}) {
   if (existsSync2(outPath))
     throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  if (opts.referenceVideo && artistPath)
+    throw new Error("CLI_VIDEO: give an artist file or a reference video, not both");
   const plan = await readPlan(planPath);
+  if (opts.referenceVideo && plan.motion.animations.length !== 1)
+    throw new Error("CLI_VIDEO: a reference video goes with a plan of one animation");
   const paths = planPaths(planPath, plan);
   const generated = JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8"));
   const tex = textures(paths.images);
@@ -39498,7 +39502,8 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
   const captions = font && existsSync2(font);
   const labels = [];
   const reviews = plan.motion.animations.map((a) => reviewFrames(sides, tex.texture, view, a.name, opts.loops ? { loops: opts.loops } : {}));
-  const width = reviews[0].width;
+  const refTiles = opts.referenceVideo ? await referenceTiles(resolve3(opts.referenceVideo), sides[0], tex.texture, view, plan.motion.animations[0].name, reviews[0].frames, reviews[0].fps) : void 0;
+  const width = refTiles ? 2 * view.width + 4 : reviews[0].width;
   let t0 = 0;
   const names = { wireframe: "1 \u4F48\u7DDA", bones: "2 \u9AA8\u67B6", motion: "3 \u5B8C\u6574\u52D5\u614B" };
   plan.motion.animations.forEach((a, k) => {
@@ -39516,8 +39521,8 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
     }
     t0 += length;
   });
-  if (artistPath) {
-    labels.push({ text: "\u4EBA\u5DE5", x: "12", y: head + 10, size: 22 });
+  if (artistPath || refTiles) {
+    labels.push({ text: refTiles ? "\u53C3\u8003\u5F71\u7247" : "\u4EBA\u5DE5", x: "12", y: head + 10, size: 22 });
     labels.push({ text: "AutoSpine", x: String(view.width + 16), y: head + 10, size: 22 });
   }
   const filters = captions ? labels.map((l) => `drawtext=fontfile='${drawtextValue(font)}':text='${drawtextValue(l.text)}':x=${l.x}:y=${l.y}:fontsize=${l.size}:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=6` + (l.from !== void 0 ? `:enable='between(t,${l.from.toFixed(3)},${l.to.toFixed(3)})'` : "")).join(",") : "null";
@@ -39561,12 +39566,23 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
   const band = new Uint8Array(width * head * 3);
   for (let i = 0; i < band.length; i += 3)
     band.set([24, 27, 34], i);
-  for (const r of reviews)
+  const pair = new Uint8Array(width * view.height * 3);
+  for (const r of reviews) {
+    let n = 0;
     for (const { raster } of r.play()) {
       await write(band);
-      await write(raster.rgb);
+      if (refTiles) {
+        const tile = refTiles[n++ % r.frames % refTiles.length], w = view.width * 3;
+        for (let y = 0; y < view.height; y++) {
+          pair.set(tile.subarray(y * w, (y + 1) * w), y * width * 3);
+          pair.set(raster.rgb.subarray(y * w, (y + 1) * w), y * width * 3 + w + 12);
+        }
+        await write(pair);
+      } else
+        await write(raster.rgb);
       frames++;
     }
+  }
   ffmpeg.stdin.end();
   const code = await done;
   if (code !== 0)
@@ -39812,6 +39828,65 @@ async function* videoFrames(path, start, fps, count, width, height) {
     }
   } finally {
     p.kill();
+  }
+}
+async function referenceTiles(video, sk, texture, view, animation, count, fps) {
+  const { width: W, height: H } = await videoSize(video);
+  const w = view.width, h = view.height;
+  const frames = videoFrames(video, 0, fps, count, W, H);
+  try {
+    const first = await frames.next();
+    if (first.done)
+      throw new Error(`CLI_VIDEO: ${video} has no frames`);
+    const ref0 = first.value, bg = borderColor(ref0);
+    if (plainBorder(ref0, bg) < 0.75)
+      throw new Error(`CLI_VIDEO: ${video} does not have a plain background; export the reference on a single colour`);
+    const rs = maskStats(foregroundMask(ref0, bg), W, H);
+    if (rs.area < 64)
+      throw new Error(`CLI_VIDEO: no figure found in ${video}`);
+    pose(sk, animation, 0);
+    const canvas = render(sk, texture, view), buildMask = new Uint8Array(w * h);
+    for (let i = 0; i < buildMask.length; i++)
+      buildMask[i] = canvas[i * 4 + 3] > 0.5 ? 1 : 0;
+    const bs = maskStats(buildMask, w, h);
+    let a = (rs.maxY - rs.minY + 1) / Math.max(1, bs.maxY - bs.minY + 1), ox = (rs.minX + rs.maxX) / 2 - a * (bs.minX + bs.maxX) / 2, oy = (rs.minY + rs.maxY) / 2 - a * (bs.minY + bs.maxY) / 2;
+    const place = (f) => {
+      const ss = Math.max(1, Math.ceil(a)), out = new Uint8Array(w * h * 3);
+      for (let y = 0; y < h; y++)
+        for (let x = 0; x < w; x++) {
+          let r = 0, g = 0, b = 0;
+          for (let j = 0; j < ss; j++)
+            for (let i = 0; i < ss; i++) {
+              const u = Math.round(a * (x - 0.5 + (i + 0.5) / ss) + ox), v = Math.round(a * (y - 0.5 + (j + 0.5) / ss) + oy);
+              if (u < 0 || v < 0 || u >= W || v >= H) {
+                r += bg[0];
+                g += bg[1];
+                b += bg[2];
+                continue;
+              }
+              const o2 = (v * W + u) * 3;
+              r += f.rgb[o2];
+              g += f.rgb[o2 + 1];
+              b += f.rgb[o2 + 2];
+            }
+          const o = (y * w + x) * 3;
+          out[o] = Math.round(r / ss / ss);
+          out[o + 1] = Math.round(g / ss / ss);
+          out[o + 2] = Math.round(b / ss / ss);
+        }
+      return out;
+    };
+    const placed = foregroundMask({ width: w, height: h, rgb: place(ref0) }, bg);
+    const reg = registerMasks(buildMask, placed, w, h);
+    ox += a * (reg.cx - (reg.cx + reg.dx) / reg.scale);
+    oy += a * (reg.cy - (reg.cy + reg.dy) / reg.scale);
+    a /= reg.scale;
+    const tiles = [place(ref0)];
+    for (let next = await frames.next(); !next.done; next = await frames.next())
+      tiles.push(place(next.value));
+    return tiles;
+  } finally {
+    await frames.return(void 0);
   }
 }
 function videoWriter(outPath, width, height, fps, filter) {
@@ -40872,7 +40947,7 @@ var characterUsage = `Character commands (ADR-017):
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
   autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
   autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]
-  autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file]
+  autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file] [--reference-video=file]
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
@@ -40956,11 +41031,12 @@ ${characterUsage}`);
     case "review-video": {
       if (p.length !== 4 && p.length !== 5)
         throw new Error(characterUsage);
-      known2("loops", "height", "font");
+      known2("loops", "height", "font", "reference-video");
       const opts = {
         loops: numberFlag("loops"),
         height: numberFlag("height"),
-        font: flags.get("font")
+        font: flags.get("font"),
+        referenceVideo: flags.get("reference-video") || void 0
       };
       console.log(JSON.stringify(await reviewVideoFiles(p[1], p[2], p.length === 5 ? p[3] : void 0, p.at(-1), Object.fromEntries(Object.entries(opts).filter(([, v]) => v !== void 0)))));
       return true;

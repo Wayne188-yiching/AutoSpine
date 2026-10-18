@@ -33,7 +33,7 @@ Set the host-controlled `AUTOSPINE_WORKSPACE` environment variable to the intend
 | `autospine_build_character`         | Lint and build a workspace plan into a **new** workspace directory (Spine JSON, IR, record)                                              |
 | `autospine_compare_reference`       | Artist-baseline comparison and pre-registered acceptance into a **new** workspace directory                                              |
 | `autospine_optimize_motion`         | Resumable motion-parameter search for at most `budgetSeconds` in a workspace state directory                                             |
-| `autospine_review_video`            | **New** MP4: artist \| build with wireframe, then bones, then motion (needs ffmpeg)                                                      |
+| `autospine_review_video`            | **New** MP4: artist \| build (or reference video \| build) with wireframe, then bones, then motion (needs ffmpeg)                        |
 | `autospine_compare_video`           | **New** directory: the build against a workspace reference video, V1–V4 rows, hints and reference \| build \| difference video (ADR-034) |
 | `autospine_fit_pose`                | **New** JSON: a rest pose fitted to a PNG of `qa.view` (ADR-024), or key poses fitted to pictures on frames (`references`, ADR-033)      |
 | `autospine_merge_plans`             | **New** plan: plans of one character merged, every animation keeping its motion (ADR-031)                                                |

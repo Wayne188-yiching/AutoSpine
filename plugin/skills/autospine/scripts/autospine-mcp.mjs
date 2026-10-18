@@ -39205,7 +39205,11 @@ var drawtextValue = (v) => v.replace(/\\/g, "\\\\").replace(/:/g, "\\:").replace
 async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = {}) {
   if (existsSync2(outPath))
     throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  if (opts.referenceVideo && artistPath)
+    throw new Error("CLI_VIDEO: give an artist file or a reference video, not both");
   const plan = await readPlan(planPath);
+  if (opts.referenceVideo && plan.motion.animations.length !== 1)
+    throw new Error("CLI_VIDEO: a reference video goes with a plan of one animation");
   const paths = planPaths(planPath, plan);
   const generated = JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8"));
   const tex = textures(paths.images);
@@ -39233,7 +39237,8 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
   const captions = font && existsSync2(font);
   const labels = [];
   const reviews = plan.motion.animations.map((a) => reviewFrames(sides, tex.texture, view, a.name, opts.loops ? { loops: opts.loops } : {}));
-  const width = reviews[0].width;
+  const refTiles = opts.referenceVideo ? await referenceTiles(resolve3(opts.referenceVideo), sides[0], tex.texture, view, plan.motion.animations[0].name, reviews[0].frames, reviews[0].fps) : void 0;
+  const width = refTiles ? 2 * view.width + 4 : reviews[0].width;
   let t0 = 0;
   const names = { wireframe: "1 \u4F48\u7DDA", bones: "2 \u9AA8\u67B6", motion: "3 \u5B8C\u6574\u52D5\u614B" };
   plan.motion.animations.forEach((a, k) => {
@@ -39251,8 +39256,8 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
     }
     t0 += length;
   });
-  if (artistPath) {
-    labels.push({ text: "\u4EBA\u5DE5", x: "12", y: head + 10, size: 22 });
+  if (artistPath || refTiles) {
+    labels.push({ text: refTiles ? "\u53C3\u8003\u5F71\u7247" : "\u4EBA\u5DE5", x: "12", y: head + 10, size: 22 });
     labels.push({ text: "AutoSpine", x: String(view.width + 16), y: head + 10, size: 22 });
   }
   const filters = captions ? labels.map((l) => `drawtext=fontfile='${drawtextValue(font)}':text='${drawtextValue(l.text)}':x=${l.x}:y=${l.y}:fontsize=${l.size}:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=6` + (l.from !== void 0 ? `:enable='between(t,${l.from.toFixed(3)},${l.to.toFixed(3)})'` : "")).join(",") : "null";
@@ -39296,12 +39301,23 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
   const band = new Uint8Array(width * head * 3);
   for (let i = 0; i < band.length; i += 3)
     band.set([24, 27, 34], i);
-  for (const r of reviews)
+  const pair = new Uint8Array(width * view.height * 3);
+  for (const r of reviews) {
+    let n = 0;
     for (const { raster } of r.play()) {
       await write(band);
-      await write(raster.rgb);
+      if (refTiles) {
+        const tile = refTiles[n++ % r.frames % refTiles.length], w = view.width * 3;
+        for (let y = 0; y < view.height; y++) {
+          pair.set(tile.subarray(y * w, (y + 1) * w), y * width * 3);
+          pair.set(raster.rgb.subarray(y * w, (y + 1) * w), y * width * 3 + w + 12);
+        }
+        await write(pair);
+      } else
+        await write(raster.rgb);
       frames++;
     }
+  }
   ffmpeg.stdin.end();
   const code = await done;
   if (code !== 0)
@@ -39372,6 +39388,65 @@ async function* videoFrames(path, start, fps, count, width, height) {
     }
   } finally {
     p.kill();
+  }
+}
+async function referenceTiles(video, sk, texture, view, animation, count, fps) {
+  const { width: W, height: H } = await videoSize(video);
+  const w = view.width, h = view.height;
+  const frames = videoFrames(video, 0, fps, count, W, H);
+  try {
+    const first = await frames.next();
+    if (first.done)
+      throw new Error(`CLI_VIDEO: ${video} has no frames`);
+    const ref0 = first.value, bg = borderColor(ref0);
+    if (plainBorder(ref0, bg) < 0.75)
+      throw new Error(`CLI_VIDEO: ${video} does not have a plain background; export the reference on a single colour`);
+    const rs = maskStats(foregroundMask(ref0, bg), W, H);
+    if (rs.area < 64)
+      throw new Error(`CLI_VIDEO: no figure found in ${video}`);
+    pose(sk, animation, 0);
+    const canvas = render(sk, texture, view), buildMask = new Uint8Array(w * h);
+    for (let i = 0; i < buildMask.length; i++)
+      buildMask[i] = canvas[i * 4 + 3] > 0.5 ? 1 : 0;
+    const bs = maskStats(buildMask, w, h);
+    let a = (rs.maxY - rs.minY + 1) / Math.max(1, bs.maxY - bs.minY + 1), ox = (rs.minX + rs.maxX) / 2 - a * (bs.minX + bs.maxX) / 2, oy = (rs.minY + rs.maxY) / 2 - a * (bs.minY + bs.maxY) / 2;
+    const place = (f) => {
+      const ss = Math.max(1, Math.ceil(a)), out = new Uint8Array(w * h * 3);
+      for (let y = 0; y < h; y++)
+        for (let x = 0; x < w; x++) {
+          let r = 0, g = 0, b = 0;
+          for (let j = 0; j < ss; j++)
+            for (let i = 0; i < ss; i++) {
+              const u = Math.round(a * (x - 0.5 + (i + 0.5) / ss) + ox), v = Math.round(a * (y - 0.5 + (j + 0.5) / ss) + oy);
+              if (u < 0 || v < 0 || u >= W || v >= H) {
+                r += bg[0];
+                g += bg[1];
+                b += bg[2];
+                continue;
+              }
+              const o2 = (v * W + u) * 3;
+              r += f.rgb[o2];
+              g += f.rgb[o2 + 1];
+              b += f.rgb[o2 + 2];
+            }
+          const o = (y * w + x) * 3;
+          out[o] = Math.round(r / ss / ss);
+          out[o + 1] = Math.round(g / ss / ss);
+          out[o + 2] = Math.round(b / ss / ss);
+        }
+      return out;
+    };
+    const placed = foregroundMask({ width: w, height: h, rgb: place(ref0) }, bg);
+    const reg = registerMasks(buildMask, placed, w, h);
+    ox += a * (reg.cx - (reg.cx + reg.dx) / reg.scale);
+    oy += a * (reg.cy - (reg.cy + reg.dy) / reg.scale);
+    a /= reg.scale;
+    const tiles = [place(ref0)];
+    for (let next = await frames.next(); !next.done; next = await frames.next())
+      tiles.push(place(next.value));
+    return tiles;
+  } finally {
+    await frames.return(void 0);
   }
 }
 function videoWriter(outPath, width, height, fps, filter) {
@@ -40521,7 +40596,8 @@ var toolSchemas = {
     buildDir: WorkspacePath,
     artistPath: Type.Optional(WorkspacePath),
     outputPath: WorkspacePath,
-    loops: Type.Optional(Type.Integer({ minimum: 1, maximum: 10 }))
+    loops: Type.Optional(Type.Integer({ minimum: 1, maximum: 10 })),
+    referenceVideoPath: Type.Optional(WorkspacePath)
   }, strict5),
   autospine_compare_video: Type.Object({
     planPath: WorkspacePath,
@@ -40601,7 +40677,7 @@ var descriptions = {
   autospine_fit_pose: "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
   autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
   autospine_fit_video: "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
-  autospine_review_video: "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval."
+  autospine_review_video: "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (reference video | build with referenceVideoPath, its frame i beside animation frame i; the build alone without either), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval."
 };
 var writingTools = /* @__PURE__ */ new Set([
   "autospine_build",
@@ -40980,8 +41056,12 @@ var AutoSpineMcpServer = class {
           const { root, plan } = await guardPlan(this.workspace, args.planPath);
           const build = await guardDirectory(root, args.buildDir);
           const artist = args.artistPath ? await guardFile(root, args.artistPath, 256 * 1024 * 1024) : void 0;
+          const referenceVideo = args.referenceVideoPath ? await guardFile(root, args.referenceVideoPath, 2 * 1024 * 1024 * 1024) : void 0;
           const output = await guardOutput(root, args.outputPath, true);
-          const video = await reviewVideoFiles(plan, build, artist, output, args.loops === void 0 ? {} : { loops: args.loops }).catch(characterFailure);
+          const video = await reviewVideoFiles(plan, build, artist, output, {
+            ...args.loops === void 0 ? {} : { loops: args.loops },
+            ...referenceVideo ? { referenceVideo } : {}
+          }).catch(characterFailure);
           return result({
             ...video,
             output: relative4(root, output),
