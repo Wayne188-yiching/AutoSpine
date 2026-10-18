@@ -47,6 +47,30 @@ describe("artist-density meshes by default (ADR-038)", () => {
     expect(kept.mesh.vertices.length).toBeLessThan(fine.mesh.vertices.length / 2);
   });
 
+  it("leaves a stray fragment out of a budget mesh and bridges two large pieces (ADR-039)", () => {
+    // A sliver of a neighbouring image left in the picture's corner, apart from the art.
+    const p = blob(300, 240);
+    for (let y = 0; y < 30; y++) for (let x = 296; x < 300; x++) p.alpha[y * 300 + x] = 255;
+    const asset = assetFor(p as never, "s"),
+      b = artistBudget(p.width, p.height),
+      budget = { hullVertices: b.hull, interiorVertices: b.interior };
+    const r = generateFeatureMesh(asset.parts[0]!, p.alpha, budget);
+    expect(r.discarded).toBe(120);
+    expect(r.mesh.uvs.filter(([u, v]) => u * 300 > 285 && v * 240 < 40)).toHaveLength(0);
+    // Two eyes on one image are too large to drop: one outline covers both.
+    const eyes = blob(300, 120);
+    eyes.alpha.fill(0);
+    for (let y = 0; y < 120; y++)
+      for (let x = 0; x < 300; x++)
+        if (((x % 150) - 75) ** 2 / 70 ** 2 + (y - 60) ** 2 / 55 ** 2 <= 1)
+          eyes.alpha[y * 300 + x] = 255;
+    const both = generateFeatureMesh(assetFor(eyes as never, "s").parts[0]!, eyes.alpha, budget);
+    expect(both.discarded).toBe(0);
+    const us = both.mesh.uvs.map(([u]) => u * 300);
+    expect(Math.min(...us)).toBeLessThan(10);
+    expect(Math.max(...us)).toBeGreaterThan(290);
+  });
+
   it("meshes a planned feature part at the artist budget unless the plan asks for fine", () => {
     const head = (plan: CharacterPlan) =>
       buildCharacter(plan, fixtureLayout()).rigging.meshes.get("Head")!.mesh;
