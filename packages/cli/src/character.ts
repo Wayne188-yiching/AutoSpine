@@ -701,18 +701,24 @@ const drawtextValue = (v: string) =>
  * review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4>: one video per plan, every
  * animation as artist | build (or the build alone), first with the mesh wireframe, then with the
  * bones, then the plain motion (the official 4.0 runtime, plan.qa.view). Needs ffmpeg on PATH; captions use --font
- * (default: Microsoft JhengHei on Windows) and are skipped without a font.
+ * (default: Microsoft JhengHei on Windows) and are skipped without a font. With --reference-video
+ * (no artist file) the left tile plays that video instead: its frame i beside animation frame i, the
+ * figure scaled and placed over the build's.
  */
 export async function reviewVideoFiles(
   planPath: string,
   buildDir: string,
   artistPath: string | undefined,
   outPath: string,
-  opts: { loops?: number; height?: number; font?: string } = {},
+  opts: { loops?: number; height?: number; font?: string; referenceVideo?: string } = {},
 ) {
   if (existsSync(outPath))
     throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  if (opts.referenceVideo && artistPath)
+    throw new Error("CLI_VIDEO: give an artist file or a reference video, not both");
   const plan = await readPlan(planPath);
+  if (opts.referenceVideo && plan.motion.animations.length !== 1)
+    throw new Error("CLI_VIDEO: a reference video goes with a plan of one animation");
   const paths = planPaths(planPath, plan);
   const generated = JSON.parse(
     await readFile(join(buildDir, `${plan.id}.json`), "utf8"),
@@ -750,7 +756,19 @@ export async function reviewVideoFiles(
   const reviews = plan.motion.animations.map((a) =>
     reviewFrames(sides, tex.texture, view, a.name, opts.loops ? { loops: opts.loops } : {}),
   );
-  const width = reviews[0]!.width;
+  const refTiles = opts.referenceVideo
+    ? await referenceTiles(
+        resolve(opts.referenceVideo),
+        sides[0]!,
+        tex.texture,
+        view,
+        plan.motion.animations[0]!.name,
+        reviews[0]!.frames,
+        reviews[0]!.fps,
+      )
+    : undefined;
+  // The same gap as between artist and build tiles.
+  const width = refTiles ? 2 * view.width + 4 : reviews[0]!.width;
   let t0 = 0;
   const names = { wireframe: "1 佈線", bones: "2 骨架", motion: "3 完整動態" } as const;
   plan.motion.animations.forEach((a, k) => {
@@ -771,8 +789,8 @@ export async function reviewVideoFiles(
     t0 += length;
   });
   // Side labels sit inside each tile's top-left corner, under the segment title band.
-  if (artistPath) {
-    labels.push({ text: "人工", x: "12", y: head + 10, size: 22 });
+  if (artistPath || refTiles) {
+    labels.push({ text: refTiles ? "參考影片" : "人工", x: "12", y: head + 10, size: 22 });
     labels.push({ text: "AutoSpine", x: String(view.width + 16), y: head + 10, size: 22 });
   }
   const filters = captions
@@ -832,12 +850,24 @@ export async function reviewVideoFiles(
   let frames = 0;
   const band = new Uint8Array(width * head * 3);
   for (let i = 0; i < band.length; i += 3) band.set([24, 27, 34], i);
-  for (const r of reviews)
+  const pair = new Uint8Array(width * view.height * 3);
+  for (const r of reviews) {
+    let n = 0;
     for (const { raster } of r.play()) {
       await write(band);
-      await write(raster.rgb);
+      if (refTiles) {
+        // play() runs each segment's loops frame by frame: the reference restarts with every loop.
+        const tile = refTiles[(n++ % r.frames) % refTiles.length]!,
+          w = view.width * 3;
+        for (let y = 0; y < view.height; y++) {
+          pair.set(tile.subarray(y * w, (y + 1) * w), y * width * 3);
+          pair.set(raster.rgb.subarray(y * w, (y + 1) * w), y * width * 3 + w + 12);
+        }
+        await write(pair);
+      } else await write(raster.rgb);
       frames++;
     }
+  }
   ffmpeg.stdin.end();
   const code = await done;
   if (code !== 0) throw new Error(`CLI_FFMPEG: ffmpeg failed (${code}): ${stderr.slice(-400)}`);
@@ -1183,6 +1213,89 @@ async function* videoFrames(
     }
   } finally {
     p.kill();
+  }
+}
+/**
+ * The first `count` frames of a reference video as review tiles in `view`: frame 0's figure is
+ * scaled and placed over the build's frame-0 figure (bounds, then registerMasks), and every frame is
+ * drawn the same way. Pixels outside the video show its background.
+ */
+async function referenceTiles(
+  video: string,
+  sk: LoadedSkeleton,
+  texture: (path: string) => Texture,
+  view: View,
+  animation: string,
+  count: number,
+  fps: number,
+): Promise<Uint8Array[]> {
+  const { width: W, height: H } = await videoSize(video);
+  const w = view.width,
+    h = view.height;
+  const frames = videoFrames(video, 0, fps, count, W, H);
+  try {
+    const first = await frames.next();
+    if (first.done) throw new Error(`CLI_VIDEO: ${video} has no frames`);
+    const ref0 = first.value,
+      bg = borderColor(ref0);
+    if (plainBorder(ref0, bg) < 0.75)
+      throw new Error(
+        `CLI_VIDEO: ${video} does not have a plain background; export the reference on a single colour`,
+      );
+    const rs = maskStats(foregroundMask(ref0, bg), W, H);
+    if (rs.area < 64) throw new Error(`CLI_VIDEO: no figure found in ${video}`);
+    pose(sk, animation, 0);
+    const canvas = render(sk, texture, view),
+      buildMask = new Uint8Array(w * h);
+    for (let i = 0; i < buildMask.length; i++) buildMask[i] = canvas[i * 4 + 3]! > 0.5 ? 1 : 0;
+    const bs = maskStats(buildMask, w, h);
+    // Tile pixel (x, y) shows video pixel (a x + ox, a y + oy); first the bounds on the bounds.
+    let a = (rs.maxY - rs.minY + 1) / Math.max(1, bs.maxY - bs.minY + 1),
+      ox = (rs.minX + rs.maxX) / 2 - (a * (bs.minX + bs.maxX)) / 2,
+      oy = (rs.minY + rs.maxY) / 2 - (a * (bs.minY + bs.maxY)) / 2;
+    // Box filter: ss x ss samples per tile pixel when the video is larger than the tile.
+    const place = (f: RgbFrame) => {
+      const ss = Math.max(1, Math.ceil(a)),
+        out = new Uint8Array(w * h * 3);
+      for (let y = 0; y < h; y++)
+        for (let x = 0; x < w; x++) {
+          let r = 0,
+            g = 0,
+            b = 0;
+          for (let j = 0; j < ss; j++)
+            for (let i = 0; i < ss; i++) {
+              const u = Math.round(a * (x - 0.5 + (i + 0.5) / ss) + ox),
+                v = Math.round(a * (y - 0.5 + (j + 0.5) / ss) + oy);
+              if (u < 0 || v < 0 || u >= W || v >= H) {
+                r += bg[0];
+                g += bg[1];
+                b += bg[2];
+                continue;
+              }
+              const o = (v * W + u) * 3;
+              r += f.rgb[o]!;
+              g += f.rgb[o + 1]!;
+              b += f.rgb[o + 2]!;
+            }
+          const o = (y * w + x) * 3;
+          out[o] = Math.round(r / ss / ss);
+          out[o + 1] = Math.round(g / ss / ss);
+          out[o + 2] = Math.round(b / ss / ss);
+        }
+      return out;
+    };
+    // registerMasks scales the placed reference by k about (cx, cy) and moves it by (dx, dy).
+    const placed = foregroundMask({ width: w, height: h, rgb: place(ref0) }, bg);
+    const reg = registerMasks(buildMask, placed, w, h);
+    ox += a * (reg.cx - (reg.cx + reg.dx) / reg.scale);
+    oy += a * (reg.cy - (reg.cy + reg.dy) / reg.scale);
+    a /= reg.scale;
+    const tiles = [place(ref0)];
+    for (let next = await frames.next(); !next.done; next = await frames.next())
+      tiles.push(place(next.value));
+    return tiles;
+  } finally {
+    await frames.return(undefined);
   }
 }
 /** Raw RGB frames in, H.264 out. */

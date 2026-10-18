@@ -243,6 +243,7 @@ const toolSchemas = {
       artistPath: Type.Optional(WorkspacePath),
       outputPath: WorkspacePath,
       loops: Type.Optional(Type.Integer({ minimum: 1, maximum: 10 })),
+      referenceVideoPath: Type.Optional(WorkspacePath),
     },
     strict,
   ),
@@ -373,7 +374,7 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_fit_video:
     "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
   autospine_review_video:
-    "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
+    "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (reference video | build with referenceVideoPath, its frame i beside animation frame i; the build alone without either), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
 /** Tools that write into the workspace (new directories, or the optimizer's own state directory). */
 const writingTools = new Set<string>([
@@ -775,14 +776,14 @@ export class AutoSpineMcpServer {
           const artist = args.artistPath
             ? await guardFile(root, args.artistPath, 256 * 1024 * 1024)
             : undefined;
+          const referenceVideo = args.referenceVideoPath
+            ? await guardFile(root, args.referenceVideoPath, 2 * 1024 * 1024 * 1024)
+            : undefined;
           const output = await guardOutput(root, args.outputPath, true);
-          const video = await reviewVideoFiles(
-            plan,
-            build,
-            artist,
-            output,
-            args.loops === undefined ? {} : { loops: args.loops },
-          ).catch(characterFailure);
+          const video = await reviewVideoFiles(plan, build, artist, output, {
+            ...(args.loops === undefined ? {} : { loops: args.loops }),
+            ...(referenceVideo ? { referenceVideo } : {}),
+          }).catch(characterFailure);
           return result({
             ...video,
             output: relative(root, output),

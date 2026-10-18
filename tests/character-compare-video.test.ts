@@ -4,7 +4,12 @@ import { readFileSync } from "node:fs";
 import { readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { PNG } from "pngjs";
-import { buildCharacterFiles, compareVideoFiles, deliverFiles } from "@autospine/cli/character";
+import {
+  buildCharacterFiles,
+  compareVideoFiles,
+  deliverFiles,
+  reviewVideoFiles,
+} from "@autospine/cli/character";
 import {
   checkVideoAcceptance,
   drawList,
@@ -266,6 +271,54 @@ describe.skipIf(!hasFfmpeg)("compare-video: the build against a reference video"
     console.log(JSON.stringify(b.rows), b.hints);
     expect(b.pass).toBe(false);
     expect(b.hints.join(" ")).toMatch(/late/);
+  }, 120_000);
+
+  it("review-video plays a reference video beside the build, figure on figure", async () => {
+    const ws = await texturedWorkspace();
+    const plan = join(ws, "plan.json");
+    await buildCharacterFiles(plan, join(ws, "build"));
+    const referenceVideoPath = await referenceVideo(ws, join(ws, "ref.mp4"));
+    const out = join(ws, "review.mp4");
+    await expect(
+      reviewVideoFiles(plan, join(ws, "build"), plan, out, { referenceVideo: referenceVideoPath }),
+    ).rejects.toThrow(/not both/);
+    const video = await reviewVideoFiles(plan, join(ws, "build"), undefined, out, {
+      loops: 1,
+      height: 240,
+      referenceVideo: referenceVideoPath,
+    });
+    const tile = (video.width - 4) / 2,
+      frames = video.frames / 3;
+    expect(Number.isInteger(tile)).toBe(true);
+    // A frame of 3 完整動態: the reference's figure (light background) over the build's (dark one).
+    const n = 2 * frames + Math.floor(frames / 2);
+    const rgb = spawnSync(
+      "ffmpeg",
+      [
+        ...["-loglevel", "error", "-i", out, "-vf", `select=eq(n\\,${n})`, "-frames:v", "1"],
+        ...["-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+      ],
+      { maxBuffer: 64 * 1024 * 1024 },
+    ).stdout;
+    expect(rgb.length).toBe(video.width * video.height * 3);
+    const mask = (x0: number, bg: number[]) => {
+      const m = new Uint8Array(tile * 240);
+      for (let y = 0; y < 240; y++)
+        for (let x = 0; x < tile; x++) {
+          const o = ((56 + y) * video.width + x0 + x) * 3;
+          m[y * tile + x] = bg.reduce((s, c, k) => s + Math.abs(rgb[o + k]! - c), 0) > 60 ? 1 : 0;
+        }
+      return m;
+    };
+    const ref = mask(0, [237, 242, 247]),
+      build = mask(tile + 4, [33, 38, 46]);
+    let both = 0,
+      either = 0;
+    for (let i = 0; i < ref.length; i++) {
+      both += ref[i]! & build[i]!;
+      either += ref[i]! | build[i]!;
+    }
+    expect(both / either).toBeGreaterThan(0.85);
   }, 120_000);
 
   it("deliver adds <name>-vs-reference.mp4 when the plan names a reference video", async () => {

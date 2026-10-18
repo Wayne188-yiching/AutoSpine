@@ -62,10 +62,10 @@ Work on copies. Never write into original artwork folders or an open Spine proje
    - `--ignore=slot,...`: parts whose drawing changes between pictures (an expression's mouth, eyes, tongue) and should not place their bone.
    - `--ease` (default `ease`): the arrival ease written on the new keys.
 
-6. **Review video** [`autospine_review_video`]: one MP4 per plan, every animation first with the mesh wireframe, then with the bones, then the plain motion; artist | build when an artist file is given. Needs ffmpeg.
+6. **Review video** [`autospine_review_video`]: one MP4 per plan, every animation first with the mesh wireframe, then with the bones, then the plain motion; artist | build when an artist file is given, or reference video | build with `--reference-video=<file>` (a plan of one animation; the video's frame i beside animation frame i, its figure scaled and placed over the build's). Needs ffmpeg.
 
    ```text
-   node packages/cli/dist/index.js review-video work/plan.json work/build-1 [artist.json] work/review.mp4
+   node packages/cli/dist/index.js review-video work/plan.json work/build-1 [artist.json] work/review.mp4 [--reference-video=ref.mp4]
    ```
 
 7. **Compare with a reference video** [`autospine_compare_video`] when the requester has the motion as a video (ADR-034). Record it in the plan as `motion.animations[].reference: { video, start? }` (path relative to the plan; `start` is the second that shows frame 0), then:
