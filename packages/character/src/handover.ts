@@ -197,6 +197,21 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
             "、",
           )}），疊在主動作、跟隨和波動之上。改姿勢就改這些幀上的關鍵幀；兩者都動的骨在那段是逐幀的鍵。`,
       );
+      // ADR-040: each bone's lag behind the nearest bone above it with key poses, as an animator
+      // offsets a chain; the bones at the top of the posed set are the reference.
+      const lagOf = (b: string) => a.keyposeLag?.[b] ?? 0;
+      const offsets = bones.flatMap((b) => {
+        let p = parent.get(b);
+        while (p && !bones.includes(p)) p = parent.get(p);
+        const d = p ? lagOf(b) - lagOf(p) : 0;
+        return d ? [`\`${b}\` 比 \`${p}\` ${d > 0 ? `晚 ${d}` : `早 ${-d}`} 幀`] : [];
+      });
+      if (offsets.length)
+        add(
+          `- 時間錯開：${offsets.join(
+            "、",
+          )}，跟參考影片一樣。這些骨的關鍵姿勢整段錯開了這麼多幀（循環動畫繞回開頭），所以它們的關鍵幀不和上面的骨對齊；要對齊就把那根骨的關鍵幀拖回去。`,
+        );
     }
     if (a.mirror) {
       const r = a.mirror.frames.map(([f, t]) => `${f}–${t}`).join("、");

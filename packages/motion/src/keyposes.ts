@@ -333,6 +333,19 @@ export function addTracks(a: readonly TrackKey[], b: readonly TrackKey[], step =
   return out;
 }
 
+/**
+ * A track played `lag` frames later (earlier when negative): a loop wraps around its length, a
+ * one-shot holds its first value before the keys and its last after them (ADR-040).
+ */
+export function shiftTrack(
+  track: readonly TrackKey[],
+  lag: number,
+  frames: number,
+  loop: boolean,
+): TrackKey[] {
+  return shifted(track as Track, Math.round(lag), frames, loop);
+}
+
 // ---- drivers -------------------------------------------------------------------------------
 function shifted(track: Track, lag: number, N: number, loop: boolean): Track {
   if (loop) {

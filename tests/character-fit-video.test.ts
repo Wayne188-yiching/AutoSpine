@@ -222,7 +222,8 @@ describe("fit-video: a reference video drives the motion (ADR-036)", () => {
         expect(Math.abs(a.translations.hips![1] - b.translations.hips![1])).toBeLessThan(1);
       }
       expect(worst).toBeLessThan(2);
-      expect(fit.rounds[0]!.keys).toMatchObject({ frames: 4, capped: true });
+      // Nothing in the video trails its parent: every bone stays on the shared keys (ADR-040).
+      expect(fit.rounds[0]!.keys).toMatchObject({ frames: 4, capped: true, lag: {} });
       // A clean clip: both tracks agree everywhere and never lose a part.
       expect(fit.tracking).toMatchObject({
         disagree: {},
@@ -232,6 +233,78 @@ describe("fit-video: a reference video drives the motion (ADR-036)", () => {
       expect(lines.some((l) => l.startsWith("round 1: penalty 0 (passed)"))).toBe(true);
     },
     600_000,
+  );
+
+  it.skipIf(!hasFfmpeg)(
+    "keeps an arm that trails the body by 5 frames on its own timing (ADR-040)",
+    async () => {
+      const { ws, plan } = await workspace();
+      // The spine sways out and back over frames 0-30, the arm the other way 5 frames later; both
+      // rest from frame 35, so frame 0 is the build's own pose (the zero frame).
+      const target = moving(plan);
+      target.motion.animations[0]!.keyposes = [
+        {
+          frame: 10,
+          ease: "sine",
+          pose: { hips: { y: 3 }, spine: { rotate: 5 }, arm_r: { rotate: -8 } },
+        },
+        {
+          frame: 20,
+          ease: "sine",
+          pose: { spine: { rotate: -4 }, arm_r: { rotate: 6.4 }, thigh_r: { rotate: -5 } },
+        },
+        { frame: 30, ease: "sine", pose: { hips: { y: 3 } } },
+      ];
+      target.motion.animations[0]!.keyposeLag = { arm_r: 5 };
+      await writeFile(join(ws, "target.json"), JSON.stringify(target));
+      await buildCharacterFiles(join(ws, "plan.json"), join(ws, "build"));
+      await buildCharacterFiles(join(ws, "target.json"), join(ws, "target"));
+      const clip = await video(ws, join(ws, "target"), join(ws, "idle.mp4"));
+      const fit = (dir: string, lag: boolean) =>
+        fitVideoFiles(join(ws, "plan.json"), join(ws, "build"), join(ws, dir), {
+          video: clip,
+          every: 2,
+          rounds: 1,
+          lag,
+        });
+      const bestOf = async (dir: string) =>
+        JSON.parse(await readFile(join(ws, dir, "best", "plan.json"), "utf8")) as CharacterPlan;
+      const want = irPose(target),
+        arm = (p: ReturnType<typeof irPose>) =>
+          Array.from({ length: 40 }, (_, g) => p(g).rotations.arm_r ?? 0);
+      const truth = arm(want),
+        error = (a: number[]) => Math.max(...a.map((v, g) => Math.abs(v - truth[g]!))),
+        swing = (a: number[]) => a.indexOf(Math.min(...a));
+      // The arm swings out on frame 14-16, 5 frames after the spine (with the plan's own arm motion).
+      expect(Math.abs(swing(truth) - 15)).toBeLessThanOrEqual(1);
+      // Shared keys alone: the arm is keyed with the body and its swing is cut and moved.
+      const flat = await fit("flat", false);
+      expect(flat.rounds[0]!.keys.lag).toEqual({});
+      const flatArm = arm(irPose(await bestOf("flat")));
+      // With its lag the arm plays 5 frames behind the spine it hangs from, as in the video.
+      const lagged = await fit("fit", true),
+        lag = lagged.rounds[0]!.keys.lag,
+        best = await bestOf("fit");
+      expect((lag.arm_r ?? 0) - (lag.spine ?? 0)).toBe(5);
+      expect(best.motion.animations[0]!.keyposeLag).toEqual(lag);
+      const lagArm = arm(irPose(best));
+      // The arm swings out on the video's frame, and the four shared keys fit every bone far
+      // better: the moved tracks are in step again.
+      expect(Math.abs(swing(lagArm) - swing(truth))).toBeLessThanOrEqual(1);
+      expect(error(lagArm)).toBeLessThan(0.7 * error(flatArm));
+      const [f, l] = [flat.rounds[0]!, lagged.rounds[0]!];
+      expect(l.keys.frames).toBe(f.keys.frames);
+      expect(l.keys.error).toBeLessThan(0.6 * f.keys.error);
+      const p90 = (r: typeof f) =>
+        (r.rows.find((x) => x.id.startsWith("V2"))!.value as number[])[1]!;
+      expect(p90(l)).toBeLessThan(0.5 * p90(f));
+      expect(flat.pass).toBe(false);
+      expect(lagged.pass).toBe(true);
+      expect(await readFile(join(ws, "fit", "best", "build", "HANDOVER.md"), "utf8")).toContain(
+        "`arm_r` 比 `spine` 晚 5 幀",
+      );
+    },
+    900_000,
   );
 
   it.skipIf(!hasFfmpeg)(

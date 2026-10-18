@@ -87,8 +87,8 @@ import {
   foldTracks,
   foldValue,
   keyGapPrior,
+  lagKeys,
   median3,
-  reduceKeys,
   sampleAnimation,
   sharedPeriod,
   spread,
@@ -581,6 +581,11 @@ export async function fitPoseFiles(
   const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as unknown;
   const pictures = typeof references === "string" ? [{ frame: 0, path: references }] : references;
   if (!pictures.length) throw new Error("CLI_FIT_FRAMES: give at least one picture");
+  // Key poses share their frames; a layer whose bones play off them cannot take more (ADR-040).
+  if (typeof references !== "string" && Object.keys(planned.keyposeLag ?? {}).length)
+    throw new Error(
+      `CLI_FIT_LAG: ${animation} has keyposeLag (bones timed off its key frames, from fit-video); key poses from pictures cannot be added to it. Fit the video again, or remove keyposeLag and keyposes first`,
+    );
   const loop = planned.loop !== false,
     last = loop ? planned.frames - 1 : planned.frames;
   const seen = new Set<number>();
@@ -1772,6 +1777,12 @@ export interface FitVideoOptions {
    * out a bone the two passes disagree on (default true; ADR-039). False fits every frame alone.
    */
   track?: boolean;
+  /**
+   * Keep each bone's timing offset from the shared key frames, so a part that trails the others in
+   * the video (a head behind the body) still does (default true; ADR-040). False keys every bone on
+   * the shared frames.
+   */
+  lag?: boolean;
   /** Caption font for the comparison videos. */
   font?: string;
   /** Progress lines for long runs. */
@@ -1799,6 +1810,8 @@ export interface FitVideoRound {
     /** Largest error left, in tolerances (0.5 degree / px); above 1 when the cap held. */
     error: number;
     capped: boolean;
+    /** Frames a bone plays after the shared keys (before when negative); bones on the keys left out. */
+    lag: Record<string, number>;
   };
   /** Waves rescaled or shifted from the comparison, and chain roots fitted from now on. */
   waves: { chain: string; amp: number; peak: number }[];
@@ -1953,6 +1966,7 @@ export async function fitVideoFiles(
     },
   };
   delete baseAnimation.keyposes;
+  delete baseAnimation.keyposeLag;
   const basePath = join(out, "base", "plan.json");
   await mkdir(dirname(basePath), { recursive: true });
   const base = planAt(basePlan, planPath, basePath);
@@ -2290,27 +2304,50 @@ export async function fitVideoFiles(
     }
     // At most twice the artists' key density, or four keys a cycle for a fast loop.
     const density = Math.max(2 / gapFrames, info && !info.oneCycle ? 4 / info.period : 0);
-    const reduced = reduceKeys(
+    // Each bone may play a few frames off the shared keys (ADR-040): up to a third of a second, a
+    // quarter of a loop's cycle or an eighth of a one-shot.
+    const bones = [...new Set(used.map((c) => c.bone))],
+      span = info ? N / info.cyclesInAnimation : N,
+      maxLag =
+        opts.lag === false ? 0 : Math.min(Math.round(fps / 3), Math.floor(span / (loop ? 4 : 8)));
+    // Each bone's lag is measured behind the nearest fitted bone it hangs from.
+    const parents = bones.map((b) => {
+      let p = parentOf.get(b);
+      while (p && !bones.includes(p)) p = parentOf.get(p);
+      return p === undefined ? undefined : bones.indexOf(p);
+    });
+    const lagged = lagKeys(
       targets,
       noise.map((n) => Math.max(tolerance, 2 * n)),
+      bones.map((b) => used.flatMap((c, k) => (c.bone === b ? [k] : []))),
       // A loop's keys wrap into frame 0; a one-shot also keys its last frame.
       {
         loop,
         minGap: 2,
         maxKeys: Math.min(256, Math.max(2, Math.round(N * density) + (loop ? 0 : 1))),
+        maxLag,
+        parents,
+        kinds: used.map((c) => c.kind),
       },
     );
+    const reduced = lagged.reduced,
+      lag = Object.fromEntries(
+        bones.flatMap((b, k) => (lagged.lags[k] ? [[b, lagged.lags[k]!] as const] : [])),
+      );
+    // The keys stand for each bone moved its lag earlier.
+    const values = lagged.targets;
     if (process.env.AUTOSPINE_DEBUG_TRACKS)
       debugTracks = {
         channels: used.map((c) => key(c)),
         tolerance: noise.map((n) => Math.max(tolerance, 2 * n)),
         targets,
+        lag,
         absolute: series,
       };
     const keyposes = reduced.frames.map((frame, i) => {
       const pose: Record<string, { x?: number; y?: number; rotate?: number }> = {};
       used.forEach((c, k) => {
-        const v = targets[k]![frame]!;
+        const v = values[k]![frame]!;
         if (c.kind === "rotate" ? Math.abs(v) < 0.01 : Math.abs(v) < 0.05) return;
         (pose[c.bone] ??= {})[c.kind] = +v.toFixed(c.kind === "rotate" ? 3 : 2);
       });
@@ -2325,6 +2362,7 @@ export async function fitVideoFiles(
         prior: { category: gap.category, perSecond: +(fps / gapFrames).toFixed(2) },
         error: reduced.error,
         capped: reduced.capped,
+        lag,
       },
       ...(info ? { loop: info } : {}),
       ...(window !== undefined ? { window } : {}),
@@ -2436,6 +2474,9 @@ export async function fitVideoFiles(
     shaped = shape(irOf(roundBase), skip);
     const roundPlan = structuredClone(roundBase);
     roundPlan.motion.animations[index]!.keyposes = shaped.keyposes;
+    if (Object.keys(shaped.keys.lag).length)
+      roundPlan.motion.animations[index]!.keyposeLag = shaped.keys.lag;
+    else delete roundPlan.motion.animations[index]!.keyposeLag;
     const planFile = join(dir, "plan.json");
     await writeFile(planFile, json(planAt(roundPlan, basePath, planFile)));
     if (debugTracks) await writeFile(join(dir, "tracks.json"), JSON.stringify(debugTracks));

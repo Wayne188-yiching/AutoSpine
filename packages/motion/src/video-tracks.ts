@@ -600,3 +600,182 @@ export function reduceKeys(
     capped,
   };
 }
+
+/** Channel values (frames 0..N, a loop's frame N being its frame 0) moved `d` frames earlier. */
+function advance(t: readonly number[], d: number, loop: boolean): number[] {
+  const N = t.length - 1;
+  return t.map((_, g) =>
+    loop ? t[(((g + d) % N) + N) % N]! : t[Math.min(N, Math.max(0, g + d))]!,
+  );
+}
+/** Each channel's largest gap from the keys' eased segments, in tolerances. */
+function keyErrors(
+  targets: readonly (readonly number[])[],
+  tolerance: readonly number[],
+  reduced: KeyReduction,
+  loop: boolean,
+): number[] {
+  const last = Math.max(0, ...targets.map((t) => t.length)) - 1,
+    ends = loop ? [...reduced.frames, last] : reduced.frames;
+  const curves = ends.map((_, i) =>
+    easeCurve(loop && i === ends.length - 1 ? reduced.eases[0]! : reduced.eases[i]!),
+  );
+  return targets.map((t, c) => {
+    let e = 0;
+    for (let i = 1; i < ends.length; i++) {
+      const a = ends[i - 1]!,
+        b = ends[i]!;
+      for (let g = a + 1; g < b; g++) {
+        const v = t[a]! + (t[b]! - t[a]!) * keyFraction(curves[i], (g - a) / (b - a));
+        e = Math.max(e, Math.abs(v - t[g]!) / tolerance[c]!);
+      }
+    }
+    return e;
+  });
+}
+/**
+ * What a one-shot channel played `d` frames late loses at its ends, in tolerances: it holds its
+ * frame-d value before frame d (its last-but-|d| value after N - |d| when early).
+ */
+function endError(t: readonly number[], d: number, tolerance: number): number {
+  const N = t.length - 1;
+  let e = 0;
+  if (d > 0) for (let g = 0; g < d; g++) e = Math.max(e, Math.abs(t[d]! - t[g]!));
+  else if (d < 0) for (let g = N + d + 1; g <= N; g++) e = Math.max(e, Math.abs(t[N + d]! - t[g]!));
+  return e / tolerance;
+}
+export interface KeyLags {
+  /** Frames each group plays after the shared keys (negative: before them); 0 = on the keys. */
+  lags: number[];
+  /** The targets with each group moved its lag earlier: what the shared keys stand for. */
+  targets: number[][];
+  reduced: KeyReduction;
+}
+/**
+ * Shared key frames with a time offset per group of channels (ADR-040; a group is one bone's
+ * channels). A bone that trails the others by a few frames (a head behind the body, an arm behind
+ * the shoulder) reaches its extremes between the shared keys, so with few keys its swing is cut and
+ * its timing lost.
+ *
+ * Each group's lag is measured behind the group it hangs from (`parents`, skipping groups that do
+ * not move that way): the shift, up to `maxLag` frames, at which its most moving channel
+ * correlates best with one of the parent's of the same kind (`kinds`: a rotation with a rotation,
+ * never with the hips' bob), at least 0.6 and better than in step. Lags add down the hierarchy: a
+ * hand 2 frames behind the forearm that is 3 behind the body plays 5 frames after the body. A
+ * group that moves its own way correlates with nothing, and one that does not move rides along:
+ * both stay in step with their parent.
+ *
+ * Each group is moved earlier by its lag and the keys are found again for the moved targets; the
+ * build plays the group that many frames later. A loop's keys always include frame 0, so where
+ * they fit depends on the layer's timing as a whole: the lags are tried with every common offset
+ * up to `maxLag` (all groups moved alike; what plays stays the same motion), and the best fit is
+ * taken. A one-shot counts what a move loses at its ends (a group played late holds its frame-d
+ * value before frame d). The lags are kept when their keys are no more and fit the channels
+ * better on average without a worse channel past 5 %; where the plain keys already play within the
+ * tolerance, only when they are fewer. Otherwise every lag is 0 and the plain reduction is
+ * returned.
+ */
+export function lagKeys(
+  targets: readonly (readonly number[])[],
+  tolerance: readonly number[],
+  groups: readonly (readonly number[])[],
+  opts: Parameters<typeof reduceKeys>[2] & {
+    maxLag: number;
+    parents?: readonly (number | undefined)[];
+    /** Each channel's kind ("rotate", "x", "y"): a lag is measured between channels of one kind. */
+    kinds?: readonly string[];
+  },
+): KeyLags {
+  const base = reduceKeys(targets, tolerance, opts),
+    plain = { lags: groups.map(() => 0), targets: targets.map((t) => [...t]), reduced: base };
+  const maxLag = Math.floor(opts.maxLag);
+  if (maxLag < 1 || !groups.length) return plain;
+  const loop = opts.loop;
+  const moved = (lags: readonly number[]) => {
+    const out = targets.map((t) => [...t]);
+    groups.forEach((g, k) => {
+      if (lags[k]) for (const c of g) out[c] = advance(targets[c]!, lags[k]!, loop);
+    });
+    return out;
+  };
+  const fit = (lags: readonly number[], reduced: KeyReduction) => {
+    const keys = keyErrors(moved(lags), tolerance, reduced, loop);
+    if (!loop)
+      groups.forEach((g, k) => {
+        for (const c of g)
+          keys[c] = Math.max(keys[c]!, endError(targets[c]!, lags[k]!, tolerance[c]!));
+      });
+    return { mean: mean(keys), max: Math.max(0, ...keys) };
+  };
+
+  // Each group behind the nearest group above it that moves the same way (a rotation behind a
+  // rotation, never behind the hips' bob): the shift at which they correlate best.
+  const score = (c: number) => spread(targets[c]!) / tolerance[c]!;
+  const moving = (k: number) => groups[k]!.filter((c) => score(c) >= 1);
+  const behind = groups.map((_, k) => {
+    // A group that does not move rides along with its parent.
+    const own = moving(k);
+    if (!own.length) return { parent: opts.parents?.[k], lag: 0 };
+    const c = own.reduce((a, b) => (score(b) > score(a) ? b : a)),
+      like = (q: number) => moving(q).filter((x) => !opts.kinds || opts.kinds[x] === opts.kinds[c]);
+    let p = opts.parents?.[k];
+    while (p !== undefined && !like(p).length) p = opts.parents?.[p];
+    if (p === undefined) return { parent: undefined, lag: 0 };
+    const refs = like(p);
+    const r = (d: number) => {
+      const x = advance(targets[c]!, d, loop);
+      return Math.max(
+        0,
+        ...refs.map((q) => Math.abs(pearson(targets[q]!.map((v, g) => [v, x[g]!])) ?? 0)),
+      );
+    };
+    const r0 = r(0);
+    let best = 0,
+      bestR = r0;
+    for (let d = -maxLag; d <= maxLag; d++) {
+      const v = r(d);
+      if (v > bestR + 1e-9 || (Math.abs(v - bestR) <= 1e-9 && Math.abs(d) < Math.abs(best)))
+        [best, bestR] = [d, v];
+    }
+    return { parent: p, lag: bestR >= 0.6 && bestR > r0 + 0.005 ? best : 0 };
+  });
+  // Added down the hierarchy; a loop's total wraps into half its length, a one-shot's is held to it.
+  const N = Math.max(1, ...targets.map((t) => t.length - 1));
+  const total: (number | undefined)[] = groups.map(() => undefined);
+  const lagOf = (k: number, depth = 0): number => {
+    if (total[k] === undefined) {
+      const p = behind[k]!.parent,
+        sum = behind[k]!.lag + (p === undefined || depth > groups.length ? 0 : lagOf(p, depth + 1));
+      total[k] = loop
+        ? ((((sum + Math.floor(N / 2)) % N) + N) % N) - Math.floor(N / 2)
+        : Math.max(-Math.floor(N / 2), Math.min(Math.floor(N / 2), sum));
+    }
+    return total[k]!;
+  };
+  const fromParents = groups.map((_, k) => lagOf(k));
+
+  // A loop's keys may start off frame 0's timing (the whole layer moved by one offset) where they
+  // fit better; what plays stays the video's motion. Offsets are scored on the fast reduction, and
+  // the best is reduced exactly.
+  if (fromParents.every((d) => d === 0)) return plain;
+  let lags = fromParents,
+    least = Infinity;
+  for (let k = 0; loop && k <= 2 * maxLag; k++) {
+    const shift = k % 2 ? (k + 1) / 2 : -k / 2,
+      shifted = fromParents.map((d) => d + shift),
+      r = reduceKeys(moved(shifted), tolerance, { ...opts, greedy: true }),
+      m = fit(shifted, r).mean;
+    if (m < least - 1e-9) [lags, least] = [shifted, m];
+  }
+  const aligned = moved(lags),
+    r = reduceKeys(aligned, tolerance, opts),
+    before = fit(plain.lags, base),
+    after = fit(lags, r);
+  // Keys that already play within the tolerance take lags only to save keys.
+  const better = base.capped
+    ? after.mean < before.mean - 1e-9
+    : r.frames.length < base.frames.length;
+  return r.frames.length <= base.frames.length && better && after.max <= 1.05 * before.max + 1e-9
+    ? { lags, targets: aligned, reduced: r }
+    : plain;
+}
