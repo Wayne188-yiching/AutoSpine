@@ -155,6 +155,7 @@ export function planAttachments(
           ...(hullVertices !== undefined && spec.density !== "artist" ? { keepHoles: true } : {}),
         };
         const r = generateFeatureMesh(asset.parts[0]!, p.alpha, options);
+        if (r.discarded) evidence[`${p.key}:alphaPrep`] = { discarded: r.discarded };
         return { asset, mesh: toWorldMesh(r.mesh as Mesh2D, p, id), rings: r.rings };
       }
       case "contour": {

@@ -319,6 +319,7 @@ const toolSchemas = {
         Type.Array(Type.String({ minLength: 1, maxLength: 128 }), { maxItems: 512 }),
       ),
       zero: Type.Optional(Type.Boolean()),
+      track: Type.Optional(Type.Boolean()),
     },
     strict,
   ),
@@ -369,7 +370,7 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_compare_video:
     "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds — outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
   autospine_fit_video:
-    "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
+    "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
   autospine_review_video:
     "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
@@ -869,10 +870,12 @@ export class AutoSpineMcpServer {
             ...(args.every === undefined ? {} : { every: args.every }),
             ...(args.ignore === undefined ? {} : { ignore: args.ignore }),
             ...(args.zero === undefined ? {} : { zero: args.zero }),
+            ...(args.track === undefined ? {} : { track: args.track }),
           }).catch(characterFailure);
           return result({
             ...fit,
             video: relative(root, fit.video),
+            inputs: fit.inputs.map((i) => ({ ...i, path: relative(root, i.path) })),
             best: {
               round: fit.best.round,
               dir: relative(root, fit.best.dir),

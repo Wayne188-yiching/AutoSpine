@@ -33,6 +33,8 @@ export interface FeatureMesh {
   mesh: MeshSpec;
   /** Ordered vertex indices of each feature ring (one per kept hole). */
   rings: number[][];
+  /** Opaque pixels (alpha above 8) left out of the mesh: detached specks and stray fragments. */
+  discarded: number;
 }
 
 const cross = (a: Point, b: Point, c: Point) =>
@@ -449,7 +451,9 @@ export function generateFeatureMesh(
       "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers",
     );
   const budget = options.hullVertices !== undefined;
-  // Detached pieces too large to drop (fur tufts beside a face) are bridged into one outline.
+  // Detached pieces up to 2 % of the opaque pixels are dropped (specks, a sliver of a neighbouring
+  // image left in the picture); pieces too large to drop (fur tufts beside a face, two eyes on one
+  // image) are bridged into one outline. A budget hull did not drop them before (ADR-039).
   const primary = () => {
     try {
       return selectPrimaryComponent(
@@ -467,7 +471,9 @@ export function generateFeatureMesh(
       return bridgedSolid(alpha, width, height);
     }
   };
-  const solid = budget ? bridgedSolid(alpha, width, height) : primary();
+  const solid = primary();
+  let discarded = 0;
+  for (let i = 0; i < alpha.length; i++) if (alpha[i]! > 8 && !solid[i]) discarded++;
   const foreground = solid.reduce((n, a) => n + (a ? 1 : 0), 0);
   const holes = enclosedHoles(solid, width, height),
     filled = Uint8Array.from(solid);
@@ -631,5 +637,5 @@ export function generateFeatureMesh(
   };
   const report = validateMeshSpec(mesh);
   if (report.status !== "passed") throw new MeshError(report);
-  return { mesh, rings: ringIndices };
+  return { mesh, rings: ringIndices, discarded };
 }
