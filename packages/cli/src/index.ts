@@ -93,7 +93,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
-  autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--font=file]
+  autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
@@ -223,6 +223,7 @@ async function characterCommand(args: string[]): Promise<boolean> {
         "ignore",
         "no-zero",
         "no-track",
+        "no-lag",
         "font",
       );
       const opts = {
@@ -234,6 +235,7 @@ async function characterCommand(args: string[]): Promise<boolean> {
         ignore: flags.get("ignore")?.split(",").filter(Boolean),
         zero: flags.has("no-zero") ? false : undefined,
         track: flags.has("no-track") ? false : undefined,
+        lag: flags.has("no-lag") ? false : undefined,
         font: flags.get("font") || undefined,
       };
       let fit: Awaited<ReturnType<typeof fitVideoFiles>>;

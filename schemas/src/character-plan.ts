@@ -622,6 +622,15 @@ export const MotionPlanSchema = Type.Object(
             ),
           ),
           /**
+           * Time offsets of the key pose layer (ADR-040): frames each bone's key poses play after
+           * the shared key frames, or before them when negative; a loop wraps, a one-shot holds its
+           * first and last values. `fit-video` writes them for bones that trail or lead the others
+           * in the video (a head behind the body), so their swings keep the video's timing.
+           */
+          keyposeLag: Type.Optional(
+            Type.Record(IdSchema, Type.Integer({ minimum: -600, maximum: 600 })),
+          ),
+          /**
            * Mirror (ADR-035): `bone` and everything under it flipped left to right on the frames of
            * each range (inclusive): it flips on a range's first frame and back after its last. `keep`
            * bones under it keep their drawing the right way round while they ride along (a head

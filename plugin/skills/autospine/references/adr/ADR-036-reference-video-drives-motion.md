@@ -103,7 +103,7 @@ One command, `fit-video`, runs the loop. It reuses the engines above. The new co
 - **Scale and alpha**: character entries start at scale 0.48 and alpha 0.51 (ADR-032), and the pose fit has no scale channel.
 - **Redrawn parts**: nothing automatic replaces the manual leg model. They are reported.
 - **Time-warped comparison** (DTW): it would absorb drift, but it could also hide real timing errors, and V3 judges timing.
-- **Per-bone key times**: a `keyposes` key would leave a missing bone interpolating instead of at zero offset. Fewer keys, but a schema change to ADR-033's semantics. Revisit if the density cap binds often.
+- **Per-bone key times**: a `keyposes` key would leave a missing bone interpolating instead of at zero offset. Fewer keys, but a schema change to ADR-033's semantics. Revisit if the density cap binds often. (ADR-040 keeps the shared frames and plays a bone's whole layer a few frames off them instead.)
 - **Colour normalisation** of the video (H.264 shifts): only if frame-0 coverage turns out low on real clips. The manual clip covered 0.90–0.95 without it.
 - **Camera moves and scenery backgrounds.**
 

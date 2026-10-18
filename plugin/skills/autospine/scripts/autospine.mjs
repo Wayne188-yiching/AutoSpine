@@ -26459,6 +26459,15 @@ var MotionPlanSchema = Type.Object(
             )
           ),
           /**
+           * Time offsets of the key pose layer (ADR-040): frames each bone's key poses play after
+           * the shared key frames, or before them when negative; a loop wraps, a one-shot holds its
+           * first and last values. `fit-video` writes them for bones that trail or lead the others
+           * in the video (a head behind the body), so their swings keep the video's timing.
+           */
+          keyposeLag: Type.Optional(
+            Type.Record(IdSchema, Type.Integer({ minimum: -600, maximum: 600 }))
+          ),
+          /**
            * Mirror (ADR-035): `bone` and everything under it flipped left to right on the frames of
            * each range (inclusive): it flips on a range's first frame and back after its last. `keep`
            * bones under it keep their drawing the right way round while they ride along (a head
@@ -30980,6 +30989,9 @@ function addTracks(a, b, step = 1) {
   out.push({ frame: times.at(-1), value: sum(times.at(-1)) });
   return out;
 }
+function shiftTrack(track, lag2, frames, loop) {
+  return shifted(track, Math.round(lag2), frames, loop);
+}
 function shifted(track, lag2, N, loop) {
   if (loop) {
     const wrapped = (lag2 % N + N) % N;
@@ -31786,6 +31798,103 @@ function reduceKeys(targets, tolerance, opts) {
     error: +error.toFixed(3),
     capped
   };
+}
+function advance(t, d, loop) {
+  const N = t.length - 1;
+  return t.map(
+    (_, g) => loop ? t[((g + d) % N + N) % N] : t[Math.min(N, Math.max(0, g + d))]
+  );
+}
+function keyErrors(targets, tolerance, reduced, loop) {
+  const last = Math.max(0, ...targets.map((t) => t.length)) - 1, ends = loop ? [...reduced.frames, last] : reduced.frames;
+  const curves = ends.map(
+    (_, i) => easeCurve(loop && i === ends.length - 1 ? reduced.eases[0] : reduced.eases[i])
+  );
+  return targets.map((t, c) => {
+    let e = 0;
+    for (let i = 1; i < ends.length; i++) {
+      const a = ends[i - 1], b = ends[i];
+      for (let g = a + 1; g < b; g++) {
+        const v = t[a] + (t[b] - t[a]) * keyFraction(curves[i], (g - a) / (b - a));
+        e = Math.max(e, Math.abs(v - t[g]) / tolerance[c]);
+      }
+    }
+    return e;
+  });
+}
+function endError(t, d, tolerance) {
+  const N = t.length - 1;
+  let e = 0;
+  if (d > 0) for (let g = 0; g < d; g++) e = Math.max(e, Math.abs(t[d] - t[g]));
+  else if (d < 0) for (let g = N + d + 1; g <= N; g++) e = Math.max(e, Math.abs(t[N + d] - t[g]));
+  return e / tolerance;
+}
+function lagKeys(targets, tolerance, groups, opts) {
+  const base = reduceKeys(targets, tolerance, opts), plain = { lags: groups.map(() => 0), targets: targets.map((t) => [...t]), reduced: base };
+  const maxLag = Math.floor(opts.maxLag);
+  if (maxLag < 1 || !groups.length) return plain;
+  const loop = opts.loop;
+  const moved = (lags2) => {
+    const out = targets.map((t) => [...t]);
+    groups.forEach((g, k) => {
+      if (lags2[k]) for (const c of g) out[c] = advance(targets[c], lags2[k], loop);
+    });
+    return out;
+  };
+  const fit = (lags2, reduced) => {
+    const keys = keyErrors(moved(lags2), tolerance, reduced, loop);
+    if (!loop)
+      groups.forEach((g, k) => {
+        for (const c of g)
+          keys[c] = Math.max(keys[c], endError(targets[c], lags2[k], tolerance[c]));
+      });
+    return { mean: mean(keys), max: Math.max(0, ...keys) };
+  };
+  const score = (c) => spread(targets[c]) / tolerance[c];
+  const moving = (k) => groups[k].filter((c) => score(c) >= 1);
+  const behind = groups.map((_, k) => {
+    const own = moving(k);
+    if (!own.length) return { parent: opts.parents?.[k], lag: 0 };
+    const c = own.reduce((a, b) => score(b) > score(a) ? b : a), like = (q) => moving(q).filter((x) => !opts.kinds || opts.kinds[x] === opts.kinds[c]);
+    let p = opts.parents?.[k];
+    while (p !== void 0 && !like(p).length) p = opts.parents?.[p];
+    if (p === void 0) return { parent: void 0, lag: 0 };
+    const refs = like(p);
+    const r2 = (d) => {
+      const x = advance(targets[c], d, loop);
+      return Math.max(
+        0,
+        ...refs.map((q) => Math.abs(pearson(targets[q].map((v, g) => [v, x[g]])) ?? 0))
+      );
+    };
+    const r0 = r2(0);
+    let best = 0, bestR = r0;
+    for (let d = -maxLag; d <= maxLag; d++) {
+      const v = r2(d);
+      if (v > bestR + 1e-9 || Math.abs(v - bestR) <= 1e-9 && Math.abs(d) < Math.abs(best))
+        [best, bestR] = [d, v];
+    }
+    return { parent: p, lag: bestR >= 0.6 && bestR > r0 + 5e-3 ? best : 0 };
+  });
+  const N = Math.max(1, ...targets.map((t) => t.length - 1));
+  const total = groups.map(() => void 0);
+  const lagOf = (k, depth = 0) => {
+    if (total[k] === void 0) {
+      const p = behind[k].parent, sum = behind[k].lag + (p === void 0 || depth > groups.length ? 0 : lagOf(p, depth + 1));
+      total[k] = loop ? ((sum + Math.floor(N / 2)) % N + N) % N - Math.floor(N / 2) : Math.max(-Math.floor(N / 2), Math.min(Math.floor(N / 2), sum));
+    }
+    return total[k];
+  };
+  const fromParents = groups.map((_, k) => lagOf(k));
+  if (fromParents.every((d) => d === 0)) return plain;
+  let lags = fromParents, least = Infinity;
+  for (let k = 0; loop && k <= 2 * maxLag; k++) {
+    const shift = k % 2 ? (k + 1) / 2 : -k / 2, shifted2 = fromParents.map((d) => d + shift), r2 = reduceKeys(moved(shifted2), tolerance, { ...opts, greedy: true }), m = fit(shifted2, r2).mean;
+    if (m < least - 1e-9) [lags, least] = [shifted2, m];
+  }
+  const aligned = moved(lags), r = reduceKeys(aligned, tolerance, opts), before = fit(plain.lags, base), after = fit(lags, r);
+  const better = base.capped ? after.mean < before.mean - 1e-9 : r.frames.length < base.frames.length;
+  return r.frames.length <= base.frames.length && better && after.max <= 1.05 * before.max + 1e-9 ? { lags, targets: aligned, reduced: r } : plain;
 }
 
 // packages/motion/src/simplify.ts
@@ -34604,7 +34713,7 @@ function addKeyposes(existing, fitted, frames, loop, ease) {
   }
   return [...out.values()].sort((a, b) => a.frame - b.frame);
 }
-function applyKeyposes(animation, keyposes, fps) {
+function applyKeyposes(animation, keyposes, fps, lag2 = {}) {
   if (!keyposes?.length) return animation;
   const out = structuredClone(animation), frames = Math.round(animation.duration * fps), r = (v) => +v.toFixed(4);
   const sorted = [...keyposes].sort((a, b) => a.frame - b.frame);
@@ -34616,7 +34725,12 @@ function applyKeyposes(animation, keyposes, fps) {
       channels.push({ boneId, rotate: false });
   }
   for (const { boneId, rotate } of channels) {
-    const rest = rotate ? [0] : [0, 0], layer = layerTrack(sorted, boneId, rotate, frames, animation.loop);
+    const rest = rotate ? [0] : [0, 0], layer = shiftTrack(
+      layerTrack(sorted, boneId, rotate, frames, animation.loop),
+      lag2[boneId] ?? 0,
+      frames,
+      animation.loop
+    );
     const list = rotate ? out.rotationTimelines ??= [] : out.translationTimelines ??= [];
     const index = list.findIndex((t) => t.boneId === boneId);
     const own = index < 0 ? [{ frame: 0, value: rest }] : list[index].keys.map((k) => {
@@ -34794,6 +34908,19 @@ function handoverNotes(rigging, animations) {
           "\u3001"
         )}\uFF09\uFF0C\u758A\u5728\u4E3B\u52D5\u4F5C\u3001\u8DDF\u96A8\u548C\u6CE2\u52D5\u4E4B\u4E0A\u3002\u6539\u59FF\u52E2\u5C31\u6539\u9019\u4E9B\u5E40\u4E0A\u7684\u95DC\u9375\u5E40\uFF1B\u5169\u8005\u90FD\u52D5\u7684\u9AA8\u5728\u90A3\u6BB5\u662F\u9010\u5E40\u7684\u9375\u3002`
       );
+      const lagOf = (b) => a.keyposeLag?.[b] ?? 0;
+      const offsets = bones.flatMap((b) => {
+        let p = parent.get(b);
+        while (p && !bones.includes(p)) p = parent.get(p);
+        const d = p ? lagOf(b) - lagOf(p) : 0;
+        return d ? [`\`${b}\` \u6BD4 \`${p}\` ${d > 0 ? `\u665A ${d}` : `\u65E9 ${-d}`} \u5E40`] : [];
+      });
+      if (offsets.length)
+        add(
+          `- \u6642\u9593\u932F\u958B\uFF1A${offsets.join(
+            "\u3001"
+          )}\uFF0C\u8DDF\u53C3\u8003\u5F71\u7247\u4E00\u6A23\u3002\u9019\u4E9B\u9AA8\u7684\u95DC\u9375\u59FF\u52E2\u6574\u6BB5\u932F\u958B\u4E86\u9019\u9EBC\u591A\u5E40\uFF08\u5FAA\u74B0\u52D5\u756B\u7E5E\u56DE\u958B\u982D\uFF09\uFF0C\u6240\u4EE5\u5B83\u5011\u7684\u95DC\u9375\u5E40\u4E0D\u548C\u4E0A\u9762\u7684\u9AA8\u5C0D\u9F4A\uFF1B\u8981\u5C0D\u9F4A\u5C31\u628A\u90A3\u6839\u9AA8\u7684\u95DC\u9375\u5E40\u62D6\u56DE\u53BB\u3002`
+        );
     }
     if (a.mirror) {
       const r = a.mirror.frames.map(([f, t]) => `${f}\u2013${t}`).join("\u3001");
@@ -35348,7 +35475,8 @@ function animateCharacter(rigging, params = {}) {
         applyKeyposes(
           applyRestPose(buildKeyposeAnimation(rigging.rigged.rig, s2), plan.animations[i].pose),
           plan.animations[i].keyposes,
-          s2.fps
+          s2.fps,
+          plan.animations[i].keyposeLag
         ),
         s2.fps,
         plan.keyTolerance ?? KEY_TOLERANCE
@@ -35706,6 +35834,13 @@ function lintOne(plan, partNames, knownAnimations) {
           errors.push(`${where}: key pose ${k.frame} ${id} needs finite offsets`);
       }
     });
+    const posed = new Set(keyposes.flatMap((k) => Object.keys(k.pose)));
+    for (const [id, lag2] of Object.entries(a.keyposeLag ?? {})) {
+      bone(id, `${where} keyposeLag`);
+      if (!posed.has(id)) warnings.push(`${where}: keyposeLag ${id} has no key poses to move`);
+      if (!Number.isInteger(lag2) || Math.abs(lag2) >= a.frames)
+        errors.push(`${where}: keyposeLag ${id} must be whole frames under ${a.frames}`);
+    }
   }
   const under = (id, top) => {
     for (let p = parentOf2.get(id); p; p = parentOf2.get(p)) if (p === top) return true;
@@ -39241,6 +39376,8 @@ async function fitPoseFiles(planPath, buildDir, references, outPath, opts = {}) 
   const pictures = typeof references === "string" ? [{ frame: 0, path: references }] : references;
   if (!pictures.length)
     throw new Error("CLI_FIT_FRAMES: give at least one picture");
+  if (typeof references !== "string" && Object.keys(planned.keyposeLag ?? {}).length)
+    throw new Error(`CLI_FIT_LAG: ${animation} has keyposeLag (bones timed off its key frames, from fit-video); key poses from pictures cannot be added to it. Fit the video again, or remove keyposeLag and keyposes first`);
   const loop = planned.loop !== false, last = loop ? planned.frames - 1 : planned.frames;
   const seen = /* @__PURE__ */ new Set();
   for (const { frame: frame2, path } of pictures) {
@@ -40165,6 +40302,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     }
   };
   delete baseAnimation.keyposes;
+  delete baseAnimation.keyposeLag;
   const basePath = join2(out, "base", "plan.json");
   await mkdir2(dirname3(basePath), { recursive: true });
   const base = planAt(basePlan, planPath, basePath);
@@ -40404,27 +40542,41 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       targets = used.map((c, k) => smooth[k].map((v, g) => v - baseValue(c, g)));
     }
     const density = Math.max(2 / gapFrames, info && !info.oneCycle ? 4 / info.period : 0);
-    const reduced = reduceKeys(
+    const bones = [...new Set(used.map((c) => c.bone))], span = info ? N / info.cyclesInAnimation : N, maxLag = opts.lag === false ? 0 : Math.min(Math.round(fps / 3), Math.floor(span / (loop ? 4 : 8)));
+    const parents = bones.map((b) => {
+      let p = parentOf2.get(b);
+      while (p && !bones.includes(p))
+        p = parentOf2.get(p);
+      return p === void 0 ? void 0 : bones.indexOf(p);
+    });
+    const lagged = lagKeys(
       targets,
       noise.map((n) => Math.max(tolerance, 2 * n)),
+      bones.map((b) => used.flatMap((c, k) => c.bone === b ? [k] : [])),
       // A loop's keys wrap into frame 0; a one-shot also keys its last frame.
       {
         loop,
         minGap: 2,
-        maxKeys: Math.min(256, Math.max(2, Math.round(N * density) + (loop ? 0 : 1)))
+        maxKeys: Math.min(256, Math.max(2, Math.round(N * density) + (loop ? 0 : 1))),
+        maxLag,
+        parents,
+        kinds: used.map((c) => c.kind)
       }
     );
+    const reduced = lagged.reduced, lag2 = Object.fromEntries(bones.flatMap((b, k) => lagged.lags[k] ? [[b, lagged.lags[k]]] : []));
+    const values = lagged.targets;
     if (process.env.AUTOSPINE_DEBUG_TRACKS)
       debugTracks = {
         channels: used.map((c) => key(c)),
         tolerance: noise.map((n) => Math.max(tolerance, 2 * n)),
         targets,
+        lag: lag2,
         absolute: series
       };
     const keyposes = reduced.frames.map((frame2, i) => {
       const pose2 = {};
       used.forEach((c, k) => {
-        const v = targets[k][frame2];
+        const v = values[k][frame2];
         if (c.kind === "rotate" ? Math.abs(v) < 0.01 : Math.abs(v) < 0.05)
           return;
         (pose2[c.bone] ??= {})[c.kind] = +v.toFixed(c.kind === "rotate" ? 3 : 2);
@@ -40439,7 +40591,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
         perSecond: +(reduced.frames.length / D).toFixed(2),
         prior: { category: gap.category, perSecond: +(fps / gapFrames).toFixed(2) },
         error: reduced.error,
-        capped: reduced.capped
+        capped: reduced.capped,
+        lag: lag2
       },
       ...info ? { loop: info } : {},
       ...window !== void 0 ? { window } : {}
@@ -40521,6 +40674,10 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     shaped = shape(irOf(roundBase), skip);
     const roundPlan = structuredClone(roundBase);
     roundPlan.motion.animations[index].keyposes = shaped.keyposes;
+    if (Object.keys(shaped.keys.lag).length)
+      roundPlan.motion.animations[index].keyposeLag = shaped.keys.lag;
+    else
+      delete roundPlan.motion.animations[index].keyposeLag;
     const planFile = join2(dir, "plan.json");
     await writeFile2(planFile, json(planAt(roundPlan, basePath, planFile)));
     if (debugTracks)
@@ -40721,7 +40878,7 @@ var characterUsage = `Character commands (ADR-017):
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
-  autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--font=file]
+  autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]`;
 async function characterCommand(args) {
   const flags = new Map(args.filter((a) => a.startsWith("--")).map((a) => [a.slice(2).split("=")[0], a.split("=").slice(1).join("=")]));
@@ -40834,7 +40991,7 @@ ${characterUsage}`);
     case "fit-video": {
       if (p.length !== 4)
         throw new Error(characterUsage);
-      known2("animation", "video", "start", "rounds", "every", "ignore", "no-zero", "no-track", "font");
+      known2("animation", "video", "start", "rounds", "every", "ignore", "no-zero", "no-track", "no-lag", "font");
       const opts = {
         animation: flags.get("animation") || void 0,
         video: flags.get("video") || void 0,
@@ -40844,6 +41001,7 @@ ${characterUsage}`);
         ignore: flags.get("ignore")?.split(",").filter(Boolean),
         zero: flags.has("no-zero") ? false : void 0,
         track: flags.has("no-track") ? false : void 0,
+        lag: flags.has("no-lag") ? false : void 0,
         font: flags.get("font") || void 0
       };
       let fit;

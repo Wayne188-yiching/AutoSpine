@@ -304,6 +304,14 @@ function lintOne(
           errors.push(`${where}: key pose ${k.frame} ${id} needs finite offsets`);
       }
     });
+    // Key pose lags (ADR-040): bones with key poses, shorter than the animation.
+    const posed = new Set(keyposes.flatMap((k) => Object.keys(k.pose)));
+    for (const [id, lag] of Object.entries(a.keyposeLag ?? {})) {
+      bone(id, `${where} keyposeLag`);
+      if (!posed.has(id)) warnings.push(`${where}: keyposeLag ${id} has no key poses to move`);
+      if (!Number.isInteger(lag) || Math.abs(lag) >= a.frames)
+        errors.push(`${where}: keyposeLag ${id} must be whole frames under ${a.frames}`);
+    }
   }
   // Mirror (ADR-035): planned bones, kept bones under the mirrored one, ordered ranges inside.
   const under = (id: string, top: string) => {
