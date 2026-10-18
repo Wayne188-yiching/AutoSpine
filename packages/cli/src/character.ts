@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync } from "node:fs";
 import {
   copyFile,
   cp,
@@ -34,6 +34,7 @@ import {
   type Params,
 } from "@autospine/character";
 import {
+  agreePoses,
   checkAcceptance,
   compareToReference,
   fitKeyPoses,
@@ -1766,6 +1767,11 @@ export interface FitVideoOptions {
   ignore?: readonly string[];
   /** The video's frame 0 shows the build's frame-0 pose (default true; ADR-033 zero frame). */
   zero?: boolean;
+  /**
+   * Follow each part from the frame before, forward and then backward through the clip, and leave
+   * out a bone the two passes disagree on (default true; ADR-039). False fits every frame alone.
+   */
+  track?: boolean;
   /** Caption font for the comparison videos. */
   font?: string;
   /** Progress lines for long runs. */
@@ -1798,6 +1804,35 @@ export interface FitVideoRound {
   waves: { chain: string; amp: number; peak: number }[];
   freed: string[];
   seconds: number;
+}
+
+/**
+ * What a run read (ADR-039): each input file's path, size and SHA-256, so a result shows which
+ * files made it, and that the artist's own Spine file was not one of them.
+ */
+async function inputsOf(files: readonly string[]) {
+  return Promise.all(
+    [...new Set(files)].filter(existsSync).map(async (path) => {
+      const hash = createHash("sha256");
+      let bytes = 0;
+      for await (const chunk of createReadStream(path) as AsyncIterable<Buffer>) {
+        hash.update(chunk);
+        bytes += chunk.length;
+      }
+      return { path, bytes, sha256: hash.digest("hex") };
+    }),
+  );
+}
+
+/** Frames as runs ("10-18, 40"), frames `step` apart counting as one run. */
+function spans(frames: readonly number[], step: number): string {
+  const runs: [number, number][] = [];
+  for (const f of frames) {
+    const last = runs.at(-1);
+    if (last && f - last[1] <= step) last[1] = f;
+    else runs.push([f, f]);
+  }
+  return runs.map(([a, b]) => (a === b ? `${a}` : `${a}-${b}`)).join(", ");
 }
 
 /**
@@ -1968,22 +2003,44 @@ export async function fitVideoFiles(
     coverage: number;
     pose: PoseFitResult["pose"];
     used: Set<string>;
+    placements: Record<string, Placement>;
+    lost: string[];
+    /** Bones the forward and backward tracks disagree on: no value on this frame (ADR-039). */
+    drop?: Set<string>;
   };
+  // Tracking (ADR-039): a part is searched near where the frame before placed it, within a
+  // twelfth of the figure's height and 12 degrees a frame; two tracks that differ by more than
+  // 8 degrees or 2 % of the height followed different look-alikes.
+  const unit = placed.figureHeight / placed.view.scale,
+    trackSpan = {
+      move: +Math.min(searchWindow, (unit / 12) * every).toFixed(2),
+      turn: Math.min(40, 12 * every),
+    },
+    agreement = { turn: 8, move: +(0.02 * unit).toFixed(2) };
   const fitFrame = async (
     doc: unknown,
     f: number,
     options: ReturnType<typeof fitOptions>,
     zero?: Record<string, Placement>,
+    predict?: Record<string, Placement>,
   ): Promise<FrameFit> => {
     const r = fitRestPose(doc, name, await picture(f), image, {
       ...options,
       time: frameTime(loop ? f % N : f, N, D, fps),
       ...(zero ? { zero } : {}),
+      ...(predict ? { predict, track: trackSpan } : {}),
     });
     const moving = new Set(options.bones),
       used = new Set<string>();
     for (const p of r.parts) if (p.used) used.add(ownerOf(p.slot, moving) ?? "");
-    return { accepted: r.coverage >= 0.6, coverage: r.coverage, pose: r.pose, used };
+    return {
+      accepted: r.coverage >= 0.6,
+      coverage: r.coverage,
+      pose: r.pose,
+      used,
+      placements: r.placements,
+      lost: r.lost,
+    };
   };
   let free: string[] = [];
   let options = fitOptions(free);
@@ -2041,6 +2098,10 @@ export async function fitVideoFiles(
     if (!fit.accepted) return;
     const p = at(loop ? f % N : f);
     for (const c of channels) {
+      if (fit.drop?.has(c.bone)) {
+        track.get(key(c))![f] = null;
+        continue;
+      }
       const off = fit.pose[c.bone],
         value =
           c.kind === "rotate"
@@ -2053,15 +2114,65 @@ export async function fitVideoFiles(
   record(
     0,
     zero
-      ? { accepted: true, coverage: zero.coverage, pose: {}, used: new Set() }
+      ? {
+          accepted: true,
+          coverage: zero.coverage,
+          pose: {},
+          used: new Set(),
+          placements: zero.placements,
+          lost: [],
+        }
       : (first as FrameFit),
     baseAt,
   );
   const zeroPlacements = zero?.placements;
   const t0 = Date.now();
-  for (const f of fitAll(every, reach - 1)) {
-    record(f, await fitFrame(baseDoc, f, options, zeroPlacements), baseAt);
-    if (f % 10 === 0) log(`fit: frame ${f} of ${reach - 1}`);
+  const dense = fitAll(every, reach - 1),
+    trackOn = opts.track !== false;
+  // Per bone, the frames on which the two tracks disagree; frames only one track accepted.
+  const tracking = { disagree: new Map<string, number[]>(), single: [] as number[], lost: [0, 0] };
+  if (!trackOn)
+    for (const f of dense) {
+      record(f, await fitFrame(baseDoc, f, options, zeroPlacements), baseAt);
+      if (f % 10 === 0) log(`fit: frame ${f} of ${reach - 1}`);
+    }
+  else {
+    // Forward from frame 0, then backward from the last frame fitted alone (ADR-039).
+    const passes = [new Map<number, FrameFit>(), new Map<number, FrameFit>()] as const;
+    for (const [k, order] of [dense, [...dense].reverse()].entries()) {
+      let near: Record<string, Placement> | undefined =
+        k === 0 ? (zero?.placements ?? (first as FrameFit).placements) : undefined;
+      for (const f of order) {
+        const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near);
+        passes[k]!.set(f, fit);
+        if (fit.lost.length) tracking.lost[k]!++;
+        if (fit.accepted) near = { ...near, ...fit.placements };
+        if (f % 10 === 0) log(`fit: frame ${f} of ${reach - 1} (${k ? "backward" : "forward"})`);
+      }
+    }
+    for (const f of dense) {
+      const a = passes[0].get(f)!,
+        b = passes[1].get(f)!;
+      if (!a.accepted || !b.accepted) {
+        if (a.accepted || b.accepted) tracking.single.push(f);
+        record(f, a.accepted ? a : b, baseAt);
+        continue;
+      }
+      const { pose, disagree } = agreePoses(a.pose, b.pose, options.bones, agreement);
+      for (const bone of disagree)
+        tracking.disagree.set(bone, [...(tracking.disagree.get(bone) ?? []), f]);
+      record(
+        f,
+        {
+          ...a,
+          coverage: Math.min(a.coverage, b.coverage),
+          pose,
+          used: new Set([...a.used].filter((x) => b.used.has(x))),
+          drop: new Set(disagree),
+        },
+        baseAt,
+      );
+    }
   }
   log(`fit: ${fitted.size} frames in ${((Date.now() - t0) / 1000).toFixed(1)}s`);
   // Bones whose own parts the video does not show as drawn (another drawing, a hidden part) in at
@@ -2397,6 +2508,16 @@ export async function fitVideoFiles(
     hints.push(
       `the key cap (twice the ${best.keys.prior.category} key density) held: the keys stay within ${best.keys.error}x their tolerance (${tolerance} degree or px, or twice a channel's fit noise)`,
     );
+  for (const [bone, frames] of tracking.disagree) {
+    const share = frames.length / dense.length;
+    hints.push(
+      `${bone}: the forward and backward tracks disagree on ${frames.length} of ${dense.length} frames (${spans(frames, every)}); left as gaps and filled from the frames around them${
+        share > 0.3
+          ? ": its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)"
+          : ""
+      }`,
+    );
+  }
   const summary = {
     animation: name,
     video,
@@ -2404,6 +2525,13 @@ export async function fitVideoFiles(
     fps,
     label: "reference-fitted",
     pass: best.pass,
+    inputs: await inputsOf([
+      resolve(planPath),
+      resolve(paths.imagesOnly),
+      ...[...layout.parts.values()].map((p) => resolve(paths.images, p.path + ".png")),
+      resolve(buildDir, `${plan.id}.json`),
+      video,
+    ]),
     best: {
       round: best.round,
       dir: bestDir,
@@ -2425,6 +2553,15 @@ export async function fitVideoFiles(
         }
       : null,
     searchWindow,
+    tracking: trackOn
+      ? {
+          span: trackSpan,
+          agreement,
+          disagree: Object.fromEntries(tracking.disagree),
+          singlePass: tracking.single,
+          lost: { forward: tracking.lost[0], backward: tracking.lost[1] },
+        }
+      : null,
     ...(fold ? { loop: fold } : {}),
     unfitted: [...missing].map(([bone, u]) => ({
       bone,
