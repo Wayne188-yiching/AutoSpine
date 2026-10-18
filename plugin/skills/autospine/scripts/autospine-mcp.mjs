@@ -29762,7 +29762,9 @@ function generateFeatureMesh(part, alpha, options = {}) {
       return bridgedSolid(alpha, width, height);
     }
   };
-  const solid = budget ? bridgedSolid(alpha, width, height) : primary();
+  const solid = primary();
+  let discarded = 0;
+  for (let i = 0; i < alpha.length; i++) if (alpha[i] > 8 && !solid[i]) discarded++;
   const foreground = solid.reduce((n, a) => n + (a ? 1 : 0), 0);
   const holes = enclosedHoles(solid, width, height), filled = Uint8Array.from(solid);
   for (const hole of holes) for (const i of hole) filled[i] = 255;
@@ -29895,7 +29897,7 @@ function generateFeatureMesh(part, alpha, options = {}) {
   };
   const report3 = validateMeshSpec(mesh2);
   if (report3.status !== "passed") throw new MeshError(report3);
-  return { mesh: mesh2, rings: ringIndices };
+  return { mesh: mesh2, rings: ringIndices, discarded };
 }
 
 // packages/motion/src/curves.ts
@@ -32854,7 +32856,7 @@ function convert(node) {
 var import_pngjs2 = __toESM(require_png(), 1);
 import { createHash as createHash3 } from "node:crypto";
 import { spawn } from "node:child_process";
-import { existsSync as existsSync2, readFileSync as readFileSync2 } from "node:fs";
+import { createReadStream, existsSync as existsSync2, readFileSync as readFileSync2 } from "node:fs";
 import { copyFile, cp, mkdir as mkdir2, readFile as readFile3, readdir as readdir2, rename as rename2, rm, writeFile as writeFile2, stat as stat2 } from "node:fs/promises";
 import { basename as basename3, dirname as dirname3, join as join2, relative as relative3, resolve as resolve3, sep } from "node:path";
 
@@ -33440,6 +33442,7 @@ function planAttachments(plan, index, rigged, regionBone) {
           ...hullVertices !== void 0 && spec.density !== "artist" ? { keepHoles: true } : {}
         };
         const r = generateFeatureMesh(asset.parts[0], p.alpha, options);
+        if (r.discarded) evidence[`${p.key}:alphaPrep`] = { discarded: r.discarded };
         return { asset, mesh: toWorldMesh(r.mesh, p, id), rings: r.rings };
       }
       case "contour": {
@@ -37807,7 +37810,7 @@ function fitRestPose(document2, animation, reference, image, options) {
     const a = -T.r * Math.PI / 180, u = x[0] - T.t[0], v = x[1] - T.t[1];
     return [Math.cos(a) * u - Math.sin(a) * v, Math.sin(a) * u + Math.cos(a) * v];
   };
-  const fitted = /* @__PURE__ */ new Map(), anchored = /* @__PURE__ */ new Set(), placements = {}, parts = [], targets = /* @__PURE__ */ new Map();
+  const fitted = /* @__PURE__ */ new Map(), anchored = /* @__PURE__ */ new Set(), placements = {}, lost = [], parts = [], targets = /* @__PURE__ */ new Map();
   const childWindow = 0.5 * window;
   for (const b of sk.skeleton.bones) {
     const name = b.data.name, parent = b.parent?.data.name;
@@ -37868,7 +37871,8 @@ function fitRestPose(document2, animation, reference, image, options) {
     const coarse = Math.max(4, 6 / scale);
     const xs = set.map((x) => x.p[0]), ys = set.map((x) => x.p[1]), extent = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
     const moveSpan = near ? Math.min(childWindow, Math.max(4 * coarse, 0.5 * extent)) : window, turnSpan = near ? Math.min(maxRotate, 25) : maxRotate;
-    const rank = (c2) => c2[0] - 0.05 * (Math.hypot(c2[2], c2[3]) / moveSpan + Math.abs(c2[1]) / turnSpan);
+    const from = (o, span, turn) => (c2) => c2[0] - 0.05 * (Math.hypot(c2[2] - o[2], c2[3] - o[3]) / span + Math.abs(c2[1] - o[1]) / turn);
+    let rank = from([0, 0, 0, 0], moveSpan, turnSpan);
     const search = (sub2, seeds, rotSpan, rotStep, span, step, keep) => {
       const out2 = [];
       for (const [, r0, x0, y0] of seeds)
@@ -37881,9 +37885,30 @@ function fitRestPose(document2, animation, reference, image, options) {
       out2.sort((a2, b2) => rank(b2) - rank(a2));
       return out2.slice(0, keep);
     };
-    let best = search(subset(200), [[0, 0, 0, 0]], turnSpan, 5, moveSpan, coarse, 8);
-    best = search(subset(600), best, 5, 1, coarse, coarse / 4, 3);
-    best = search(set, best, 1, 0.25, coarse / 4, Math.max(0.5, coarse / 16), 1);
+    const P = options.predict?.[name];
+    let best;
+    if (P) {
+      const r0 = P.r - D0.r, a0 = r0 * Math.PI / 180, turn = (x) => [
+        Math.cos(a0) * x[0] - Math.sin(a0) * x[1],
+        Math.sin(a0) * x[0] + Math.cos(a0) * x[1]
+      ], [tx, ty] = turn(D0.t), [cx, cy] = turn(c);
+      const seed = [0, r0, P.t[0] - tx - c[0] + cx, P.t[1] - ty - c[1] + cy];
+      const span = options.track?.move ?? 0.25 * window, spin = Math.min(maxRotate, options.track?.turn ?? 15), step = Math.min(coarse, span / 2);
+      rank = from(seed, span, spin);
+      let near2 = search(subset(200), [seed], spin, Math.min(5, spin / 2), span, step, 8);
+      near2 = search(subset(600), near2, 5, 1, step, step / 4, 3);
+      near2 = search(set, near2, 1, 0.25, step / 4, Math.max(0.5, step / 16), 1);
+      if (near2[0] && near2[0][0] >= minScore) best = near2;
+      else {
+        lost.push(name);
+        rank = from([0, 0, 0, 0], moveSpan, turnSpan);
+      }
+    }
+    if (!best) {
+      best = search(subset(200), [[0, 0, 0, 0]], turnSpan, 5, moveSpan, coarse, 8);
+      best = search(subset(600), best, 5, 1, coarse, coarse / 4, 3);
+      best = search(set, best, 1, 0.25, coarse / 4, Math.max(0.5, coarse / 16), 1);
+    }
     const [boneScore, rot, dx, dy] = best[0];
     const a = rot * Math.PI / 180, Rc = [
       Math.cos(a) * c[0] - Math.sin(a) * c[1],
@@ -38046,6 +38071,7 @@ function fitRestPose(document2, animation, reference, image, options) {
     pose: out,
     parts,
     placements,
+    lost,
     coverage: +(sampled ? usedSamples / sampled : 0).toFixed(3),
     residual: {
       median: +(perPart[Math.floor((perPart.length - 1) / 2)] ?? 0).toFixed(2),
@@ -38053,6 +38079,25 @@ function fitRestPose(document2, animation, reference, image, options) {
     },
     iterations
   };
+}
+function agreePoses(a, b, bones, limits) {
+  const pose2 = {}, disagree = [];
+  for (const bone of bones) {
+    const p = a[bone] ?? {}, q = b[bone] ?? {};
+    const r = [p.rotate ?? 0, q.rotate ?? 0], x = [p.x ?? 0, q.x ?? 0], y = [p.y ?? 0, q.y ?? 0];
+    if (Math.abs(r[0] - r[1]) > limits.turn || Math.hypot(x[0] - x[1], y[0] - y[1]) > limits.move) {
+      disagree.push(bone);
+      continue;
+    }
+    const mean2 = (v) => +((v[0] + v[1]) / 2).toFixed(3);
+    const m = {
+      ...p.x !== void 0 || q.x !== void 0 ? { x: mean2(x) } : {},
+      ...p.y !== void 0 || q.y !== void 0 ? { y: mean2(y) } : {},
+      ...p.rotate !== void 0 || q.rotate !== void 0 ? { rotate: mean2(r) } : {}
+    };
+    if (Object.keys(m).length) pose2[bone] = m;
+  }
+  return { pose: pose2, disagree };
 }
 function fitKeyPoses(document2, animation, pictures, image, options) {
   const fps = options.fps ?? 30, minCoverage = options.minCoverage ?? 0.6;
@@ -39577,6 +39622,28 @@ function framePicture(frame2, mask, view, area3) {
     }
   return { width, height, rgba };
 }
+async function inputsOf(files) {
+  return Promise.all([...new Set(files)].filter(existsSync2).map(async (path) => {
+    const hash = createHash3("sha256");
+    let bytes = 0;
+    for await (const chunk of createReadStream(path)) {
+      hash.update(chunk);
+      bytes += chunk.length;
+    }
+    return { path, bytes, sha256: hash.digest("hex") };
+  }));
+}
+function spans(frames, step) {
+  const runs = [];
+  for (const f of frames) {
+    const last = runs.at(-1);
+    if (last && f - last[1] <= step)
+      last[1] = f;
+    else
+      runs.push([f, f]);
+  }
+  return runs.map(([a, b]) => a === b ? `${a}` : `${a}-${b}`).join(", ");
+}
 async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const log = opts.log ?? (() => void 0);
   const plan = await readPlan(planPath);
@@ -39685,17 +39752,29 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       b = parentOf2.get(b);
     return b;
   };
-  const fitFrame = async (doc, f, options2, zero2) => {
+  const unit = placed.figureHeight / placed.view.scale, trackSpan = {
+    move: +Math.min(searchWindow, unit / 12 * every).toFixed(2),
+    turn: Math.min(40, 12 * every)
+  }, agreement = { turn: 8, move: +(0.02 * unit).toFixed(2) };
+  const fitFrame = async (doc, f, options2, zero2, predict) => {
     const r = fitRestPose(doc, name, await picture(f), image, {
       ...options2,
       time: frameTime(loop ? f % N : f, N, D, fps),
-      ...zero2 ? { zero: zero2 } : {}
+      ...zero2 ? { zero: zero2 } : {},
+      ...predict ? { predict, track: trackSpan } : {}
     });
     const moving = new Set(options2.bones), used = /* @__PURE__ */ new Set();
     for (const p of r.parts)
       if (p.used)
         used.add(ownerOf(p.slot, moving) ?? "");
-    return { accepted: r.coverage >= 0.6, coverage: r.coverage, pose: r.pose, used };
+    return {
+      accepted: r.coverage >= 0.6,
+      coverage: r.coverage,
+      pose: r.pose,
+      used,
+      placements: r.placements,
+      lost: r.lost
+    };
   };
   let free = [];
   let options = fitOptions(free);
@@ -39746,18 +39825,67 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       return;
     const p = at2(loop ? f % N : f);
     for (const c of channels) {
+      if (fit.drop?.has(c.bone)) {
+        track.get(key(c))[f] = null;
+        continue;
+      }
       const off = fit.pose[c.bone], value = c.kind === "rotate" ? (p.rotations[c.bone] ?? 0) + (off?.rotate ?? 0) : (p.translations[c.bone]?.[c.kind === "x" ? 0 : 1] ?? 0) + (off?.[c.kind] ?? 0);
       track.get(key(c))[f] = value;
     }
   };
   const baseAt = irOf(base);
-  record(0, zero ? { accepted: true, coverage: zero.coverage, pose: {}, used: /* @__PURE__ */ new Set() } : first, baseAt);
+  record(0, zero ? {
+    accepted: true,
+    coverage: zero.coverage,
+    pose: {},
+    used: /* @__PURE__ */ new Set(),
+    placements: zero.placements,
+    lost: []
+  } : first, baseAt);
   const zeroPlacements = zero?.placements;
   const t0 = Date.now();
-  for (const f of fitAll(every, reach - 1)) {
-    record(f, await fitFrame(baseDoc, f, options, zeroPlacements), baseAt);
-    if (f % 10 === 0)
-      log(`fit: frame ${f} of ${reach - 1}`);
+  const dense = fitAll(every, reach - 1), trackOn = opts.track !== false;
+  const tracking = { disagree: /* @__PURE__ */ new Map(), single: [], lost: [0, 0] };
+  if (!trackOn)
+    for (const f of dense) {
+      record(f, await fitFrame(baseDoc, f, options, zeroPlacements), baseAt);
+      if (f % 10 === 0)
+        log(`fit: frame ${f} of ${reach - 1}`);
+    }
+  else {
+    const passes = [/* @__PURE__ */ new Map(), /* @__PURE__ */ new Map()];
+    for (const [k, order] of [dense, [...dense].reverse()].entries()) {
+      let near = k === 0 ? zero?.placements ?? first.placements : void 0;
+      for (const f of order) {
+        const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near);
+        passes[k].set(f, fit);
+        if (fit.lost.length)
+          tracking.lost[k]++;
+        if (fit.accepted)
+          near = { ...near, ...fit.placements };
+        if (f % 10 === 0)
+          log(`fit: frame ${f} of ${reach - 1} (${k ? "backward" : "forward"})`);
+      }
+    }
+    for (const f of dense) {
+      const a = passes[0].get(f), b = passes[1].get(f);
+      if (!a.accepted || !b.accepted) {
+        if (a.accepted || b.accepted)
+          tracking.single.push(f);
+        record(f, a.accepted ? a : b, baseAt);
+        continue;
+      }
+      const { pose: pose2, disagree } = agreePoses(a.pose, b.pose, options.bones, agreement);
+      for (const bone of disagree)
+        tracking.disagree.set(bone, [...tracking.disagree.get(bone) ?? [], f]);
+      record(f, {
+        ...a,
+        coverage: Math.min(a.coverage, b.coverage),
+        pose: pose2,
+        used: new Set([...a.used].filter((x) => b.used.has(x))),
+        drop: new Set(disagree)
+      }, baseAt);
+    }
   }
   log(`fit: ${fitted.size} frames in ${((Date.now() - t0) / 1e3).toFixed(1)}s`);
   const unfitted = () => {
@@ -40010,6 +40138,10 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     hints.push(`folded ${fold.cycles} cycles (frames 0-${fold.foldFrames - 1}); the clip's last cycle comes ${Math.abs(fold.drift)} frames ${fold.drift < 0 ? "early" : "late"}`);
   if (best.keys.capped)
     hints.push(`the key cap (twice the ${best.keys.prior.category} key density) held: the keys stay within ${best.keys.error}x their tolerance (${tolerance} degree or px, or twice a channel's fit noise)`);
+  for (const [bone, frames2] of tracking.disagree) {
+    const share = frames2.length / dense.length;
+    hints.push(`${bone}: the forward and backward tracks disagree on ${frames2.length} of ${dense.length} frames (${spans(frames2, every)}); left as gaps and filled from the frames around them${share > 0.3 ? ": its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)" : ""}`);
+  }
   const summary = {
     animation: name,
     video,
@@ -40017,6 +40149,13 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     fps,
     label: "reference-fitted",
     pass: best.pass,
+    inputs: await inputsOf([
+      resolve3(planPath),
+      resolve3(paths.imagesOnly),
+      ...[...layout.parts.values()].map((p) => resolve3(paths.images, p.path + ".png")),
+      resolve3(buildDir, `${plan.id}.json`),
+      video
+    ]),
     best: {
       round: best.round,
       dir: bestDir,
@@ -40036,6 +40175,13 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       offset: +zero.offset.toFixed(2)
     } : null,
     searchWindow,
+    tracking: trackOn ? {
+      span: trackSpan,
+      agreement,
+      disagree: Object.fromEntries(tracking.disagree),
+      singlePass: tracking.single,
+      lost: { forward: tracking.lost[0], backward: tracking.lost[1] }
+    } : null,
     ...fold ? { loop: fold } : {},
     unfitted: [...missing].map(([bone, u]) => ({
       bone,
@@ -40268,7 +40414,8 @@ var toolSchemas = {
     rounds: Type.Optional(Type.Integer({ minimum: 1, maximum: 10 })),
     every: Type.Optional(Type.Integer({ minimum: 1, maximum: 30 })),
     ignore: Type.Optional(Type.Array(Type.String({ minLength: 1, maxLength: 128 }), { maxItems: 512 })),
-    zero: Type.Optional(Type.Boolean())
+    zero: Type.Optional(Type.Boolean()),
+    track: Type.Optional(Type.Boolean())
   }, strict5)
 };
 var descriptions = {
@@ -40295,7 +40442,7 @@ var descriptions = {
   autospine_merge_plans: "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose: "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
   autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
-  autospine_fit_video: "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
+  autospine_fit_video: "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
   autospine_review_video: "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (or the build alone without artistPath), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval."
 };
 var writingTools = /* @__PURE__ */ new Set([
@@ -40757,11 +40904,13 @@ var AutoSpineMcpServer = class {
             ...args.rounds === void 0 ? {} : { rounds: args.rounds },
             ...args.every === void 0 ? {} : { every: args.every },
             ...args.ignore === void 0 ? {} : { ignore: args.ignore },
-            ...args.zero === void 0 ? {} : { zero: args.zero }
+            ...args.zero === void 0 ? {} : { zero: args.zero },
+            ...args.track === void 0 ? {} : { track: args.track }
           }).catch(characterFailure);
           return result({
             ...fit,
             video: relative4(root, fit.video),
+            inputs: fit.inputs.map((i) => ({ ...i, path: relative4(root, i.path) })),
             best: {
               round: fit.best.round,
               dir: relative4(root, fit.best.dir),

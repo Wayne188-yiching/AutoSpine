@@ -39,7 +39,7 @@ const area = (points: [number, number][], triangles: number[]) => {
 };
 
 describe("silhouette and feature-ring mesh", () => {
-  const { mesh, rings } = generateFeatureMesh(part, alpha);
+  const { mesh, rings, discarded } = generateFeatureMesh(part, alpha);
 
   it("rings each socket with locked edges and ignores the speck", () => {
     expect(rings.length).toBe(2);
@@ -83,7 +83,7 @@ describe("silhouette and feature-ring mesh", () => {
         );
       }
     expect((minAngle * 180) / Math.PI).toBeGreaterThan(5);
-    expect(generateFeatureMesh(part, alpha)).toEqual({ mesh, rings });
+    expect(generateFeatureMesh(part, alpha)).toEqual({ mesh, rings, discarded });
   });
 
   it("rejects mismatched alpha and out-of-range lengths", () => {

@@ -43,3 +43,4 @@ Causes:
 - Fewer vertices bend less smoothly. A part that folds (an elbow inside one mesh, a belly that squashes) may need explicit counts; B1 and B3 say where.
 - The cleanup moves the motion by at most the tolerance between frames that were keyed before; numbers compared at 0.1 degree should set `keyTolerance: 0`.
 - Rollback: `density` back to `"artist"` only, drop `keepHoles`, `simplifyAnimation` and `keyTolerance`.
+- Amended by ADR-039 (2026-10-18): the budget hull bridged detached pieces the fine lattice had dropped, so slivers of neighbouring images left in a picture were meshed and drawn; it now drops pieces up to 2 % first.

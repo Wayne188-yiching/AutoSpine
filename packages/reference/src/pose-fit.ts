@@ -48,6 +48,16 @@ export interface PoseFitOptions {
    * fit's targets.
    */
   zero?: Readonly<Record<string, Placement>>;
+  /**
+   * Placements found on a neighbouring frame of the same clip (ADR-039): each bone's parts are
+   * searched near there, within `track.move` world units and `track.turn` degrees, and a candidate
+   * further from it ranks lower, so a look-alike nearer the plan's pose does not take the part. A
+   * bone without a placement, or whose parts score under `minScore` near it, is searched over the
+   * whole window as without it, and named in `lost`.
+   */
+  predict?: Readonly<Record<string, Placement>>;
+  /** Search spans around `predict` (default a quarter of `window`, and 15 degrees). */
+  track?: { move?: number; turn?: number };
 }
 /** A rigid world move: x -> R(r) x + t, degrees counter-clockwise (Spine world, y up). */
 export interface Placement {
@@ -76,8 +86,10 @@ export interface PoseFitResult {
   /** Share of the sampled texels on parts whose match was used: below about 0.6 the reference
    *  shows something a rest pose cannot (a scaled head, another expression); do not use the pose. */
   coverage: number;
-  /** Placements of the bones whose own parts matched, for `zero` (ADR-033). */
+  /** Placements of the bones whose own parts matched, for `zero` (ADR-033) and `predict`. */
   placements: Record<string, Placement>;
+  /** Bones given a `predict` placement whose parts were not found near it (ADR-039). */
+  lost: string[];
 }
 
 interface Sample {
@@ -299,6 +311,7 @@ export function fitRestPose(
   const fitted = new Map<string, Rigid>(),
     anchored = new Set<string>(),
     placements: Record<string, Rigid> = {},
+    lost: string[] = [],
     parts: PoseFitPart[] = [],
     targets = new Map<string, { sample: Sample; to: [number, number] }[]>();
   const childWindow = 0.5 * window;
@@ -379,8 +392,11 @@ export function fitRestPose(
       turnSpan = near ? Math.min(maxRotate, 25) : maxRotate;
     type Cand = [number, number, number, number];
     // A slight preference for the smaller move settles identical images (two legs) and plain areas.
-    const rank = (c: Cand) =>
-      c[0] - 0.05 * (Math.hypot(c[2], c[3]) / moveSpan + Math.abs(c[1]) / turnSpan);
+    const from =
+      (o: Cand, span: number, turn: number) =>
+      (c: Cand): number =>
+        c[0] - 0.05 * (Math.hypot(c[2] - o[2], c[3] - o[3]) / span + Math.abs(c[1] - o[1]) / turn);
+    let rank = from([0, 0, 0, 0], moveSpan, turnSpan);
     const search = (
       sub: typeof set,
       seeds: Cand[],
@@ -401,9 +417,37 @@ export function fitRestPose(
       out.sort((a, b) => rank(b) - rank(a));
       return out.slice(0, keep);
     };
-    let best = search(subset(200), [[0, 0, 0, 0]], turnSpan, 5, moveSpan, coarse, 8);
-    best = search(subset(600), best, 5, 1, coarse, coarse / 4, 3);
-    best = search(set, best, 1, 0.25, coarse / 4, Math.max(0.5, coarse / 16), 1);
+    // Near the neighbouring frame's placement first (ADR-039), as (rotation, shift) about c.
+    const P = options.predict?.[name];
+    let best: Cand[] | undefined;
+    if (P) {
+      const r0 = P.r - D0.r,
+        a0 = (r0 * Math.PI) / 180,
+        turn = (x: [number, number]): [number, number] => [
+          Math.cos(a0) * x[0] - Math.sin(a0) * x[1],
+          Math.sin(a0) * x[0] + Math.cos(a0) * x[1],
+        ],
+        [tx, ty] = turn(D0.t),
+        [cx, cy] = turn(c);
+      const seed: Cand = [0, r0, P.t[0] - tx - c[0] + cx, P.t[1] - ty - c[1] + cy];
+      const span = options.track?.move ?? 0.25 * window,
+        spin = Math.min(maxRotate, options.track?.turn ?? 15),
+        step = Math.min(coarse, span / 2);
+      rank = from(seed, span, spin);
+      let near = search(subset(200), [seed], spin, Math.min(5, spin / 2), span, step, 8);
+      near = search(subset(600), near, 5, 1, step, step / 4, 3);
+      near = search(set, near, 1, 0.25, step / 4, Math.max(0.5, step / 16), 1);
+      if (near[0] && near[0][0] >= minScore) best = near;
+      else {
+        lost.push(name);
+        rank = from([0, 0, 0, 0], moveSpan, turnSpan);
+      }
+    }
+    if (!best) {
+      best = search(subset(200), [[0, 0, 0, 0]], turnSpan, 5, moveSpan, coarse, 8);
+      best = search(subset(600), best, 5, 1, coarse, coarse / 4, 3);
+      best = search(set, best, 1, 0.25, coarse / 4, Math.max(0.5, coarse / 16), 1);
+    }
     const [boneScore, rot, dx, dy] = best[0]!;
     // Composite: x -> place(D0 x).
     const a = (rot * Math.PI) / 180,
@@ -596,6 +640,7 @@ export function fitRestPose(
     pose: out,
     parts,
     placements,
+    lost,
     coverage: +(sampled ? usedSamples / sampled : 0).toFixed(3),
     residual: {
       median: +(perPart[Math.floor((perPart.length - 1) / 2)] ?? 0).toFixed(2),
@@ -603,6 +648,40 @@ export function fitRestPose(
     },
     iterations,
   };
+}
+
+/**
+ * Two fits of one frame, tracked from either end of a clip (ADR-039): a bone on which they agree
+ * within `turn` degrees and `move` units gets their mean; a bone on which they do not is named in
+ * `disagree` and left out, since one of them followed a look-alike.
+ */
+export function agreePoses(
+  a: PoseFitResult["pose"],
+  b: PoseFitResult["pose"],
+  bones: readonly string[],
+  limits: { turn: number; move: number },
+): { pose: PoseFitResult["pose"]; disagree: string[] } {
+  const pose: PoseFitResult["pose"] = {},
+    disagree: string[] = [];
+  for (const bone of bones) {
+    const p = a[bone] ?? {},
+      q = b[bone] ?? {};
+    const r = [p.rotate ?? 0, q.rotate ?? 0] as const,
+      x = [p.x ?? 0, q.x ?? 0] as const,
+      y = [p.y ?? 0, q.y ?? 0] as const;
+    if (Math.abs(r[0] - r[1]) > limits.turn || Math.hypot(x[0] - x[1], y[0] - y[1]) > limits.move) {
+      disagree.push(bone);
+      continue;
+    }
+    const mean = (v: readonly [number, number]) => +((v[0] + v[1]) / 2).toFixed(3);
+    const m = {
+      ...(p.x !== undefined || q.x !== undefined ? { x: mean(x) } : {}),
+      ...(p.y !== undefined || q.y !== undefined ? { y: mean(y) } : {}),
+      ...(p.rotate !== undefined || q.rotate !== undefined ? { rotate: mean(r) } : {}),
+    };
+    if (Object.keys(m).length) pose[bone] = m;
+  }
+  return { pose, disagree };
 }
 
 /** A reference picture of the pose on one frame (a storyboard frame or a frame of a video). */
