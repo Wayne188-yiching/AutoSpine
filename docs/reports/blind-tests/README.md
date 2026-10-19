@@ -6,6 +6,8 @@
 
 GitHub 會顯示 HTML 原始碼。下載並解壓後，開啟根目錄的 `autospine-blind-report.html`，即可瀏覽報告數據與縮圖。最新 ZIP 不含測試影片；HTML 中的影片播放器需先還原影片才能播放。
 
+要給別台電腦看：在有影片的本機執行 `node tools/pack-blind-report.mjs`，會產生 `docs/local-reviews/autospine-blind-report-portable.zip`（報告與所有連到的圖片、影片、數據）。對方解壓後雙擊 `autospine-blind-report.html` 即可，不需架伺服器。ZIP 含美術影片，請只用內部管道傳遞。
+
 ## 歷史影片
 
 107 支測試影片（約 498 MiB）保留於固定歷史版本 [`d3b1ab2`](https://github.com/Wayne188-yiching/AutoSpine/tree/d3b1ab2edfed935cb2efe3efbd74570f663abedd/docs/reports/blind-tests)，不再隨最新版下載或更新。原始報告 HTML、驗收數據與縮圖保留不變。
