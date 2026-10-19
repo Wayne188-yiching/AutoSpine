@@ -39,6 +39,12 @@ AutoSpine 用來製作 Spine 角色的骨架與動畫。提供已拆圖、擺好
 
 [方案格式與手動指令](docs/CHARACTER_PLAN.md) · [MCP 工具](docs/MCP_ADAPTER.md) · [程式架構](ARCHITECTURE.md) · [開發紀錄](AUTOSPINE_DEVELOPMENT_WORKFLOW.md)
 
+原始碼保留外掛、報告數據與縮圖，測試影片改為[按需還原](docs/reports/blind-tests/README.md#歷史影片)。下載最新 ZIP 不含歷史影片；第一次使用 Git 下載時，可只取得最新版，避免一併下載舊影片歷史：
+
+```text
+git clone --depth 1 https://github.com/Wayne188-yiching/AutoSpine.git
+```
+
 開發環境需有 Node.js 22.12 以上及 npm 12：
 
 ```text

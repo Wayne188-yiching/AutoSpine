@@ -8,6 +8,9 @@
 # Local acceptance reports containing private artwork and artist mesh data
 /docs/local-reviews/
 
+# Report videos are restored from the archived revision only when needed.
+/docs/reports/**/*.mp4
+
 # Dependencies and generated output
 node_modules/
 dist/

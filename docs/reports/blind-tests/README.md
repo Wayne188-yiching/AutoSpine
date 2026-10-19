@@ -4,7 +4,27 @@
 
 [完整 HTML 報告](autospine-blind-report.html) · [下載專案 ZIP](https://github.com/Wayne188-yiching/AutoSpine/archive/refs/heads/main.zip)
 
-GitHub 會顯示 HTML 原始碼。下載並解壓後，開啟根目錄的 `autospine-blind-report.html`，即可瀏覽完整報告。
+GitHub 會顯示 HTML 原始碼。下載並解壓後，開啟根目錄的 `autospine-blind-report.html`，即可瀏覽報告數據與縮圖。最新 ZIP 不含測試影片；HTML 中的影片播放器需先還原影片才能播放。
+
+## 歷史影片
+
+107 支測試影片（約 498 MiB）保留於固定歷史版本 [`d3b1ab2`](https://github.com/Wayne188-yiching/AutoSpine/tree/d3b1ab2edfed935cb2efe3efbd74570f663abedd/docs/reports/blind-tests)，不再隨最新版下載或更新。原始報告 HTML、驗收數據與縮圖保留不變。
+
+已有完整 Git 歷史時，在專案根目錄執行：
+
+```text
+git restore --source=d3b1ab2edfed935cb2efe3efbd74570f663abedd --worktree -- ":(glob)docs/reports/**/*.mp4"
+```
+
+若是淺層複製，需先取得該歷史版本（會下載影片），再執行上面的還原指令：
+
+```text
+git fetch origin d3b1ab2edfed935cb2efe3efbd74570f663abedd
+```
+
+若使用 ZIP，可[下載含影片的歷史 ZIP](https://github.com/Wayne188-yiching/AutoSpine/archive/d3b1ab2edfed935cb2efe3efbd74570f663abedd.zip)，或從歷史目錄下載需要的影片，放回原本相對路徑。
+
+還原的影片已列入 `.gitignore`，一般提交不會重新收錄。新的測試影片請存放在 `docs/local-reviews/`，需要分享時使用獨立附件，報告中保留連結。
 
 ## 成績摘要
 
