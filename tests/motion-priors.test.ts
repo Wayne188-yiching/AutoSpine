@@ -3,6 +3,9 @@ import type { CharacterPlan } from "@autospine/schemas";
 import { buildCharacter, lintCharacterPlan } from "@autospine/character";
 import {
   MOTION_PRIORS,
+  clapPose,
+  clapRecipe,
+  isWeakPrior,
   loopRecipe,
   oneShotKind,
   oneShotTemplate,
@@ -192,6 +195,132 @@ describe("measured motion priors (ADR-032)", () => {
     expect(rel(8) - rel(null)).toBeCloseTo(-t.translate[1]!.value[1], 1);
     expect(rel(15) - rel(null)).toBeCloseTo(-t.translate[2]!.value[1], 1);
     expect(rel(19) - rel(null)).toBeCloseTo(0, 1);
+  });
+});
+
+describe("weak single-art priors from the mummy cat (ADR-041)", () => {
+  it("marks one-art priors weak and leaves the batch priors as they were", () => {
+    for (const kind of ["clap", "entryRise", "idleHands", "walk", "look"] as const)
+      expect(isWeakPrior(kind), kind).toBe(true);
+    for (const kind of ["idle", "entry", "jump"] as const)
+      expect(isWeakPrior(kind), kind).toBe(false);
+    const pop = oneShotTemplate("01_In", { frames: 40, unit: 100, subject: "character" });
+    expect(pop.weak).toBe(false);
+    expect([pop.body, pop.arms]).toEqual([undefined, undefined]);
+  });
+
+  it("claps four times per sway, the hands meeting between the shoulders", () => {
+    const r = clapRecipe(100);
+    expect(r).toMatchObject({
+      weak: true,
+      beatFrames: 15,
+      beatsPerSway: 4,
+      contactFrame: 8,
+      dip: 4.7,
+      open: { reach: 0.98, aboveShoulderDeg: 7.2 },
+      contact: { gap: 20.9, belowShoulder: 2.8 },
+    });
+    const arms = {
+      l: { shoulder: [-50, -200] as [number, number], reach: 40 },
+      r: { shoulder: [50, -200] as [number, number], reach: 40 },
+    };
+    const at = (f: number) => clapPose(r, f, arms);
+    for (const f of [8, 23, 38, 53]) {
+      const p = at(f);
+      expect(p.contact, `frame ${f}`).toBeCloseTo(1, 2);
+      expect(p.wrist.r[0] - p.wrist.l[0]).toBeCloseTo(20.9, 1);
+      expect(p.wrist.l[1]).toBeCloseTo(-197.2, 1);
+      expect(p.dip).toBeCloseTo(4.7, 1);
+    }
+    // Open half a frame in: nearly the full arm, just above the shoulder line, inside the reach.
+    const open = at(0.5);
+    expect(open.contact).toBe(0);
+    expect(open.wrist.l[0]).toBeCloseTo(-50 - 39.2 * Math.cos((7.2 * Math.PI) / 180), 1);
+    expect(open.wrist.l[1]).toBeLessThan(-200);
+    expect(Math.hypot(open.wrist.r[0] - 50, open.wrist.r[1] + 200)).toBeLessThanOrEqual(
+      39.2 + 0.01,
+    );
+    // Counter-clockwise for the first two claps, clockwise for the last two; the loop closes.
+    expect(at(8).leanDeg).toBeLessThan(-15);
+    expect(at(38).leanDeg).toBeGreaterThan(15);
+    expect(Math.abs(at(8).leanDeg)).toBeGreaterThan(Math.abs(at(15).leanDeg));
+    for (const k of ["sway", "contact", "leanDeg", "dip"] as const)
+      expect(at(60)[k], k).toBeCloseTo(at(0)[k], 6);
+    expect(code(() => clapRecipe(0))).toBe("PRIOR_UNIT");
+  });
+
+  it("enters by rising and squashing, without scale or fade, when asked for", () => {
+    const t = oneShotTemplate("01_In", {
+      frames: 30,
+      unit: 100,
+      subject: "character",
+      entry: "rise",
+    });
+    expect(t.weak).toBe(true);
+    expect([t.scale, t.alpha, t.rotate]).toEqual([[], [], []]);
+    expect(t.translate).toEqual([
+      { frame: 0, value: [0, 133] },
+      { frame: 10, value: [0, -1.9], ease: "out" },
+      { frame: 18, value: [0, 1.1], ease: "sine" },
+      { frame: 30, value: [0, 0], ease: "sine" },
+    ]);
+    const b = t.body!;
+    // IR px, y down: the chest squashes at 0.67, the head 2 frames later and further.
+    expect(b.chest.find((k) => k.frame === 20)!.value).toBe(8.7);
+    expect(b.head.find((k) => k.frame === 22)!.value).toBe(14.7);
+    expect(b.face.map((k) => [k.frame, k.value])).toEqual([
+      [0, 28.3],
+      [4, 28.3],
+      [14, -13.1],
+      [22, 15.4],
+      [30, 0],
+    ]);
+    expect(b.tilt[0]!.value).toBe(-18);
+    // Arms: flung above the shoulders by 0.3, dropped below them on the landing, inside the arm.
+    const [start, peak, low] = t.arms!;
+    expect(peak!.frame).toBe(9);
+    expect(peak!.value[1]).toBeLessThan(0);
+    expect(low!.value[1]).toBeGreaterThan(0);
+    for (const k of [start!, peak!, low!]) expect(Math.hypot(...k.value)).toBeLessThanOrEqual(0.98);
+    expect(t.swing.limbDeg).toBe(0);
+  });
+
+  it("keeps rise-entry key frames strictly increasing inside short animations", () => {
+    for (const frames of [2, 5, 9, 14, 60]) {
+      const t = oneShotTemplate("In", { frames, unit: 80, subject: "character", entry: "rise" });
+      for (const keys of [
+        t.translate,
+        t.body!.tilt,
+        t.body!.chest,
+        t.body!.head,
+        t.body!.face,
+        t.arms!,
+      ]) {
+        const f = keys.map((k) => k.frame);
+        expect(
+          f.every((x, i) => x >= 0 && x <= frames && (i === 0 || x > f[i - 1]!)),
+          `${frames}`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("lets free idle hands follow at travel 1 unless the bob is asked for", () => {
+    expect(loopRecipe("idle", 100).hand).toEqual({
+      travel: 1,
+      lag: 2,
+      twicePerBreath: 0,
+      palmDeg: 0,
+      weak: false,
+    });
+    expect(loopRecipe("idle", 100, { handBob: true }).hand).toEqual({
+      travel: 2.6,
+      lag: 5,
+      twicePerBreath: 5.4,
+      palmDeg: 33.2,
+      weak: true,
+    });
+    expect(loopRecipe("walk", 100).hand).toBeUndefined();
   });
 });
 
