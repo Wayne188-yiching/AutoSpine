@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="AutoSpine 盲測報告：只給圖片，自動做出 Spine 骨架、網格、權重與動作，和美術原檔比對；工作流、工具、盲測影片與人工接手。">
+<meta name="description" content="AutoSpine 盲測報告：給圖片和參考影片，自動做出 Spine 骨架、網格、權重與動作，和美術原檔比對；工作流、工具、盲測影片與人工接手。">
 <title>AutoSpine 盲測報告</title>
 <style>
 :root {
@@ -232,11 +232,11 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
 <main id="top">
 <section class="hero">
   <div class="wrap">
-    <p class="kicker">IMAGES → SPINE</p>
-    <h1>只給圖片<br><em>自動做出 Spine 動畫</em></h1>
-    <p class="lead">從 PSD 匯入 Spine、只有圖片和擺位的檔案開始，自動建好骨架、網格、權重與動作；做出來的是一般的 Spine 專案，美術可以直接接手修改。</p>
+    <p class="kicker">IMAGES ＋ VIDEO → SPINE</p>
+    <h1>圖片＋參考影片<br><em>自動做出 Spine 動畫</em></h1>
+    <p class="lead">從 PSD 匯入 Spine、只有圖片和擺位的檔案，加上一段示範動作的參考影片開始，自動建好骨架、網格、權重與動作；做出來的是一般的 Spine 專案，美術可以直接接手修改。</p>
     <div class="pipe" aria-label="流程">
-      <div class="node"><small>INPUT</small><strong>PSD 匯入檔</strong><span>圖片 ＋ 擺位</span></div>
+      <div class="node"><small>INPUT</small><strong>PSD 匯入檔 ＋ 參考影片</strong><span>圖片 ＋ 擺位 ＋ 示範動作</span></div>
       <div class="arrow" aria-hidden="true">→</div>
       <div class="node"><small>AUTOSPINE</small><strong>自動製作</strong><span>骨架 ・ 網格 ・ 權重 ・ 動作</span></div>
       <div class="arrow" aria-hidden="true">→</div>
@@ -299,9 +299,10 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
       <li class="step">
         <div>
           <span class="num">2</span>
-          <p class="where">需求</p>
-          <h3>說明要做什麼</h3>
+          <p class="where">參考影片 ＋ 需求</p>
+          <h3>給參考影片，說明要做什麼</h3>
           <ol class="sub">
+            <li>參考影片：示範這段動作（必要）</li>
             <li>動畫名稱與長度</li>
             <li>這段動畫顯示哪些部件</li>
             <li>有姿勢圖就附上（可選）</li>
@@ -316,7 +317,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
           <h3>自動製作</h3>
           <ol class="sub">
             <li>AI 依技能寫出方案</li>
-            <li>建出骨架、網格、權重、動作，對齊姿勢圖</li>
+            <li>建出骨架、網格、權重，動作依參考影片擬合</li>
             <li>輸出檢查影片：佈線 → 骨架 → 動作</li>
           </ol>
           <p class="out">產出：<code>Spine JSON</code> ＋ <code>檢查影片</code></p>
@@ -331,7 +332,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
           <ol class="sub">
             <li>同一角色的動畫合成一個專案</li>
             <li>附接手說明 HANDOVER.md，交付時在對話中摘要</li>
-            <li>有美術版時，自動比對出分數與並排影片</li>
+            <li>和參考影片比對出分數與並排影片</li>
           </ol>
           <p class="out">產出：<code>.spine</code> ＋ <code>檢查影片</code> ＋ <code>HANDOVER.md</code>（在 <code>_work/builds/</code>）</p>
         </div>
@@ -355,10 +356,10 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
       <h3>依步驟分組的工具</h3>
       <ul class="tags">
         <li><span class="step-name">步驟 3 · 寫方案</span><span class="codes"><span class="tag">lint_character_plan</span></span><span>檢查方案</span></li>
-        <li><span class="step-name">步驟 3 · 製作</span><span class="codes"><span class="tag">build_character</span><span class="tag">fit_pose</span></span><span>建出 Spine 檔、對齊姿勢圖</span></li>
+        <li><span class="step-name">步驟 3 · 製作</span><span class="codes"><span class="tag">build_character</span><span class="tag">fit_video</span><span class="tag">fit_pose</span></span><span>建出 Spine 檔、依參考影片擬合動作</span></li>
         <li><span class="step-name">步驟 3 · 檢查</span><span class="codes"><span class="tag">review_video</span></span><span>佈線 → 骨架 → 動作影片</span></li>
         <li><span class="step-name">步驟 4 · 交付</span><span class="codes"><span class="tag">merge_plans</span></span><span>同一角色合成一個專案</span></li>
-        <li><span class="step-name">步驟 4 · 驗收</span><span class="codes"><span class="tag">compare_reference</span></span><span>和美術原檔比對</span></li>
+        <li><span class="step-name">步驟 4 · 驗收</span><span class="codes"><span class="tag">compare_video</span><span class="tag">compare_reference</span></span><span>和參考影片、美術原檔比對</span></li>
         <li><span class="step-name">外部</span><span class="codes"><span class="tag">Spine 4.0.64</span><span class="tag">ffmpeg</span></span><span>匯出／匯入專案、輸出影片</span></li>
       </ul>
     </div>
@@ -368,7 +369,7 @@ footer .sp { margin-left: auto; font-family: var(--mono); }
         <li><b>只看像素</b> <span>關節由部件的端點、重疊、質心決定</span></li>
         <li><b>有邏輯的骨架</b> <span>每根骨從自己的關節指向下一個關節</span></li>
         <li><b>人工密度的網格</b> <span>點數比照美術習慣，權重依用途選</span></li>
-        <li><b>稀疏關鍵幀</b> <span>主動作加規則推出的次要動作，不烘焙逐格</span></li>
+        <li><b>動作照參考影片</b> <span>從影片擬合姿勢、節奏與幅度，再補次要動作</span></li>
       </ul>
     </div>
     </div>
