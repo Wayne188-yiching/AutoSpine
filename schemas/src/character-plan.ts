@@ -147,6 +147,12 @@ export const MeshPlanSchema = Type.Object(
           density: Type.Optional(Type.Union([Type.Literal("artist"), Type.Literal("fine")])),
           hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
           interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 })),
+          /**
+           * The part is also deformed by mesh deform keys (ADR-042), so it is wired as a part
+           * that bends: hull x0.9 at least and spread interior points. Parts in
+           * `motion.deforms` are marked automatically.
+           */
+          deform: Type.Optional(Type.Boolean()),
         },
         strict,
       ),

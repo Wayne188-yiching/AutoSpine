@@ -151,6 +151,16 @@ for (const [name, spec] of corpora) {
     world = boneWorld(doc.bones),
     length = new Map(doc.bones.map((b) => [b.name, b.length ?? 0])),
     images = await imageIndex(imagesDir);
+  // Attachments an animation deforms by keys (Spine 3.8/4.0 `deform`, older `ffd`).
+  const keyed = new Set(
+    Object.values(doc.animations ?? {}).flatMap((anim) =>
+      Object.values(anim.deform ?? anim.ffd ?? {}).flatMap((slots) =>
+        Object.entries(slots).flatMap(([slot, atts]) =>
+          Object.keys(atts).map((k) => `${slot}/${k}`),
+        ),
+      ),
+    ),
+  );
   for (const { slot, name: att, attachment: a } of attachmentEntries(doc)) {
     if (a.type !== "mesh") continue;
     const row = { corpus: name, slot, attachment: att };
@@ -192,7 +202,11 @@ for (const [name, spec] of corpora) {
           });
         }
       }
-      const options = flag("budget") === "adr024" ? adr024(width, height) : { bones };
+      const deforms = keyed.has(`${slot}/${att}`);
+      const options =
+        flag("budget") === "adr024"
+          ? adr024(width, height)
+          : { bones, ...(deforms ? { deforms } : {}) };
       const t0 = performance.now();
       const { mesh } = generateFeatureMesh(
         {
@@ -240,6 +254,7 @@ for (const [name, spec] of corpora) {
         width,
         height,
         bones: bones.length,
+        deforms,
         joints: bones.filter((b) => b.joint).length,
         artistHull: artist.hull.length,
         generatedHull: mesh.hull.length,

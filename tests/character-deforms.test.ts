@@ -102,6 +102,17 @@ describe("mesh deform keys (ADR-037)", () => {
     expect(handoverNotes(built.rigging, built.animations)).toContain("網格變形 `squint`");
   });
 
+  it("wires a part that control points deform as one that bends (ADR-042)", () => {
+    const eyes = (deformed: boolean) => {
+      const plan = squintPlan();
+      plan.meshing = { parts: { Eyes: {} } };
+      if (!deformed) delete plan.motion.deforms;
+      return buildCharacter(plan, fixtureLayout()).rigging.meshes.get("Eyes")!.mesh;
+    };
+    // Hull x0.9 of the outline's corners instead of a rigid part's x0.67.
+    expect(eyes(true).hull.length).toBeGreaterThan(eyes(false).hull.length);
+  });
+
   it("lints parts that are not meshes, unknown points and late keys", () => {
     const plan = squintPlan();
     delete plan.meshing;

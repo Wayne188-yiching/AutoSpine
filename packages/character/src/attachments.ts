@@ -163,6 +163,10 @@ export function planAttachments(
       ];
     });
   };
+  // ADR-042: parts that control-point deforms move bend like parts on bones.
+  const keyed = new Set(
+    (plan.motion.deforms ?? []).flatMap((d) => d.parts.map((n) => index.part(n).key)),
+  );
   const shape = (
     spec: MeshPlan["mesh"],
     p: CharacterPart,
@@ -176,7 +180,8 @@ export function planAttachments(
         // the engine's fine lattice; it keeps hole rings (eye sockets, ADR-038) unless
         // `density: "artist"`, which covers them (ADR-024). Explicit counts override.
         const fine =
-          spec.density === "fine" || spec.spacing !== undefined || spec.edgeLength !== undefined;
+            spec.density === "fine" || spec.spacing !== undefined || spec.edgeLength !== undefined,
+          deforms = spec.deform === true || keyed.has(p.key);
         const options = {
           ...(spec.spacing !== undefined ? { spacing: spec.spacing } : {}),
           ...(spec.edgeLength !== undefined ? { edgeLength: spec.edgeLength } : {}),
@@ -185,7 +190,7 @@ export function planAttachments(
           ...(spec.interiorVertices !== undefined
             ? { interiorVertices: spec.interiorVertices }
             : {}),
-          ...(fine ? {} : { bones: imageBones(bones, p) }),
+          ...(fine ? {} : { bones: imageBones(bones, p), ...(deforms ? { deforms } : {}) }),
           ...((!fine || spec.hullVertices !== undefined) && spec.density !== "artist"
             ? { keepHoles: true }
             : {}),

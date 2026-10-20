@@ -25997,7 +25997,13 @@ var MeshPlanSchema = Type.Object(
            */
           density: Type.Optional(Type.Union([Type.Literal("artist"), Type.Literal("fine")])),
           hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
-          interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 }))
+          interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 })),
+          /**
+           * The part is also deformed by mesh deform keys (ADR-042), so it is wired as a part
+           * that bends: hull x0.9 at least and spread interior points. Parts in
+           * `motion.deforms` are marked automatically.
+           */
+          deform: Type.Optional(Type.Boolean())
         },
         strict2
       ),
@@ -29692,11 +29698,40 @@ function grow(region2, width, height, r) {
   for (const hole of enclosedHoles(out, width, height)) for (const i of hole) out[i] = 255;
   return out;
 }
+var meanEdge = (ring) => ring.reduce((s2, a, i) => {
+  const b = ring[(i + 1) % ring.length];
+  return s2 + Math.hypot(b[0] - a[0], b[1] - a[1]) / ring.length;
+}, 0);
+function spread(boundaries, rings, existing, count, step) {
+  if (count <= 0) return [];
+  const outer = boundaries[0], xs = outer.map((p) => p[0]), ys = outer.map((p) => p[1]), cell = Math.max(step / 4, Math.sqrt(Math.abs(signedArea2(outer)) / 2 / 2e4));
+  const candidates = [], score = [];
+  for (let y = Math.min(...ys) + cell / 2; y < Math.max(...ys); y += cell)
+    for (let x = Math.min(...xs) + cell / 2; x < Math.max(...xs); x += cell) {
+      const p = [x, y];
+      if (!inside(p, outer) || rings.some((r) => inside(p, r))) continue;
+      const d = Math.min(...boundaries.map((b) => distanceToPolygon(p, b)));
+      if (d < step / 2) continue;
+      candidates.push(p);
+      score.push(Math.min(2 * d, ...existing.map((q) => Math.hypot(p[0] - q[0], p[1] - q[1]))));
+    }
+  const out = [];
+  while (out.length < count) {
+    let best = -1;
+    score.forEach((s2, i) => {
+      if (best < 0 || s2 > score[best]) best = i;
+    });
+    if (best < 0 || score[best] < step / 2) break;
+    const p = candidates[best];
+    out.push(p);
+    candidates.forEach((c, i) => {
+      score[i] = Math.min(score[i], Math.hypot(c[0] - p[0], c[1] - p[1]));
+    });
+  }
+  return out;
+}
 function jointRows(bones, outer) {
-  const step = outer.reduce((s2, a, i) => {
-    const b = outer[(i + 1) % outer.length];
-    return s2 + Math.hypot(b[0] - a[0], b[1] - a[1]) / outer.length;
-  }, 0);
+  const step = meanEdge(outer);
   const out = [];
   for (const { origin, tip, joint } of bones) {
     const d = [tip[0] - origin[0], tip[1] - origin[1]], length = Math.hypot(d[0], d[1]);
@@ -29863,7 +29898,7 @@ function generateFeatureMesh(part, alpha, options = {}) {
         for (const i of hole) largest[i] = 255;
       return simplifyClosed(covering(largest), 0.03 * Math.sqrt(width * height)).length;
     };
-    const n = options.bones?.length ?? 0, hull2 = options.hullVertices ?? Math.max(3, Math.round(corners() * (n >= 3 ? 1.5 : n ? 0.9 : 0.67))), padded = grow(filled, width, height, PAD), stray = Uint8Array.from(alpha, (a, i) => a > 8 && !padded[i] ? 255 : 0);
+    const n = options.bones?.length ?? 0, hull2 = options.hullVertices ?? Math.max(3, Math.round(corners() * (n >= 3 ? 1.5 : n || options.deforms ? 0.9 : 0.67))), padded = grow(filled, width, height, PAD), stray = Uint8Array.from(alpha, (a, i) => a > 8 && !padded[i] ? 255 : 0);
     const fit = (avoid) => fitHullBudget(covering(padded), hull2, padded, width, height, avoid);
     outer = fit(discarded ? stray : void 0);
     if (outer.length > hull2) outer = fit();
@@ -29935,11 +29970,13 @@ function generateFeatureMesh(part, alpha, options = {}) {
     return out;
   };
   let grid = [];
-  if (interior === void 0 && options.bones)
-    grid = jointRows(options.bones.length > 1 ? options.bones : [], outer).filter(
+  if (options.bones) {
+    const bends = options.bones.length > 1 || !!options.deforms, rows = jointRows(bends ? options.bones : [], outer).filter(
       (p) => !rings.some((r) => inside(p, r))
-    );
-  else if (interior === void 0)
+    ), step = meanEdge(outer), target = interior ?? (bends ? Math.round(0.27 * Math.abs(signedArea2(outer)) / 2 / (step * step)) : 0);
+    grid = rows.slice(0, interior ?? rows.length);
+    grid.push(...spread(boundaries, rings, grid, target - grid.length, step));
+  } else if (interior === void 0)
     grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
   else if (interior > 0) {
     let lo = 2, hi = Math.max(width, height);
@@ -30779,7 +30816,7 @@ function autocorrelation(x, lag2) {
   }
   return pearson(pairs);
 }
-function spread(x) {
+function spread2(x) {
   const v = x.filter(known), m = mean(v);
   return Math.sqrt(mean(v.map((a) => (a - m) ** 2)));
 }
@@ -30932,7 +30969,7 @@ function foldTracks(channels, period, opts = {}) {
     });
   };
   const samples = (Q) => samplesOf(channels, Q);
-  const variance = channels.map((c) => Math.max(1e-9, spread(c) ** 2));
+  const variance = channels.map((c) => Math.max(1e-9, spread2(c) ** 2));
   const harmonicsFor = (count) => Math.max(
     1,
     Math.min(opts.harmonics ?? Math.max(3, Math.round(P / 8)), Math.floor((count - 1) / 4))
@@ -31203,7 +31240,7 @@ function lagKeys(targets, tolerance, groups, opts) {
       });
     return { mean: mean(keys), max: Math.max(0, ...keys) };
   };
-  const score = (c) => spread(targets[c]) / tolerance[c];
+  const score = (c) => spread2(targets[c]) / tolerance[c];
   const moving = (k) => groups[k].filter((c) => score(c) >= 1);
   const behind = groups.map((_, k) => {
     const own = moving(k);
@@ -33643,19 +33680,22 @@ function planAttachments(plan, index, rigged, regionBone) {
       ];
     });
   };
+  const keyed = new Set(
+    (plan.motion.deforms ?? []).flatMap((d) => d.parts.map((n) => index.part(n).key))
+  );
   const shape = (spec, p, bones = []) => {
     const id = safeId(p.key === p.slot ? p.slot : p.key);
     switch (spec.type) {
       case "feature": {
         const asset = assetFor(p, id);
-        const fine = spec.density === "fine" || spec.spacing !== void 0 || spec.edgeLength !== void 0;
+        const fine = spec.density === "fine" || spec.spacing !== void 0 || spec.edgeLength !== void 0, deforms = spec.deform === true || keyed.has(p.key);
         const options = {
           ...spec.spacing !== void 0 ? { spacing: spec.spacing } : {},
           ...spec.edgeLength !== void 0 ? { edgeLength: spec.edgeLength } : {},
           ...spec.minHoleFraction !== void 0 ? { minHoleFraction: spec.minHoleFraction } : {},
           ...spec.hullVertices !== void 0 ? { hullVertices: spec.hullVertices } : {},
           ...spec.interiorVertices !== void 0 ? { interiorVertices: spec.interiorVertices } : {},
-          ...fine ? {} : { bones: imageBones(bones, p) },
+          ...fine ? {} : { bones: imageBones(bones, p), ...deforms ? { deforms } : {} },
           ...(!fine || spec.hullVertices !== void 0) && spec.density !== "artist" ? { keepHoles: true } : {}
         };
         const r = generateFeatureMesh(asset.parts[0], p.alpha, options);
@@ -40244,8 +40284,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     let info;
     let window;
     if (loop) {
-      const moving = series.filter((s2) => spread(s2) >= tolerance);
-      const figure = [0, 1].map((k) => centroid.map((c) => Number.isFinite(c[k]) ? c[k] : null)).filter((s2) => spread(s2) >= tolerance);
+      const moving = series.filter((s2) => spread2(s2) >= tolerance);
+      const figure = [0, 1].map((k) => centroid.map((c) => Number.isFinite(c[k]) ? c[k] : null)).filter((s2) => spread2(s2) >= tolerance);
       const est = periodHint ?? sharedPeriod([...moving, ...figure])?.period;
       let period, oneCycle = false;
       if (est !== void 0 && count >= 2 * est - 1)

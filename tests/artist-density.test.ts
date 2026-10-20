@@ -68,7 +68,48 @@ const chain = (w: number, h: number, n: number) =>
     joint: i > 0,
   }));
 
-describe("artist wiring rules (ADR-041)", () => {
+type Mesh = ReturnType<typeof mesh>;
+type XY = [number, number];
+const edgeDistance = (q: XY, poly: XY[]) =>
+  Math.min(
+    ...poly.map((a, i) => {
+      const b = poly[(i + 1) % poly.length]!,
+        dx = b[0] - a[0],
+        dy = b[1] - a[1],
+        t = Math.max(
+          0,
+          Math.min(1, ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / (dx * dx + dy * dy)),
+        );
+      return Math.hypot(a[0] + t * dx - q[0], a[1] + t * dy - q[1]);
+    }),
+  );
+/** A rule mesh in image pixels: interior points, hull, mean hull edge and the ADR-042 area rule. */
+function layout(m: Mesh, w: number, h: number) {
+  const px = m.uvs.map(([u, v]) => [u * w, v * h] as XY),
+    hull = m.hull.map((i) => px[i]!),
+    step =
+      hull.reduce(
+        (s, a, i) =>
+          s + Math.hypot(...([0, 1].map((k) => hull[(i + 1) % hull.length]![k]! - a[k]!) as XY)),
+        0,
+      ) / hull.length,
+    area =
+      Math.abs(
+        hull.reduce(
+          (s, a, i) =>
+            s + a[0] * hull[(i + 1) % hull.length]![1] - hull[(i + 1) % hull.length]![0] * a[1],
+          0,
+        ),
+      ) / 2;
+  return {
+    interior: px.slice(m.hull.length),
+    hull,
+    step,
+    rule: Math.round((0.27 * area) / (step * step)),
+  };
+}
+
+describe("artist wiring rules (ADR-041, ADR-042)", () => {
   it("counts hull vertices from the outline, not the image size", () => {
     const hull = (p: Part) => mesh(p, { bones: [] }).hull.length;
     // The same ellipse at four times the size keeps its count; ADR-024 grew it from 11 to 22.
@@ -102,13 +143,17 @@ describe("artist wiring rules (ADR-041)", () => {
     const p = ellipse(200, 300),
       three = mesh(p, { bones: chain(200, 300, 3) });
     expect(mesh(p, { bones: [] }).vertices.length).toBe(mesh(p, { bones: [] }).hull.length);
-    const interior = three.uvs.slice(three.hull.length).map(([u, v]) => [u * 200, v * 300]);
-    expect(interior.length).toBeGreaterThanOrEqual(3);
-    // Every point sits on a row square to the bones: at a joint (y 103.3, 196.7) or mid-bone.
-    const rows = [56.7, 103.3, 150, 196.7, 243.3];
-    for (const [, y] of interior)
-      expect(Math.min(...rows.map((r) => Math.abs(r - y!)))).toBeLessThan(0.1);
-    expect(interior.some(([, y]) => Math.abs(y! - 103.3) < 0.1)).toBe(true);
+    const { interior, rule, step, hull } = layout(three, 200, 300);
+    // Rows square to the bones at both joints (y 103.3, 196.7), then spread points up to the
+    // area rule (ADR-042), all half a hull edge or more from the hull and from each other.
+    for (const joint of [103.33, 196.67])
+      expect(interior.some(([, y]) => Math.abs(y - joint) < 0.1)).toBe(true);
+    expect(interior.length).toBeGreaterThanOrEqual(rule);
+    for (const [i, q] of interior.entries()) {
+      expect(edgeDistance(q, hull)).toBeGreaterThanOrEqual(step / 2 - 1e-6);
+      for (const r of interior.slice(i + 1))
+        expect(Math.hypot(q[0] - r[0], q[1] - r[1])).toBeGreaterThanOrEqual(step / 2 - 1e-6);
+    }
     // Delaunay: every interior edge's opposite angles sum to at most 180 degrees.
     const v = three.uvs.map(([a, b]) => [a * 200, b * 300] as const),
       opposite = new Map<string, number[]>();
@@ -125,6 +170,28 @@ describe("artist wiring rules (ADR-041)", () => {
       }
     for (const angles of opposite.values())
       if (angles.length === 2) expect(angles[0]! + angles[1]!).toBeLessThanOrEqual(Math.PI + 1e-6);
+  });
+
+  it("wires a part deformed by keys as one that bends (ADR-042)", () => {
+    const p = ellipse(200, 300),
+      rigid = mesh(p, { bones: [] }),
+      keyed = mesh(p, { bones: [], deforms: true });
+    // 0.9 of the outline's corners instead of 0.67, and spread points up to the area rule.
+    expect(keyed.hull.length).toBeGreaterThan(rigid.hull.length);
+    const { interior, rule, step, hull } = layout(keyed, 200, 300);
+    expect(rule).toBeGreaterThan(2);
+    expect(interior).toHaveLength(rule);
+    // About half their spacing in from the hull, as artists' (about one hull edge), not centred.
+    const depth = interior.map((q) => edgeDistance(q, hull) / step).sort((a, b) => a - b);
+    expect(depth[depth.length >> 1]).toBeGreaterThan(0.5);
+    expect(depth[depth.length >> 1]).toBeLessThan(2);
+    // Explicit counts: exactly that many, joint rows first (no lattice with bones).
+    expect(
+      layout(mesh(p, { bones: [], deforms: true, interiorVertices: 7 }), 200, 300).interior,
+    ).toHaveLength(7);
+    expect(
+      layout(mesh(p, { bones: chain(200, 300, 3), interiorVertices: 1 }), 200, 300).interior,
+    ).toHaveLength(1);
   });
 
   it("keeps a rule mesh's eye socket as a ring", () => {

@@ -94,4 +94,5 @@ Over the 157 meshes both runs built:
 - **Not yet measured.** A full Pig or Yuuna rebuild from a plan, against its artist file (B1 inversions and B3 stretch with the new rows).
 - **Hull padding.** The hull sits a median of 1 px further out than the old covering hull's opaque edge. Numbers measured at the outline (deform keys, B3 stretch) move by about that much.
 - **Rows only from known bones.** Interior rows need bones known before the weights are solved. A `transfer` mesh takes every bone in its sources, which may overcount.
+- **Amended by ADR-042 (2026-10-21).** Parts deformed by keys bend too, and every part that bends gets spread points up to an area rule after its joint rows.
 - **Rollback.** Drop `bones` from the caller and restore `artistBudget`; the engine without `bones` behaves as before, except that a budget hull now covers alpha above 8, is padded 1 px and avoids dropped fragments.

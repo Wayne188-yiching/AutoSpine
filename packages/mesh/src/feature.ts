@@ -22,16 +22,23 @@ export interface FeatureMeshOptions {
    * every opaque pixel; holes are covered and long edges are not subdivided.
    */
   hullVertices?: number;
-  /** Interior lattice points: the spacing is searched to give about this many (0: none). */
+  /**
+   * Interior points. Without `bones`: lattice points, the spacing searched to give about this
+   * many (0: none). With `bones`: exactly this many, joint rows first (ADR-042).
+   */
   interiorVertices?: number;
   /**
    * Artist wiring (ADR-041) from the bones that weight the part ([] for a rigid part), in image
    * pixels, `joint` when the bone's parent also weights it. The hull gets as many vertices as the
    * outline simplified at 3 % of sqrt(width x height) has corners, times 0.67 (rigid), 0.9 (one
-   * or two bones) or 1.5 (three or more); on two or more bones, rows of interior points cross the
-   * part at each joint inside it and halfway along each long bone. Explicit counts override.
+   * or two bones, or deformed by keys) or 1.5 (three or more). A part that bends (two or more
+   * bones, or `deforms`) gets rows of interior points across each joint inside it and halfway
+   * along each long bone, then spread points up to 0.27 x hull area / mean hull edge squared
+   * (ADR-042). Explicit counts override.
    */
   bones?: { origin: Point; tip: Point; joint?: boolean }[];
+  /** With `bones`: the part is also deformed by mesh deform keys, so it bends (ADR-042). */
+  deforms?: boolean;
   /**
    * With a budget: enclosed holes of at least `minHoleFraction` keep their rings as without one
    * (eye sockets in a face plate, ADR-038) instead of being covered.
@@ -346,11 +353,58 @@ function grow(region: Uint8Array, width: number, height: number, r: number): Uin
  * and halfway along each bone longer than `LONG_BONE` times the hull's mean edge; points split
  * each line's span inside the hull into pieces about one hull edge long.
  */
-function jointRows(bones: NonNullable<FeatureMeshOptions["bones"]>, outer: Point[]): Point[] {
-  const step = outer.reduce((s, a, i) => {
-    const b = outer[(i + 1) % outer.length]!;
-    return s + Math.hypot(b[0] - a[0], b[1] - a[1]) / outer.length;
+const meanEdge = (ring: Point[]) =>
+  ring.reduce((s, a, i) => {
+    const b = ring[(i + 1) % ring.length]!;
+    return s + Math.hypot(b[0] - a[0], b[1] - a[1]) / ring.length;
   }, 0);
+/**
+ * `count` more interior points (ADR-042), each where it is farthest from the points so far and
+ * from the boundaries counted at twice their distance (a point's mirror image across the hull),
+ * so they sit about half their spacing inside the outline, as artists' do. Candidates lie on a
+ * grid of a quarter hull edge, at least half an edge from every boundary and every point.
+ */
+function spread(
+  boundaries: Point[][],
+  rings: Point[][],
+  existing: Point[],
+  count: number,
+  step: number,
+): Point[] {
+  if (count <= 0) return [];
+  const outer = boundaries[0]!,
+    xs = outer.map((p) => p[0]),
+    ys = outer.map((p) => p[1]),
+    // ponytail: candidate grid capped near 20k cells; a finer one only matters for huge parts.
+    cell = Math.max(step / 4, Math.sqrt(Math.abs(signedArea2(outer)) / 2 / 20000));
+  const candidates: Point[] = [],
+    score: number[] = [];
+  for (let y = Math.min(...ys) + cell / 2; y < Math.max(...ys); y += cell)
+    for (let x = Math.min(...xs) + cell / 2; x < Math.max(...xs); x += cell) {
+      const p: Point = [x, y];
+      if (!inside(p, outer) || rings.some((r) => inside(p, r))) continue;
+      const d = Math.min(...boundaries.map((b) => distanceToPolygon(p, b)));
+      if (d < step / 2) continue;
+      candidates.push(p);
+      score.push(Math.min(2 * d, ...existing.map((q) => Math.hypot(p[0] - q[0], p[1] - q[1]))));
+    }
+  const out: Point[] = [];
+  while (out.length < count) {
+    let best = -1;
+    score.forEach((s, i) => {
+      if (best < 0 || s > score[best]!) best = i;
+    });
+    if (best < 0 || score[best]! < step / 2) break;
+    const p = candidates[best]!;
+    out.push(p);
+    candidates.forEach((c, i) => {
+      score[i] = Math.min(score[i]!, Math.hypot(c[0] - p[0], c[1] - p[1]));
+    });
+  }
+  return out;
+}
+function jointRows(bones: NonNullable<FeatureMeshOptions["bones"]>, outer: Point[]): Point[] {
+  const step = meanEdge(outer);
   const out: Point[] = [];
   for (const { origin, tip, joint } of bones) {
     const d: Point = [tip[0] - origin[0], tip[1] - origin[1]],
@@ -601,7 +655,7 @@ export function generateFeatureMesh(
     const n = options.bones?.length ?? 0,
       hull =
         options.hullVertices ??
-        Math.max(3, Math.round(corners() * (n >= 3 ? 1.5 : n ? 0.9 : 0.67))),
+        Math.max(3, Math.round(corners() * (n >= 3 ? 1.5 : n || options.deforms ? 0.9 : 0.67))),
       padded = grow(filled, width, height, PAD),
       stray = Uint8Array.from(alpha, (a, i) => (a > 8 && !padded[i] ? 255 : 0));
     const fit = (avoid?: Uint8Array) =>
@@ -688,11 +742,19 @@ export function generateFeatureMesh(
     return out;
   };
   let grid: Point[] = [];
-  if (interior === undefined && options.bones)
-    grid = jointRows(options.bones.length > 1 ? options.bones : [], outer).filter(
-      (p) => !rings.some((r) => inside(p, r)),
-    );
-  else if (interior === undefined)
+  if (options.bones) {
+    // ADR-042: a part that bends gets joint rows, then spread points up to the area rule.
+    const bends = options.bones.length > 1 || !!options.deforms,
+      rows = jointRows(bends ? options.bones : [], outer).filter(
+        (p) => !rings.some((r) => inside(p, r)),
+      ),
+      step = meanEdge(outer),
+      target =
+        interior ??
+        (bends ? Math.round((0.27 * Math.abs(signedArea2(outer))) / 2 / (step * step)) : 0);
+    grid = rows.slice(0, interior ?? rows.length);
+    grid.push(...spread(boundaries, rings, grid, target - grid.length, step));
+  } else if (interior === undefined)
     grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
   else if (interior > 0) {
     // The count falls as the spacing grows: bisect the spacing in log space for the closest count.
