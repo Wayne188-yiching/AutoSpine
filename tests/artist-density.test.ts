@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AnimationSpec, CharacterPlan } from "@autospine/schemas";
-import { artistBudget, assetFor, buildCharacter, type Keyposes } from "@autospine/character";
+import { assetFor, buildCharacter, type Keyposes } from "@autospine/character";
 import { generateFeatureMesh } from "@autospine/mesh";
 import { rotationsAt, simplifyAnimation } from "@autospine/motion";
 import { fixtureLayout, fixturePlan } from "./character-fixture.js";
@@ -27,36 +27,132 @@ function blob(w: number, h: number, hole = false) {
     setup: { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
   };
 }
+/** Inside the polygon or on its boundary. */
+function covers(poly: [number, number][], p: [number, number]) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i]!,
+      [xj, yj] = poly[j]!,
+      dx = xj - xi,
+      dy = yj - yi,
+      t = Math.max(0, Math.min(1, ((p[0] - xi) * dx + (p[1] - yi) * dy) / (dx * dx + dy * dy)));
+    if (Math.hypot(xi + t * dx - p[0], yi + t * dy - p[1]) < 1e-6) return true;
+    if (yi > p[1] !== yj > p[1] && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi) + xi) c = !c;
+  }
+  return c;
+}
 const rotation = (a: AnimationSpec, bone: string) =>
   a.rotationTimelines?.find((t) => t.boneId === bone);
 
-describe("artist-density meshes by default (ADR-038)", () => {
-  it("keeps a budget mesh's eye socket as a ring", () => {
-    const p = blob(420, 360, true),
-      asset = assetFor(p as never, "s"),
-      b = artistBudget(p.width, p.height);
-    const budget = { hullVertices: b.hull, interiorVertices: b.interior };
-    const kept = generateFeatureMesh(asset.parts[0]!, p.alpha, { ...budget, keepHoles: true });
-    const covered = generateFeatureMesh(asset.parts[0]!, p.alpha, budget);
-    const fine = generateFeatureMesh(asset.parts[0]!, p.alpha, {});
-    expect(kept.rings).toHaveLength(1);
-    expect(kept.mesh.manualEdges?.length).toBe(kept.rings[0]!.length);
-    expect(covered.rings).toHaveLength(0);
-    // The ring adds its own points; the hull and the interior keep the budget.
-    expect(kept.mesh.hull).toHaveLength(b.hull);
-    expect(kept.mesh.vertices.length).toBeLessThan(fine.mesh.vertices.length / 2);
+type Part = ReturnType<typeof blob>;
+const mesh = (p: Part, options: Parameters<typeof generateFeatureMesh>[2]) =>
+  generateFeatureMesh(assetFor(p as never, "s").parts[0]!, p.alpha, options).mesh;
+/** A part of `w` x `h` whose alpha is `inside`. */
+function shape(w: number, h: number, inside: (x: number, y: number) => boolean): Part {
+  const p = blob(w, h);
+  for (let y = 0; y < h; y++)
+    for (let x = 0; x < w; x++) p.alpha[y * w + x] = inside(x, y) ? 255 : 0;
+  return p;
+}
+const ellipse = (w: number, h: number) =>
+  shape(
+    w,
+    h,
+    (x, y) => ((x + 0.5 - w / 2) / (0.45 * w)) ** 2 + ((y + 0.5 - h / 2) / (0.45 * h)) ** 2 <= 1,
+  );
+/** A vertical chain of `n` bones down the middle of a w x h image, 10 px from top and bottom. */
+const chain = (w: number, h: number, n: number) =>
+  Array.from({ length: n }, (_, i) => ({
+    origin: [w / 2, 10 + ((h - 20) * i) / n] as [number, number],
+    tip: [w / 2, 10 + ((h - 20) * (i + 1)) / n] as [number, number],
+    joint: i > 0,
+  }));
+
+describe("artist wiring rules (ADR-041)", () => {
+  it("counts hull vertices from the outline, not the image size", () => {
+    const hull = (p: Part) => mesh(p, { bones: [] }).hull.length;
+    // The same ellipse at four times the size keeps its count; ADR-024 grew it from 11 to 22.
+    expect(Math.abs(hull(ellipse(120, 100)) - hull(ellipse(480, 400)))).toBeLessThanOrEqual(1);
+    // A star of the same size has more corners than the ellipse, so more hull vertices.
+    const star = shape(240, 240, (x, y) => {
+      const a = Math.atan2(y - 120, x - 120),
+        r = Math.hypot(x - 120, y - 120);
+      return r <= 60 + 50 * Math.cos(6 * a);
+    });
+    expect(hull(star)).toBeGreaterThan(1.3 * hull(ellipse(240, 240)));
   });
 
-  it("leaves a stray fragment out of a budget mesh and bridges two large pieces (ADR-039)", () => {
+  it("scales the count by how many bones bend the part and covers every opaque pixel", () => {
+    const p = ellipse(200, 300),
+      rigid = mesh(p, { bones: [] }),
+      one = mesh(p, { bones: chain(200, 300, 1) }),
+      three = mesh(p, { bones: chain(200, 300, 3) });
+    // 0.67 : 0.9 : 1.5 of the outline's corners.
+    expect(rigid.hull.length).toBeLessThan(one.hull.length);
+    expect(three.hull.length / rigid.hull.length).toBeGreaterThan(1.8);
+    for (const m of [rigid, one, three]) {
+      const hull = m.hull.map((i) => [m.uvs[i]![0] * 200, m.uvs[i]![1] * 300] as [number, number]);
+      for (let y = 0; y < 300; y++)
+        for (let x = 0; x < 200; x++)
+          if (p.alpha[y * 200 + x]) expect(covers(hull, [x + 0.5, y + 0.5])).toBe(true);
+    }
+  });
+
+  it("puts interior rows across the joints of a bending part and none in a rigid one", () => {
+    const p = ellipse(200, 300),
+      three = mesh(p, { bones: chain(200, 300, 3) });
+    expect(mesh(p, { bones: [] }).vertices.length).toBe(mesh(p, { bones: [] }).hull.length);
+    const interior = three.uvs.slice(three.hull.length).map(([u, v]) => [u * 200, v * 300]);
+    expect(interior.length).toBeGreaterThanOrEqual(3);
+    // Every point sits on a row square to the bones: at a joint (y 103.3, 196.7) or mid-bone.
+    const rows = [56.7, 103.3, 150, 196.7, 243.3];
+    for (const [, y] of interior)
+      expect(Math.min(...rows.map((r) => Math.abs(r - y!)))).toBeLessThan(0.1);
+    expect(interior.some(([, y]) => Math.abs(y! - 103.3) < 0.1)).toBe(true);
+    // Delaunay: every interior edge's opposite angles sum to at most 180 degrees.
+    const v = three.uvs.map(([a, b]) => [a * 200, b * 300] as const),
+      opposite = new Map<string, number[]>();
+    for (let t = 0; t < three.triangles.length; t += 3)
+      for (let k = 0; k < 3; k++) {
+        const [a, b, c] = [0, 1, 2].map((j) => three.triangles[t + ((k + j) % 3)]!);
+        const key = `${Math.min(a!, b!)}:${Math.max(a!, b!)}`,
+          u = [v[a!]![0] - v[c!]![0], v[a!]![1] - v[c!]![1]],
+          w = [v[b!]![0] - v[c!]![0], v[b!]![1] - v[c!]![1]];
+        const angle = Math.acos(
+          (u[0]! * w[0]! + u[1]! * w[1]!) / Math.hypot(u[0]!, u[1]!) / Math.hypot(w[0]!, w[1]!),
+        );
+        opposite.set(key, [...(opposite.get(key) ?? []), angle]);
+      }
+    for (const angles of opposite.values())
+      if (angles.length === 2) expect(angles[0]! + angles[1]!).toBeLessThanOrEqual(Math.PI + 1e-6);
+  });
+
+  it("keeps a rule mesh's eye socket as a ring", () => {
+    const p = blob(420, 360, true);
+    const kept = mesh(p, { bones: [], keepHoles: true }),
+      covered = mesh(p, { bones: [] }),
+      fine = mesh(p, {});
+    expect(kept.manualEdges?.length).toBeGreaterThan(4);
+    expect(covered.manualEdges).toBeUndefined();
+    // The ring adds its own points; the hull keeps the rule's count.
+    expect(kept.hull).toHaveLength(covered.hull.length);
+    expect(kept.vertices.length).toBeLessThan(fine.vertices.length / 2);
+  });
+
+  it("leaves a stray fragment out of a rule mesh and bridges two large pieces (ADR-039)", () => {
     // A sliver of a neighbouring image left in the picture's corner, apart from the art.
     const p = blob(300, 240);
     for (let y = 0; y < 30; y++) for (let x = 296; x < 300; x++) p.alpha[y * 300 + x] = 255;
     const asset = assetFor(p as never, "s"),
-      b = artistBudget(p.width, p.height),
-      budget = { hullVertices: b.hull, interiorVertices: b.interior };
+      budget = { bones: [] };
     const r = generateFeatureMesh(asset.parts[0]!, p.alpha, budget);
     expect(r.discarded).toBe(120);
-    expect(r.mesh.uvs.filter(([u, v]) => u * 300 > 285 && v * 240 < 40)).toHaveLength(0);
+    // The hull's few vertices reach towards the corner but never over the sliver.
+    const hull = r.mesh.hull.map(
+      (i) => [r.mesh.uvs[i]![0] * 300, r.mesh.uvs[i]![1] * 240] as [number, number],
+    );
+    for (let y = 0; y < 30; y++)
+      for (let x = 296; x < 300; x++) expect(covers(hull, [x + 0.5, y + 0.5])).toBe(false);
     // Two eyes on one image are too large to drop: one outline covers both.
     const eyes = blob(300, 120);
     eyes.alpha.fill(0);
@@ -71,20 +167,24 @@ describe("artist-density meshes by default (ADR-038)", () => {
     expect(Math.max(...us)).toBeGreaterThan(290);
   });
 
-  it("meshes a planned feature part at the artist budget unless the plan asks for fine", () => {
+  it("wires a planned feature part by its weighting bones unless the plan asks for fine", () => {
     const head = (plan: CharacterPlan) =>
       buildCharacter(plan, fixtureLayout()).rigging.meshes.get("Head")!.mesh;
     const plan = fixturePlan();
-    const layout = fixtureLayout(),
-      part = layout.parts.get("Head")!,
-      b = artistBudget(part.width, part.height);
-    const budget = head(plan);
-    expect(budget.hull).toHaveLength(b.hull);
-    expect(budget.vertices.length).toBeLessThanOrEqual(b.hull + b.interior + 4);
+    const ruled = head(plan);
+    // The head's dome weights bend it on several bones: more hull vertices than a rigid part.
+    const part = fixtureLayout().parts.get("Head")!,
+      rigid = mesh(
+        { ...blob(part.width, part.height), alpha: Uint8Array.from(part.alpha) },
+        {
+          bones: [],
+        },
+      );
+    expect(ruled.hull.length).toBeGreaterThan(rigid.hull.length);
     const fine = structuredClone(plan);
     for (const m of fine.meshes!)
       if (m.part === "Head" && m.mesh.type === "feature") m.mesh.density = "fine";
-    expect(head(fine).vertices.length).toBeGreaterThan(2 * budget.vertices.length);
+    expect(head(fine).vertices.length).toBeGreaterThan(2 * ruled.vertices.length);
   });
 });
 

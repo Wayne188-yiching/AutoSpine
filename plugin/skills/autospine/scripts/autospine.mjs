@@ -25989,12 +25989,13 @@ var MeshPlanSchema = Type.Object(
           edgeLength: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
           minHoleFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
           /**
-           * Vertex budget (ADR-024, ADR-038). The default: the artist budget, s = sqrt(image width x
-           * height) px, hull round(sqrt s) clamped to 6..40, interior 0 below s 100 else
-           * round(s / 80) (median of 423 artist character meshes), with enclosed holes kept as
-           * rings. `artist` names that budget but covers holes (as `meshing.all` does). `fine`, or
-           * an explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
-           * whatever the size). Explicit counts override the budget.
+           * Wiring (ADR-041, ADR-038). The default: artist wiring measured on 205 artist meshes,
+           * the hull as many vertices as the opaque outline has corners at 3 % of sqrt(image width
+           * x height), times 0.67 (rigid), 0.9 (one or two weighting bones) or 1.5 (three or more);
+           * interior rows across the joints on two or more bones; enclosed holes kept as rings.
+           * `artist` names that wiring but covers holes (as `meshing.all` does). `fine`, or an
+           * explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
+           * whatever the size). Explicit counts override the wiring.
            */
           density: Type.Optional(Type.Union([Type.Literal("artist"), Type.Literal("fine")])),
           hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
@@ -26660,7 +26661,7 @@ var CharacterPlanSchema = Type.Object(
     regions: Type.Optional(Type.Record(PartNameSchema, IdSchema)),
     /**
      * ADR-024. `all`: every region part an animation shows (all of them when no animation has
-     * `show`) is meshed at artist density and weighted rigidly to its region bone. Collapsed and
+     * `show`) is meshed with artist wiring and weighted rigidly to its region bone. Collapsed and
      * sheared placements keep their region or quad. `parts` gives chosen region parts their own
      * vertex counts (a mouth that deforms, ADR-037) and meshes them even without `all`.
      */
@@ -28353,6 +28354,18 @@ function simplifyArc(points, start, end, tolerance2) {
     ...simplifyArc(points, farthest, end, tolerance2)
   ];
 }
+function simplifyClosed(outline, tolerance) {
+  let far = 0;
+  outline.forEach((p, i) => {
+    if (distanceToSegment2(p, outline[0], outline[0]) > distanceToSegment2(outline[far], outline[0], outline[0]))
+      far = i;
+  });
+  const ring = [...outline, outline[0]], t2 = tolerance * tolerance;
+  return [
+    ...simplifyArc(ring, 0, far, t2).slice(0, -1),
+    ...simplifyArc(ring, far, outline.length, t2).slice(0, -1)
+  ].map((i) => ring[i]);
+}
 function simplifyClippedOutline(outline, width, height, tolerance2) {
   const anchors = /* @__PURE__ */ new Set([0]);
   for (let i = 0; i < outline.length; i++) {
@@ -28867,7 +28880,7 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
     const u = a.u + (b.u - a.u) * t, left = a.left + (b.left - a.left) * t, right = a.right + (b.right - a.right) * t;
     return [left, (left + right) / 2, right].map((v) => vertical ? [v, u] : [u, v]);
   });
-  const grow = (margin) => rawRows.map(
+  const grow2 = (margin) => rawRows.map(
     (row, i) => row.map((point3, c) => {
       const p = [...point3], v = vertical ? 0 : 1, u = vertical ? 1 : 0;
       if (c !== 1) p[v] = Math.max(0, Math.min(across, p[v] + (c === 0 ? -margin : margin)));
@@ -28891,15 +28904,15 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
     return c.missed / c.foreground <= 0.02;
   };
   let low = 0, high = Math.min(8, Math.hypot(width, height) * 0.05);
-  if (missedFits(grow(0))) high = 0;
-  else if (!missedFits(grow(high)))
+  if (missedFits(grow2(0))) high = 0;
+  else if (!missedFits(grow2(high)))
     failMesh("STRIP_MISSED_BUDGET", "Strip cannot meet the missed-foreground budget");
   for (let i = 0; i < 12 && high > 0; i++) {
     const middle = (low + high) / 2;
-    if (missedFits(grow(middle))) high = middle;
+    if (missedFits(grow2(middle))) high = middle;
     else low = middle;
   }
-  const rows = grow(high), coverage = inspect(rows);
+  const rows = grow2(high), coverage = inspect(rows);
   if (coverage.added / coverage.foreground > padding)
     failMesh("STRIP_PADDING_BUDGET", "Strip exceeds same-attachment transparent padding");
   const cells = rows.map(() => []), points = [], hull = [];
@@ -29587,7 +29600,8 @@ function cutsSolid(a, v, b, solid, width, height) {
     }
   return false;
 }
-function fitHullBudget(ring, target, solid, width, height) {
+function fitHullBudget(ring, target, solid, width, height, stray) {
+  const covers = (a, v, b) => stray !== void 0 && cutsSolid(a, v, b, stray, width, height);
   let out = ring.filter((v, i) => {
     const a = ring[(i - 1 + ring.length) % ring.length], b = ring[(i + 1) % ring.length];
     return Math.abs(cross3(a, v, b)) > 1e-12;
@@ -29604,7 +29618,7 @@ function fitHullBudget(ring, target, solid, width, height) {
     for (let i = 0; i < n; i++) {
       const a = at2(i - 1), v = at2(i), b = at2(i + 1);
       const turn = cross3(a, v, b) * orient, area3 = Math.abs(cross3(a, v, b)) / 2;
-      if (turn <= 0 || !cutsSolid(a, v, b, solid, width, height))
+      if (turn <= 0 ? !covers(a, v, b) : !cutsSolid(a, v, b, solid, width, height))
         steps.push({
           cost: area3,
           apply: () => out.filter((_, k) => k !== i),
@@ -29619,7 +29633,7 @@ function fitHullBudget(ring, target, solid, width, height) {
         if (t <= 1 || !inImage(P)) continue;
         P[0] = Math.min(width, Math.max(0, P[0]));
         P[1] = Math.min(height, Math.max(0, P[1]));
-        if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0) continue;
+        if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0 || covers(v, P, b)) continue;
         const j = (i + 1) % n;
         steps.push({
           cost: Math.abs(cross3(v, P, b)) / 2,
@@ -29770,6 +29784,65 @@ function enclosedHoles(solid, width, height) {
   }
   return holes;
 }
+function grow(region2, width, height, r) {
+  const out = Uint8Array.from(region2), R = Math.floor(r);
+  for (let y = 0; y < height; y++)
+    for (let x = 0; x < width; x++) {
+      const i = y * width + x;
+      if (!region2[i]) continue;
+      if (x && y && x < width - 1 && y < height - 1) {
+        if (region2[i - 1] && region2[i + 1] && region2[i - width] && region2[i + width]) continue;
+      }
+      for (let dy = -R; dy <= R; dy++)
+        for (let dx = -R; dx <= R; dx++)
+          if (dx * dx + dy * dy <= r * r && x + dx >= 0 && y + dy >= 0) {
+            if (x + dx < width && y + dy < height) out[i + dy * width + dx] = 255;
+          }
+    }
+  for (const hole of enclosedHoles(out, width, height)) for (const i of hole) out[i] = 255;
+  return out;
+}
+function jointRows(bones, outer) {
+  const step = outer.reduce((s2, a, i) => {
+    const b = outer[(i + 1) % outer.length];
+    return s2 + Math.hypot(b[0] - a[0], b[1] - a[1]) / outer.length;
+  }, 0);
+  const out = [];
+  for (const { origin, tip, joint } of bones) {
+    const d = [tip[0] - origin[0], tip[1] - origin[1]], length = Math.hypot(d[0], d[1]);
+    if (!length) continue;
+    const across = [-d[1] / length, d[0] / length];
+    const rows = [
+      ...joint ? [origin] : [],
+      ...length > LONG_BONE * step ? [[origin[0] + d[0] / 2, origin[1] + d[1] / 2]] : []
+    ];
+    for (const at2 of rows) {
+      if (!inside(at2, outer)) continue;
+      let lo = -Infinity, hi = Infinity;
+      outer.forEach((a, i) => {
+        const b = outer[(i + 1) % outer.length], e = [b[0] - a[0], b[1] - a[1]], den = across[0] * e[1] - across[1] * e[0];
+        if (Math.abs(den) < 1e-12) return;
+        const w = [a[0] - at2[0], a[1] - at2[1]], s2 = (w[0] * e[1] - w[1] * e[0]) / den, u = (w[0] * across[1] - w[1] * across[0]) / den;
+        if (u < 0 || u > 1) return;
+        if (s2 < 0) lo = Math.max(lo, s2);
+        else hi = Math.min(hi, s2);
+      });
+      if (!Number.isFinite(hi - lo)) continue;
+      const pieces = Math.max(2, Math.round((hi - lo) / step));
+      for (let k = 1; k < pieces; k++) {
+        const s2 = lo + (hi - lo) * k / pieces;
+        out.push([at2[0] + across[0] * s2, at2[1] + across[1] * s2]);
+      }
+    }
+  }
+  const kept = [];
+  for (const p of out)
+    if (distanceToPolygon(p, outer) >= step / 2 && kept.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= step / 2))
+      kept.push(p);
+  return kept;
+}
+var PAD = 1;
+var LONG_BONE = 2;
 function splitEdge(triangles, u, v, w) {
   for (let t = triangles.length - 1; t >= 0; t--) {
     const tri = triangles[t], k = [0, 1, 2].find((i) => {
@@ -29861,20 +29934,16 @@ function generateFeatureMesh(part, alpha, options = {}) {
     failMesh("ALPHA_MISSING", "Part must include a Gate 2 alpha mask");
   const { width, height } = mask;
   const { minHoleFraction = 0.01 } = options;
-  if (alpha.length !== width * height || !(minHoleFraction > 0 && minHoleFraction <= 1) || [options.edgeLength, options.spacing].some((v) => v !== void 0 && !(v >= 2 && v <= 4096)) || options.hullVertices !== void 0 && !(Number.isInteger(options.hullVertices) && options.hullVertices >= 3) || options.interiorVertices !== void 0 && !(Number.isInteger(options.interiorVertices) && options.interiorVertices >= 0))
+  if (alpha.length !== width * height || !(minHoleFraction > 0 && minHoleFraction <= 1) || [options.edgeLength, options.spacing].some((v) => v !== void 0 && !(v >= 2 && v <= 4096)) || options.hullVertices !== void 0 && !(Number.isInteger(options.hullVertices) && options.hullVertices >= 3) || options.interiorVertices !== void 0 && !(Number.isInteger(options.interiorVertices) && options.interiorVertices >= 0) || options.bones !== void 0 && !(Array.isArray(options.bones) && options.bones.every((b) => [...b.origin, ...b.tip].every(Number.isFinite))))
     failMesh(
       "FEATURE_INPUT",
-      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers"
+      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers; bones finite"
     );
-  const budget = options.hullVertices !== void 0;
+  const budget = options.hullVertices !== void 0 || options.bones !== void 0;
+  const opaque = Uint8Array.from(alpha, (a) => a > (budget ? 8 : 0) ? 255 : 0);
   const primary = () => {
     try {
-      return selectPrimaryComponent(
-        Uint8Array.from(alpha, (a) => a > 0 ? 255 : 0),
-        width,
-        height,
-        0.02
-      ).alpha;
+      return selectPrimaryComponent(opaque, width, height, 0.02).alpha;
     } catch (error) {
       if (!(error instanceof MeshError) || !error.validation.issues.some((i) => i.code === "DISCARD_BUDGET"))
         throw error;
@@ -29892,16 +29961,23 @@ function generateFeatureMesh(part, alpha, options = {}) {
     const ring = simplifyContour(traceCovering(region2, width, height), region2, width, height, true);
     return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
   };
-  const outer = budget ? fitHullBudget(
-    (() => {
-      const ring = traceCovering(filled, width, height);
-      return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
-    })(),
-    options.hullVertices,
-    filled,
-    width,
-    height
-  ) : loop(filled);
+  const covering = (region2) => {
+    const ring = traceCovering(region2, width, height);
+    return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
+  };
+  let outer;
+  if (budget) {
+    const corners = () => {
+      const largest = selectPrimaryComponent(opaque, width, height, 1).alpha;
+      for (const hole of enclosedHoles(largest, width, height))
+        for (const i of hole) largest[i] = 255;
+      return simplifyClosed(covering(largest), 0.03 * Math.sqrt(width * height)).length;
+    };
+    const n = options.bones?.length ?? 0, hull2 = options.hullVertices ?? Math.max(3, Math.round(corners() * (n >= 3 ? 1.5 : n ? 0.9 : 0.67))), padded = grow(filled, width, height, PAD), stray = Uint8Array.from(alpha, (a, i) => a > 8 && !padded[i] ? 255 : 0);
+    const fit = (avoid) => fitHullBudget(covering(padded), hull2, padded, width, height, avoid);
+    outer = fit(discarded ? stray : void 0);
+    if (outer.length > hull2) outer = fit();
+  } else outer = loop(filled);
   const rings = holes.filter((hole) => (!budget || options.keepHoles) && hole.length >= minHoleFraction * foreground).map((hole) => {
     const region2 = new Uint8Array(width * height);
     for (const i of hole) region2[i] = 255;
@@ -29969,7 +30045,11 @@ function generateFeatureMesh(part, alpha, options = {}) {
     return out;
   };
   let grid = [];
-  if (interior === void 0)
+  if (interior === void 0 && options.bones)
+    grid = jointRows(options.bones.length > 1 ? options.bones : [], outer).filter(
+      (p) => !rings.some((r) => inside(p, r))
+    );
+  else if (interior === void 0)
     grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
   else if (interior > 0) {
     let lo = 2, hi = Math.max(width, height);
@@ -33691,13 +33771,6 @@ function planRig(plan, index) {
 
 // packages/character/src/attachments.ts
 var safeId = (s2) => s2.replace(/[^A-Za-z0-9_]/g, "_");
-function artistBudget(width, height) {
-  const s2 = Math.sqrt(width * height);
-  return {
-    hull: Math.min(40, Math.max(6, Math.round(Math.sqrt(s2)))),
-    interior: s2 < 100 ? 0 : Math.round(s2 / 80)
-  };
-}
 var collapsed = (p) => Math.abs(p.affine[0] * p.affine[3] - p.affine[1] * p.affine[2]) < 1e-9;
 function assetFor(p, id, alpha = p.alpha) {
   return {
@@ -33757,21 +33830,56 @@ function planAttachments(plan, index, rigged, regionBone) {
     if (!b) failStage("weights", "PLAN_BONE", `Weights reference unknown bone ${id}`);
     return b.length;
   };
-  const shape = (spec, p) => {
+  const weightBones = (w) => {
+    switch (w.type) {
+      case "chain":
+        return w.bones ?? (w.chain ? rigged.chains[w.chain] ?? [] : []);
+      case "gradient":
+        return [w.from, w.to];
+      case "nearest":
+        return w.bones;
+      case "dome":
+        return plan.face ? [plan.face.base, plan.face.control, ...plan.face.counter ? [plan.face.counter] : []] : [];
+      case "transfer": {
+        const ids = w.sources.flatMap(
+          (name) => meshes.get(name)?.weights.vertices.flatMap((v) => v.influences.map((i) => i.boneId)) ?? []
+        );
+        return [.../* @__PURE__ */ new Set([...ids, ...(w.proxies ?? []).map((x) => x.bone)])];
+      }
+      case "rigid":
+        return [];
+    }
+  };
+  const imageBones = (ids, p) => {
+    if (collapsed(p)) return [];
+    const inv = invert(p.affine), set = new Set(ids);
+    return ids.flatMap((id) => {
+      const f = rigged.world.get(id), b = rig.bones.find((x) => x.id === id);
+      if (!f || !b) return [];
+      const r = f.a * Math.PI / 180;
+      return [
+        {
+          origin: apply(inv, f.o),
+          tip: apply(inv, [f.o[0] + b.length * Math.cos(r), f.o[1] + b.length * Math.sin(r)]),
+          joint: b.parentId !== void 0 && set.has(b.parentId)
+        }
+      ];
+    });
+  };
+  const shape = (spec, p, bones = []) => {
     const id = safeId(p.key === p.slot ? p.slot : p.key);
     switch (spec.type) {
       case "feature": {
         const asset = assetFor(p, id);
         const fine = spec.density === "fine" || spec.spacing !== void 0 || spec.edgeLength !== void 0;
-        const budget = fine ? void 0 : artistBudget(p.width, p.height);
-        const hullVertices = spec.hullVertices ?? budget?.hull, interiorVertices = spec.interiorVertices ?? budget?.interior;
         const options = {
           ...spec.spacing !== void 0 ? { spacing: spec.spacing } : {},
           ...spec.edgeLength !== void 0 ? { edgeLength: spec.edgeLength } : {},
           ...spec.minHoleFraction !== void 0 ? { minHoleFraction: spec.minHoleFraction } : {},
-          ...hullVertices !== void 0 ? { hullVertices } : {},
-          ...interiorVertices !== void 0 ? { interiorVertices } : {},
-          ...hullVertices !== void 0 && spec.density !== "artist" ? { keepHoles: true } : {}
+          ...spec.hullVertices !== void 0 ? { hullVertices: spec.hullVertices } : {},
+          ...spec.interiorVertices !== void 0 ? { interiorVertices: spec.interiorVertices } : {},
+          ...fine ? {} : { bones: imageBones(bones, p) },
+          ...(!fine || spec.hullVertices !== void 0) && spec.density !== "artist" ? { keepHoles: true } : {}
         };
         const r = generateFeatureMesh(asset.parts[0], p.alpha, options);
         if (r.discarded) evidence[`${p.key}:alphaPrep`] = { discarded: r.discarded };
@@ -33814,7 +33922,7 @@ function planAttachments(plan, index, rigged, regionBone) {
     const p = index.part(m.part);
     if (meshes.has(m.part))
       failStage("mesh", "PLAN_MESH_DUPLICATE", `Part ${m.part} has two mesh plans`);
-    const built = shape(m.mesh, p);
+    const built = shape(m.mesh, p, weightBones(m.weights));
     let weights;
     const w = m.weights;
     switch (w.type) {

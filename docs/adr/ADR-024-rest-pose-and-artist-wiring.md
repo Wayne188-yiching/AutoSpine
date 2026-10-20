@@ -82,3 +82,4 @@ Consequences:
 - Expressions made with deform keys stay out of scope until a brief can name them.
 - The A6 thresholds and the template come from one character; the next blind test is their first real check.
 - Rollback: drop `meshing`, `density`, `pose`, `fit-pose` and A6. A1 returns to all slots, and seams to setup.
+- The size budget (hull round(√s), interior round(s / 80)) is superseded by ADR-041 (2026-10-20): counts from the outline and the weighting bones. The covering hull, the bridges and `meshing.all` stand.

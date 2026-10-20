@@ -4,6 +4,7 @@ import { failMesh, MeshError, validateMeshSpec } from "./validation.js";
 import {
   selectPrimaryComponent,
   signedArea2,
+  simplifyClosed,
   simplifyContour,
   traceContour,
   type Point,
@@ -17,12 +18,20 @@ export interface FeatureMeshOptions {
   /** Interior lattice spacing in pixels. */
   spacing?: number;
   /**
-   * Vertex budget (ADR-024): the hull is reduced or split to this many vertices while it keeps
-   * covering every opaque pixel; holes are covered and long edges are not subdivided.
+   * Hull vertex count: the hull is reduced or split to this many vertices while it keeps covering
+   * every opaque pixel; holes are covered and long edges are not subdivided.
    */
   hullVertices?: number;
   /** Interior lattice points: the spacing is searched to give about this many (0: none). */
   interiorVertices?: number;
+  /**
+   * Artist wiring (ADR-041) from the bones that weight the part ([] for a rigid part), in image
+   * pixels, `joint` when the bone's parent also weights it. The hull gets as many vertices as the
+   * outline simplified at 3 % of sqrt(width x height) has corners, times 0.67 (rigid), 0.9 (one
+   * or two bones) or 1.5 (three or more); on two or more bones, rows of interior points cross the
+   * part at each joint inside it and halfway along each long bone. Explicit counts override.
+   */
+  bones?: { origin: Point; tip: Point; joint?: boolean }[];
   /**
    * With a budget: enclosed holes of at least `minHoleFraction` keep their rings as without one
    * (eye sockets in a face plate, ADR-038) instead of being covered.
@@ -65,8 +74,9 @@ function cutsSolid(a: Point, v: Point, b: Point, solid: Uint8Array, width: numbe
  * Reduces a covering ring (traced pixel-cell edges) to `target` vertices. Each step takes the
  * cheapest change in area that keeps every solid pixel centre covered, the ring simple and inside
  * the image: dropping a vertex (a concave one grows the ring; a convex one may cut empty pixels
- * only) or replacing two convex neighbours by the meeting point of their outer edges. Long edges
- * are then split up to the target.
+ * only) or replacing two convex neighbours by the meeting point of their outer edges. A step never
+ * grows the ring over a `stray` pixel centre (a dropped fragment, ADR-039). Long edges are then
+ * split up to the target.
  */
 function fitHullBudget(
   ring: Point[],
@@ -74,7 +84,10 @@ function fitHullBudget(
   solid: Uint8Array,
   width: number,
   height: number,
+  stray?: Uint8Array,
 ): Point[] {
+  const covers = (a: Point, v: Point, b: Point) =>
+    stray !== undefined && cutsSolid(a, v, b, stray, width, height);
   // Collinear runs first: free and exact.
   let out = ring.filter((v, i) => {
     const a = ring[(i - 1 + ring.length) % ring.length]!,
@@ -101,7 +114,7 @@ function fitHullBudget(
         b = at(i + 1);
       const turn = cross(a, v, b) * orient,
         area = Math.abs(cross(a, v, b)) / 2;
-      if (turn <= 0 || !cutsSolid(a, v, b, solid, width, height))
+      if (turn <= 0 ? !covers(a, v, b) : !cutsSolid(a, v, b, solid, width, height))
         steps.push({
           cost: area,
           apply: () => out.filter((_, k) => k !== i),
@@ -121,7 +134,7 @@ function fitHullBudget(
         // Rounding past the image edge would put a UV outside [0, 1].
         P[0] = Math.min(width, Math.max(0, P[0]));
         P[1] = Math.min(height, Math.max(0, P[1]));
-        if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0) continue;
+        if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0 || covers(v, P, b)) continue;
         const j = (i + 1) % n;
         steps.push({
           cost: Math.abs(cross(v, P, b)) / 2,
@@ -310,6 +323,87 @@ function enclosedHoles(solid: Uint8Array, width: number, height: number): number
   }
   return holes;
 }
+/** The region grown by `r` px (every pixel centre within r of one of it), holes refilled. */
+function grow(region: Uint8Array, width: number, height: number, r: number): Uint8Array {
+  const out = Uint8Array.from(region),
+    R = Math.floor(r);
+  for (let y = 0; y < height; y++)
+    for (let x = 0; x < width; x++) {
+      const i = y * width + x;
+      if (!region[i]) continue;
+      if (x && y && x < width - 1 && y < height - 1)
+        if (region[i - 1] && region[i + 1] && region[i - width] && region[i + width]) continue;
+      for (let dy = -R; dy <= R; dy++)
+        for (let dx = -R; dx <= R; dx++)
+          if (dx * dx + dy * dy <= r * r && x + dx >= 0 && y + dy >= 0)
+            if (x + dx < width && y + dy < height) out[i + dy * width + dx] = 255;
+    }
+  for (const hole of enclosedHoles(out, width, height)) for (const i of hole) out[i] = 255;
+  return out;
+}
+/**
+ * Interior rows (ADR-041): a line across the part, square to the bone, at each joint inside it
+ * and halfway along each bone longer than `LONG_BONE` times the hull's mean edge; points split
+ * each line's span inside the hull into pieces about one hull edge long.
+ */
+function jointRows(bones: NonNullable<FeatureMeshOptions["bones"]>, outer: Point[]): Point[] {
+  const step = outer.reduce((s, a, i) => {
+    const b = outer[(i + 1) % outer.length]!;
+    return s + Math.hypot(b[0] - a[0], b[1] - a[1]) / outer.length;
+  }, 0);
+  const out: Point[] = [];
+  for (const { origin, tip, joint } of bones) {
+    const d: Point = [tip[0] - origin[0], tip[1] - origin[1]],
+      length = Math.hypot(d[0], d[1]);
+    if (!length) continue;
+    const across: Point = [-d[1] / length, d[0] / length];
+    const rows = [
+      ...(joint ? [origin] : []),
+      ...(length > LONG_BONE * step ? [[origin[0] + d[0] / 2, origin[1] + d[1] / 2] as Point] : []),
+    ];
+    for (const at of rows) {
+      if (!inside(at, outer)) continue;
+      // The line's span through `at`: the nearest hull crossing on either side.
+      let lo = -Infinity,
+        hi = Infinity;
+      outer.forEach((a, i) => {
+        const b = outer[(i + 1) % outer.length]!,
+          e: Point = [b[0] - a[0], b[1] - a[1]],
+          den = across[0] * e[1] - across[1] * e[0];
+        if (Math.abs(den) < 1e-12) return;
+        const w: Point = [a[0] - at[0], a[1] - at[1]],
+          s = (w[0] * e[1] - w[1] * e[0]) / den,
+          u = (w[0] * across[1] - w[1] * across[0]) / den;
+        if (u < 0 || u > 1) return;
+        if (s < 0) lo = Math.max(lo, s);
+        else hi = Math.min(hi, s);
+      });
+      if (!Number.isFinite(hi - lo)) continue;
+      const pieces = Math.max(2, Math.round((hi - lo) / step));
+      for (let k = 1; k < pieces; k++) {
+        const s = lo + ((hi - lo) * k) / pieces;
+        out.push([at[0] + across[0] * s, at[1] + across[1] * s]);
+      }
+    }
+  }
+  // Keep points apart from each other and from the hull by half an edge.
+  const kept: Point[] = [];
+  for (const p of out)
+    if (
+      distanceToPolygon(p, outer) >= step / 2 &&
+      kept.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= step / 2)
+    )
+      kept.push(p);
+  return kept;
+}
+/**
+ * ADR-041: the budget hull covers the opaque pixels grown by PAD px (its fewer vertices overshoot
+ * corners, about 4 px in all on the artist corpus against the artists' 3), and a bone longer than
+ * LONG_BONE hull edges gets a mid-bone row.
+ */
+const PAD = 1,
+  LONG_BONE = 2;
+
 /** Insert w on edge u-v of every triangle using it, keeping orientation (a hull edge has one). */
 function splitEdge(triangles: [number, number, number][], u: number, v: number, w: number) {
   for (let t = triangles.length - 1; t >= 0; t--) {
@@ -424,8 +518,9 @@ function improve(points: Point[], triangles: [number, number, number][], locked:
  * bandage with a face window). The hull follows the opaque silhouette instead of the image
  * rectangle; every enclosed hole of at least `minHoleFraction` becomes a ring of vertices locked
  * as mesh edges, so the hole rim can be weighted to move with whatever shows through it. Hole
- * interiors are triangulated (the editor sees one ordinary hull), and an interior lattice gives
- * smooth deformations room to bend, with min-angle flips that never cross a ring.
+ * interiors are triangulated (the editor sees one ordinary hull), and interior points (a lattice,
+ * or with `bones` rows at the joints) give deformations room to bend, with min-angle (Delaunay)
+ * flips that never cross a ring.
  */
 export function generateFeatureMesh(
   part: AssetPart,
@@ -444,24 +539,26 @@ export function generateFeatureMesh(
     (options.hullVertices !== undefined &&
       !(Number.isInteger(options.hullVertices) && options.hullVertices >= 3)) ||
     (options.interiorVertices !== undefined &&
-      !(Number.isInteger(options.interiorVertices) && options.interiorVertices >= 0))
+      !(Number.isInteger(options.interiorVertices) && options.interiorVertices >= 0)) ||
+    (options.bones !== undefined &&
+      !(
+        Array.isArray(options.bones) &&
+        options.bones.every((b) => [...b.origin, ...b.tip].every(Number.isFinite))
+      ))
   )
     failMesh(
       "FEATURE_INPUT",
-      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers",
+      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers; bones finite",
     );
-  const budget = options.hullVertices !== undefined;
+  const budget = options.hullVertices !== undefined || options.bones !== undefined;
   // Detached pieces up to 2 % of the opaque pixels are dropped (specks, a sliver of a neighbouring
   // image left in the picture); pieces too large to drop (fur tufts beside a face, two eyes on one
-  // image) are bridged into one outline. A budget hull did not drop them before (ADR-039).
+  // image) are bridged into one outline. A budget hull did not drop them before (ADR-039). A
+  // budget hull covers the opaque pixels (alpha above 8): a faint fringe would spike its outline.
+  const opaque = Uint8Array.from(alpha, (a) => (a > (budget ? 8 : 0) ? 255 : 0));
   const primary = () => {
     try {
-      return selectPrimaryComponent(
-        Uint8Array.from(alpha, (a) => (a > 0 ? 255 : 0)),
-        width,
-        height,
-        0.02,
-      ).alpha;
+      return selectPrimaryComponent(opaque, width, height, 0.02).alpha;
     } catch (error) {
       if (
         !(error instanceof MeshError) ||
@@ -486,19 +583,33 @@ export function generateFeatureMesh(
     const ring = simplifyContour(traceCovering(region, width, height), region, width, height, true);
     return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
   };
-  // A budget hull starts from the traced pixel-cell outline, which covers every pixel.
-  const outer = budget
-    ? fitHullBudget(
-        (() => {
-          const ring = traceCovering(filled, width, height);
-          return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
-        })(),
-        options.hullVertices!,
-        filled,
-        width,
-        height,
-      )
-    : loop(filled);
+  const covering = (region: Uint8Array) => {
+    const ring = traceCovering(region, width, height);
+    return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
+  };
+  // A budget hull starts from the traced pixel-cell outline of the region grown by PAD px, which
+  // covers every pixel. Its count (ADR-041): the corners of the largest piece's outline at 3 %
+  // tolerance, scaled by how many bones bend the part (measured on 205 artist meshes).
+  let outer: Point[];
+  if (budget) {
+    const corners = () => {
+      const largest = selectPrimaryComponent(opaque, width, height, 1).alpha;
+      for (const hole of enclosedHoles(largest, width, height))
+        for (const i of hole) largest[i] = 255;
+      return simplifyClosed(covering(largest), 0.03 * Math.sqrt(width * height)).length;
+    };
+    const n = options.bones?.length ?? 0,
+      hull =
+        options.hullVertices ??
+        Math.max(3, Math.round(corners() * (n >= 3 ? 1.5 : n ? 0.9 : 0.67))),
+      padded = grow(filled, width, height, PAD),
+      stray = Uint8Array.from(alpha, (a, i) => (a > 8 && !padded[i] ? 255 : 0));
+    const fit = (avoid?: Uint8Array) =>
+      fitHullBudget(covering(padded), hull, padded, width, height, avoid);
+    outer = fit(discarded ? stray : undefined);
+    // Avoiding them stalls above the count when they surround the art (an effect's rays).
+    if (outer.length > hull) outer = fit();
+  } else outer = loop(filled);
   const rings = holes
     .filter((hole) => (!budget || options.keepHoles) && hole.length >= minHoleFraction * foreground)
     .map((hole) => {
@@ -577,7 +688,11 @@ export function generateFeatureMesh(
     return out;
   };
   let grid: Point[] = [];
-  if (interior === undefined)
+  if (interior === undefined && options.bones)
+    grid = jointRows(options.bones.length > 1 ? options.bones : [], outer).filter(
+      (p) => !rings.some((r) => inside(p, r)),
+    );
+  else if (interior === undefined)
     grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
   else if (interior > 0) {
     // The count falls as the spacing grows: bisect the spacing in log space for the closest count.

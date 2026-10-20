@@ -3,7 +3,6 @@ export { JointSolver, PartIndex, num, val, type Params } from "./joints.js";
 export { planRig, type PlannedRig, type WorldFrame } from "./rig.js";
 export {
   planAttachments,
-  artistBudget,
   assetFor,
   rigidWeights,
   type MeshAsset,

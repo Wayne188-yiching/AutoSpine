@@ -81,7 +81,8 @@ describe("mesh deform keys (ADR-037)", () => {
     expect(keys.length).toBe(4); // 0, 20, 40 and the loop close on 80
 
     // Against the same build without the deform: a squash to a third about the eyes' centre moves
-    // their outline (opaque to 5 px above and below it) by 5 x 2/3 on frame 20; frame 0 is setup.
+    // their outline (opaque to 5 px above and below it, padded 1 px, ADR-041) by 6 x 2/3 on frame
+    // 20; frame 0 is setup.
     const plain = fixturePlan();
     plain.meshing = plan.meshing;
     const a = loadSkeleton(built.document),
@@ -96,7 +97,7 @@ describe("mesh deform keys (ADR-037)", () => {
       return Math.max(...x.map((v, i) => Math.abs(v - y[i]!)));
     };
     expect(diff(0)).toBeLessThan(1e-3);
-    expect(diff(20)).toBeCloseTo(10 / 3, 1);
+    expect(diff(20)).toBeCloseTo(4, 1);
     expect(diff(40)).toBeLessThan(1e-3);
     expect(handoverNotes(built.rigging, built.animations)).toContain("網格變形 `squint`");
   });

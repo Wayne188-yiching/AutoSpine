@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  artistBudget,
   assetFor,
   buildCharacter,
   lintCharacterPlan,
@@ -22,7 +21,6 @@ import {
   sampleTracks,
 } from "@autospine/reference";
 import {
-  FIXTURE_IMAGES,
   fixtureImagesOnly,
   fixtureLayout,
   fixturePlan,
@@ -69,12 +67,6 @@ const covered = (p: [number, number], poly: [number, number][]) => {
 };
 
 describe("rest pose and artist wiring (ADR-024)", () => {
-  it("budgets vertices like artist character meshes", () => {
-    expect(artistBudget(75, 75)).toEqual({ hull: 9, interior: 0 });
-    expect(artistBudget(340, 340)).toEqual({ hull: 18, interior: 4 });
-    expect(artistBudget(4000, 4000).hull).toBe(40);
-  });
-
   it("wraps separate blobs in one budget hull that covers every opaque pixel", () => {
     // Two eyes on one image (HorseYearFish W_Eye_W2): the default mesher keeps one component.
     const eyes = part(
@@ -101,17 +93,16 @@ describe("rest pose and artist wiring (ADR-024)", () => {
     expect(r.mesh.vertices.length - 12).toBeLessThanOrEqual(4);
   });
 
-  it("meshes every shown region at artist density, rigid to its bone", () => {
+  it("meshes every shown region with artist wiring, rigid to its bone", () => {
     const plan = clone(fixturePlan());
     plan.meshing = { all: true };
     const built = buildCharacter(plan, fixtureLayout());
     const eyes = built.rigging.meshes.get("Eyes")!;
-    const { hull, interior } = artistBudget(
-      FIXTURE_IMAGES.Eyes!.width,
-      FIXTURE_IMAGES.Eyes!.height,
-    );
-    expect(eyes.mesh.hull.length).toBe(hull);
-    expect(eyes.mesh.vertices.length).toBeLessThanOrEqual(hull + interior + 1);
+    // Rigid (ADR-041): the rigid hull rule and no interior points.
+    const layout = fixtureLayout().parts.get("Eyes")!,
+      rigid = generateFeatureMesh(assetFor(layout, "eyes").parts[0]!, layout.alpha, { bones: [] });
+    expect(eyes.mesh.hull.length).toBe(rigid.mesh.hull.length);
+    expect(eyes.mesh.vertices.length).toBe(eyes.mesh.hull.length);
     expect(
       new Set(eyes.weights.vertices.flatMap((v) => v.influences.map((i) => i.boneId))),
     ).toEqual(new Set(["eyes"]));
