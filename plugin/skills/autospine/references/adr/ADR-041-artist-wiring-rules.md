@@ -97,4 +97,5 @@ Over the 157 meshes both runs built:
 - **Hull padding.** The hull sits a median of 1 px further out than the old covering hull's opaque edge. Numbers measured at the outline (deform keys, B3 stretch) move by about that much.
 - **Rows only from known bones.** Interior rows need bones known before the weights are solved. A `transfer` mesh takes every bone in its sources, which may overcount.
 - **Amended by ADR-042 (2026-10-21).** Parts deformed by keys bend too, and every part that bends gets spread points up to an area rule after its joint rows.
+- **Amended by ADR-043 (2026-10-21).** The fitted hull is evened out: no hull edge under half the mean where a covering step can remove it. The cheapest-area fit packed points into notches; on the ThreePigWC wolf's pants a 16 px crotch edge stretched 3.26 in the idle (B1, B3 failed).
 - **Rollback.** Drop `bones` from the caller and restore `artistBudget`; the engine without `bones` behaves as before, except that a budget hull now covers alpha above 8, is padded 1 px and avoids dropped fragments.
