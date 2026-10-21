@@ -186,3 +186,22 @@ Known limits, seen on the fixture:
 2. **Tempo drift**: loops are judged on the fitted cycles, with whole-clip rows and drift reported as information; one-shots on the whole clip. Under the first proposal, BlanketOfficeWorker build-07 would fail forever for drift alone. This narrows ADR-034's acceptance window, so it still needs the art lead's agreement before it ships.
 3. **Key density**: the tolerance (0.5° / 0.5 px) decides, capped at twice the category prior; when the cap binds, the error reached is reported.
 4. **Chains**: procedural, corrected by the reported amplitude and lag; the chain's root is fitted from the video only where the part moves differently.
+
+## Amendment (2026-10-21, plugin 0.5.9): when frame 0 is really off
+
+Context: on the ThreePigWC wolf's Win (plugin-test-0.5.8, plan-05, build-02) fit-video said "frame 0 of the video is 30.0 degrees or px off the build's frame 0: fit the rest pose from it first", although the plan's Win rest pose was fitted and A6 passes on frame 0 (median 0.0098, p90 0.032 head widths against the artist, who rendered the video). The number was the largest offset of any bone in the zero frame's fit: `finger2_l` turned -30.05 degrees, the edge of a child's search (25 + 5 degrees). Four fingers per hand look alike in a 0.6 px-per-unit video, and the next offsets were fingers, a hand and forearms (8-19 degrees). That is the matching's own error, which the zero frame exists to take off the other frames (ADR-033); the body, spine, chest, neck and head were within 6 degrees and 4 units.
+
+Decision:
+
+- Each fitted part reports `shift`: the RMS distance of its texels from where the posed build draws them to where the picture shows them, world units.
+- The zero frame's measure is `shifted`: the share of its matched parts, by texels, whose `shift` exceeds the V2 p90 limit (1.5 % of the figure height). Matching errors are a few parts on their own; a rest pose that is off moves whole limbs.
+- The hint fires when `shifted` exceeds a quarter, and names the largest parts that moved: "frame 0 of the video draws N% of the matched parts (by area: ...) more than 1.5% of the figure height from the build's frame 0: its rest pose is off; ...".
+- `summary.json` `zero` gives `shifted` and `largestOffset` (`{ bone, channel, value }`), in place of `offset`.
+
+Evidence:
+
+- Wolf Win zero frame, three rest poses (figure height 516 units, limit 7.7):
+  - Plan-05 as fitted: `shifted` 0.12 (Arm2_1, matched 47 units away at score 0.355, and the look-alike Finger2_01). No hint; the largest offset is still `finger2_l` -30.05.
+  - The same plan without its Win rest pose: 0.36. Arms turned 20 degrees off the fitted pose: 0.64. Both get the hint.
+- `tests/character-restpose.test.ts`: the fixture with its spine turned 6 degrees and arm 10 degrees moves half the figure by area (0.50); fitted over a build already in that pose, nothing moves (every part under 1 unit).
+- `tests/character-fit-video.test.ts`: the fitted idle (frame 0 is the build's pose) has `shifted` 0 and no frame-0 hint; a video whose rest pose has the spine turned 8 degrees and the arm 15 gets the hint, naming Body.
