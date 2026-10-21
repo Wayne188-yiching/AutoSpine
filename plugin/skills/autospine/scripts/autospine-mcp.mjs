@@ -33081,6 +33081,9 @@ async function buildJobFile(jobPath) {
   return output;
 }
 
+// packages/cli/dist/version.js
+var AUTOSPINE_VERSION = "0.5.7";
+
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
   return convert(JSON.parse(JSON.stringify(schema)));
@@ -37243,7 +37246,10 @@ function prepareReference(artist, imagesOnly, options) {
     throw new Error("REFERENCE_PROBE: probes need a face part (or a chain) for the unit");
   const unit = headUnit(img, unitPart);
   const structure = structureOf(skeleton);
-  const animations = skeleton.data.animations.map((a) => a.name);
+  const animations = skeleton.data.animations.map((a) => a.name).filter((a) => !options.compared || options.compared.includes(a));
+  for (const a of options.compared ?? [])
+    if (!animations.includes(a))
+      throw new Error(`REFERENCE_ANIMATION: the artist file has no ${a}`);
   const exclude = (options.deformExclude ?? []).map((p) => new RegExp(p));
   const ref = {
     skeleton,
@@ -39118,6 +39124,8 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   for (const s2 of built.specs)
     await writeFile2(join2(outDir, `keypose-${s2.name.replace(/[^A-Za-z0-9_-]/g, "_")}.json`), json(s2));
   const record = {
+    // The engine that built it: a stale MCP server builds with an older one.
+    engineVersion: AUTOSPINE_VERSION,
     plan: { id: plan.id, sha256: sha256(await readFile3(planPath)) },
     imagesOnly: { sha256: sha256(await readFile3(paths.imagesOnly)) },
     params: { ...plan.motion.params, ...params },
@@ -39139,6 +39147,7 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   }
   return {
     output: join2(outDir, name),
+    engineVersion: AUTOSPINE_VERSION,
     bones: built.rigging.rigged.rig.bones.length,
     slots: built.rigging.slots.length,
     setupDeviationPx: record.setupDeviationPx,
@@ -39147,7 +39156,23 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   };
 }
 var loopNames = (plan) => plan.motion.animations.filter((a) => a.loop !== false).map((a) => a.name);
-async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
+function comparedAnimations(plan, artist, only) {
+  const planned = plan.motion.animations.map((a) => a.name);
+  const drawn = Object.keys(artist.animations ?? {});
+  if (only !== void 0 && !planned.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the plan has no animation ${only}`);
+  if (only !== void 0 && !drawn.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has no animation ${only}`);
+  const animations = planned.filter((a) => drawn.includes(a) && (only === void 0 || a === only));
+  if (!animations.length)
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has none of the plan's animations (${planned.join(", ")}); it has ${drawn.join(", ") || "none"}`);
+  return {
+    animations,
+    artistOnly: drawn.filter((a) => !planned.includes(a)),
+    planOnly: planned.filter((a) => !drawn.includes(a))
+  };
+}
+async function compareReferenceFiles(planPath, buildDir, artistPath, outDir, opts = {}) {
   const plan = await readPlan(planPath);
   const paths = planPaths(planPath, plan);
   const probes = plan.qa?.probes;
@@ -39155,6 +39180,7 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     throw new Error("CLI_PLAN_QA: comparison needs qa.probes in the plan");
   const tex = textures(paths.images);
   const artist = JSON.parse(await readFile3(artistPath, "utf8"));
+  const compared = comparedAnimations(plan, artist, opts.animation);
   const imagesOnly = JSON.parse(await readFile3(paths.imagesOnly, "utf8"));
   const generated = JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8"));
   const ir = JSON.parse(await readFile3(join2(buildDir, "ir.json"), "utf8"));
@@ -39164,7 +39190,8 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: loopNames(plan)
+    loop: loopNames(plan),
+    compared: compared.animations
   };
   const reference = prepareReference(artist, imagesOnly, options);
   const { result: result2, sheets } = compareToReference(reference, generated, imagesOnly, {
@@ -39182,7 +39209,7 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     png.data.set(s2.rgba);
     await writeFile2(join2(outDir, `compare-${a.replace(/[^A-Za-z0-9_-]/g, "_")}.png`), import_pngjs2.PNG.sync.write(png));
   }
-  return check;
+  return { ...check, ...compared };
 }
 async function optimizeMotionFiles(planPath, artistPath, stateDir, opts) {
   const plan = await readPlan(planPath);
@@ -39202,7 +39229,8 @@ async function optimizeMotionFiles(planPath, artistPath, stateDir, opts) {
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: loopNames(plan)
+    loop: loopNames(plan),
+    compared: comparedAnimations(plan, artist).animations
   });
   const rigging = rigCharacter(plan, layout);
   const evaluate = makeObjective(rigging, reference, {
@@ -40752,7 +40780,8 @@ var toolSchemas = {
     planPath: WorkspacePath,
     buildDir: WorkspacePath,
     artistPath: WorkspacePath,
-    outputDir: WorkspacePath
+    outputDir: WorkspacePath,
+    animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 }))
   }, strict5),
   autospine_optimize_motion: Type.Object({
     planPath: WorkspacePath,
@@ -40834,7 +40863,7 @@ var descriptions = {
   autospine_gradient_weights: "Linear two-bone gradient between two bone origins (eyelids, jaws, flaps); fold-free until full collapse (ADR-015).",
   autospine_measure_overlap: "Skin two weighted meshes in an optional pose and report overlap seam drift plus inversions per mesh; numeric QA, not artist approval.",
   autospine_review_performance: "Measure performance metrics from sampled probes (parallax, pupil, holds, saccade speed, delay-chain peaks, hand vs body, key density) and compare them with an artist-statistics profile; findings only, not artist approval.",
-  autospine_get_status: "Read engineering status and explicit unverified capabilities; no writes.",
+  autospine_get_status: "Read the engine version (compare it with the command line's `--version`: a server left running from an earlier plugin version reports an older one), the workspace and explicit unverified capabilities; no writes.",
   autospine_validate_plan: "Validate an explicit chain proposal; low confidence is review-required.",
   autospine_execute_plan: "Run a validated plan in memory and measure it; no files or art approval.",
   autospine_build: "Build a host-approved job within the configured workspace into a NEW directory.",
@@ -40842,7 +40871,7 @@ var descriptions = {
   autospine_apply_correction: "Rebuild in memory from a fingerprint-bound correction and remeasure.",
   autospine_lint_character_plan: "Check a character plan (CharacterPlan-0.1, ADR-017) in memory: schema errors, then joints, bones, meshes, constraints, motion controls, parameter references and expressions; with partNames also every named part and that each image has a mesh or region bone. Run after every plan edit.",
   autospine_build_character: "Build a workspace-local character plan (images-only layout + images) into a NEW workspace-local directory: Spine 4.0 JSON, IR, keypose specs, build record and copied images. The plan is linted first; no artist approval.",
-  autospine_compare_reference: "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
+  autospine_compare_reference: "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Compares the plan's animations the artist file also has (or only `animation`); a full artist export may hold more, which are listed as artistOnly. Numeric acceptance, not artist approval.",
   autospine_optimize_motion: "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
   autospine_merge_plans: "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose: "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
@@ -40973,8 +41002,11 @@ function characterFailure(error) {
     throw new Error(`MCP_${code}: ${fit[code]}`);
   if (code === "FIT_VIDEO")
     throw new Error(`MCP_FIT_VIDEO: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
-  if (code === "PLAN_QA" || code === "PLAN_SEARCH")
+  if (code === "PLAN_QA" || code === "PLAN_SEARCH" || code === "COMPARE_ANIMATION")
     throw new Error(`MCP_${code}: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
+  const reference = message.match(/^REFERENCE_([A-Z_]+): ([^\n]+)/);
+  if (reference)
+    throw new Error(`MCP_REFERENCE_${reference[1]}: ${reference[2]}`);
   throw error;
 }
 var result = (value, isError = false) => ({
@@ -41098,13 +41130,14 @@ var AutoSpineMcpServer = class {
           return result(reviewPerformance(args.sample, args.profile, keyStats));
         }
         case "autospine_get_status": {
-          let status = { available: false };
+          let status;
           try {
             status = JSON.parse(await readFile4(resolve5(this.workspace, "docs/reviews/GATE_5_17_STATUS.json"), "utf8"));
           } catch {
           }
           return result({
-            status,
+            version: AUTOSPINE_VERSION,
+            ...status === void 0 ? {} : { status },
             // Plans, images-only inputs, artist files and outputs must sit inside this folder.
             workspace: this.workspace,
             capabilities: {
@@ -41200,7 +41233,9 @@ var AutoSpineMcpServer = class {
           const build = await guardDirectory(root, args.buildDir);
           const artist = await guardFile(root, args.artistPath, 256 * 1024 * 1024);
           const output = await guardOutput(root, args.outputDir, true);
-          const check = await compareReferenceFiles(plan, build, artist, output).catch(characterFailure);
+          const check = await compareReferenceFiles(plan, build, artist, output, {
+            ...args.animation === void 0 ? {} : { animation: args.animation }
+          }).catch(characterFailure);
           return result({
             ...check,
             output: relative4(root, output),
@@ -41372,7 +41407,7 @@ var AutoSpineMcpServer = class {
       return response({
         protocolVersion: params.protocolVersion === "2025-06-18" ? "2025-06-18" : "2025-11-25",
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: "autospine", version: "0.0.0" },
+        serverInfo: { name: "autospine", version: AUTOSPINE_VERSION },
         instructions: "Legacy MCP v1; chain-wave file build, explicit character IR compilation, in-memory engine tools (pose-table animation, feature meshes, dome/transfer/chain/gradient weights, overlap QA) and character plans (lint, build, compare with an artist baseline, motion optimisation). No live visual AI or artist approval. File tools require host authorization and workspace-local paths; builds and comparisons write new directories only."
       });
     }

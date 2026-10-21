@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { access, mkdtemp, readFile, readdir, realpath, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
+import { AUTOSPINE_VERSION } from "@autospine/cli/version";
 import { AutoSpineMcpServer, guardJob, mcpTools } from "@autospine/mcp";
 import { criticMetrics, evidenceFromBuild, executePlannerProposal } from "@autospine/planning";
 import { workflowFixture } from "./workflow-fixture.js";
@@ -194,6 +195,9 @@ describe("Gate16 actual legacy stdio MCP", () => {
       before = await readdir(f.directory),
       server = await ready(f.directory);
     const r = await request(server, "autospine_get_status");
+    // The plugin version, compared with the command line's to spot a stale server.
+    expect(body(r).version).toBe(AUTOSPINE_VERSION);
+    expect(body(r)).not.toHaveProperty("status");
     expect(body(r).capabilities).toMatchObject({
       livePlannerVerified: false,
       liveVisionCriticVerified: false,

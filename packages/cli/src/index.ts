@@ -16,6 +16,7 @@ import {
   mergePlanFiles,
   stripImages,
 } from "./character.js";
+import { AUTOSPINE_VERSION } from "./version.js";
 import {
   AssetParseError,
   decodeAlphaMask,
@@ -82,10 +83,11 @@ async function writeMesh(
 }
 
 const characterUsage = `Character commands (ADR-017):
+  autospine --version
   autospine strip-images <artist.json> <images-dir> <images-only.json>
   autospine lint-plan <plan.json>
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
-  autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
+  autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir> [--animation=name]
   autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]
   autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file] [--reference-video=file]
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
@@ -135,8 +137,16 @@ async function characterCommand(args: string[]): Promise<boolean> {
       return true;
     case "compare-reference": {
       if (p.length !== 5) throw new Error(characterUsage);
-      known();
-      const check = await compareReferenceFiles(p[1]!, p[2]!, p[3]!, p[4]!);
+      known("animation");
+      const animation = flags.get("animation") || undefined;
+      const check = await compareReferenceFiles(p[1]!, p[2]!, p[3]!, p[4]!, {
+        ...(animation ? { animation } : {}),
+      });
+      console.log(`compared: ${check.animations.join(", ")}`);
+      if (check.artistOnly.length)
+        console.log(`  not compared, only in the artist file: ${check.artistOnly.join(", ")}`);
+      if (check.planOnly.length)
+        console.log(`  not compared, no artist version: ${check.planOnly.join(", ")}`);
       for (const r of check.rows)
         console.log(`${r.ok ? "PASS" : "FAIL"} ${r.id}  ${JSON.stringify(r.value)}`);
       console.log(check.pass ? "ALL AUTOMATABLE CRITERIA PASS" : "NOT PASSED");
@@ -344,6 +354,11 @@ async function characterCommand(args: string[]): Promise<boolean> {
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
+  // Compared with autospine_get_status's `version`: a stale MCP server reports an older one.
+  if (args.length === 1 && (args[0] === "--version" || args[0] === "version")) {
+    console.log(AUTOSPINE_VERSION);
+    return;
+  }
   if (args[0] === "build" && args.length === 2) {
     console.log(await buildJobFile(args[1]!));
     return;
