@@ -183,7 +183,7 @@ describe("fit-video: a reference video drives the motion (ADR-036)", () => {
       expect(fit.label).toBe("reference-fitted");
       expect(fit.pass).toBe(true);
       // What the run read: the plan, the images-only file and its images, the build and the video.
-      const read = fit.inputs.map((i) => relative(ws, i.path));
+      const read = fit.inputs.map((i) => relative(ws, i.path).replaceAll("\\", "/"));
       expect(read).toEqual(
         expect.arrayContaining(["plan.json", "build/fixture_character.json", "idle.mp4"]),
       );

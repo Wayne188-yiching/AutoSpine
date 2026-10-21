@@ -93,4 +93,5 @@ A second survey of the same corpus (Yuuna, Panda, Pig with images, 164 meshes; l
 - **What the plan must say.** A part that is deformed by keys but weighted rigidly must say so (`deform: true`, or be in `motion.deforms`). The engine cannot see keys that a later step adds.
 - **Faces and wings.** They still get about a third of the artist's interior (Pig head 4 against 22, nose 3 against 29). Their excess is semantic, not geometric. Give them explicit `interiorVertices`, now placed like the rule's points instead of on a lattice; on the Pig this brought the face and nose closer to the artist's frame 0.
 - **Interior count follows the hull.** The count scales with the hull's edge length, so a hull sparser than the artist's (the Pig's face parts) also thins the interior.
+- **Amended by ADR-043 (2026-10-21).** Hull placement is no longer unchanged: the fitted hull is evened out so no edge is under half the mean.
 - **Rollback.** Drop `deforms`, `deform` and `spread`; a bending part's interior returns to joint rows only.

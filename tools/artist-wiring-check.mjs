@@ -141,6 +141,20 @@ function delaunayShare(m) {
     : undefined;
 }
 
+/** Hull edge lengths over their mean: coefficient of variation, and the share under half (ADR-043). */
+function hullSpacing(m) {
+  const l = m.hull.map((a, i) => {
+      const p = m.vertices[a],
+        q = m.vertices[m.hull[(i + 1) % m.hull.length]];
+      return Math.hypot(p[0] - q[0], p[1] - q[1]);
+    }),
+    mean = l.reduce((s, x) => s + x, 0) / l.length;
+  return {
+    cv: Math.sqrt(l.reduce((s, x) => s + (x - mean) ** 2, 0) / l.length) / mean,
+    short: l.filter((x) => x < 0.5 * mean).length / l.length,
+  };
+}
+
 const rows = [];
 for (const [name, spec] of corpora) {
   const [jsonPath, imagesDir] = spec.split(",");
@@ -271,6 +285,8 @@ for (const [name, spec] of corpora) {
         automaticRecall: edges.automatic?.recall,
         artistPad: pad(artist),
         generatedPad: pad(generated),
+        artistSpacing: hullSpacing(artist),
+        generatedSpacing: hullSpacing(generated),
         artistDelaunay: delaunayShare(artist),
         generatedDelaunay: delaunayShare(generated),
         ms: Math.round(ms),
@@ -288,7 +304,7 @@ const median = (xs) => {
 const mean = (xs) => xs.reduce((s, x) => s + x, 0) / xs.length;
 const f = (x, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : "-");
 console.log(
-  "corpus     meshes  |hull err| med/mean  hull within 25%  |interior err| med  position %diag med/mean  hull max %diag med  hull recall  auto recall  pad px artist/gen  Delaunay artist/gen  ms",
+  "corpus     meshes  |hull err| med/mean  hull within 25%  |interior err| med  position %diag med/mean  hull max %diag med  hull recall  auto recall  pad px artist/gen  hull edge CV artist/gen  short edges artist/gen  Delaunay artist/gen  ms",
 );
 for (const group of [...corpora.map(([n]) => n), "all"]) {
   const r = rows.filter((x) => !x.error && (group === "all" || x.corpus === group));
@@ -313,6 +329,13 @@ for (const group of [...corpora.map(([n]) => n), "all"]) {
       `${f(median(r.map((x) => x.artistPad)), 1)}/${f(median(r.map((x) => x.generatedPad)), 1)}`.padStart(
         19,
       ),
+      `${f(median(r.map((x) => x.artistSpacing.cv)))}/${f(median(r.map((x) => x.generatedSpacing.cv)))}`.padStart(
+        24,
+      ),
+      [r.map((x) => x.artistSpacing.short), r.map((x) => x.generatedSpacing.short)]
+        .map((d) => f(100 * mean(d), 0) + "%")
+        .join("/")
+        .padStart(24),
       [r.map((x) => x.artistDelaunay), r.map((x) => x.generatedDelaunay)]
         .map((d) => f(100 * mean(d.filter(Number.isFinite)), 0) + "%")
         .join("/")

@@ -19,7 +19,8 @@ export interface FeatureMeshOptions {
   spacing?: number;
   /**
    * Hull vertex count: the hull is reduced or split to this many vertices while it keeps covering
-   * every opaque pixel; holes are covered and long edges are not subdivided.
+   * every opaque pixel, then evened out so no edge it can drop is under half the mean (ADR-043);
+   * holes are covered and long edges are not subdivided.
    */
   hullVertices?: number;
   /**
@@ -110,11 +111,25 @@ function fitHullBudget(
       const d = out[(k + 1) % out.length]!;
       return edges.some(([a, b]) => properCrossing(a, b, c, d));
     });
-  while (out.length > Math.max(3, target)) {
+  /** The ring's edge lengths: edge i runs from vertex i to i + 1. */
+  const lengths = () =>
+    out.map((a, i) => {
+      const b = out[(i + 1) % out.length]!;
+      return Math.hypot(b[0] - a[0], b[1] - a[1]);
+    });
+  type Step = {
+    cost: number;
+    apply: () => Point[];
+    edges: [Point, Point][];
+    skip: Set<number>;
+    /** Edges the step removes or replaces. */
+    touches: number[];
+  };
+  /** Every step that keeps the solid pixel centres covered, cheapest first. */
+  const steps = () => {
     const n = out.length,
-      at = (i: number) => out[((i % n) + n) % n]!;
-    type Step = { cost: number; apply: () => Point[]; edges: [Point, Point][]; skip: Set<number> };
-    const steps: Step[] = [];
+      at = (i: number) => out[((i % n) + n) % n]!,
+      all: Step[] = [];
     for (let i = 0; i < n; i++) {
       const a = at(i - 1),
         v = at(i),
@@ -122,11 +137,12 @@ function fitHullBudget(
       const turn = cross(a, v, b) * orient,
         area = Math.abs(cross(a, v, b)) / 2;
       if (turn <= 0 ? !covers(a, v, b) : !cutsSolid(a, v, b, solid, width, height))
-        steps.push({
+        all.push({
           cost: area,
           apply: () => out.filter((_, k) => k !== i),
           edges: [[a, b]],
           skip: new Set([(i - 1 + n) % n, i]),
+          touches: [(i - 1 + n) % n, i],
         });
       // v and b both convex: extend edges a-v and c-b to meet beyond them.
       const c = at(i + 2);
@@ -143,7 +159,7 @@ function fitHullBudget(
         P[1] = Math.min(height, Math.max(0, P[1]));
         if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0 || covers(v, P, b)) continue;
         const j = (i + 1) % n;
-        steps.push({
+        all.push({
           cost: Math.abs(cross(v, P, b)) / 2,
           apply: () => {
             const next = out.map((p, k) => (k === i ? P : p));
@@ -154,25 +170,40 @@ function fitHullBudget(
             [P, c],
           ],
           skip: new Set([(i - 1 + n) % n, i, j, (j + 1) % n]),
+          touches: [(i - 1 + n) % n, i, j],
         });
       }
     }
-    steps.sort((x, y) => x.cost - y.cost);
-    const step = steps.find((x) => !crossing(x.edges, x.skip));
+    return all.sort((x, y) => x.cost - y.cost);
+  };
+  const splitLongest = () => {
+    const l = lengths(),
+      k = l.indexOf(Math.max(...l)),
+      a = out[k]!,
+      b = out[(k + 1) % out.length]!;
+    out.splice(k + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+  };
+  while (out.length > Math.max(3, target)) {
+    const step = steps().find((x) => !crossing(x.edges, x.skip));
     if (!step) break;
     out = step.apply();
   }
-  while (out.length < target) {
-    let k = 0,
-      longest = -1;
-    out.forEach((a, i) => {
-      const b = out[(i + 1) % out.length]!,
-        l = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      if (l > longest) [k, longest] = [i, l];
-    });
-    const a = out[k]!,
-      b = out[(k + 1) % out.length]!;
-    out.splice(k + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+  while (out.length < target) splitLongest();
+  // ADR-043: artists space hull vertices evenly (on 166 artist meshes, 9 % of hull edges are shorter
+  // than half the mean edge; the cheapest-area fit left 22 %, packed into corners and notches). An
+  // edge shorter than half the mean loses an end by the cheapest step, and the longest edge is split
+  // to keep the count. A short edge no step can remove (a covered spike) stays.
+  for (let guard = 0; guard < 2 * target && out.length === target; guard++) {
+    const l = lengths(),
+      mean = l.reduce((s, x) => s + x, 0) / l.length,
+      short = new Set(l.flatMap((x, i) => (x < SHORT_EDGE * mean ? [i] : [])));
+    if (!short.size) break;
+    const step = steps().find(
+      (x) => x.touches.some((e) => short.has(e)) && !crossing(x.edges, x.skip),
+    );
+    if (!step) break;
+    out = step.apply();
+    splitLongest();
   }
   return out;
 }
@@ -453,10 +484,12 @@ function jointRows(bones: NonNullable<FeatureMeshOptions["bones"]>, outer: Point
 /**
  * ADR-041: the budget hull covers the opaque pixels grown by PAD px (its fewer vertices overshoot
  * corners, about 4 px in all on the artist corpus against the artists' 3), and a bone longer than
- * LONG_BONE hull edges gets a mid-bone row.
+ * LONG_BONE hull edges gets a mid-bone row. ADR-043: no budget hull edge is shorter than SHORT_EDGE
+ * times the mean edge where a step can remove it.
  */
 const PAD = 1,
-  LONG_BONE = 2;
+  LONG_BONE = 2,
+  SHORT_EDGE = 0.5;
 
 /** Insert w on edge u-v of every triangle using it, keeping orientation (a hull edge has one). */
 function splitEdge(triangles: [number, number, number][], u: number, v: number, w: number) {
@@ -707,6 +740,19 @@ export function generateFeatureMesh(
     (i) => i,
   );
   ringIndices.forEach((indices, k) => pushTriangles(earcut(rings[k]!.flat()), (i) => indices[i]!));
+  // Earcut can drop a hull point in line with its neighbours (a budget hull's split edge, ADR-043):
+  // it goes back on its edge by splitting the triangle there.
+  const used = new Set(triangles.flat()),
+    size = outer.length;
+  outer.forEach((_, i) => {
+    if (used.has(i)) return;
+    let a = i - 1,
+      b = i + 1;
+    while (!used.has((a + size) % size)) a--;
+    while (!used.has(b % size)) b++;
+    splitEdge(triangles, (a + size) % size, b % size, i);
+    used.add(i);
+  });
   // Earcut drops collinear points, so long edges are refined only now, by splitting their triangles.
   const refine = (loop: number[]) =>
     loop.flatMap((a, i) => {

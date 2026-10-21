@@ -29508,18 +29508,22 @@ function fitHullBudget(ring, target, solid, width, height, stray) {
     const d = out[(k + 1) % out.length];
     return edges.some(([a, b]) => properCrossing(a, b, c, d));
   });
-  while (out.length > Math.max(3, target)) {
-    const n = out.length, at2 = (i) => out[(i % n + n) % n];
-    const steps = [];
+  const lengths = () => out.map((a, i) => {
+    const b = out[(i + 1) % out.length];
+    return Math.hypot(b[0] - a[0], b[1] - a[1]);
+  });
+  const steps = () => {
+    const n = out.length, at2 = (i) => out[(i % n + n) % n], all = [];
     for (let i = 0; i < n; i++) {
       const a = at2(i - 1), v = at2(i), b = at2(i + 1);
       const turn = cross3(a, v, b) * orient, area3 = Math.abs(cross3(a, v, b)) / 2;
       if (turn <= 0 ? !covers(a, v, b) : !cutsSolid(a, v, b, solid, width, height))
-        steps.push({
+        all.push({
           cost: area3,
           apply: () => out.filter((_, k) => k !== i),
           edges: [[a, b]],
-          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i])
+          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i]),
+          touches: [(i - 1 + n) % n, i]
         });
       const c = at2(i + 2);
       if (turn > 0 && cross3(v, b, c) * orient > 0) {
@@ -29531,7 +29535,7 @@ function fitHullBudget(ring, target, solid, width, height, stray) {
         P[1] = Math.min(height, Math.max(0, P[1]));
         if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0 || covers(v, P, b)) continue;
         const j = (i + 1) % n;
-        steps.push({
+        all.push({
           cost: Math.abs(cross3(v, P, b)) / 2,
           apply: () => {
             const next = out.map((p, k) => k === i ? P : p);
@@ -29541,23 +29545,32 @@ function fitHullBudget(ring, target, solid, width, height, stray) {
             [a, P],
             [P, c]
           ],
-          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i, j, (j + 1) % n])
+          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i, j, (j + 1) % n]),
+          touches: [(i - 1 + n) % n, i, j]
         });
       }
     }
-    steps.sort((x, y) => x.cost - y.cost);
-    const step = steps.find((x) => !crossing(x.edges, x.skip));
+    return all.sort((x, y) => x.cost - y.cost);
+  };
+  const splitLongest = () => {
+    const l = lengths(), k = l.indexOf(Math.max(...l)), a = out[k], b = out[(k + 1) % out.length];
+    out.splice(k + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+  };
+  while (out.length > Math.max(3, target)) {
+    const step = steps().find((x) => !crossing(x.edges, x.skip));
     if (!step) break;
     out = step.apply();
   }
-  while (out.length < target) {
-    let k = 0, longest = -1;
-    out.forEach((a2, i) => {
-      const b2 = out[(i + 1) % out.length], l = Math.hypot(b2[0] - a2[0], b2[1] - a2[1]);
-      if (l > longest) [k, longest] = [i, l];
-    });
-    const a = out[k], b = out[(k + 1) % out.length];
-    out.splice(k + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+  while (out.length < target) splitLongest();
+  for (let guard = 0; guard < 2 * target && out.length === target; guard++) {
+    const l = lengths(), mean2 = l.reduce((s2, x) => s2 + x, 0) / l.length, short = new Set(l.flatMap((x, i) => x < SHORT_EDGE * mean2 ? [i] : []));
+    if (!short.size) break;
+    const step = steps().find(
+      (x) => x.touches.some((e) => short.has(e)) && !crossing(x.edges, x.skip)
+    );
+    if (!step) break;
+    out = step.apply();
+    splitLongest();
   }
   return out;
 }
@@ -29768,6 +29781,7 @@ function jointRows(bones, outer) {
 }
 var PAD = 1;
 var LONG_BONE = 2;
+var SHORT_EDGE = 0.5;
 function splitEdge(triangles, u, v, w) {
   for (let t = triangles.length - 1; t >= 0; t--) {
     const tri = triangles[t], k = [0, 1, 2].find((i) => {
@@ -29942,6 +29956,15 @@ function generateFeatureMesh(part, alpha, options = {}) {
     (i) => i
   );
   ringIndices.forEach((indices, k) => pushTriangles(earcut(rings[k].flat()), (i) => indices[i]));
+  const used = new Set(triangles.flat()), size = outer.length;
+  outer.forEach((_, i) => {
+    if (used.has(i)) return;
+    let a = i - 1, b = i + 1;
+    while (!used.has((a + size) % size)) a--;
+    while (!used.has(b % size)) b++;
+    splitEdge(triangles, (a + size) % size, b % size, i);
+    used.add(i);
+  });
   const refine = (loop2) => loop2.flatMap((a, i) => {
     const b = loop2[(i + 1) % loop2.length], pa = points[a], pb = points[b], n = Math.ceil(Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) / edgeLength);
     const added = [];
