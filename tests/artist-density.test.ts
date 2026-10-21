@@ -192,6 +192,11 @@ describe("artist wiring rules (ADR-041, ADR-042)", () => {
     expect(
       layout(mesh(p, { bones: chain(200, 300, 3), interiorVertices: 1 }), 200, 300).interior,
     ).toHaveLength(1);
+    // A count far denser than the few hull edges allow at half an edge apart still fits whole
+    // (a face given the artist's 24 points on an 11-point hull).
+    const dense = layout(mesh(p, { bones: [], deforms: true, interiorVertices: 60 }), 200, 300);
+    expect(dense.interior).toHaveLength(60);
+    expect(60).toBeGreaterThan(2 * dense.rule);
   });
 
   it("keeps a rule mesh's eye socket as a ring", () => {

@@ -40,6 +40,8 @@ A second survey of the same corpus (Yuuna, Panda, Pig with images, 164 meshes; l
   - Candidates lie on a grid of a quarter hull edge, half an edge or more from every boundary and point.
   - The fill stops early when no candidate is half an edge from everything.
 - **Explicit `interiorVertices` with `bones`.** Exactly that many points: joint rows first, then spread points. They no longer switch to the lattice. Without `bones` (the engine tool `autospine_feature_mesh`), the lattice search is unchanged.
+  - The spacing unit is then the smaller of the mean hull edge and √(hull area / count). Otherwise a count denser than the few hull edges allow stops short: the Pig's nose got 16 of 29 on its 14-point hull.
+- **Points on an edge.** An interior point exactly on an edge two triangles share (a candidate in line with two vertices) splits both triangles. Before, it was dropped, on any path (29 asked, 28 placed).
 - **Unchanged.** Hull placement, padding and coverage (ADR-041); hole rings; `density: "fine"`; Delaunay flips.
 
 ## Evidence
@@ -77,13 +79,18 @@ A second survey of the same corpus (Yuuna, Panda, Pig with images, 164 meshes; l
 | A6 rest pose idle, median / p90                             |        | 0.0002 / 0.001           | 0.0019 / 0.0146    | 0.0015 / 0.0081 |
 
 - **Failing in every arm.** A1 (13.5 px, `1_arrow2`) and A2 fail: Quality v3's calibrated images-only file is refused by the current engine, so every arm is compared on the soft-v2 placements.
+- **Face and nose at the artist's counts** (`plans/plan-22.json`: `interiorVertices` 24 on `1_face`, 29 on `1_Nose`; `builds/build-24-face-nose`, `checks/compare-24-face-nose`):
+  - Both now have the artist's interior counts; total vertices 1034.
+  - Nose inversions stay at 0. D1 and face parallax are unchanged (12/13, 9/10; 0.065 / 0.088), so face parallax does not come from these two meshes.
+  - A6 p90 improves from 0.0081 to 0.0062. Distance to the artist's frame 0 falls from 0.0081 to 0.0048 head widths for the nose, and from 0.0119 to under 0.0057 for the face (out of the worst six).
+  - A2 for the nose rises from 30.7 to 44.8 px. A2 measures distance from the plain image placement, and the build fits each mesh to the artist's shaped setup, so a nose that follows the artist's snout closer moves further from the flat image.
 - **Tests.**
-  - `tests/artist-density.test.ts`: a 3-bone part has rows at both joints and at least the area rule, all half an edge from the hull and from each other. A keyed rigid part has a larger hull than a rigid one and exactly the area rule's interior, a median 0.5–2 edges in. Explicit counts give exactly that many, joint rows first.
+  - `tests/artist-density.test.ts`: a 3-bone part has rows at both joints and at least the area rule, all half an edge from the hull and from each other. A keyed rigid part has a larger hull than a rigid one and exactly the area rule's interior, a median 0.5–2 edges in. Explicit counts give exactly that many, joint rows first, even 60 on a sparse hull (over twice the rule).
   - `tests/character-deforms.test.ts`: a `meshing.parts` part named in `motion.deforms` gets the larger hull.
 
 ## Consequences
 
 - **What the plan must say.** A part that is deformed by keys but weighted rigidly must say so (`deform: true`, or be in `motion.deforms`). The engine cannot see keys that a later step adds.
-- **Faces and wings.** They still get about a third of the artist's interior (Pig head 4 against 22, nose 3 against 29). Their excess is semantic, not geometric. Give them explicit `interiorVertices`, now placed like the rule's points instead of on a lattice.
+- **Faces and wings.** They still get about a third of the artist's interior (Pig head 4 against 22, nose 3 against 29). Their excess is semantic, not geometric. Give them explicit `interiorVertices`, now placed like the rule's points instead of on a lattice; on the Pig this brought the face and nose closer to the artist's frame 0.
 - **Interior count follows the hull.** The count scales with the hull's edge length, so a hull sparser than the artist's (the Pig's face parts) also thins the interior.
 - **Rollback.** Drop `deforms`, `deform` and `spread`; a bending part's interior returns to joint rows only.

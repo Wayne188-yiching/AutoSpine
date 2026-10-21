@@ -29973,9 +29973,10 @@ function generateFeatureMesh(part, alpha, options = {}) {
   if (options.bones) {
     const bends = options.bones.length > 1 || !!options.deforms, rows = jointRows(bends ? options.bones : [], outer).filter(
       (p) => !rings.some((r) => inside(p, r))
-    ), step = meanEdge(outer), target = interior ?? (bends ? Math.round(0.27 * Math.abs(signedArea2(outer)) / 2 / (step * step)) : 0);
+    ), step = meanEdge(outer), area3 = Math.abs(signedArea2(outer)) / 2, target = interior ?? (bends ? Math.round(0.27 * area3 / (step * step)) : 0);
     grid = rows.slice(0, interior ?? rows.length);
-    grid.push(...spread(boundaries, rings, grid, target - grid.length, step));
+    const spacing = interior ? Math.min(step, Math.sqrt(area3 / interior)) : step;
+    grid.push(...spread(boundaries, rings, grid, target - grid.length, spacing));
   } else if (interior === void 0)
     grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
   else if (interior > 0) {
@@ -29988,14 +29989,36 @@ function generateFeatureMesh(part, alpha, options = {}) {
       else hi = mid;
     }
   }
+  const edgeThrough = (p) => {
+    const uses = /* @__PURE__ */ new Map();
+    const sides = (t) => [
+      [t[0], t[1]],
+      [t[1], t[2]],
+      [t[2], t[0]]
+    ];
+    for (const t of triangles)
+      for (const [u, v] of sides(t)) uses.set(edgeKey(u, v), (uses.get(edgeKey(u, v)) ?? 0) + 1);
+    for (const t of triangles)
+      for (const [u, v] of sides(t)) {
+        const a = points[u], b = points[v], l2 = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2, along = (p[0] - a[0]) * (b[0] - a[0]) + (p[1] - a[1]) * (b[1] - a[1]);
+        if (Math.abs(cross3(a, b, p)) > 1e-9 * l2 || along <= 0 || along >= l2) continue;
+        if (uses.get(edgeKey(u, v)) === 2 && !locked.has(edgeKey(u, v))) return [u, v];
+      }
+  };
   for (const p of grid) {
-    const target = triangles.findIndex(
-      ([a2, b2, c2]) => cross3(points[a2], points[b2], p) > 1e-9 && cross3(points[b2], points[c2], p) > 1e-9 && cross3(points[c2], points[a2], p) > 1e-9
+    const index = points.length, target = triangles.findIndex(
+      ([a, b, c]) => cross3(points[a], points[b], p) > 1e-9 && cross3(points[b], points[c], p) > 1e-9 && cross3(points[c], points[a], p) > 1e-9
     );
-    if (target < 0) continue;
-    const index = points.length, [a, b, c] = triangles[target];
+    if (target >= 0) {
+      const [a, b, c] = triangles[target];
+      points.push(p);
+      triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+      continue;
+    }
+    const edge = edgeThrough(p);
+    if (!edge) continue;
     points.push(p);
-    triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+    splitEdge(triangles, edge[0], edge[1], index);
   }
   improve(points, triangles, locked);
   const canonical = (t) => {

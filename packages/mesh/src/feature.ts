@@ -749,11 +749,12 @@ export function generateFeatureMesh(
         (p) => !rings.some((r) => inside(p, r)),
       ),
       step = meanEdge(outer),
-      target =
-        interior ??
-        (bends ? Math.round((0.27 * Math.abs(signedArea2(outer))) / 2 / (step * step)) : 0);
+      area = Math.abs(signedArea2(outer)) / 2,
+      target = interior ?? (bends ? Math.round((0.27 * area) / (step * step)) : 0);
     grid = rows.slice(0, interior ?? rows.length);
-    grid.push(...spread(boundaries, rings, grid, target - grid.length, step));
+    // An explicit count denser than the hull's edges allows packs closer, so all of it fits.
+    const spacing = interior ? Math.min(step, Math.sqrt(area / interior)) : step;
+    grid.push(...spread(boundaries, rings, grid, target - grid.length, spacing));
   } else if (interior === undefined)
     grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
   else if (interior > 0) {
@@ -769,18 +770,46 @@ export function generateFeatureMesh(
       else hi = mid;
     }
   }
+  /** An unlocked edge two triangles share that runs through p, strictly between its ends. */
+  const edgeThrough = (p: Point): [number, number] | undefined => {
+    const uses = new Map<string, number>();
+    const sides = (t: [number, number, number]) =>
+      [
+        [t[0], t[1]],
+        [t[1], t[2]],
+        [t[2], t[0]],
+      ] as const;
+    for (const t of triangles)
+      for (const [u, v] of sides(t)) uses.set(edgeKey(u, v), (uses.get(edgeKey(u, v)) ?? 0) + 1);
+    for (const t of triangles)
+      for (const [u, v] of sides(t)) {
+        const a = points[u]!,
+          b = points[v]!,
+          l2 = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2,
+          along = (p[0] - a[0]) * (b[0] - a[0]) + (p[1] - a[1]) * (b[1] - a[1]);
+        if (Math.abs(cross(a, b, p)) > 1e-9 * l2 || along <= 0 || along >= l2) continue;
+        if (uses.get(edgeKey(u, v)) === 2 && !locked.has(edgeKey(u, v))) return [u, v];
+      }
+  };
   for (const p of grid) {
-    const target = triangles.findIndex(
-      ([a, b, c]) =>
-        cross(points[a]!, points[b]!, p) > 1e-9 &&
-        cross(points[b]!, points[c]!, p) > 1e-9 &&
-        cross(points[c]!, points[a]!, p) > 1e-9,
-    );
-    if (target < 0) continue;
     const index = points.length,
-      [a, b, c] = triangles[target]!;
+      target = triangles.findIndex(
+        ([a, b, c]) =>
+          cross(points[a]!, points[b]!, p) > 1e-9 &&
+          cross(points[b]!, points[c]!, p) > 1e-9 &&
+          cross(points[c]!, points[a]!, p) > 1e-9,
+      );
+    if (target >= 0) {
+      const [a, b, c] = triangles[target]!;
+      points.push(p);
+      triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+      continue;
+    }
+    // A point in line with two vertices (a grid candidate) splits the triangles on both sides.
+    const edge = edgeThrough(p);
+    if (!edge) continue;
     points.push(p);
-    triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+    splitEdge(triangles, edge[0], edge[1], index);
   }
   improve(points, triangles, locked);
 
