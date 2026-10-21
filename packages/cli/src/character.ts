@@ -66,8 +66,10 @@ import {
   matchPart,
   partTemplate,
   plainBorder,
+  clearlyMirrored,
   mirrorSimilarity,
   mirroredRun,
+  shiftedShare,
   VIDEO_ACCEPTANCE,
   videoPenalty,
   type LoadedSkeleton,
@@ -990,17 +992,23 @@ function imagePaths(document: { skins?: unknown }) {
   return [...paths].sort();
 }
 /**
- * What deliver wrote into a project folder, by file name (a hidden file beside the project): the
- * project's hash tells a later delivery whether it was saved since, i.e. edited in Spine.
+ * What deliver wrote into a project folder, by file name: the project's hash tells a later
+ * delivery whether it was saved since, i.e. edited in Spine. It is kept in the work folder, out of
+ * the requester's way; 0.5.7 and 0.5.8 wrote `.autospine-delivery.json` beside the project, which
+ * Windows Explorer shows (a dot file is not hidden there). That one is still read, and removed on
+ * the next delivery.
  */
-const DELIVERY_RECORD = ".autospine-delivery.json";
+const DELIVERY_RECORD = join("_work", "delivery.json"),
+  OLD_DELIVERY_RECORD = ".autospine-delivery.json";
 type DeliveryRecord = Record<string, { sha256: string; delivered: string; engineVersion: string }>;
 async function readDeliveryRecord(dir: string): Promise<DeliveryRecord> {
-  try {
-    return JSON.parse(await readFile(join(dir, DELIVERY_RECORD), "utf8")) as DeliveryRecord;
-  } catch {
-    return {};
-  }
+  for (const file of [DELIVERY_RECORD, OLD_DELIVERY_RECORD])
+    try {
+      return JSON.parse(await readFile(join(dir, file), "utf8")) as DeliveryRecord;
+    } catch {
+      /* try the next place */
+    }
+  return {};
 }
 
 export interface DeliverOptions {
@@ -1026,7 +1034,7 @@ export interface DeliverOptions {
  * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the project folder gets only
  * `<name>.spine` (imported with the Spine command line), `images/` (the images it draws, so the
  * folder opens anywhere) and `<name>.mp4` (the review video, artist | build when an artist file is
- * given), plus the hidden `.autospine-delivery.json` with the project's hash.
+ * given), plus `_work/delivery.json` with the project's hash.
  * Plans, builds, comparisons and every other working file stay in the work folder. Without the
  * Spine editor the project is delivered as `<name>.json` for Import Data instead. Animations whose
  * reference says `use: "fit"` are fitted to their videos first (ADR-036), in the build folder.
@@ -1109,8 +1117,8 @@ export async function deliverFiles(
       `CLI_OUTPUT_EXISTS: ${present.join(", ")} already delivered; pass --replace to swap in this build (the old files move into the build folder)`,
     );
   // A project whose bytes differ from the hash recorded when it was delivered was saved since,
-  // probably edited in Spine. Without a record (delivered before 0.5.8), a project saved more than
-  // two minutes after its video counts as edited.
+  // probably edited in Spine. Without a record (delivered before 0.5.7, or _work/ deleted), a
+  // project saved more than two minutes after its video counts as edited.
   if (present.length && !opts.force) {
     const record = await readDeliveryRecord(out);
     for (const file of [target.spine, target.json].filter((f) => existsSync(f))) {
@@ -1218,7 +1226,9 @@ export async function deliverFiles(
         delivered: new Date().toISOString(),
         engineVersion: AUTOSPINE_VERSION,
       };
+  await mkdir(join(out, "_work"), { recursive: true });
   await writeFile(join(out, DELIVERY_RECORD), json(record));
+  await rm(join(out, OLD_DELIVERY_RECORD), { force: true });
   if (staged) {
     await moveFile(staged, target.video);
     result.video = target.video;
@@ -1669,8 +1679,10 @@ async function compareOneVideo(
     const tracksByPart = new Map<string, PartTrack>();
     const owner = new Int16Array(W * H);
     const lastHit = new Map<string, { dx: number; dy: number; angle: number; mirrored: boolean }>();
-    // Which way round each part shows in the reference, and how symmetric it is in the build.
-    const mirroredByPart = new Map<string, (boolean | null)[]>();
+    // Which way round each part shows in the reference (found mirrored: the best scores flipped
+    // and the right way round), and how symmetric it is in the build.
+    type Flip = { flipped: number; unflipped: number } | false | null;
+    const mirroredByPart = new Map<string, Flip[]>();
     const symmetryByPart = new Map<string, number[]>();
     // Half-size pixels: parts more than 8% of the height away are not found.
     const radius = Math.max(6, Math.ceil((0.08 * figureHeight) / 2));
@@ -1734,14 +1746,22 @@ async function compareOneVideo(
         if (hit && hit.score >= 0.6) lastHit.set(name, hit);
         else lastHit.delete(name);
         let flips = mirroredByPart.get(name);
-        if (!flips) mirroredByPart.set(name, (flips = Array<boolean | null>(f).fill(null)));
+        if (!flips) mirroredByPart.set(name, (flips = Array<Flip>(f).fill(null)));
         if (!mine || !tpl || !hit || hit.score < 0.6) {
           track.ref.push(null);
           track.build.push(null);
           flips.push(null);
           continue;
         }
-        flips.push(hit.mirrored);
+        flips.push(
+          hit.mirrored && {
+            flipped: hit.score,
+            unflipped: Math.max(
+              0,
+              matchPart(gr, tpl, radius, { dx: hit.dx, dy: hit.dy, angle: hit.angle }).score,
+            ),
+          },
+        );
         if (f % 8 === 0) {
           const sym = symmetryByPart.get(name) ?? [];
           sym.push(mirrorSimilarity(gb, tpl));
@@ -1837,13 +1857,19 @@ async function compareOneVideo(
       e.sort((a, b) => a - b);
       return e.length ? +(e[e.length >> 1]! * 100).toFixed(3) : null;
     });
-    // Parts drawn the other way round in the reference: asymmetric parts mirrored for a stretch.
+    // Parts drawn the other way round in the reference: asymmetric parts clearly mirrored for a
+    // stretch, not redrawn (an expression, a deform) so that their mirror image matches a little
+    // better.
     const median = (v: number[]) => [...v].sort((a, b) => a - b)[v.length >> 1] ?? 1;
     const mirrored = [...mirroredByPart]
-      .filter(([part]) => median(symmetryByPart.get(part) ?? []) < 0.8)
-      .map(([part, flags]) => ({
+      .map(([part, flips]) => ({ part, flips, symmetry: median(symmetryByPart.get(part) ?? []) }))
+      .filter((p) => p.symmetry < 0.8)
+      .map(({ part, flips, symmetry }) => ({
         part,
-        frames: mirroredRun(flags, Math.max(4, Math.round(count / 10))),
+        frames: mirroredRun(
+          flips.map((m) => m && clearlyMirrored(m.flipped, m.unflipped, symmetry)),
+          Math.max(4, Math.round(count / 10)),
+        ),
       }))
       .filter((m): m is { part: string; frames: [number, number] } => m.frames !== null);
     const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored);
@@ -1916,6 +1942,12 @@ async function compareOneVideo(
 const FIT_TOLERANCE = 0.5;
 /** Part frames whose median error passes the V2 median limit are refit (% of the figure height). */
 const REFIT_ERROR = VIDEO_ACCEPTANCE.partMedian * 100;
+/**
+ * Frame 0 is off the build's rest pose when more than this share of its matched parts (by texels)
+ * is drawn further than the V2 p90 limit from the build's frame 0; isolated parts are the
+ * matching's own error, which the zero frame takes off (ADR-033).
+ */
+const ZERO_SHIFTED = 0.25;
 
 /** A plan written into another folder: its images and reference videos pointed at from there. */
 function planAt(plan: CharacterPlan, fromPath: string, toPath: string): CharacterPlan {
@@ -2288,18 +2320,25 @@ export async function fitVideoFiles(
     return list;
   };
   const zeroOn = opts.zero !== false;
-  let zero: (PoseFitResult & { offset: number }) | undefined;
+  // Frame 0 is the zero frame (ADR-033): what its fit moves is taken for the matching's own error.
+  // `shifted` tells that from a rest pose that is off; `largest` is the biggest single offset, often
+  // a look-alike finger.
+  type Offset = { bone: string; channel: "rotate" | "x" | "y"; value: number };
+  let zero: (PoseFitResult & { shifted: number; largest?: Offset }) | undefined;
   if (zeroOn) {
     const r = fitRestPose(baseDoc, name, await picture(0), image, { ...options, time: 0 });
-    const offset = Math.max(
-      0,
-      ...Object.values(r.pose).flatMap((p) => [
-        Math.abs(p.rotate ?? 0),
-        Math.abs(p.x ?? 0),
-        Math.abs(p.y ?? 0),
-      ]),
-    );
-    zero = { ...r, offset };
+    let largest: Offset | undefined;
+    for (const [bone, p] of Object.entries(r.pose))
+      for (const channel of ["rotate", "x", "y"] as const) {
+        const value = p[channel];
+        if (value !== undefined && Math.abs(value) > Math.abs(largest?.value ?? 0))
+          largest = { bone, channel, value };
+      }
+    zero = {
+      ...r,
+      shifted: shiftedShare(r.parts, VIDEO_ACCEPTANCE.partP90 * unit),
+      ...(largest ? { largest } : {}),
+    };
   }
   const first = zero ?? (await fitFrame(baseDoc, 0, options));
   if (first.coverage < 0.6)
@@ -2749,10 +2788,19 @@ export async function fitVideoFiles(
     hints.push(
       `${bone} (${u.parts.join(", ")}): drawn differently in the video in ${Math.round((1 - u.share) * 100)}% of the frames; not fitted, its plan motion stays`,
     );
-  if (zero && zero.offset > 2)
+  if (zero && zero.shifted > ZERO_SHIFTED) {
+    const far = zero.parts
+      .filter((p) => p.used && p.shift > VIDEO_ACCEPTANCE.partP90 * unit)
+      .sort((a, b) => b.samples - a.samples);
     hints.push(
-      `frame 0 of the video is ${zero.offset.toFixed(1)} degrees or px off the build's frame 0: fit the rest pose from it first (fit-pose), or pass --no-zero`,
+      `frame 0 of the video draws ${Math.round(zero.shifted * 100)}% of the matched parts (by area: ${far
+        .slice(0, 4)
+        .map((p) => p.slot)
+        .join(", ")}${far.length > 4 ? ", ..." : ""}) more than ${
+        VIDEO_ACCEPTANCE.partP90 * 100
+      }% of the figure height from the build's frame 0: its rest pose is off; fit the rest pose from it first (fit-pose), or pass --no-zero`,
     );
+  }
   const fold = shaped?.loop;
   if (fold?.oneCycle)
     hints.push(`no repeat found in the video: its first ${N} frames are taken as one loop`);
@@ -2813,7 +2861,13 @@ export async function fitVideoFiles(
           frame: 0,
           coverage: zero.coverage,
           residual: zero.residual,
-          offset: +zero.offset.toFixed(2),
+          // Share of the matched parts (by texels) more than the V2 p90 limit from the build's
+          // frame 0; above ZERO_SHIFTED the rest pose is off. The largest single offset is
+          // usually the matching's own error.
+          shifted: +zero.shifted.toFixed(3),
+          largestOffset: zero.largest
+            ? { ...zero.largest, value: +zero.largest.value.toFixed(2) }
+            : null,
         }
       : null,
     searchWindow,

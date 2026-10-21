@@ -33105,7 +33105,7 @@ async function buildJobFile(jobPath) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.8";
+var AUTOSPINE_VERSION = "0.5.9";
 
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
@@ -38164,6 +38164,7 @@ function fitRestPose(document2, animation, reference, image, options) {
           dx: 0,
           dy: 0,
           rotate: 0,
+          shift: 0,
           used: false
         });
       continue;
@@ -38267,6 +38268,12 @@ function fitRestPose(document2, animation, reference, image, options) {
         const q = move(D, x.s.w0);
         return n2 + hit(x.s, q[0], q[1]);
       }, 0) / mine.length;
+      const shift = Math.sqrt(
+        list.reduce((n2, s2) => {
+          const q = move(D, s2.w0);
+          return n2 + (q[0] - s2.w0[0]) ** 2 + (q[1] - s2.w0[1]) ** 2;
+        }, 0) / list.length
+      );
       const centre = list.reduce(
         (m, s2) => [m[0] + s2.w0[0] / list.length, m[1] + s2.w0[1] / list.length],
         [0, 0]
@@ -38280,7 +38287,8 @@ function fitRestPose(document2, animation, reference, image, options) {
         dx: +(moved[0] - centre[0]).toFixed(2),
         dy: +(moved[1] - centre[1]).toFixed(2),
         rotate: +D.r.toFixed(2),
-        used: used2
+        used: used2,
+        shift: +shift.toFixed(2)
       });
       if (!used2) continue;
       const k = Math.max(1, Math.floor(list.length / 16));
@@ -38414,6 +38422,10 @@ function fitRestPose(document2, animation, reference, image, options) {
     },
     iterations
   };
+}
+function shiftedShare(parts, distance) {
+  const used = parts.filter((p) => p.used), all = used.reduce((n, p) => n + p.samples, 0);
+  return all ? used.filter((p) => p.shift > distance).reduce((n, p) => n + p.samples, 0) / all : 0;
 }
 function agreePoses(a, b, bones, limits) {
   const pose2 = {}, disagree = [];
@@ -38793,6 +38805,9 @@ function mirrorSimilarity(img, tpl) {
   }
   const flipped = { ...tpl, xs, box: { ...tpl.box, x0, x1 } };
   return Math.max(0, matchPart(img, flipped, 3).score);
+}
+function clearlyMirrored(flipped, unflipped, symmetry) {
+  return flipped - unflipped >= 0.5 * (1 - symmetry);
 }
 function mirroredRun(flags, minRun) {
   let best = null, start = -1, last = -1;
@@ -39555,6 +39570,7 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
   };
 }
 var safeFileName = (name) => [...name].map((c) => /[\\/:*?"<>|]/.test(c) || c.charCodeAt(0) < 32 ? "_" : c).join("").trim() || "character";
+var DELIVERY_RECORD = join2("_work", "delivery.json");
 async function videoSize(path) {
   if (!existsSync2(path))
     throw new Error(`CLI_VIDEO: ${path} not found`);
@@ -39882,7 +39898,10 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
           flips.push(null);
           continue;
         }
-        flips.push(hit.mirrored);
+        flips.push(hit.mirrored && {
+          flipped: hit.score,
+          unflipped: Math.max(0, matchPart(gr, tpl, radius, { dx: hit.dx, dy: hit.dy, angle: hit.angle }).score)
+        });
         if (f % 8 === 0) {
           const sym = symmetryByPart.get(name) ?? [];
           sym.push(mirrorSimilarity(gb, tpl));
@@ -39960,9 +39979,9 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
       return e.length ? +(e[e.length >> 1] * 100).toFixed(3) : null;
     });
     const median2 = (v) => [...v].sort((a, b) => a - b)[v.length >> 1] ?? 1;
-    const mirrored = [...mirroredByPart].filter(([part]) => median2(symmetryByPart.get(part) ?? []) < 0.8).map(([part, flags]) => ({
+    const mirrored = [...mirroredByPart].map(([part, flips]) => ({ part, flips, symmetry: median2(symmetryByPart.get(part) ?? []) })).filter((p) => p.symmetry < 0.8).map(({ part, flips, symmetry }) => ({
       part,
-      frames: mirroredRun(flags, Math.max(4, Math.round(count / 10)))
+      frames: mirroredRun(flips.map((m) => m && clearlyMirrored(m.flipped, m.unflipped, symmetry)), Math.max(4, Math.round(count / 10)))
     })).filter((m) => m.frames !== null);
     const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored);
     if (whole)
@@ -40014,6 +40033,7 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
 }
 var FIT_TOLERANCE = 0.5;
 var REFIT_ERROR = VIDEO_ACCEPTANCE.partMedian * 100;
+var ZERO_SHIFTED = 0.25;
 function planAt(plan, fromPath, toPath) {
   const from = dirname3(resolve3(fromPath)), to = dirname3(resolve3(toPath));
   const rel = (p) => relative3(to, resolve3(from, p)).split(sep).join("/");
@@ -40225,12 +40245,18 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   let zero;
   if (zeroOn) {
     const r = fitRestPose(baseDoc, name, await picture(0), image, { ...options, time: 0 });
-    const offset = Math.max(0, ...Object.values(r.pose).flatMap((p) => [
-      Math.abs(p.rotate ?? 0),
-      Math.abs(p.x ?? 0),
-      Math.abs(p.y ?? 0)
-    ]));
-    zero = { ...r, offset };
+    let largest;
+    for (const [bone, p] of Object.entries(r.pose))
+      for (const channel of ["rotate", "x", "y"]) {
+        const value = p[channel];
+        if (value !== void 0 && Math.abs(value) > Math.abs(largest?.value ?? 0))
+          largest = { bone, channel, value };
+      }
+    zero = {
+      ...r,
+      shifted: shiftedShare(r.parts, VIDEO_ACCEPTANCE.partP90 * unit),
+      ...largest ? { largest } : {}
+    };
   }
   const first = zero ?? await fitFrame(baseDoc, 0, options);
   if (first.coverage < 0.6)
@@ -40581,8 +40607,10 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const hints = [];
   for (const [bone, u] of missing)
     hints.push(`${bone} (${u.parts.join(", ")}): drawn differently in the video in ${Math.round((1 - u.share) * 100)}% of the frames; not fitted, its plan motion stays`);
-  if (zero && zero.offset > 2)
-    hints.push(`frame 0 of the video is ${zero.offset.toFixed(1)} degrees or px off the build's frame 0: fit the rest pose from it first (fit-pose), or pass --no-zero`);
+  if (zero && zero.shifted > ZERO_SHIFTED) {
+    const far = zero.parts.filter((p) => p.used && p.shift > VIDEO_ACCEPTANCE.partP90 * unit).sort((a, b) => b.samples - a.samples);
+    hints.push(`frame 0 of the video draws ${Math.round(zero.shifted * 100)}% of the matched parts (by area: ${far.slice(0, 4).map((p) => p.slot).join(", ")}${far.length > 4 ? ", ..." : ""}) more than ${VIDEO_ACCEPTANCE.partP90 * 100}% of the figure height from the build's frame 0: its rest pose is off; fit the rest pose from it first (fit-pose), or pass --no-zero`);
+  }
   const fold = shaped?.loop;
   if (fold?.oneCycle)
     hints.push(`no repeat found in the video: its first ${N} frames are taken as one loop`);
@@ -40626,7 +40654,11 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       frame: 0,
       coverage: zero.coverage,
       residual: zero.residual,
-      offset: +zero.offset.toFixed(2)
+      // Share of the matched parts (by texels) more than the V2 p90 limit from the build's
+      // frame 0; above ZERO_SHIFTED the rest pose is off. The largest single offset is
+      // usually the matching's own error.
+      shifted: +zero.shifted.toFixed(3),
+      largestOffset: zero.largest ? { ...zero.largest, value: +zero.largest.value.toFixed(2) } : null
     } : null,
     searchWindow,
     tracking: trackOn ? {
@@ -40898,8 +40930,8 @@ var descriptions = {
   autospine_optimize_motion: "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
   autospine_merge_plans: "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose: "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
-  autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
-  autospine_fit_video: "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
+  autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video clearly draws mirrored (left-right) and on which frames (ADR-035 `mirror`; a part only redrawn, such as an expression, is not counted). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
+  autospine_fit_video: "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. summary.json `zero.shifted` is the share of frame 0's matched parts drawn more than 1.5% of the figure height from the build's frame 0; above a quarter a hint asks to fit the rest pose from frame 0 first. Results are reference-fitted, not blind.",
   autospine_review_video: "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (reference video | build with referenceVideoPath, its frame i beside animation frame i; the build alone without either), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval."
 };
 var writingTools = /* @__PURE__ */ new Set([

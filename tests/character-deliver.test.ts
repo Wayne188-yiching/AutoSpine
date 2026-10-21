@@ -8,6 +8,7 @@ import {
   mkdtemp,
   readFile,
   readdir,
+  rename,
   rm,
   utimes,
   writeFile,
@@ -53,7 +54,7 @@ describe("deliver: the project folder holds only the Spine project, its images a
         video,
       });
       const expected = [
-        ".autospine-delivery.json",
+        "_work",
         "Fixture_Idle.spine",
         "images",
         ...(video ? ["Fixture_Idle.mp4"] : []),
@@ -86,14 +87,14 @@ describe("deliver: the project folder holds only the Spine project, its images a
         replace: true,
       });
       expect((await readdir(delivery)).sort()).toEqual(expected.sort());
-      // The old project and video move away; images/ and the delivery record stay.
-      const replacedFiles = expected.filter((f) => f !== "images" && !f.startsWith("."));
+      // The old project and video move away; images/ and _work/ (the delivery record) stay.
+      const replacedFiles = expected.filter((f) => f !== "images" && f !== "_work");
       expect((await readdir(second.replaced!)).sort()).toEqual(replacedFiles.sort());
 
       if (video) {
         // A delivery from before the record (0.5.6) falls back on the project being saved more
         // than two minutes after its video.
-        await rm(join(delivery, ".autospine-delivery.json"));
+        await rm(join(delivery, "_work", "delivery.json"));
         const later = new Date(Date.now() + 10 * 60_000);
         await utimes(join(delivery, "Fixture_Idle.spine"), later, later);
         await expect(
@@ -135,7 +136,7 @@ describe("deliver: the project folder holds only the Spine project, its images a
       });
       if (result.spine) return; // a real Spine install on this machine
       expect((await readdir(delivery)).sort()).toEqual([
-        ".autospine-delivery.json",
+        "_work",
         "fixture_character.json",
         "images",
       ]);
@@ -181,8 +182,9 @@ describe("deliver: the project folder holds only the Spine project, its images a
     const sha = createHash("sha256")
       .update(await readFile(project))
       .digest("hex");
+    // The record is kept in _work/, out of the requester's way (a dot file shows in Explorer).
     const record = JSON.parse(
-      await readFile(join(delivery, ".autospine-delivery.json"), "utf8"),
+      await readFile(join(delivery, "_work", "delivery.json"), "utf8"),
     ) as Record<string, { sha256: string; engineVersion: string }>;
     expect(record[basename(project)]).toMatchObject({
       sha256: sha,
@@ -203,6 +205,17 @@ describe("deliver: the project folder holds only the Spine project, its images a
     await expect(readFile(edited, "utf8")).resolves.toMatch(/ $/);
     const forced = await deliver({ replace: true, force: true });
     expect((await readdir(forced.replaced!)).sort()).toEqual([basename(edited)]);
+
+    // A delivery from 0.5.7 or 0.5.8 kept the record beside the project: still read, then moved.
+    await rename(
+      join(delivery, "_work", "delivery.json"),
+      join(delivery, ".autospine-delivery.json"),
+    );
+    await appendFile((forced.spine ?? forced.json)!, " ");
+    await expect(deliver({ replace: true })).rejects.toThrow("CLI_DELIVER_EDITED");
+    await deliver({ replace: true, force: true });
+    expect(await readdir(delivery)).not.toContain(".autospine-delivery.json");
+    expect(await readdir(join(delivery, "_work"))).toEqual(["delivery.json"]);
     // A missing image stops the delivery before anything is written.
     await expect(
       deliverFiles(plan, build, await mkdtemp(join(tmpdir(), "autospine-delivery-")), undefined, {
@@ -238,5 +251,10 @@ describe("deliver: the project folder holds only the Spine project, its images a
     // Only files that are neither projects, videos nor art are reported; nothing is moved.
     expect(result.stray).toEqual(["make-plan.mjs"]);
     expect(await readdir(project)).toContain("make-plan.mjs");
+    // The delivery record joins the work folder; nothing new at the top level.
+    expect((await readdir(layout.work)).sort()).toEqual(
+      ["builds", "checks", "delivery.json", "input", "notes", "plans"].sort(),
+    );
+    expect((await readdir(project)).filter((f) => f.startsWith("."))).toEqual([]);
   }, 120_000);
 });

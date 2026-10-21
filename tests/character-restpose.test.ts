@@ -19,6 +19,7 @@ import {
   render,
   restPoseDelta,
   sampleTracks,
+  shiftedShare,
 } from "@autospine/reference";
 import {
   fixtureImagesOnly,
@@ -193,6 +194,26 @@ describe("rest pose and artist wiring (ADR-024)", () => {
     // Bones that start on their parent's joint only turn.
     expect(fit.pose.spine?.x).toBeUndefined();
     expect(fit.residual.median).toBeLessThan(1.5);
+    // The turned spine and arm move everything above the legs, half the figure by area, more than
+    // 1.5 % of its height (310 units): well over fit-video's limit of a quarter.
+    const limit = 0.015 * 310;
+    expect(shiftedShare(fit.parts, limit)).toBeGreaterThan(0.4);
+    // Over a build already in that pose, nothing moves (a zero frame, ADR-033).
+    const again = fitRestPose(
+      posed.document,
+      "IDLE",
+      { width: viewBox.width * scale, height: viewBox.height * scale, rgba: reference },
+      (p) => images.get(p)!,
+      {
+        view: viewBox,
+        bones: posed.rigging.rigged.rig.bones
+          .map((b) => b.id)
+          .filter((id) => !["root", "face_base", "face_ctl", "face_counter", "eyes"].includes(id)),
+        window: 40,
+      },
+    );
+    expect(shiftedShare(again.parts, limit)).toBe(0);
+    expect(again.parts.filter((p) => p.used).every((p) => p.shift < 1)).toBe(true);
   });
 
   it("measures the frame-0 pose against the artist and scores A1 on shown slots", () => {
