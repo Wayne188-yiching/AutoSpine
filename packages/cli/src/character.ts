@@ -94,6 +94,7 @@ import {
   spread,
   wholeCycleLength,
 } from "@autospine/motion";
+import { AUTOSPINE_VERSION } from "./version.js";
 
 const sha256 = (data: string | Uint8Array) => createHash("sha256").update(data).digest("hex");
 const json = (v: unknown) => `${JSON.stringify(v, null, 1)}\n`;
@@ -323,6 +324,8 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
       json(s),
     );
   const record = {
+    // The engine that built it: a stale MCP server builds with an older one.
+    engineVersion: AUTOSPINE_VERSION,
     plan: { id: plan.id, sha256: sha256(await readFile(planPath)) },
     imagesOnly: { sha256: sha256(await readFile(paths.imagesOnly)) },
     params: { ...plan.motion.params, ...params },
@@ -348,6 +351,7 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
   }
   return {
     output: join(outDir, name),
+    engineVersion: AUTOSPINE_VERSION,
     bones: built.rigging.rigged.rig.bones.length,
     slots: built.rigging.slots.length,
     setupDeviationPx: record.setupDeviationPx,
@@ -361,14 +365,40 @@ const loopNames = (plan: CharacterPlan) =>
   plan.motion.animations.filter((a) => a.loop !== false).map((a) => a.name);
 
 /**
- * compare-reference <plan.json> <generated-dir> <artist.json> <new-output-dir>: pre-registered
- * acceptance of a build against the artist file, with review sheets and the criteria check.
+ * The plan animations an artist file is compared on. A full artist export holds animations the
+ * plan does not build (`artistOnly`), and a plan may build some the artist has not made
+ * (`planOnly`); neither is compared. `only` narrows the comparison to one animation both have.
+ */
+function comparedAnimations(plan: CharacterPlan, artist: unknown, only?: string) {
+  const planned = plan.motion.animations.map((a) => a.name);
+  const drawn = Object.keys((artist as { animations?: Record<string, unknown> }).animations ?? {});
+  if (only !== undefined && !planned.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the plan has no animation ${only}`);
+  if (only !== undefined && !drawn.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has no animation ${only}`);
+  const animations = planned.filter((a) => drawn.includes(a) && (only === undefined || a === only));
+  if (!animations.length)
+    throw new Error(
+      `CLI_COMPARE_ANIMATION: the artist file has none of the plan's animations (${planned.join(", ")}); it has ${drawn.join(", ") || "none"}`,
+    );
+  return {
+    animations,
+    artistOnly: drawn.filter((a) => !planned.includes(a)),
+    planOnly: planned.filter((a) => !drawn.includes(a)),
+  };
+}
+
+/**
+ * compare-reference <plan.json> <generated-dir> <artist.json> <new-output-dir> [--animation=name]:
+ * pre-registered acceptance of a build against the artist file, with review sheets and the
+ * criteria check, on the plan's animations the artist file also has (or the one named).
  */
 export async function compareReferenceFiles(
   planPath: string,
   buildDir: string,
   artistPath: string,
   outDir: string,
+  opts: { animation?: string } = {},
 ) {
   const plan = await readPlan(planPath);
   const paths = planPaths(planPath, plan);
@@ -376,6 +406,7 @@ export async function compareReferenceFiles(
   if (!probes) throw new Error("CLI_PLAN_QA: comparison needs qa.probes in the plan");
   const tex = textures(paths.images);
   const artist = JSON.parse(await readFile(artistPath, "utf8")) as unknown;
+  const compared = comparedAnimations(plan, artist, opts.animation);
   const imagesOnly = JSON.parse(await readFile(paths.imagesOnly, "utf8")) as unknown;
   const generated = JSON.parse(
     await readFile(join(buildDir, `${plan.id}.json`), "utf8"),
@@ -393,6 +424,7 @@ export async function compareReferenceFiles(
     alpha: tex.alpha,
     name: plan.name,
     loop: loopNames(plan),
+    compared: compared.animations,
   };
   const reference = prepareReference(artist, imagesOnly, options);
   const { result, sheets } = compareToReference(reference, generated, imagesOnly, {
@@ -413,7 +445,7 @@ export async function compareReferenceFiles(
       PNG.sync.write(png),
     );
   }
-  return check;
+  return { ...check, ...compared };
 }
 
 /**
@@ -451,6 +483,7 @@ export async function optimizeMotionFiles(
     alpha: tex.alpha,
     name: plan.name,
     loop: loopNames(plan),
+    compared: comparedAnimations(plan, artist).animations,
   });
   const rigging = rigCharacter(plan, layout);
   const evaluate = makeObjective(rigging, reference, {
@@ -945,10 +978,38 @@ function strayEntries(names: string[]) {
   );
 }
 
+/** The image paths a Spine document draws: each region and mesh attachment's `path` or name. */
+function imagePaths(document: { skins?: unknown }) {
+  const paths = new Set<string>();
+  type Attachment = { type?: string; path?: string };
+  for (const skin of (document.skins ?? []) as { attachments?: Record<string, unknown> }[])
+    for (const slot of Object.values(skin.attachments ?? {}) as Record<string, Attachment>[])
+      for (const [name, a] of Object.entries(slot))
+        if (["region", "mesh", "linkedmesh"].includes(a.type ?? "region"))
+          paths.add(a.path ?? name);
+  return [...paths].sort();
+}
+/**
+ * What deliver wrote into a project folder, by file name (a hidden file beside the project): the
+ * project's hash tells a later delivery whether it was saved since, i.e. edited in Spine.
+ */
+const DELIVERY_RECORD = ".autospine-delivery.json";
+type DeliveryRecord = Record<string, { sha256: string; delivered: string; engineVersion: string }>;
+async function readDeliveryRecord(dir: string): Promise<DeliveryRecord> {
+  try {
+    return JSON.parse(await readFile(join(dir, DELIVERY_RECORD), "utf8")) as DeliveryRecord;
+  } catch {
+    return {};
+  }
+}
+
 export interface DeliverOptions {
   /** File name without extension; default the plan id. */
   name?: string;
-  /** The images to deliver in `<delivery-dir>/images/`; default the plan's (`source.images`). */
+  /**
+   * The folder the art comes from; default the plan's (`source.images`). Only the images the
+   * project draws are copied into `<delivery-dir>/images/`.
+   */
   images?: string;
   /** Spine editor executable; default AUTOSPINE_SPINE or the standard install. */
   spine?: string;
@@ -963,8 +1024,9 @@ export interface DeliverOptions {
 }
 /**
  * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the project folder gets only
- * `<name>.spine` (imported with the Spine command line), `images/` (the art it uses, so the folder
- * opens anywhere) and `<name>.mp4` (the review video, artist | build when an artist file is given).
+ * `<name>.spine` (imported with the Spine command line), `images/` (the images it draws, so the
+ * folder opens anywhere) and `<name>.mp4` (the review video, artist | build when an artist file is
+ * given), plus the hidden `.autospine-delivery.json` with the project's hash.
  * Plans, builds, comparisons and every other working file stay in the work folder. Without the
  * Spine editor the project is delivered as `<name>.json` for Import Data instead. Animations whose
  * reference says `use: "fit"` are fitted to their videos first (ADR-036), in the build folder.
@@ -1010,7 +1072,19 @@ export async function deliverFiles(
   if (!(await exists(images))) throw new Error(`CLI_DELIVER_IMAGES: ${images} not found`);
   const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as {
     skeleton: Record<string, unknown>;
+    skins?: unknown;
   };
+  // Only the images the project draws travel with it, not the rest of the art folder (thumbnails,
+  // archives, other skeletons' images).
+  const used = imagePaths(document);
+  const missing = used.filter((p) => !existsSync(join(images, p + ".png")));
+  if (missing.length)
+    throw new Error(
+      `CLI_DELIVER_IMAGES: ${images} has no ${missing
+        .slice(0, 5)
+        .map((p) => p + ".png")
+        .join(", ")}${missing.length > 5 ? ` and ${missing.length - 5} more` : ""}`,
+    );
   const out = resolve(deliveryDir);
   const target = {
     spine: join(out, `${name}.spine`),
@@ -1034,13 +1108,23 @@ export async function deliverFiles(
     throw new Error(
       `CLI_OUTPUT_EXISTS: ${present.join(", ")} already delivered; pass --replace to swap in this build (the old files move into the build folder)`,
     );
-  // The project and its video are written together; a project saved later was edited in Spine.
-  if (present.length && !opts.force && existsSync(target.spine) && existsSync(target.video)) {
-    const [project, video] = await Promise.all([stat(target.spine), stat(target.video)]);
-    if (project.mtimeMs > video.mtimeMs + 120_000)
-      throw new Error(
-        `CLI_DELIVER_EDITED: ${target.spine} was saved after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`,
-      );
+  // A project whose bytes differ from the hash recorded when it was delivered was saved since,
+  // probably edited in Spine. Without a record (delivered before 0.5.8), a project saved more than
+  // two minutes after its video counts as edited.
+  if (present.length && !opts.force) {
+    const record = await readDeliveryRecord(out);
+    for (const file of [target.spine, target.json].filter((f) => existsSync(f))) {
+      const known = record[basename(file)];
+      const edited = known
+        ? sha256(await readFile(file)) !== known.sha256
+        : file === target.spine &&
+          existsSync(target.video) &&
+          (await stat(file)).mtimeMs > (await stat(target.video)).mtimeMs + 120_000;
+      if (edited)
+        throw new Error(
+          `CLI_DELIVER_EDITED: ${file} changed after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`,
+        );
+    }
   }
   // Render first, in the build folder: a missing ffmpeg leaves the delivery folder untouched.
   let staged: string | undefined;
@@ -1065,16 +1149,22 @@ export async function deliverFiles(
     for (const p of present) await moveFile(p, join(replaced, basename(p)));
   }
   await mkdir(out, { recursive: true });
-  // The art travels with the project: images/ beside it, overwritten file by file.
+  // The art travels with the project: the images it draws, in images/ beside it, file by file.
   const deliveredImages = join(out, "images");
   if (resolve(images) !== resolve(deliveredImages))
-    await cp(images, deliveredImages, { recursive: true, force: true });
+    for (const p of used) {
+      const to = join(deliveredImages, p + ".png");
+      await mkdir(dirname(to), { recursive: true });
+      await copyFile(join(images, p + ".png"), to);
+    }
   document.skeleton = { ...document.skeleton, images: "./images/" };
   const result: {
     spine: string | null;
     json: string | null;
     video: string | null;
     images: string;
+    imageFiles: number;
+    strayImages: string[];
     replaced: string | null;
     spineError?: string;
     reference?: {
@@ -1097,6 +1187,8 @@ export async function deliverFiles(
     json: null,
     video: null,
     images: String(document.skeleton.images),
+    imageFiles: used.length,
+    strayImages: [],
     replaced: replaced ?? null,
   };
   const exe = spineExecutable(opts.spine);
@@ -1116,6 +1208,17 @@ export async function deliverFiles(
     await writeFile(target.json, json(document));
     result.json = target.json;
   }
+  // The delivered project's hash, so the next delivery can tell whether it was edited since.
+  const record = await readDeliveryRecord(out);
+  for (const file of Object.keys(record)) if (!existsSync(join(out, file))) delete record[file];
+  for (const file of [result.spine, result.json])
+    if (file)
+      record[basename(file)] = {
+        sha256: sha256(await readFile(file)),
+        delivered: new Date().toISOString(),
+        engineVersion: AUTOSPINE_VERSION,
+      };
+  await writeFile(join(out, DELIVERY_RECORD), json(record));
   if (staged) {
     await moveFile(staged, target.video);
     result.video = target.video;
@@ -1139,8 +1242,15 @@ export async function deliverFiles(
   if (referenceError) result.referenceError = referenceError;
   if (fitted.length) result.fitted = fitted;
   if (fitError) result.fitError = fitError;
-  // Anything else at the top level belongs in _work/ (reported, never moved by the engine).
+  // Anything else at the top level belongs in _work/ (reported, never moved by the engine), and
+  // images the project does not draw were left by an earlier delivery (reported, never removed).
   result.stray = strayEntries(await readdir(out));
+  const drawn = new Set(used.map((p) => p + ".png"));
+  result.strayImages = (await readdir(deliveredImages, { recursive: true, withFileTypes: true }))
+    .filter((e) => e.isFile())
+    .map((e) => relative(deliveredImages, join(e.parentPath, e.name)).split(sep).join("/"))
+    .filter((f) => !drawn.has(f))
+    .sort();
   return result;
 }
 

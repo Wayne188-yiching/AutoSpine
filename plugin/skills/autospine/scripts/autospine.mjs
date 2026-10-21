@@ -37511,7 +37511,10 @@ function prepareReference(artist, imagesOnly, options) {
     throw new Error("REFERENCE_PROBE: probes need a face part (or a chain) for the unit");
   const unit = headUnit(img, unitPart);
   const structure = structureOf(skeleton);
-  const animations = skeleton.data.animations.map((a) => a.name);
+  const animations = skeleton.data.animations.map((a) => a.name).filter((a) => !options.compared || options.compared.includes(a));
+  for (const a of options.compared ?? [])
+    if (!animations.includes(a))
+      throw new Error(`REFERENCE_ANIMATION: the artist file has no ${a}`);
   const exclude = (options.deformExclude ?? []).map((p) => new RegExp(p));
   const ref = {
     skeleton,
@@ -39230,6 +39233,9 @@ function videoPenalty(rows) {
   return +penalty.toFixed(4);
 }
 
+// packages/cli/dist/version.js
+var AUTOSPINE_VERSION = "0.5.8";
+
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");
 var json = (v) => `${JSON.stringify(v, null, 1)}
@@ -39406,6 +39412,8 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   for (const s2 of built.specs)
     await writeFile2(join2(outDir, `keypose-${s2.name.replace(/[^A-Za-z0-9_-]/g, "_")}.json`), json(s2));
   const record = {
+    // The engine that built it: a stale MCP server builds with an older one.
+    engineVersion: AUTOSPINE_VERSION,
     plan: { id: plan.id, sha256: sha256(await readFile3(planPath)) },
     imagesOnly: { sha256: sha256(await readFile3(paths.imagesOnly)) },
     params: { ...plan.motion.params, ...params },
@@ -39427,6 +39435,7 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   }
   return {
     output: join2(outDir, name),
+    engineVersion: AUTOSPINE_VERSION,
     bones: built.rigging.rigged.rig.bones.length,
     slots: built.rigging.slots.length,
     setupDeviationPx: record.setupDeviationPx,
@@ -39435,7 +39444,23 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   };
 }
 var loopNames = (plan) => plan.motion.animations.filter((a) => a.loop !== false).map((a) => a.name);
-async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
+function comparedAnimations(plan, artist, only) {
+  const planned = plan.motion.animations.map((a) => a.name);
+  const drawn = Object.keys(artist.animations ?? {});
+  if (only !== void 0 && !planned.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the plan has no animation ${only}`);
+  if (only !== void 0 && !drawn.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has no animation ${only}`);
+  const animations = planned.filter((a) => drawn.includes(a) && (only === void 0 || a === only));
+  if (!animations.length)
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has none of the plan's animations (${planned.join(", ")}); it has ${drawn.join(", ") || "none"}`);
+  return {
+    animations,
+    artistOnly: drawn.filter((a) => !planned.includes(a)),
+    planOnly: planned.filter((a) => !drawn.includes(a))
+  };
+}
+async function compareReferenceFiles(planPath, buildDir, artistPath, outDir, opts = {}) {
   const plan = await readPlan(planPath);
   const paths = planPaths(planPath, plan);
   const probes = plan.qa?.probes;
@@ -39443,6 +39468,7 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     throw new Error("CLI_PLAN_QA: comparison needs qa.probes in the plan");
   const tex = textures(paths.images);
   const artist = JSON.parse(await readFile3(artistPath, "utf8"));
+  const compared = comparedAnimations(plan, artist, opts.animation);
   const imagesOnly = JSON.parse(await readFile3(paths.imagesOnly, "utf8"));
   const generated = JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8"));
   const ir = JSON.parse(await readFile3(join2(buildDir, "ir.json"), "utf8"));
@@ -39452,7 +39478,8 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: loopNames(plan)
+    loop: loopNames(plan),
+    compared: compared.animations
   };
   const reference = prepareReference(artist, imagesOnly, options);
   const { result, sheets } = compareToReference(reference, generated, imagesOnly, {
@@ -39470,7 +39497,7 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     png.data.set(s2.rgba);
     await writeFile2(join2(outDir, `compare-${a.replace(/[^A-Za-z0-9_-]/g, "_")}.png`), import_pngjs2.PNG.sync.write(png));
   }
-  return check;
+  return { ...check, ...compared };
 }
 async function optimizeMotionFiles(planPath, artistPath, stateDir, opts) {
   const plan = await readPlan(planPath);
@@ -39490,7 +39517,8 @@ async function optimizeMotionFiles(planPath, artistPath, stateDir, opts) {
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: loopNames(plan)
+    loop: loopNames(plan),
+    compared: comparedAnimations(plan, artist).animations
   });
   const rigging = rigCharacter(plan, layout);
   const evaluate = makeObjective(rigging, reference, {
@@ -39842,6 +39870,23 @@ var DELIVERABLE = /\.(spine|json|mp4|mov|webm|gif|png|jpe?g|webp|psd|atlas)$/i;
 function strayEntries(names) {
   return names.filter((n) => !["images", "_work"].includes(n) && !n.startsWith(".") && !DELIVERABLE.test(n));
 }
+function imagePaths(document2) {
+  const paths = /* @__PURE__ */ new Set();
+  for (const skin of document2.skins ?? [])
+    for (const slot of Object.values(skin.attachments ?? {}))
+      for (const [name, a] of Object.entries(slot))
+        if (["region", "mesh", "linkedmesh"].includes(a.type ?? "region"))
+          paths.add(a.path ?? name);
+  return [...paths].sort();
+}
+var DELIVERY_RECORD = ".autospine-delivery.json";
+async function readDeliveryRecord(dir) {
+  try {
+    return JSON.parse(await readFile3(join2(dir, DELIVERY_RECORD), "utf8"));
+  } catch {
+    return {};
+  }
+}
 async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = {}) {
   const work = resolve3(buildDir);
   const fitted = [];
@@ -39867,6 +39912,10 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
   if (!await exists(images))
     throw new Error(`CLI_DELIVER_IMAGES: ${images} not found`);
   const document2 = JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8"));
+  const used = imagePaths(document2);
+  const missing = used.filter((p) => !existsSync2(join2(images, p + ".png")));
+  if (missing.length)
+    throw new Error(`CLI_DELIVER_IMAGES: ${images} has no ${missing.slice(0, 5).map((p) => p + ".png").join(", ")}${missing.length > 5 ? ` and ${missing.length - 5} more` : ""}`);
   const out = resolve3(deliveryDir);
   const target = {
     spine: join2(out, `${name}.spine`),
@@ -39882,10 +39931,14 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
   const present = [...Object.values(target), ...compared].filter((p) => existsSync2(p));
   if (present.length && !opts.replace)
     throw new Error(`CLI_OUTPUT_EXISTS: ${present.join(", ")} already delivered; pass --replace to swap in this build (the old files move into the build folder)`);
-  if (present.length && !opts.force && existsSync2(target.spine) && existsSync2(target.video)) {
-    const [project2, video] = await Promise.all([stat2(target.spine), stat2(target.video)]);
-    if (project2.mtimeMs > video.mtimeMs + 12e4)
-      throw new Error(`CLI_DELIVER_EDITED: ${target.spine} was saved after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`);
+  if (present.length && !opts.force) {
+    const record2 = await readDeliveryRecord(out);
+    for (const file of [target.spine, target.json].filter((f) => existsSync2(f))) {
+      const known2 = record2[basename3(file)];
+      const edited = known2 ? sha256(await readFile3(file)) !== known2.sha256 : file === target.spine && existsSync2(target.video) && (await stat2(file)).mtimeMs > (await stat2(target.video)).mtimeMs + 12e4;
+      if (edited)
+        throw new Error(`CLI_DELIVER_EDITED: ${file} changed after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`);
+    }
   }
   let staged;
   if (opts.video !== false) {
@@ -39911,13 +39964,19 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
   await mkdir2(out, { recursive: true });
   const deliveredImages = join2(out, "images");
   if (resolve3(images) !== resolve3(deliveredImages))
-    await cp(images, deliveredImages, { recursive: true, force: true });
+    for (const p of used) {
+      const to = join2(deliveredImages, p + ".png");
+      await mkdir2(dirname3(to), { recursive: true });
+      await copyFile(join2(images, p + ".png"), to);
+    }
   document2.skeleton = { ...document2.skeleton, images: "./images/" };
   const result = {
     spine: null,
     json: null,
     video: null,
     images: String(document2.skeleton.images),
+    imageFiles: used.length,
+    strayImages: [],
     replaced: replaced ?? null
   };
   const exe = spineExecutable(opts.spine);
@@ -39938,6 +39997,18 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
     await writeFile2(target.json, json(document2));
     result.json = target.json;
   }
+  const record = await readDeliveryRecord(out);
+  for (const file of Object.keys(record))
+    if (!existsSync2(join2(out, file)))
+      delete record[file];
+  for (const file of [result.spine, result.json])
+    if (file)
+      record[basename3(file)] = {
+        sha256: sha256(await readFile3(file)),
+        delivered: (/* @__PURE__ */ new Date()).toISOString(),
+        engineVersion: AUTOSPINE_VERSION
+      };
+  await writeFile2(join2(out, DELIVERY_RECORD), json(record));
   if (staged) {
     await moveFile(staged, target.video);
     result.video = target.video;
@@ -39965,6 +40036,8 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
   if (fitError)
     result.fitError = fitError;
   result.stray = strayEntries(await readdir2(out));
+  const drawn = new Set(used.map((p) => p + ".png"));
+  result.strayImages = (await readdir2(deliveredImages, { recursive: true, withFileTypes: true })).filter((e) => e.isFile()).map((e) => relative3(deliveredImages, join2(e.parentPath, e.name)).split(sep).join("/")).filter((f) => !drawn.has(f)).sort();
   return result;
 }
 async function videoSize(path) {
@@ -41136,10 +41209,11 @@ async function writeMesh(part, destination, cleanupArgument, options = {}) {
     }));
 }
 var characterUsage = `Character commands (ADR-017):
+  autospine --version
   autospine strip-images <artist.json> <images-dir> <images-only.json>
   autospine lint-plan <plan.json>
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
-  autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir>
+  autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir> [--animation=name]
   autospine optimize-motion <plan.json> <artist.json> <state-dir> [--budget=s] [--margin=n] [--seed=n]
   autospine review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4> [--loops=n] [--height=px] [--font=file] [--reference-video=file]
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
@@ -41193,8 +41267,16 @@ ${characterUsage}`);
     case "compare-reference": {
       if (p.length !== 5)
         throw new Error(characterUsage);
-      known2();
-      const check = await compareReferenceFiles(p[1], p[2], p[3], p[4]);
+      known2("animation");
+      const animation = flags.get("animation") || void 0;
+      const check = await compareReferenceFiles(p[1], p[2], p[3], p[4], {
+        ...animation ? { animation } : {}
+      });
+      console.log(`compared: ${check.animations.join(", ")}`);
+      if (check.artistOnly.length)
+        console.log(`  not compared, only in the artist file: ${check.artistOnly.join(", ")}`);
+      if (check.planOnly.length)
+        console.log(`  not compared, no artist version: ${check.planOnly.join(", ")}`);
       for (const r of check.rows)
         console.log(`${r.ok ? "PASS" : "FAIL"} ${r.id}  ${JSON.stringify(r.value)}`);
       console.log(check.pass ? "ALL AUTOMATABLE CRITERIA PASS" : "NOT PASSED");
@@ -41361,6 +41443,10 @@ ${characterUsage}`);
 }
 async function main() {
   const args = process.argv.slice(2);
+  if (args.length === 1 && (args[0] === "--version" || args[0] === "version")) {
+    console.log(AUTOSPINE_VERSION);
+    return;
+  }
   if (args[0] === "build" && args.length === 2) {
     console.log(await buildJobFile(args[1]));
     return;

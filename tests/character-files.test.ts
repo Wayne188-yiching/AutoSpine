@@ -98,6 +98,52 @@ describe("character plan files: CLI (ADR-017)", () => {
     expect(lint.status).toBe(2);
     expect(JSON.parse(lint.stdout).errors).toHaveLength(1);
   });
+
+  it("compares the plan's animations with a full artist export that holds more", async () => {
+    const ws = await fixtureWorkspace();
+    const plan = join(ws, "plan.json");
+    const out = join(ws, "build");
+    await buildCharacterFiles(plan, out);
+    // The artist's export holds every animation of the character, not only the plan's IDLE.
+    const doc = JSON.parse(await readFile(join(out, "fixture_character.json"), "utf8")) as {
+      animations: Record<string, unknown>;
+    };
+    const full = join(ws, "artist-full.json");
+    await writeFile(
+      full,
+      JSON.stringify({ ...doc, animations: { "01_In": doc.animations.IDLE, ...doc.animations } }),
+    );
+    const check = await compareReferenceFiles(plan, out, full, join(ws, "compare"));
+    expect(check).toMatchObject({
+      pass: true,
+      animations: ["IDLE"],
+      artistOnly: ["01_In"],
+      planOnly: [],
+    });
+    expect(await readdir(join(ws, "compare"))).toContain("compare-IDLE.png");
+    expect(await readdir(join(ws, "compare"))).not.toContain("compare-01_In.png");
+    const printed = cli("compare-reference", plan, out, full, join(ws, "compare-cli"));
+    expect(printed.status).toBe(0);
+    expect(printed.stdout).toContain("compared: IDLE");
+    expect(printed.stdout).toContain("only in the artist file: 01_In");
+    // The optimizer measures the same animations.
+    const run = await optimizeMotionFiles(plan, full, join(ws, "opt"), { budgetSeconds: 20 });
+    expect(run.status).toBe("passed");
+
+    // An animation the plan or the artist file lacks, or no animation in common, is refused.
+    await expect(
+      compareReferenceFiles(plan, out, full, join(ws, "c1"), { animation: "01_In" }),
+    ).rejects.toThrow("CLI_COMPARE_ANIMATION: the plan has no animation 01_In");
+    const other = join(ws, "artist-other.json");
+    await writeFile(other, JSON.stringify({ ...doc, animations: { Other: doc.animations.IDLE } }));
+    await expect(compareReferenceFiles(plan, out, other, join(ws, "c2"))).rejects.toThrow(
+      "CLI_COMPARE_ANIMATION: the artist file has none of the plan's animations (IDLE); it has Other",
+    );
+    await expect(
+      compareReferenceFiles(plan, out, other, join(ws, "c3"), { animation: "IDLE" }),
+    ).rejects.toThrow("CLI_COMPARE_ANIMATION: the artist file has no animation IDLE");
+    expect(await readdir(ws)).not.toContain("c2");
+  }, 120_000);
 });
 
 async function ready(workspace: string) {
@@ -207,8 +253,28 @@ describe("character plan files: MCP tools (ADR-017)", () => {
     expect(compared.body).toMatchObject({
       pass: true,
       output: join("out", "compare"),
+      animations: ["IDLE"],
+      artistOnly: [],
       artistQualityAccepted: false,
     });
+    // Comparison failures come back with their own code, not MCP_TOOL_FAILED.
+    const compare = (args: Record<string, unknown>) =>
+      call("autospine_compare_reference", {
+        planPath: "plan.json",
+        buildDir: "out/build",
+        artistPath: "out/build/fixture_character.json",
+        ...args,
+      });
+    const missing = await compare({ outputDir: "out/compare-x", animation: "01_In" });
+    expect(missing.error).toBe(true);
+    expect(missing.body).toMatchObject({
+      code: "MCP_COMPARE_ANIMATION",
+      reason: "the plan has no animation 01_In",
+    });
+    const unknownFace = { ...fixturePlan(), qa: { ...fixturePlan().qa, probes: { face: "Nope" } } };
+    await writeFile(join(ws, "face.json"), JSON.stringify(unknownFace));
+    const unit = await compare({ planPath: "face.json", outputDir: "out/compare-y" });
+    expect(unit.body).toMatchObject({ code: "MCP_REFERENCE_UNIT" });
     const optimised = await call("autospine_optimize_motion", {
       planPath: "plan.json",
       artistPath: "out/build/fixture_character.json",
@@ -260,6 +326,7 @@ describe("character plan files: MCP tools (ADR-017)", () => {
     }
     expect((await readdir(ws)).sort()).toEqual([
       "escape.json",
+      "face.json",
       "images",
       "imagesOnly.json",
       "out",

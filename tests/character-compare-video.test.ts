@@ -342,6 +342,7 @@ describe.skipIf(!hasFfmpeg)("compare-video: the build against a reference video"
     expect(delivered.reference?.pass).toBe(true);
     expect((await readdir(delivery)).sort()).toEqual(
       [
+        ".autospine-delivery.json",
         delivered.spine ? "Fixture_Idle.spine" : "Fixture_Idle.json",
         "Fixture_Idle.mp4",
         "Fixture_Idle-vs-reference.mp4",

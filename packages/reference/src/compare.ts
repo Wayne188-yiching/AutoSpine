@@ -514,6 +514,11 @@ export interface ReferenceOptions {
    * or the names of the loops; a one-shot (ADR-030) gets neither.
    */
   loop?: boolean | readonly string[];
+  /**
+   * The artist animations to measure and compare (default all): a full artist export holds
+   * animations the plan does not build.
+   */
+  compared?: readonly string[];
 }
 /** Whether `animation` loops under `options.loop`. */
 export function loops(options: Pick<ReferenceOptions, "loop">, animation: string): boolean {
@@ -556,7 +561,12 @@ export function prepareReference(
     throw new Error("REFERENCE_PROBE: probes need a face part (or a chain) for the unit");
   const unit = headUnit(img, unitPart);
   const structure = structureOf(skeleton);
-  const animations = skeleton.data.animations.map((a) => a.name);
+  const animations = skeleton.data.animations
+    .map((a) => a.name)
+    .filter((a) => !options.compared || options.compared.includes(a));
+  for (const a of options.compared ?? [])
+    if (!animations.includes(a))
+      throw new Error(`REFERENCE_ANIMATION: the artist file has no ${a}`);
   const exclude = (options.deformExclude ?? []).map((p) => new RegExp(p));
   const ref: PreparedReference = {
     skeleton,

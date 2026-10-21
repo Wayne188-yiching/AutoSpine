@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { cp, mkdtemp, readFile, readdir, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { AUTOSPINE_VERSION } from "@autospine/cli/version";
 import { chooseWorkspace, mcpTools } from "@autospine/mcp";
 import { fixtureWorkspace } from "./character-fixture.js";
 
@@ -80,6 +81,8 @@ describe("plugin package (Claude and Codex)", () => {
     const claude = await json(join(plugin, ".claude-plugin", "plugin.json"));
     const codex = await json(join(plugin, ".codex-plugin", "plugin.json"));
     expect(claude.name).toBe("autospine");
+    // The engine reports the plugin's version (command line, MCP server, build records).
+    expect(AUTOSPINE_VERSION).toBe(claude.version);
     expect(codex).toMatchObject({
       name: "autospine",
       version: claude.version,
@@ -149,10 +152,15 @@ describe("plugin package (Claude and Codex)", () => {
     const engine = await isolatedEngine();
     const job = await mkdtemp(join(tmpdir(), "autospine-plugin-job-"));
     await cp(join(skill, "assets", "example"), job, { recursive: true });
+    expect(engine.cli(job, "--version").stdout.trim()).toBe(AUTOSPINE_VERSION);
     expect(engine.cli(job, "lint-plan", "plan.json").status).toBe(0);
     const built = engine.cli(job, "build-character", "plan.json", "build");
     expect(built.status).toBe(0);
-    expect(JSON.parse(built.stdout)).toMatchObject({ bones: 20, slots: 7 });
+    expect(JSON.parse(built.stdout)).toMatchObject({
+      bones: 20,
+      slots: 7,
+      engineVersion: AUTOSPINE_VERSION,
+    });
 
     // Same output as the repository build of the same plan.
     const reference = await fixtureWorkspace();
@@ -221,12 +229,21 @@ describe("plugin package (Claude and Codex)", () => {
       .trim()
       .split("\n")
       .map((l) => JSON.parse(l) as { id: number; result: Record<string, unknown> });
+    // The version a stale server would report differently from the command line.
+    expect(replies.find((r) => r.id === 1)!.result.serverInfo).toEqual({
+      name: "autospine",
+      version: AUTOSPINE_VERSION,
+    });
     const tools = replies.find((r) => r.id === 2)!.result.tools as { name: string }[];
     expect(tools.map((t) => t.name).sort()).toEqual(mcpTools.map((t) => t.name).sort());
     const status = replies.find((r) => r.id === 3)!.result.structuredContent as {
+      version: string;
       workspace: string;
     };
+    expect(status.version).toBe(AUTOSPINE_VERSION);
     expect(status.workspace).toBe(workspace);
+    // The repository's development gates are not part of a plugin workspace.
+    expect(status).not.toHaveProperty("status");
     expect((await stat(workspace)).isDirectory()).toBe(true);
 
     await cp(join(skill, "assets", "example"), join(workspace, "example"), { recursive: true });

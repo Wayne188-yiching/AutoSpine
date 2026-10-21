@@ -31,6 +31,7 @@ import {
   transferWeights,
 } from "@autospine/weights";
 import { buildJobFile } from "@autospine/cli/build";
+import { AUTOSPINE_VERSION } from "@autospine/cli/version";
 import { advertisedSchema } from "./api-schema.js";
 import {
   buildCharacterFiles,
@@ -222,6 +223,7 @@ const toolSchemas = {
       buildDir: WorkspacePath,
       artistPath: WorkspacePath,
       outputDir: WorkspacePath,
+      animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
     },
     strict,
   ),
@@ -347,7 +349,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Skin two weighted meshes in an optional pose and report overlap seam drift plus inversions per mesh; numeric QA, not artist approval.",
   autospine_review_performance:
     "Measure performance metrics from sampled probes (parallax, pupil, holds, saccade speed, delay-chain peaks, hand vs body, key density) and compare them with an artist-statistics profile; findings only, not artist approval.",
-  autospine_get_status: "Read engineering status and explicit unverified capabilities; no writes.",
+  autospine_get_status:
+    "Read the engine version (compare it with the command line's `--version`: a server left running from an earlier plugin version reports an older one), the workspace and explicit unverified capabilities; no writes.",
   autospine_validate_plan:
     "Validate an explicit chain proposal; low confidence is review-required.",
   autospine_execute_plan:
@@ -362,7 +365,7 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_build_character:
     "Build a workspace-local character plan (images-only layout + images) into a NEW workspace-local directory: Spine 4.0 JSON, IR, keypose specs, build record and copied images. The plan is linted first; no artist approval.",
   autospine_compare_reference:
-    "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
+    "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Compares the plan's animations the artist file also has (or only `animation`); a full artist export may hold more, which are listed as artistOnly. Numeric acceptance, not artist approval.",
   autospine_optimize_motion:
     "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
   autospine_merge_plans:
@@ -513,8 +516,11 @@ function characterFailure(error: unknown): never {
   // A video that cannot drive the build (ADR-036); these messages name no paths.
   if (code === "FIT_VIDEO")
     throw new Error(`MCP_FIT_VIDEO: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
-  if (code === "PLAN_QA" || code === "PLAN_SEARCH")
+  if (code === "PLAN_QA" || code === "PLAN_SEARCH" || code === "COMPARE_ANIMATION")
     throw new Error(`MCP_${code}: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
+  // Comparison failures name animations, probes and parts, never paths.
+  const reference = message.match(/^REFERENCE_([A-Z_]+): ([^\n]+)/);
+  if (reference) throw new Error(`MCP_REFERENCE_${reference[1]}: ${reference[2]}`);
   // Engine failures carry a validation report (stage, code, reason) that safeFailure passes on.
   throw error;
 }
@@ -641,7 +647,9 @@ export class AutoSpineMcpServer {
           return result(reviewPerformance(args.sample, args.profile, keyStats));
         }
         case "autospine_get_status": {
-          let status: unknown = { available: false };
+          // The development gates of the AutoSpine repository, only when the workspace is that
+          // checkout; a plugin workspace has none, which says nothing about the engine.
+          let status: unknown;
           try {
             status = JSON.parse(
               await readFile(resolve(this.workspace, "docs/reviews/GATE_5_17_STATUS.json"), "utf8"),
@@ -650,7 +658,8 @@ export class AutoSpineMcpServer {
             /* Optional in fixture/client workspaces. */
           }
           return result({
-            status,
+            version: AUTOSPINE_VERSION,
+            ...(status === undefined ? {} : { status }),
             // Plans, images-only inputs, artist files and outputs must sit inside this folder.
             workspace: this.workspace,
             capabilities: {
@@ -747,9 +756,9 @@ export class AutoSpineMcpServer {
           const build = await guardDirectory(root, args.buildDir);
           const artist = await guardFile(root, args.artistPath, 256 * 1024 * 1024);
           const output = await guardOutput(root, args.outputDir, true);
-          const check = await compareReferenceFiles(plan, build, artist, output).catch(
-            characterFailure,
-          );
+          const check = await compareReferenceFiles(plan, build, artist, output, {
+            ...(args.animation === undefined ? {} : { animation: args.animation }),
+          }).catch(characterFailure);
           return result({
             ...check,
             output: relative(root, output),
@@ -961,7 +970,7 @@ export class AutoSpineMcpServer {
       return response({
         protocolVersion: params.protocolVersion === "2025-06-18" ? "2025-06-18" : "2025-11-25",
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: "autospine", version: "0.0.0" },
+        serverInfo: { name: "autospine", version: AUTOSPINE_VERSION },
         instructions:
           "Legacy MCP v1; chain-wave file build, explicit character IR compilation, in-memory engine tools (pose-table animation, feature meshes, dome/transfer/chain/gradient weights, overlap QA) and character plans (lint, build, compare with an artist baseline, motion optimisation). No live visual AI or artist approval. File tools require host authorization and workspace-local paths; builds and comparisons write new directories only.",
       });
