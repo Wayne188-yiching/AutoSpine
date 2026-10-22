@@ -1,0 +1,222 @@
+{
+  "rows": [
+    {
+      "id": "A1 imagesOnly fit (shown slots) <= 2 px",
+      "ok": true,
+      "value": 0.017
+    },
+    {
+      "id": "A2 setup placement <= 0.5 px",
+      "ok": true,
+      "value": 0.011
+    },
+    {
+      "id": "A4 loop seam clap <= 0.5 px",
+      "ok": true,
+      "value": 0.001
+    },
+    {
+      "id": "A4 loop seam idle <= 0.5 px",
+      "ok": true,
+      "value": 0
+    },
+    {
+      "id": "A4 loop seam idle2 <= 0.5 px",
+      "ok": true,
+      "value": 0
+    },
+    {
+      "id": "A6 rest pose clap: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0.0241 / 0.0912"
+    },
+    {
+      "id": "A6 rest pose idle: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0.026 / 0.0523"
+    },
+    {
+      "id": "A6 rest pose idle2: median <= 0.03, p90 <= 0.1 hw",
+      "ok": false,
+      "value": "0.0569 / 0.0875"
+    },
+    {
+      "id": "A6 rest pose idle_clap: median <= 0.03, p90 <= 0.1 hw",
+      "ok": true,
+      "value": "0.0225 / 0.0704"
+    },
+    {
+      "id": "A6 rest pose in: median <= 0.03, p90 <= 0.1 hw",
+      "ok": false,
+      "value": "0.1863 / 0.339"
+    },
+    {
+      "id": "B1 visible inversions clap = 0",
+      "ok": true,
+      "value": {}
+    },
+    {
+      "id": "B1 visible inversions idle = 0",
+      "ok": true,
+      "value": {}
+    },
+    {
+      "id": "B1 visible inversions idle2 = 0",
+      "ok": false,
+      "value": {
+        "mnm/shenti_1s": 7,
+        "shenti_1": 26,
+        "shoubi_r_1s": 1,
+        "shoubi_r_1": 1,
+        "mnm/shoubi_r_2s": 2,
+        "shoubi_r_2": 1
+      }
+    },
+    {
+      "id": "B1 visible inversions idle_clap = 0",
+      "ok": true,
+      "value": {}
+    },
+    {
+      "id": "B1 visible inversions in = 0",
+      "ok": true,
+      "value": {}
+    },
+    {
+      "id": "B2 seam drift <= 11 px",
+      "ok": false,
+      "value": 38.219
+    },
+    {
+      "id": "B3 stretch clap <= 1.5 x artist",
+      "ok": true,
+      "value": "0.539 / 1.325"
+    },
+    {
+      "id": "B3 stretch idle <= 1.5 x artist",
+      "ok": true,
+      "value": "0.663 / 1.187"
+    },
+    {
+      "id": "B3 stretch idle2 <= 1.5 x artist",
+      "ok": true,
+      "value": "0.992 / 1.431"
+    },
+    {
+      "id": "B3 stretch idle_clap <= 1.5 x artist",
+      "ok": true,
+      "value": "0.902 / 1.401"
+    },
+    {
+      "id": "B3 stretch in <= 1.5 x artist",
+      "ok": true,
+      "value": "0.514 / 1.355"
+    },
+    {
+      "id": "C1 attachments = 106",
+      "ok": true,
+      "value": 106
+    },
+    {
+      "id": "C2 recall clap >= 0.8",
+      "ok": false,
+      "value": 0.778
+    },
+    {
+      "id": "C3 precision clap >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall idle >= 0.8",
+      "ok": false,
+      "value": 0.792
+    },
+    {
+      "id": "C3 precision idle >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall idle2 >= 0.8",
+      "ok": false,
+      "value": 0.792
+    },
+    {
+      "id": "C3 precision idle2 >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall idle_clap >= 0.8",
+      "ok": false,
+      "value": 0.792
+    },
+    {
+      "id": "C3 precision idle_clap >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C2 recall in >= 0.8",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "C3 precision in >= 0.7",
+      "ok": true,
+      "value": 1
+    },
+    {
+      "id": "D1 critic clap >= 60%",
+      "ok": false,
+      "value": "3/13"
+    },
+    {
+      "id": "D1 critic idle >= 60%",
+      "ok": false,
+      "value": "5/13"
+    },
+    {
+      "id": "D1 critic idle2 >= 60%",
+      "ok": false,
+      "value": "4/13"
+    },
+    {
+      "id": "D1 critic idle_clap >= 60%",
+      "ok": true,
+      "value": "12/16"
+    },
+    {
+      "id": "D1 critic in >= 60%",
+      "ok": false,
+      "value": "4/16"
+    },
+    {
+      "id": "D2 amplitude clap >= 60%",
+      "ok": false,
+      "value": 0.057
+    },
+    {
+      "id": "D2 amplitude idle >= 60%",
+      "ok": false,
+      "value": 0.526
+    },
+    {
+      "id": "D2 amplitude idle2 >= 60%",
+      "ok": false,
+      "value": 0
+    },
+    {
+      "id": "D2 amplitude idle_clap >= 60%",
+      "ok": true,
+      "value": 0.816
+    },
+    {
+      "id": "D2 amplitude in >= 60%",
+      "ok": true,
+      "value": 1
+    }
+  ],
+  "pass": false
+}

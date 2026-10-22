@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  artistBudget,
   assetFor,
   buildCharacter,
   lintCharacterPlan,
@@ -20,9 +19,9 @@ import {
   render,
   restPoseDelta,
   sampleTracks,
+  shiftedShare,
 } from "@autospine/reference";
 import {
-  FIXTURE_IMAGES,
   fixtureImagesOnly,
   fixtureLayout,
   fixturePlan,
@@ -69,12 +68,6 @@ const covered = (p: [number, number], poly: [number, number][]) => {
 };
 
 describe("rest pose and artist wiring (ADR-024)", () => {
-  it("budgets vertices like artist character meshes", () => {
-    expect(artistBudget(75, 75)).toEqual({ hull: 9, interior: 0 });
-    expect(artistBudget(340, 340)).toEqual({ hull: 18, interior: 4 });
-    expect(artistBudget(4000, 4000).hull).toBe(40);
-  });
-
   it("wraps separate blobs in one budget hull that covers every opaque pixel", () => {
     // Two eyes on one image (HorseYearFish W_Eye_W2): the default mesher keeps one component.
     const eyes = part(
@@ -101,17 +94,16 @@ describe("rest pose and artist wiring (ADR-024)", () => {
     expect(r.mesh.vertices.length - 12).toBeLessThanOrEqual(4);
   });
 
-  it("meshes every shown region at artist density, rigid to its bone", () => {
+  it("meshes every shown region with artist wiring, rigid to its bone", () => {
     const plan = clone(fixturePlan());
     plan.meshing = { all: true };
     const built = buildCharacter(plan, fixtureLayout());
     const eyes = built.rigging.meshes.get("Eyes")!;
-    const { hull, interior } = artistBudget(
-      FIXTURE_IMAGES.Eyes!.width,
-      FIXTURE_IMAGES.Eyes!.height,
-    );
-    expect(eyes.mesh.hull.length).toBe(hull);
-    expect(eyes.mesh.vertices.length).toBeLessThanOrEqual(hull + interior + 1);
+    // Rigid (ADR-041): the rigid hull rule and no interior points.
+    const layout = fixtureLayout().parts.get("Eyes")!,
+      rigid = generateFeatureMesh(assetFor(layout, "eyes").parts[0]!, layout.alpha, { bones: [] });
+    expect(eyes.mesh.hull.length).toBe(rigid.mesh.hull.length);
+    expect(eyes.mesh.vertices.length).toBe(eyes.mesh.hull.length);
     expect(
       new Set(eyes.weights.vertices.flatMap((v) => v.influences.map((i) => i.boneId))),
     ).toEqual(new Set(["eyes"]));
@@ -202,6 +194,26 @@ describe("rest pose and artist wiring (ADR-024)", () => {
     // Bones that start on their parent's joint only turn.
     expect(fit.pose.spine?.x).toBeUndefined();
     expect(fit.residual.median).toBeLessThan(1.5);
+    // The turned spine and arm move everything above the legs, half the figure by area, more than
+    // 1.5 % of its height (310 units): well over fit-video's limit of a quarter.
+    const limit = 0.015 * 310;
+    expect(shiftedShare(fit.parts, limit)).toBeGreaterThan(0.4);
+    // Over a build already in that pose, nothing moves (a zero frame, ADR-033).
+    const again = fitRestPose(
+      posed.document,
+      "IDLE",
+      { width: viewBox.width * scale, height: viewBox.height * scale, rgba: reference },
+      (p) => images.get(p)!,
+      {
+        view: viewBox,
+        bones: posed.rigging.rigged.rig.bones
+          .map((b) => b.id)
+          .filter((id) => !["root", "face_base", "face_ctl", "face_counter", "eyes"].includes(id)),
+        window: 40,
+      },
+    );
+    expect(shiftedShare(again.parts, limit)).toBe(0);
+    expect(again.parts.filter((p) => p.used).every((p) => p.shift < 1)).toBe(true);
   });
 
   it("measures the frame-0 pose against the artist and scores A1 on shown slots", () => {

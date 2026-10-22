@@ -46,3 +46,4 @@ Causes:
 - The cleanup moves the motion by at most the tolerance between frames that were keyed before; numbers compared at 0.1 degree should set `keyTolerance: 0`.
 - Rollback: `density` back to `"artist"` only, drop `keepHoles`, `simplifyAnimation` and `keyTolerance`.
 - Amended by ADR-039 (2026-10-18): the budget hull bridged detached pieces the fine lattice had dropped, so slivers of neighbouring images left in a picture were meshed and drawn; it now drops pieces up to 2 % first.
+- Superseded in part by ADR-041 (2026-10-20): the default counts come from the outline and the weighting bones instead of the image size, and the interior from rows at the joints instead of a lattice. The hole rings and the key cleanup stand.

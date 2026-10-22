@@ -31,6 +31,7 @@ import {
   transferWeights,
 } from "@autospine/weights";
 import { buildJobFile } from "@autospine/cli/build";
+import { AUTOSPINE_VERSION } from "@autospine/cli/version";
 import { advertisedSchema } from "./api-schema.js";
 import {
   buildCharacterFiles,
@@ -231,6 +232,7 @@ const toolSchemas = {
       buildDir: WorkspacePath,
       artistPath: WorkspacePath,
       outputDir: WorkspacePath,
+      animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
     },
     strict,
   ),
@@ -415,7 +417,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Skin two weighted meshes in an optional pose and report overlap seam drift plus inversions per mesh; numeric QA, not artist approval.",
   autospine_review_performance:
     "Measure performance metrics from sampled probes (parallax, pupil, holds, saccade speed, delay-chain peaks, hand vs body, key density) and compare them with an artist-statistics profile; findings only, not artist approval.",
-  autospine_get_status: "Read engineering status and explicit unverified capabilities; no writes.",
+  autospine_get_status:
+    "Read the engine version (compare it with the command line's `--version`: a server left running from an earlier plugin version reports an older one), the workspace and explicit unverified capabilities; no writes.",
   autospine_validate_plan:
     "Validate an explicit chain proposal; low confidence is review-required.",
   autospine_execute_plan:
@@ -430,7 +433,7 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_build_character:
     "Build a workspace-local character plan (images-only layout + images) into a NEW workspace-local directory: Spine 4.0 JSON, IR, keypose specs, build record and copied images. The plan is linted first; no artist approval.",
   autospine_compare_reference:
-    "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
+    "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Compares the plan's animations the artist file also has (or only `animation`); a full artist export may hold more, which are listed as artistOnly. Numeric acceptance, not artist approval.",
   autospine_optimize_motion:
     "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
   autospine_merge_plans:
@@ -438,9 +441,9 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
   autospine_fit_pose:
     "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
   autospine_compare_video:
-    "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds — outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
+    "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds — outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video clearly draws mirrored (left-right) and on which frames (ADR-035 `mirror`; a part only redrawn, such as an expression, is not counted). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
   autospine_fit_video:
-    "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
+    "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. summary.json `zero.shifted` is the share of frame 0's matched parts drawn more than 1.5% of the figure height from the build's frame 0; above a quarter a hint asks to fit the rest pose from frame 0 first. Results are reference-fitted, not blind.",
   autospine_review_video:
     "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (reference video | build with referenceVideoPath, its frame i beside animation frame i; the build alone without either), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval.",
 };
@@ -582,8 +585,11 @@ function characterFailure(error: unknown): never {
   // A video that cannot drive the build (ADR-036); these messages name no paths.
   if (code === "FIT_VIDEO")
     throw new Error(`MCP_FIT_VIDEO: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
-  if (code === "PLAN_QA" || code === "PLAN_SEARCH")
+  if (code === "PLAN_QA" || code === "PLAN_SEARCH" || code === "COMPARE_ANIMATION")
     throw new Error(`MCP_${code}: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
+  // Comparison failures name animations, probes and parts, never paths.
+  const reference = message.match(/^REFERENCE_([A-Z_]+): ([^\n]+)/);
+  if (reference) throw new Error(`MCP_REFERENCE_${reference[1]}: ${reference[2]}`);
   // Engine failures carry a validation report (stage, code, reason) that safeFailure passes on.
   throw error;
 }
@@ -710,7 +716,9 @@ export class AutoSpineMcpServer {
           return result(reviewPerformance(args.sample, args.profile, keyStats));
         }
         case "autospine_get_status": {
-          let status: unknown = { available: false };
+          // The development gates of the AutoSpine repository, only when the workspace is that
+          // checkout; a plugin workspace has none, which says nothing about the engine.
+          let status: unknown;
           try {
             status = JSON.parse(
               await readFile(resolve(this.workspace, "docs/reviews/GATE_5_17_STATUS.json"), "utf8"),
@@ -719,7 +727,8 @@ export class AutoSpineMcpServer {
             /* Optional in fixture/client workspaces. */
           }
           return result({
-            status,
+            version: AUTOSPINE_VERSION,
+            ...(status === undefined ? {} : { status }),
             // Plans, images-only inputs, artist files and outputs must sit inside this folder.
             workspace: this.workspace,
             capabilities: {
@@ -816,9 +825,9 @@ export class AutoSpineMcpServer {
           const build = await guardDirectory(root, args.buildDir);
           const artist = await guardFile(root, args.artistPath, 256 * 1024 * 1024);
           const output = await guardOutput(root, args.outputDir, true);
-          const check = await compareReferenceFiles(plan, build, artist, output).catch(
-            characterFailure,
-          );
+          const check = await compareReferenceFiles(plan, build, artist, output, {
+            ...(args.animation === undefined ? {} : { animation: args.animation }),
+          }).catch(characterFailure);
           return result({
             ...check,
             output: relative(root, output),
@@ -1076,7 +1085,7 @@ export class AutoSpineMcpServer {
       return response({
         protocolVersion: params.protocolVersion === "2025-06-18" ? "2025-06-18" : "2025-11-25",
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: "autospine", version: "0.0.0" },
+        serverInfo: { name: "autospine", version: AUTOSPINE_VERSION },
         instructions:
           "Legacy MCP v1; chain-wave file build, explicit character IR compilation, in-memory engine tools (pose-table animation, feature meshes, dome/transfer/chain/gradient weights, overlap QA) and character plans (lint, build, compare with an artist baseline, motion optimisation). No live visual AI or artist approval. File tools require host authorization and workspace-local paths; builds and comparisons write new directories only.",
       });

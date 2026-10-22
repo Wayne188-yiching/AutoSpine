@@ -67,8 +67,10 @@ import {
   matchPart,
   partTemplate,
   plainBorder,
+  clearlyMirrored,
   mirrorSimilarity,
   mirroredRun,
+  shiftedShare,
   VIDEO_ACCEPTANCE,
   videoPenalty,
   type LoadedSkeleton,
@@ -95,6 +97,7 @@ import {
   spread,
   wholeCycleLength,
 } from "@autospine/motion";
+import { AUTOSPINE_VERSION } from "./version.js";
 
 export const sha256 = (data: string | Uint8Array) =>
   createHash("sha256").update(data).digest("hex");
@@ -331,6 +334,8 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
       json(s),
     );
   const record = {
+    // The engine that built it: a stale MCP server builds with an older one.
+    engineVersion: AUTOSPINE_VERSION,
     plan: { id: plan.id, sha256: sha256(await readFile(planPath)) },
     imagesOnly: { sha256: sha256(await readFile(paths.imagesOnly)) },
     params: { ...plan.motion.params, ...params },
@@ -356,6 +361,7 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
   }
   return {
     output: join(outDir, name),
+    engineVersion: AUTOSPINE_VERSION,
     bones: built.rigging.rigged.rig.bones.length,
     slots: built.rigging.slots.length,
     setupDeviationPx: record.setupDeviationPx,
@@ -378,14 +384,40 @@ const loopNames = (plan: CharacterPlan) =>
   plan.motion.animations.filter((a) => a.loop !== false).map((a) => a.name);
 
 /**
- * compare-reference <plan.json> <generated-dir> <artist.json> <new-output-dir>: pre-registered
- * acceptance of a build against the artist file, with review sheets and the criteria check.
+ * The plan animations an artist file is compared on. A full artist export holds animations the
+ * plan does not build (`artistOnly`), and a plan may build some the artist has not made
+ * (`planOnly`); neither is compared. `only` narrows the comparison to one animation both have.
+ */
+function comparedAnimations(plan: CharacterPlan, artist: unknown, only?: string) {
+  const planned = plan.motion.animations.map((a) => a.name);
+  const drawn = Object.keys((artist as { animations?: Record<string, unknown> }).animations ?? {});
+  if (only !== undefined && !planned.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the plan has no animation ${only}`);
+  if (only !== undefined && !drawn.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has no animation ${only}`);
+  const animations = planned.filter((a) => drawn.includes(a) && (only === undefined || a === only));
+  if (!animations.length)
+    throw new Error(
+      `CLI_COMPARE_ANIMATION: the artist file has none of the plan's animations (${planned.join(", ")}); it has ${drawn.join(", ") || "none"}`,
+    );
+  return {
+    animations,
+    artistOnly: drawn.filter((a) => !planned.includes(a)),
+    planOnly: planned.filter((a) => !drawn.includes(a)),
+  };
+}
+
+/**
+ * compare-reference <plan.json> <generated-dir> <artist.json> <new-output-dir> [--animation=name]:
+ * pre-registered acceptance of a build against the artist file, with review sheets and the
+ * criteria check, on the plan's animations the artist file also has (or the one named).
  */
 export async function compareReferenceFiles(
   planPath: string,
   buildDir: string,
   artistPath: string,
   outDir: string,
+  opts: { animation?: string } = {},
 ) {
   const plan = await readPlan(planPath);
   const paths = planPaths(planPath, plan);
@@ -393,6 +425,7 @@ export async function compareReferenceFiles(
   if (!probes) throw new Error("CLI_PLAN_QA: comparison needs qa.probes in the plan");
   const tex = textures(paths.images);
   const artist = JSON.parse(await readFile(artistPath, "utf8")) as unknown;
+  const compared = comparedAnimations(plan, artist, opts.animation);
   const imagesOnly = JSON.parse(await readFile(paths.imagesOnly, "utf8")) as unknown;
   const generated = JSON.parse(
     await readFile(join(buildDir, `${plan.id}.json`), "utf8"),
@@ -410,6 +443,7 @@ export async function compareReferenceFiles(
     alpha: tex.alpha,
     name: plan.name,
     loop: loopNames(plan),
+    compared: compared.animations,
   };
   const reference = prepareReference(artist, imagesOnly, options);
   const { result, sheets } = compareToReference(reference, generated, imagesOnly, {
@@ -430,7 +464,7 @@ export async function compareReferenceFiles(
       PNG.sync.write(png),
     );
   }
-  return check;
+  return { ...check, ...compared };
 }
 
 /**
@@ -468,6 +502,7 @@ export async function optimizeMotionFiles(
     alpha: tex.alpha,
     name: plan.name,
     loop: loopNames(plan),
+    compared: comparedAnimations(plan, artist).animations,
   });
   const rigging = rigCharacter(plan, layout);
   const evaluate = makeObjective(rigging, reference, {
@@ -962,10 +997,44 @@ function strayEntries(names: string[]) {
   );
 }
 
+/** The image paths a Spine document draws: each region and mesh attachment's `path` or name. */
+function imagePaths(document: { skins?: unknown }) {
+  const paths = new Set<string>();
+  type Attachment = { type?: string; path?: string };
+  for (const skin of (document.skins ?? []) as { attachments?: Record<string, unknown> }[])
+    for (const slot of Object.values(skin.attachments ?? {}) as Record<string, Attachment>[])
+      for (const [name, a] of Object.entries(slot))
+        if (["region", "mesh", "linkedmesh"].includes(a.type ?? "region"))
+          paths.add(a.path ?? name);
+  return [...paths].sort();
+}
+/**
+ * What deliver wrote into a project folder, by file name: the project's hash tells a later
+ * delivery whether it was saved since, i.e. edited in Spine. It is kept in the work folder, out of
+ * the requester's way; 0.5.7 and 0.5.8 wrote `.autospine-delivery.json` beside the project, which
+ * Windows Explorer shows (a dot file is not hidden there). That one is still read, and removed on
+ * the next delivery.
+ */
+const DELIVERY_RECORD = join("_work", "delivery.json"),
+  OLD_DELIVERY_RECORD = ".autospine-delivery.json";
+type DeliveryRecord = Record<string, { sha256: string; delivered: string; engineVersion: string }>;
+async function readDeliveryRecord(dir: string): Promise<DeliveryRecord> {
+  for (const file of [DELIVERY_RECORD, OLD_DELIVERY_RECORD])
+    try {
+      return JSON.parse(await readFile(join(dir, file), "utf8")) as DeliveryRecord;
+    } catch {
+      /* try the next place */
+    }
+  return {};
+}
+
 export interface DeliverOptions {
   /** File name without extension; default the plan id. */
   name?: string;
-  /** The images to deliver in `<delivery-dir>/images/`; default the plan's (`source.images`). */
+  /**
+   * The folder the art comes from; default the plan's (`source.images`). Only the images the
+   * project draws are copied into `<delivery-dir>/images/`.
+   */
   images?: string;
   /** Spine editor executable; default AUTOSPINE_SPINE or the standard install. */
   spine?: string;
@@ -980,8 +1049,9 @@ export interface DeliverOptions {
 }
 /**
  * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the project folder gets only
- * `<name>.spine` (imported with the Spine command line), `images/` (the art it uses, so the folder
- * opens anywhere) and `<name>.mp4` (the review video, artist | build when an artist file is given).
+ * `<name>.spine` (imported with the Spine command line), `images/` (the images it draws, so the
+ * folder opens anywhere) and `<name>.mp4` (the review video, artist | build when an artist file is
+ * given), plus `_work/delivery.json` with the project's hash.
  * Plans, builds, comparisons and every other working file stay in the work folder. Without the
  * Spine editor the project is delivered as `<name>.json` for Import Data instead. Animations whose
  * reference says `use: "fit"` are fitted to their videos first (ADR-036), in the build folder.
@@ -1027,7 +1097,19 @@ export async function deliverFiles(
   if (!(await exists(images))) throw new Error(`CLI_DELIVER_IMAGES: ${images} not found`);
   const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as {
     skeleton: Record<string, unknown>;
+    skins?: unknown;
   };
+  // Only the images the project draws travel with it, not the rest of the art folder (thumbnails,
+  // archives, other skeletons' images).
+  const used = imagePaths(document);
+  const missing = used.filter((p) => !existsSync(join(images, p + ".png")));
+  if (missing.length)
+    throw new Error(
+      `CLI_DELIVER_IMAGES: ${images} has no ${missing
+        .slice(0, 5)
+        .map((p) => p + ".png")
+        .join(", ")}${missing.length > 5 ? ` and ${missing.length - 5} more` : ""}`,
+    );
   const out = resolve(deliveryDir);
   const target = {
     spine: join(out, `${name}.spine`),
@@ -1051,13 +1133,23 @@ export async function deliverFiles(
     throw new Error(
       `CLI_OUTPUT_EXISTS: ${present.join(", ")} already delivered; pass --replace to swap in this build (the old files move into the build folder)`,
     );
-  // The project and its video are written together; a project saved later was edited in Spine.
-  if (present.length && !opts.force && existsSync(target.spine) && existsSync(target.video)) {
-    const [project, video] = await Promise.all([stat(target.spine), stat(target.video)]);
-    if (project.mtimeMs > video.mtimeMs + 120_000)
-      throw new Error(
-        `CLI_DELIVER_EDITED: ${target.spine} was saved after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`,
-      );
+  // A project whose bytes differ from the hash recorded when it was delivered was saved since,
+  // probably edited in Spine. Without a record (delivered before 0.5.7, or _work/ deleted), a
+  // project saved more than two minutes after its video counts as edited.
+  if (present.length && !opts.force) {
+    const record = await readDeliveryRecord(out);
+    for (const file of [target.spine, target.json].filter((f) => existsSync(f))) {
+      const known = record[basename(file)];
+      const edited = known
+        ? sha256(await readFile(file)) !== known.sha256
+        : file === target.spine &&
+          existsSync(target.video) &&
+          (await stat(file)).mtimeMs > (await stat(target.video)).mtimeMs + 120_000;
+      if (edited)
+        throw new Error(
+          `CLI_DELIVER_EDITED: ${file} changed after it was delivered, probably edited in Spine; keep those edits, or pass --force to replace it anyway`,
+        );
+    }
   }
   // Render first, in the build folder: a missing ffmpeg leaves the delivery folder untouched.
   let staged: string | undefined;
@@ -1082,16 +1174,22 @@ export async function deliverFiles(
     for (const p of present) await moveFile(p, join(replaced, basename(p)));
   }
   await mkdir(out, { recursive: true });
-  // The art travels with the project: images/ beside it, overwritten file by file.
+  // The art travels with the project: the images it draws, in images/ beside it, file by file.
   const deliveredImages = join(out, "images");
   if (resolve(images) !== resolve(deliveredImages))
-    await cp(images, deliveredImages, { recursive: true, force: true });
+    for (const p of used) {
+      const to = join(deliveredImages, p + ".png");
+      await mkdir(dirname(to), { recursive: true });
+      await copyFile(join(images, p + ".png"), to);
+    }
   document.skeleton = { ...document.skeleton, images: "./images/" };
   const result: {
     spine: string | null;
     json: string | null;
     video: string | null;
     images: string;
+    imageFiles: number;
+    strayImages: string[];
     replaced: string | null;
     spineError?: string;
     reference?: {
@@ -1114,6 +1212,8 @@ export async function deliverFiles(
     json: null,
     video: null,
     images: String(document.skeleton.images),
+    imageFiles: used.length,
+    strayImages: [],
     replaced: replaced ?? null,
   };
   const exe = spineExecutable(opts.spine);
@@ -1133,6 +1233,19 @@ export async function deliverFiles(
     await writeFile(target.json, json(document));
     result.json = target.json;
   }
+  // The delivered project's hash, so the next delivery can tell whether it was edited since.
+  const record = await readDeliveryRecord(out);
+  for (const file of Object.keys(record)) if (!existsSync(join(out, file))) delete record[file];
+  for (const file of [result.spine, result.json])
+    if (file)
+      record[basename(file)] = {
+        sha256: sha256(await readFile(file)),
+        delivered: new Date().toISOString(),
+        engineVersion: AUTOSPINE_VERSION,
+      };
+  await mkdir(join(out, "_work"), { recursive: true });
+  await writeFile(join(out, DELIVERY_RECORD), json(record));
+  await rm(join(out, OLD_DELIVERY_RECORD), { force: true });
   if (staged) {
     await moveFile(staged, target.video);
     result.video = target.video;
@@ -1156,8 +1269,15 @@ export async function deliverFiles(
   if (referenceError) result.referenceError = referenceError;
   if (fitted.length) result.fitted = fitted;
   if (fitError) result.fitError = fitError;
-  // Anything else at the top level belongs in _work/ (reported, never moved by the engine).
+  // Anything else at the top level belongs in _work/ (reported, never moved by the engine), and
+  // images the project does not draw were left by an earlier delivery (reported, never removed).
   result.stray = strayEntries(await readdir(out));
+  const drawn = new Set(used.map((p) => p + ".png"));
+  result.strayImages = (await readdir(deliveredImages, { recursive: true, withFileTypes: true }))
+    .filter((e) => e.isFile())
+    .map((e) => relative(deliveredImages, join(e.parentPath, e.name)).split(sep).join("/"))
+    .filter((f) => !drawn.has(f))
+    .sort();
   return result;
 }
 
@@ -1576,8 +1696,10 @@ async function compareOneVideo(
     const tracksByPart = new Map<string, PartTrack>();
     const owner = new Int16Array(W * H);
     const lastHit = new Map<string, { dx: number; dy: number; angle: number; mirrored: boolean }>();
-    // Which way round each part shows in the reference, and how symmetric it is in the build.
-    const mirroredByPart = new Map<string, (boolean | null)[]>();
+    // Which way round each part shows in the reference (found mirrored: the best scores flipped
+    // and the right way round), and how symmetric it is in the build.
+    type Flip = { flipped: number; unflipped: number } | false | null;
+    const mirroredByPart = new Map<string, Flip[]>();
     const symmetryByPart = new Map<string, number[]>();
     // Half-size pixels: parts more than 8% of the height away are not found.
     const radius = Math.max(6, Math.ceil((0.08 * figureHeight) / 2));
@@ -1641,14 +1763,22 @@ async function compareOneVideo(
         if (hit && hit.score >= 0.6) lastHit.set(name, hit);
         else lastHit.delete(name);
         let flips = mirroredByPart.get(name);
-        if (!flips) mirroredByPart.set(name, (flips = Array<boolean | null>(f).fill(null)));
+        if (!flips) mirroredByPart.set(name, (flips = Array<Flip>(f).fill(null)));
         if (!mine || !tpl || !hit || hit.score < 0.6) {
           track.ref.push(null);
           track.build.push(null);
           flips.push(null);
           continue;
         }
-        flips.push(hit.mirrored);
+        flips.push(
+          hit.mirrored && {
+            flipped: hit.score,
+            unflipped: Math.max(
+              0,
+              matchPart(gr, tpl, radius, { dx: hit.dx, dy: hit.dy, angle: hit.angle }).score,
+            ),
+          },
+        );
         if (f % 8 === 0) {
           const sym = symmetryByPart.get(name) ?? [];
           sym.push(mirrorSimilarity(gb, tpl));
@@ -1744,13 +1874,19 @@ async function compareOneVideo(
       e.sort((a, b) => a - b);
       return e.length ? +(e[e.length >> 1]! * 100).toFixed(3) : null;
     });
-    // Parts drawn the other way round in the reference: asymmetric parts mirrored for a stretch.
+    // Parts drawn the other way round in the reference: asymmetric parts clearly mirrored for a
+    // stretch, not redrawn (an expression, a deform) so that their mirror image matches a little
+    // better.
     const median = (v: number[]) => [...v].sort((a, b) => a - b)[v.length >> 1] ?? 1;
     const mirrored = [...mirroredByPart]
-      .filter(([part]) => median(symmetryByPart.get(part) ?? []) < 0.8)
-      .map(([part, flags]) => ({
+      .map(([part, flips]) => ({ part, flips, symmetry: median(symmetryByPart.get(part) ?? []) }))
+      .filter((p) => p.symmetry < 0.8)
+      .map(({ part, flips, symmetry }) => ({
         part,
-        frames: mirroredRun(flags, Math.max(4, Math.round(count / 10))),
+        frames: mirroredRun(
+          flips.map((m) => m && clearlyMirrored(m.flipped, m.unflipped, symmetry)),
+          Math.max(4, Math.round(count / 10)),
+        ),
       }))
       .filter((m): m is { part: string; frames: [number, number] } => m.frames !== null);
     const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored);
@@ -1823,6 +1959,12 @@ async function compareOneVideo(
 const FIT_TOLERANCE = 0.5;
 /** Part frames whose median error passes the V2 median limit are refit (% of the figure height). */
 const REFIT_ERROR = VIDEO_ACCEPTANCE.partMedian * 100;
+/**
+ * Frame 0 is off the build's rest pose when more than this share of its matched parts (by texels)
+ * is drawn further than the V2 p90 limit from the build's frame 0; isolated parts are the
+ * matching's own error, which the zero frame takes off (ADR-033).
+ */
+const ZERO_SHIFTED = 0.25;
 
 /** A plan written into another folder: its images and reference videos pointed at from there. */
 function planAt(plan: CharacterPlan, fromPath: string, toPath: string): CharacterPlan {
@@ -2195,18 +2337,25 @@ export async function fitVideoFiles(
     return list;
   };
   const zeroOn = opts.zero !== false;
-  let zero: (PoseFitResult & { offset: number }) | undefined;
+  // Frame 0 is the zero frame (ADR-033): what its fit moves is taken for the matching's own error.
+  // `shifted` tells that from a rest pose that is off; `largest` is the biggest single offset, often
+  // a look-alike finger.
+  type Offset = { bone: string; channel: "rotate" | "x" | "y"; value: number };
+  let zero: (PoseFitResult & { shifted: number; largest?: Offset }) | undefined;
   if (zeroOn) {
     const r = fitRestPose(baseDoc, name, await picture(0), image, { ...options, time: 0 });
-    const offset = Math.max(
-      0,
-      ...Object.values(r.pose).flatMap((p) => [
-        Math.abs(p.rotate ?? 0),
-        Math.abs(p.x ?? 0),
-        Math.abs(p.y ?? 0),
-      ]),
-    );
-    zero = { ...r, offset };
+    let largest: Offset | undefined;
+    for (const [bone, p] of Object.entries(r.pose))
+      for (const channel of ["rotate", "x", "y"] as const) {
+        const value = p[channel];
+        if (value !== undefined && Math.abs(value) > Math.abs(largest?.value ?? 0))
+          largest = { bone, channel, value };
+      }
+    zero = {
+      ...r,
+      shifted: shiftedShare(r.parts, VIDEO_ACCEPTANCE.partP90 * unit),
+      ...(largest ? { largest } : {}),
+    };
   }
   const first = zero ?? (await fitFrame(baseDoc, 0, options));
   if (first.coverage < 0.6)
@@ -2656,10 +2805,19 @@ export async function fitVideoFiles(
     hints.push(
       `${bone} (${u.parts.join(", ")}): drawn differently in the video in ${Math.round((1 - u.share) * 100)}% of the frames; not fitted, its plan motion stays`,
     );
-  if (zero && zero.offset > 2)
+  if (zero && zero.shifted > ZERO_SHIFTED) {
+    const far = zero.parts
+      .filter((p) => p.used && p.shift > VIDEO_ACCEPTANCE.partP90 * unit)
+      .sort((a, b) => b.samples - a.samples);
     hints.push(
-      `frame 0 of the video is ${zero.offset.toFixed(1)} degrees or px off the build's frame 0: fit the rest pose from it first (fit-pose), or pass --no-zero`,
+      `frame 0 of the video draws ${Math.round(zero.shifted * 100)}% of the matched parts (by area: ${far
+        .slice(0, 4)
+        .map((p) => p.slot)
+        .join(", ")}${far.length > 4 ? ", ..." : ""}) more than ${
+        VIDEO_ACCEPTANCE.partP90 * 100
+      }% of the figure height from the build's frame 0: its rest pose is off; fit the rest pose from it first (fit-pose), or pass --no-zero`,
     );
+  }
   const fold = shaped?.loop;
   if (fold?.oneCycle)
     hints.push(`no repeat found in the video: its first ${N} frames are taken as one loop`);
@@ -2720,7 +2878,13 @@ export async function fitVideoFiles(
           frame: 0,
           coverage: zero.coverage,
           residual: zero.residual,
-          offset: +zero.offset.toFixed(2),
+          // Share of the matched parts (by texels) more than the V2 p90 limit from the build's
+          // frame 0; above ZERO_SHIFTED the rest pose is off. The largest single offset is
+          // usually the matching's own error.
+          shifted: +zero.shifted.toFixed(3),
+          largestOffset: zero.largest
+            ? { ...zero.largest, value: +zero.largest.value.toFixed(2) }
+            : null,
         }
       : null,
     searchWindow,

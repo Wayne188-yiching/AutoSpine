@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { readFile, readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { PNG } from "pngjs";
+import type { CharacterPlan } from "@autospine/schemas";
 import {
   buildCharacterFiles,
   compareVideoFiles,
@@ -12,6 +13,7 @@ import {
 } from "@autospine/cli/character";
 import {
   checkVideoAcceptance,
+  clearlyMirrored,
   drawList,
   flatten,
   frameTime,
@@ -41,11 +43,19 @@ const hasFfmpeg = spawnSync("ffmpeg", ["-version"]).status === 0;
 async function referenceVideo(
   ws: string,
   out: string,
-  opts: { shift?: number; scale?: number; background?: [number, number, number] } = {},
+  opts: {
+    shift?: number;
+    scale?: number;
+    background?: [number, number, number];
+    /** Another build of the fixture to render (default `build/`). */
+    build?: string;
+  } = {},
 ) {
   const textured = true;
   const sk = loadSkeleton(
-    JSON.parse(await readFile(join(ws, "build", "fixture_character.json"), "utf8")),
+    JSON.parse(
+      await readFile(join(opts.build ?? join(ws, "build"), "fixture_character.json"), "utf8"),
+    ),
   );
   const cache = new Map<string, Texture>();
   const texture = (path: string): Texture => {
@@ -181,8 +191,20 @@ describe("video acceptance measures (ADR-034)", () => {
     const flipped = { w, h, g: new Float32Array(w * h) };
     for (let y = 0; y < h; y++)
       for (let x = 0; x < w; x++) flipped.g[y * w + x] = first.g[y * w + (80 - x)] ?? 30;
-    expect(matchPart(flipped, tpl, 10, undefined, true)).toMatchObject({ mirrored: true });
-    expect(mirrorSimilarity(first, tpl)).toBeLessThan(0.8);
+    const flip = matchPart(flipped, tpl, 10, undefined, true);
+    expect(flip).toMatchObject({ mirrored: true });
+    const symmetry = mirrorSimilarity(first, tpl);
+    expect(symmetry).toBeLessThan(0.8);
+    // A flip is clear: the mirror image matches far better than the part the right way round.
+    expect(clearlyMirrored(flip.score, matchPart(flipped, tpl, 10).score, symmetry)).toBe(true);
+    // Redrawn rather than flipped (here part way to its mirror image, as an expression or a
+    // deform may look): the mirror image wins by a little, which is not a flip.
+    const redrawn = { w, h, g: first.g.map((v, i) => 0.55 * flipped.g[i]! + 0.45 * v) };
+    const found = matchPart(redrawn, tpl, 10, undefined, true);
+    expect(found.mirrored).toBe(true);
+    const straight = matchPart(redrawn, tpl, 10).score;
+    expect(found.score).toBeGreaterThan(straight);
+    expect(clearlyMirrored(found.score, straight, symmetry)).toBe(false);
     expect(mirroredRun([false, null, true, true, null, true, false, true], 3)).toEqual([2, 5]);
     expect(mirroredRun([true, false, true], 2)).toBeNull();
     // A flat patch has nothing to match.
@@ -273,6 +295,35 @@ describe.skipIf(!hasFfmpeg)("compare-video: the build against a reference video"
     expect(b.hints.join(" ")).toMatch(/late/);
   }, 120_000);
 
+  it("finds the body drawn mirrored where the reference turns it round (ADR-035)", async () => {
+    const ws = await texturedWorkspace();
+    const plan = join(ws, "plan.json");
+    await buildCharacterFiles(plan, join(ws, "build"));
+    // The reference turns the whole figure round on frames 20-59, as the reindeer's walk turned
+    // its body. (A kept head would bend the body's mesh, weighted to it, out of a clean flip.)
+    const turned = JSON.parse(await readFile(plan, "utf8")) as CharacterPlan;
+    turned.motion.animations[0]!.mirror = { bone: "hips", frames: [[20, 59]] };
+    await writeFile(join(ws, "turned.json"), JSON.stringify(turned));
+    await buildCharacterFiles(join(ws, "turned.json"), join(ws, "build-turned"));
+    const video = await referenceVideo(ws, join(ws, "turned.mp4"), {
+      build: join(ws, "build-turned"),
+    });
+    const checked = await compareVideoFiles(plan, join(ws, "build"), join(ws, "check-turned"), {
+      video,
+    });
+    const report = JSON.parse(await readFile(checked.animations[0]!.report, "utf8")) as {
+      mirrored: { part: string; frames: [number, number] }[];
+    };
+    // The asymmetric head and body show clearly flipped (their mirror image matches far better)
+    // over the turned frames, and nothing else does.
+    expect(report.mirrored.map((m) => m.part).sort()).toEqual(["Body", "Head"]);
+    for (const m of report.mirrored) {
+      expect(Math.abs(m.frames[0] - 20)).toBeLessThanOrEqual(1);
+      expect(Math.abs(m.frames[1] - 59)).toBeLessThanOrEqual(1);
+    }
+    expect(checked.animations[0]!.hints.join(" ")).toMatch(/drawn mirrored .* on frames 2\d-5\d/);
+  }, 180_000);
+
   it("review-video plays a reference video beside the build, figure on figure", async () => {
     const ws = await texturedWorkspace();
     const plan = join(ws, "plan.json");
@@ -346,6 +397,7 @@ describe.skipIf(!hasFfmpeg)("compare-video: the build against a reference video"
         "Fixture_Idle.mp4",
         "Fixture_Idle-vs-reference.mp4",
         "images",
+        "_work",
       ].sort(),
     );
   }, 180_000);

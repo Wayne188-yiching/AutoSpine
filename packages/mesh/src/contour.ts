@@ -44,6 +44,24 @@ function simplifyArc(points: Point[], start: number, end: number, tolerance2: nu
   ];
 }
 
+/** Douglas-Peucker on a closed outline, split at the point farthest from the first. */
+export function simplifyClosed(outline: Point[], tolerance: number): Point[] {
+  let far = 0;
+  outline.forEach((p, i) => {
+    if (
+      distanceToSegment2(p, outline[0]!, outline[0]!) >
+      distanceToSegment2(outline[far]!, outline[0]!, outline[0]!)
+    )
+      far = i;
+  });
+  const ring = [...outline, outline[0]!],
+    t2 = tolerance * tolerance;
+  return [
+    ...simplifyArc(ring, 0, far, t2).slice(0, -1),
+    ...simplifyArc(ring, far, outline.length, t2).slice(0, -1),
+  ].map((i) => ring[i]!);
+}
+
 /** Keep both ends of a raster's clipping edges before simplifying a thin outline.
  * A short cap at an image border is a real corner, even when RDP could erase it.
  */

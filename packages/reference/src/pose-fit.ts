@@ -73,6 +73,8 @@ export interface PoseFitPart {
   dx: number;
   dy: number;
   rotate: number;
+  /** RMS distance of the part's texels from where the posed build draws them to the placement. */
+  shift: number;
   used: boolean;
   /** RMS distance of the fitted pose to the placement, world units (used parts). */
   residual?: number;
@@ -339,6 +341,7 @@ export function fitRestPose(
           dx: 0,
           dy: 0,
           rotate: 0,
+          shift: 0,
           used: false,
         });
       continue;
@@ -477,6 +480,13 @@ export function fitRestPose(
           const q = move(D, x.s.w0);
           return n + hit(x.s, q[0], q[1]);
         }, 0) / mine.length;
+      // How far the picture draws the part from where the posed build does (RMS over its texels).
+      const shift = Math.sqrt(
+        list.reduce((n, s) => {
+          const q = move(D, s.w0);
+          return n + (q[0] - s.w0[0]) ** 2 + (q[1] - s.w0[1]) ** 2;
+        }, 0) / list.length,
+      );
       const centre = list.reduce<[number, number]>(
         (m, s) => [m[0] + s.w0[0] / list.length, m[1] + s.w0[1] / list.length],
         [0, 0],
@@ -492,6 +502,7 @@ export function fitRestPose(
         dy: +(moved[1] - centre[1]).toFixed(2),
         rotate: +D.r.toFixed(2),
         used,
+        shift: +shift.toFixed(2),
       });
       if (!used) continue;
       const k = Math.max(1, Math.floor(list.length / 16));
@@ -648,6 +659,18 @@ export function fitRestPose(
     },
     iterations,
   };
+}
+
+/**
+ * The share of a fit's matched parts, by texels, drawn more than `distance` world units from where
+ * the posed build draws them. On a picture of a pose the build already shows (a zero frame,
+ * ADR-033) what moves is the matching's own error: a look-alike finger or a part drawn differently,
+ * a few parts on their own. A pose that is off moves whole limbs.
+ */
+export function shiftedShare(parts: readonly PoseFitPart[], distance: number): number {
+  const used = parts.filter((p) => p.used),
+    all = used.reduce((n, p) => n + p.samples, 0);
+  return all ? used.filter((p) => p.shift > distance).reduce((n, p) => n + p.samples, 0) / all : 0;
 }
 
 /**

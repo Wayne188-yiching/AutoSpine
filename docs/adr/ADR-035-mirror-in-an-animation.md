@@ -33,3 +33,21 @@ Evidence:
   - The comparison found the torso, collar, buttons and upper arm mirrored from about frame 49 to 130. The reference turns between its frames 48 and 51 and back between 128 and 132.
   - Against the reference, the torso's median error went from 8.65 % to 4.84 % of the height, the collar (bozi) from 7.06 % to 1.64 %, and the hand-on-hip upper arm from 8.14 % to 1.59 %.
   - The silhouette over the walk fell from 0.86 to 0.64, because the sceptre and arms change sides as decided while the reference keeps them. V1 and V2 still fail; V3 (lag 0, size 1.09) and V4 pass.
+
+## Amendment (2026-10-21, plugin 0.5.9): only a clear flip counts
+
+Context: on the ThreePigWC wolf's Win, whose reference video is rendered from the artist's file and never mirrors anything, the comparison reported Arm2_1 (frames 12-18) and Arm2_01 (17-33) as drawn mirrored, and with 0.5.6 also Face_01 (13-28) and Finger2_1 (50-55). On those frames the artist changes the expression or bends the arm's mesh. The part then matches poorly either way round (scores 0.6-0.7), and its mirror image won by a little: Arm2_01 by 0.04-0.14 at most, Arm2_1 by 0.10. Once a part was found mirrored, the search stayed mirrored while it scored 0.75, even where the right way round scored better (Nose1_01 by up to 0.13).
+
+Decision:
+
+- A frame counts as mirrored only when the flipped part beats the part the right way round by at least half of what a flip gives a part this asymmetric: `flipped - unflipped >= 0.5 x (1 - symmetry)` (`clearlyMirrored`). A perfect flip scores 1 flipped and `symmetry` unflipped. On a frame found mirrored, the right way round is searched again near the same place, then over the whole radius.
+- A mirrored frame that is not clear breaks the run like a frame the right way round. The run length (a tenth of the animation) and the asymmetry limit (0.8) are unchanged.
+
+Evidence:
+
+- `tests/character-compare-video.test.ts`:
+  - The textured bar drawn mirrored: symmetry 0.78, flipped 1.00 against 0.78 (margin 0.22, needed 0.11).
+  - The bar redrawn part way to its mirror image (0.55 mirrored + 0.45 as it was): found mirrored, by 0.02 only, so not a flip.
+  - A reference turning the fixture round on frames 20-59 (`mirror: { bone: "hips" }`): Head and Body are reported over exactly 20-59 (on the first turned frames, flipped 0.94-0.99 against 0.29-0.72 the right way round), and nothing else. With `keep: ["head"]` the body's mesh, weighted to the kept head, no longer flips cleanly and is not found either way round.
+- Wolf Win (plugin-test-0.5.8, plan-06, build-03): `mirrored` is empty; V1 0.754 / 0.655, V2 3.18 / 8.14 %, V3 lag 3 as before. The 0.5.6 run (plan-10, build-09: Face_01, Finger2_1, Arm2_1) is empty too.
+- The red-robed reindeer's files are not on this machine; its walk (torso, collar, buttons, upper arm turned) has not been rerun under this rule.

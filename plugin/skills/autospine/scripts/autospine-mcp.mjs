@@ -25987,16 +25987,23 @@ var MeshPlanSchema = Type.Object(
           edgeLength: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
           minHoleFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
           /**
-           * Vertex budget (ADR-024, ADR-038). The default: the artist budget, s = sqrt(image width x
-           * height) px, hull round(sqrt s) clamped to 6..40, interior 0 below s 100 else
-           * round(s / 80) (median of 423 artist character meshes), with enclosed holes kept as
-           * rings. `artist` names that budget but covers holes (as `meshing.all` does). `fine`, or
-           * an explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
-           * whatever the size). Explicit counts override the budget.
+           * Wiring (ADR-041, ADR-038). The default: artist wiring measured on 205 artist meshes,
+           * the hull as many vertices as the opaque outline has corners at 3 % of sqrt(image width
+           * x height), times 0.67 (rigid), 0.9 (one or two weighting bones) or 1.5 (three or more);
+           * interior rows across the joints on two or more bones; enclosed holes kept as rings.
+           * `artist` names that wiring but covers holes (as `meshing.all` does). `fine`, or an
+           * explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
+           * whatever the size). Explicit counts override the wiring.
            */
           density: Type.Optional(Type.Union([Type.Literal("artist"), Type.Literal("fine")])),
           hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
-          interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 }))
+          interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 })),
+          /**
+           * The part is also deformed by mesh deform keys (ADR-042), so it is wired as a part
+           * that bends: hull x0.9 at least and spread interior points. Parts in
+           * `motion.deforms` are marked automatically.
+           */
+          deform: Type.Optional(Type.Boolean())
         },
         strict2
       ),
@@ -26693,7 +26700,7 @@ var CharacterPlanSchema = Type.Object(
     regions: Type.Optional(Type.Record(PartNameSchema, IdSchema)),
     /**
      * ADR-024. `all`: every region part an animation shows (all of them when no animation has
-     * `show`) is meshed at artist density and weighted rigidly to its region bone. Collapsed and
+     * `show`) is meshed with artist wiring and weighted rigidly to its region bone. Collapsed and
      * sheared placements keep their region or quad. `parts` gives chosen region parts their own
      * vertex counts (a mouth that deforms, ADR-037) and meshes them even without `all`.
      */
@@ -28278,6 +28285,18 @@ function simplifyArc(points, start, end, tolerance2) {
     ...simplifyArc(points, farthest, end, tolerance2)
   ];
 }
+function simplifyClosed(outline, tolerance) {
+  let far = 0;
+  outline.forEach((p, i) => {
+    if (distanceToSegment2(p, outline[0], outline[0]) > distanceToSegment2(outline[far], outline[0], outline[0]))
+      far = i;
+  });
+  const ring = [...outline, outline[0]], t2 = tolerance * tolerance;
+  return [
+    ...simplifyArc(ring, 0, far, t2).slice(0, -1),
+    ...simplifyArc(ring, far, outline.length, t2).slice(0, -1)
+  ].map((i) => ring[i]);
+}
 function simplifyClippedOutline(outline, width, height, tolerance2) {
   const anchors = /* @__PURE__ */ new Set([0]);
   for (let i = 0; i < outline.length; i++) {
@@ -28792,7 +28811,7 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
     const u = a.u + (b.u - a.u) * t, left = a.left + (b.left - a.left) * t, right = a.right + (b.right - a.right) * t;
     return [left, (left + right) / 2, right].map((v) => vertical ? [v, u] : [u, v]);
   });
-  const grow = (margin) => rawRows.map(
+  const grow2 = (margin) => rawRows.map(
     (row, i) => row.map((point3, c) => {
       const p = [...point3], v = vertical ? 0 : 1, u = vertical ? 1 : 0;
       if (c !== 1) p[v] = Math.max(0, Math.min(across, p[v] + (c === 0 ? -margin : margin)));
@@ -28816,15 +28835,15 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
     return c.missed / c.foreground <= 0.02;
   };
   let low = 0, high = Math.min(8, Math.hypot(width, height) * 0.05);
-  if (missedFits(grow(0))) high = 0;
-  else if (!missedFits(grow(high)))
+  if (missedFits(grow2(0))) high = 0;
+  else if (!missedFits(grow2(high)))
     failMesh("STRIP_MISSED_BUDGET", "Strip cannot meet the missed-foreground budget");
   for (let i = 0; i < 12 && high > 0; i++) {
     const middle = (low + high) / 2;
-    if (missedFits(grow(middle))) high = middle;
+    if (missedFits(grow2(middle))) high = middle;
     else low = middle;
   }
-  const rows = grow(high), coverage2 = inspect(rows);
+  const rows = grow2(high), coverage2 = inspect(rows);
   if (coverage2.added / coverage2.foreground > padding)
     failMesh("STRIP_PADDING_BUDGET", "Strip exceeds same-attachment transparent padding");
   const cells = rows.map(() => []), points = [], hull = [];
@@ -29512,7 +29531,8 @@ function cutsSolid(a, v, b, solid, width, height) {
     }
   return false;
 }
-function fitHullBudget(ring, target, solid, width, height) {
+function fitHullBudget(ring, target, solid, width, height, stray) {
+  const covers = (a, v, b) => stray !== void 0 && cutsSolid(a, v, b, stray, width, height);
   let out = ring.filter((v, i) => {
     const a = ring[(i - 1 + ring.length) % ring.length], b = ring[(i + 1) % ring.length];
     return Math.abs(cross3(a, v, b)) > 1e-12;
@@ -29523,18 +29543,22 @@ function fitHullBudget(ring, target, solid, width, height) {
     const d = out[(k + 1) % out.length];
     return edges.some(([a, b]) => properCrossing(a, b, c, d));
   });
-  while (out.length > Math.max(3, target)) {
-    const n = out.length, at2 = (i) => out[(i % n + n) % n];
-    const steps = [];
+  const lengths = () => out.map((a, i) => {
+    const b = out[(i + 1) % out.length];
+    return Math.hypot(b[0] - a[0], b[1] - a[1]);
+  });
+  const steps = () => {
+    const n = out.length, at2 = (i) => out[(i % n + n) % n], all = [];
     for (let i = 0; i < n; i++) {
       const a = at2(i - 1), v = at2(i), b = at2(i + 1);
       const turn = cross3(a, v, b) * orient, area3 = Math.abs(cross3(a, v, b)) / 2;
-      if (turn <= 0 || !cutsSolid(a, v, b, solid, width, height))
-        steps.push({
+      if (turn <= 0 ? !covers(a, v, b) : !cutsSolid(a, v, b, solid, width, height))
+        all.push({
           cost: area3,
           apply: () => out.filter((_, k) => k !== i),
           edges: [[a, b]],
-          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i])
+          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i]),
+          touches: [(i - 1 + n) % n, i]
         });
       const c = at2(i + 2);
       if (turn > 0 && cross3(v, b, c) * orient > 0) {
@@ -29544,9 +29568,9 @@ function fitHullBudget(ring, target, solid, width, height) {
         if (t <= 1 || !inImage(P)) continue;
         P[0] = Math.min(width, Math.max(0, P[0]));
         P[1] = Math.min(height, Math.max(0, P[1]));
-        if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0) continue;
+        if ((P[0] - b[0]) * d2[0] + (P[1] - b[1]) * d2[1] <= 0 || covers(v, P, b)) continue;
         const j = (i + 1) % n;
-        steps.push({
+        all.push({
           cost: Math.abs(cross3(v, P, b)) / 2,
           apply: () => {
             const next = out.map((p, k) => k === i ? P : p);
@@ -29556,23 +29580,32 @@ function fitHullBudget(ring, target, solid, width, height) {
             [a, P],
             [P, c]
           ],
-          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i, j, (j + 1) % n])
+          skip: /* @__PURE__ */ new Set([(i - 1 + n) % n, i, j, (j + 1) % n]),
+          touches: [(i - 1 + n) % n, i, j]
         });
       }
     }
-    steps.sort((x, y) => x.cost - y.cost);
-    const step = steps.find((x) => !crossing(x.edges, x.skip));
+    return all.sort((x, y) => x.cost - y.cost);
+  };
+  const splitLongest = () => {
+    const l = lengths(), k = l.indexOf(Math.max(...l)), a = out[k], b = out[(k + 1) % out.length];
+    out.splice(k + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+  };
+  while (out.length > Math.max(3, target)) {
+    const step = steps().find((x) => !crossing(x.edges, x.skip));
     if (!step) break;
     out = step.apply();
   }
-  while (out.length < target) {
-    let k = 0, longest = -1;
-    out.forEach((a2, i) => {
-      const b2 = out[(i + 1) % out.length], l = Math.hypot(b2[0] - a2[0], b2[1] - a2[1]);
-      if (l > longest) [k, longest] = [i, l];
-    });
-    const a = out[k], b = out[(k + 1) % out.length];
-    out.splice(k + 1, 0, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+  while (out.length < target) splitLongest();
+  for (let guard = 0; guard < 2 * target && out.length === target; guard++) {
+    const l = lengths(), mean2 = l.reduce((s2, x) => s2 + x, 0) / l.length, short = new Set(l.flatMap((x, i) => x < SHORT_EDGE * mean2 ? [i] : []));
+    if (!short.size) break;
+    const step = steps().find(
+      (x) => x.touches.some((e) => short.has(e)) && !crossing(x.edges, x.skip)
+    );
+    if (!step) break;
+    out = step.apply();
+    splitLongest();
   }
   return out;
 }
@@ -29695,6 +29728,95 @@ function enclosedHoles(solid, width, height) {
   }
   return holes;
 }
+function grow(region2, width, height, r) {
+  const out = Uint8Array.from(region2), R = Math.floor(r);
+  for (let y = 0; y < height; y++)
+    for (let x = 0; x < width; x++) {
+      const i = y * width + x;
+      if (!region2[i]) continue;
+      if (x && y && x < width - 1 && y < height - 1) {
+        if (region2[i - 1] && region2[i + 1] && region2[i - width] && region2[i + width]) continue;
+      }
+      for (let dy = -R; dy <= R; dy++)
+        for (let dx = -R; dx <= R; dx++)
+          if (dx * dx + dy * dy <= r * r && x + dx >= 0 && y + dy >= 0) {
+            if (x + dx < width && y + dy < height) out[i + dy * width + dx] = 255;
+          }
+    }
+  for (const hole of enclosedHoles(out, width, height)) for (const i of hole) out[i] = 255;
+  return out;
+}
+var meanEdge = (ring) => ring.reduce((s2, a, i) => {
+  const b = ring[(i + 1) % ring.length];
+  return s2 + Math.hypot(b[0] - a[0], b[1] - a[1]) / ring.length;
+}, 0);
+function spread(boundaries, rings, existing, count, step) {
+  if (count <= 0) return [];
+  const outer = boundaries[0], xs = outer.map((p) => p[0]), ys = outer.map((p) => p[1]), cell = Math.max(step / 4, Math.sqrt(Math.abs(signedArea2(outer)) / 2 / 2e4));
+  const candidates = [], score = [];
+  for (let y = Math.min(...ys) + cell / 2; y < Math.max(...ys); y += cell)
+    for (let x = Math.min(...xs) + cell / 2; x < Math.max(...xs); x += cell) {
+      const p = [x, y];
+      if (!inside(p, outer) || rings.some((r) => inside(p, r))) continue;
+      const d = Math.min(...boundaries.map((b) => distanceToPolygon(p, b)));
+      if (d < step / 2) continue;
+      candidates.push(p);
+      score.push(Math.min(2 * d, ...existing.map((q) => Math.hypot(p[0] - q[0], p[1] - q[1]))));
+    }
+  const out = [];
+  while (out.length < count) {
+    let best = -1;
+    score.forEach((s2, i) => {
+      if (best < 0 || s2 > score[best]) best = i;
+    });
+    if (best < 0 || score[best] < step / 2) break;
+    const p = candidates[best];
+    out.push(p);
+    candidates.forEach((c, i) => {
+      score[i] = Math.min(score[i], Math.hypot(c[0] - p[0], c[1] - p[1]));
+    });
+  }
+  return out;
+}
+function jointRows(bones, outer) {
+  const step = meanEdge(outer);
+  const out = [];
+  for (const { origin, tip, joint } of bones) {
+    const d = [tip[0] - origin[0], tip[1] - origin[1]], length = Math.hypot(d[0], d[1]);
+    if (!length) continue;
+    const across = [-d[1] / length, d[0] / length];
+    const rows = [
+      ...joint ? [origin] : [],
+      ...length > LONG_BONE * step ? [[origin[0] + d[0] / 2, origin[1] + d[1] / 2]] : []
+    ];
+    for (const at2 of rows) {
+      if (!inside(at2, outer)) continue;
+      let lo = -Infinity, hi = Infinity;
+      outer.forEach((a, i) => {
+        const b = outer[(i + 1) % outer.length], e = [b[0] - a[0], b[1] - a[1]], den = across[0] * e[1] - across[1] * e[0];
+        if (Math.abs(den) < 1e-12) return;
+        const w = [a[0] - at2[0], a[1] - at2[1]], s2 = (w[0] * e[1] - w[1] * e[0]) / den, u = (w[0] * across[1] - w[1] * across[0]) / den;
+        if (u < 0 || u > 1) return;
+        if (s2 < 0) lo = Math.max(lo, s2);
+        else hi = Math.min(hi, s2);
+      });
+      if (!Number.isFinite(hi - lo)) continue;
+      const pieces = Math.max(2, Math.round((hi - lo) / step));
+      for (let k = 1; k < pieces; k++) {
+        const s2 = lo + (hi - lo) * k / pieces;
+        out.push([at2[0] + across[0] * s2, at2[1] + across[1] * s2]);
+      }
+    }
+  }
+  const kept = [];
+  for (const p of out)
+    if (distanceToPolygon(p, outer) >= step / 2 && kept.every((q) => Math.hypot(p[0] - q[0], p[1] - q[1]) >= step / 2))
+      kept.push(p);
+  return kept;
+}
+var PAD = 1;
+var LONG_BONE = 2;
+var SHORT_EDGE = 0.5;
 function splitEdge(triangles, u, v, w) {
   for (let t = triangles.length - 1; t >= 0; t--) {
     const tri = triangles[t], k = [0, 1, 2].find((i) => {
@@ -29786,20 +29908,16 @@ function generateFeatureMesh(part, alpha, options = {}) {
     failMesh("ALPHA_MISSING", "Part must include a Gate 2 alpha mask");
   const { width, height } = mask;
   const { minHoleFraction = 0.01 } = options;
-  if (alpha.length !== width * height || !(minHoleFraction > 0 && minHoleFraction <= 1) || [options.edgeLength, options.spacing].some((v) => v !== void 0 && !(v >= 2 && v <= 4096)) || options.hullVertices !== void 0 && !(Number.isInteger(options.hullVertices) && options.hullVertices >= 3) || options.interiorVertices !== void 0 && !(Number.isInteger(options.interiorVertices) && options.interiorVertices >= 0))
+  if (alpha.length !== width * height || !(minHoleFraction > 0 && minHoleFraction <= 1) || [options.edgeLength, options.spacing].some((v) => v !== void 0 && !(v >= 2 && v <= 4096)) || options.hullVertices !== void 0 && !(Number.isInteger(options.hullVertices) && options.hullVertices >= 3) || options.interiorVertices !== void 0 && !(Number.isInteger(options.interiorVertices) && options.interiorVertices >= 0) || options.bones !== void 0 && !(Array.isArray(options.bones) && options.bones.every((b) => [...b.origin, ...b.tip].every(Number.isFinite))))
     failMesh(
       "FEATURE_INPUT",
-      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers"
+      "Alpha must match the mask; hole fraction (0, 1]; lengths 2..4096 px; budgets are integers; bones finite"
     );
-  const budget = options.hullVertices !== void 0;
+  const budget = options.hullVertices !== void 0 || options.bones !== void 0;
+  const opaque = Uint8Array.from(alpha, (a) => a > (budget ? 8 : 0) ? 255 : 0);
   const primary = () => {
     try {
-      return selectPrimaryComponent(
-        Uint8Array.from(alpha, (a) => a > 0 ? 255 : 0),
-        width,
-        height,
-        0.02
-      ).alpha;
+      return selectPrimaryComponent(opaque, width, height, 0.02).alpha;
     } catch (error) {
       if (!(error instanceof MeshError) || !error.validation.issues.some((i) => i.code === "DISCARD_BUDGET"))
         throw error;
@@ -29817,16 +29935,23 @@ function generateFeatureMesh(part, alpha, options = {}) {
     const ring = simplifyContour(traceCovering(region2, width, height), region2, width, height, true);
     return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
   };
-  const outer = budget ? fitHullBudget(
-    (() => {
-      const ring = traceCovering(filled, width, height);
-      return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
-    })(),
-    options.hullVertices,
-    filled,
-    width,
-    height
-  ) : loop(filled);
+  const covering = (region2) => {
+    const ring = traceCovering(region2, width, height);
+    return signedArea2(ring) < 0 ? [...ring].reverse() : ring;
+  };
+  let outer;
+  if (budget) {
+    const corners = () => {
+      const largest = selectPrimaryComponent(opaque, width, height, 1).alpha;
+      for (const hole of enclosedHoles(largest, width, height))
+        for (const i of hole) largest[i] = 255;
+      return simplifyClosed(covering(largest), 0.03 * Math.sqrt(width * height)).length;
+    };
+    const n = options.bones?.length ?? 0, hull2 = options.hullVertices ?? Math.max(3, Math.round(corners() * (n >= 3 ? 1.5 : n || options.deforms ? 0.9 : 0.67))), padded = grow(filled, width, height, PAD), stray = Uint8Array.from(alpha, (a, i) => a > 8 && !padded[i] ? 255 : 0);
+    const fit = (avoid) => fitHullBudget(covering(padded), hull2, padded, width, height, avoid);
+    outer = fit(discarded ? stray : void 0);
+    if (outer.length > hull2) outer = fit();
+  } else outer = loop(filled);
   const rings = holes.filter((hole) => (!budget || options.keepHoles) && hole.length >= minHoleFraction * foreground).map((hole) => {
     const region2 = new Uint8Array(width * height);
     for (const i of hole) region2[i] = 255;
@@ -29866,6 +29991,15 @@ function generateFeatureMesh(part, alpha, options = {}) {
     (i) => i
   );
   ringIndices.forEach((indices, k) => pushTriangles(earcut(rings[k].flat()), (i) => indices[i]));
+  const used = new Set(triangles.flat()), size = outer.length;
+  outer.forEach((_, i) => {
+    if (used.has(i)) return;
+    let a = i - 1, b = i + 1;
+    while (!used.has((a + size) % size)) a--;
+    while (!used.has(b % size)) b++;
+    splitEdge(triangles, (a + size) % size, b % size, i);
+    used.add(i);
+  });
   const refine = (loop2) => loop2.flatMap((a, i) => {
     const b = loop2[(i + 1) % loop2.length], pa = points[a], pb = points[b], n = Math.ceil(Math.hypot(pb[0] - pa[0], pb[1] - pa[1]) / edgeLength);
     const added = [];
@@ -29894,7 +30028,14 @@ function generateFeatureMesh(part, alpha, options = {}) {
     return out;
   };
   let grid = [];
-  if (interior === void 0)
+  if (options.bones) {
+    const bends = options.bones.length > 1 || !!options.deforms, rows = jointRows(bends ? options.bones : [], outer).filter(
+      (p) => !rings.some((r) => inside(p, r))
+    ), step = meanEdge(outer), area3 = Math.abs(signedArea2(outer)) / 2, target = interior ?? (bends ? Math.round(0.27 * area3 / (step * step)) : 0);
+    grid = rows.slice(0, interior ?? rows.length);
+    const spacing = interior ? Math.min(step, Math.sqrt(area3 / interior)) : step;
+    grid.push(...spread(boundaries, rings, grid, target - grid.length, spacing));
+  } else if (interior === void 0)
     grid = lattice(options.spacing ?? Math.max(4, Math.sqrt(foreground / 48)));
   else if (interior > 0) {
     let lo = 2, hi = Math.max(width, height);
@@ -29906,14 +30047,36 @@ function generateFeatureMesh(part, alpha, options = {}) {
       else hi = mid;
     }
   }
+  const edgeThrough = (p) => {
+    const uses = /* @__PURE__ */ new Map();
+    const sides = (t) => [
+      [t[0], t[1]],
+      [t[1], t[2]],
+      [t[2], t[0]]
+    ];
+    for (const t of triangles)
+      for (const [u, v] of sides(t)) uses.set(edgeKey(u, v), (uses.get(edgeKey(u, v)) ?? 0) + 1);
+    for (const t of triangles)
+      for (const [u, v] of sides(t)) {
+        const a = points[u], b = points[v], l2 = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2, along = (p[0] - a[0]) * (b[0] - a[0]) + (p[1] - a[1]) * (b[1] - a[1]);
+        if (Math.abs(cross3(a, b, p)) > 1e-9 * l2 || along <= 0 || along >= l2) continue;
+        if (uses.get(edgeKey(u, v)) === 2 && !locked.has(edgeKey(u, v))) return [u, v];
+      }
+  };
   for (const p of grid) {
-    const target = triangles.findIndex(
-      ([a2, b2, c2]) => cross3(points[a2], points[b2], p) > 1e-9 && cross3(points[b2], points[c2], p) > 1e-9 && cross3(points[c2], points[a2], p) > 1e-9
+    const index = points.length, target = triangles.findIndex(
+      ([a, b, c]) => cross3(points[a], points[b], p) > 1e-9 && cross3(points[b], points[c], p) > 1e-9 && cross3(points[c], points[a], p) > 1e-9
     );
-    if (target < 0) continue;
-    const index = points.length, [a, b, c] = triangles[target];
+    if (target >= 0) {
+      const [a, b, c] = triangles[target];
+      points.push(p);
+      triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+      continue;
+    }
+    const edge = edgeThrough(p);
+    if (!edge) continue;
     points.push(p);
-    triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+    splitEdge(triangles, edge[0], edge[1], index);
   }
   improve(points, triangles, locked);
   const canonical = (t) => {
@@ -30811,7 +30974,7 @@ function autocorrelation(x, lag2) {
   }
   return pearson(pairs);
 }
-function spread(x) {
+function spread2(x) {
   const v = x.filter(known), m = mean(v);
   return Math.sqrt(mean(v.map((a) => (a - m) ** 2)));
 }
@@ -30964,7 +31127,7 @@ function foldTracks(channels, period, opts = {}) {
     });
   };
   const samples = (Q) => samplesOf(channels, Q);
-  const variance = channels.map((c) => Math.max(1e-9, spread(c) ** 2));
+  const variance = channels.map((c) => Math.max(1e-9, spread2(c) ** 2));
   const harmonicsFor = (count) => Math.max(
     1,
     Math.min(opts.harmonics ?? Math.max(3, Math.round(P / 8)), Math.floor((count - 1) / 4))
@@ -31235,7 +31398,7 @@ function lagKeys(targets, tolerance, groups, opts) {
       });
     return { mean: mean(keys), max: Math.max(0, ...keys) };
   };
-  const score = (c) => spread(targets[c]) / tolerance[c];
+  const score = (c) => spread2(targets[c]) / tolerance[c];
   const moving = (k) => groups[k].filter((c) => score(c) >= 1);
   const behind = groups.map((_, k) => {
     const own = moving(k);
@@ -33053,6 +33216,9 @@ async function buildJobFile(jobPath) {
   return output;
 }
 
+// packages/cli/dist/version.js
+var AUTOSPINE_VERSION = "0.5.10";
+
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
   return convert(JSON.parse(JSON.stringify(schema)));
@@ -33580,13 +33746,6 @@ function planRig(plan, index) {
 
 // packages/character/src/attachments.ts
 var safeId = (s2) => s2.replace(/[^A-Za-z0-9_]/g, "_");
-function artistBudget(width, height) {
-  const s2 = Math.sqrt(width * height);
-  return {
-    hull: Math.min(40, Math.max(6, Math.round(Math.sqrt(s2)))),
-    interior: s2 < 100 ? 0 : Math.round(s2 / 80)
-  };
-}
 var collapsed = (p) => Math.abs(p.affine[0] * p.affine[3] - p.affine[1] * p.affine[2]) < 1e-9;
 function assetFor(p, id, alpha = p.alpha) {
   return {
@@ -33646,21 +33805,59 @@ function planAttachments(plan, index, rigged, regionBone) {
     if (!b) failStage("weights", "PLAN_BONE", `Weights reference unknown bone ${id}`);
     return b.length;
   };
-  const shape = (spec, p) => {
+  const weightBones = (w) => {
+    switch (w.type) {
+      case "chain":
+        return w.bones ?? (w.chain ? rigged.chains[w.chain] ?? [] : []);
+      case "gradient":
+        return [w.from, w.to];
+      case "nearest":
+        return w.bones;
+      case "dome":
+        return plan.face ? [plan.face.base, plan.face.control, ...plan.face.counter ? [plan.face.counter] : []] : [];
+      case "transfer": {
+        const ids = w.sources.flatMap(
+          (name) => meshes.get(name)?.weights.vertices.flatMap((v) => v.influences.map((i) => i.boneId)) ?? []
+        );
+        return [.../* @__PURE__ */ new Set([...ids, ...(w.proxies ?? []).map((x) => x.bone)])];
+      }
+      case "rigid":
+        return [];
+    }
+  };
+  const imageBones = (ids, p) => {
+    if (collapsed(p)) return [];
+    const inv = invert(p.affine), set = new Set(ids);
+    return ids.flatMap((id) => {
+      const f = rigged.world.get(id), b = rig.bones.find((x) => x.id === id);
+      if (!f || !b) return [];
+      const r = f.a * Math.PI / 180;
+      return [
+        {
+          origin: apply(inv, f.o),
+          tip: apply(inv, [f.o[0] + b.length * Math.cos(r), f.o[1] + b.length * Math.sin(r)]),
+          joint: b.parentId !== void 0 && set.has(b.parentId)
+        }
+      ];
+    });
+  };
+  const keyed = new Set(
+    (plan.motion.deforms ?? []).flatMap((d) => d.parts.map((n) => index.part(n).key))
+  );
+  const shape = (spec, p, bones = []) => {
     const id = safeId(p.key === p.slot ? p.slot : p.key);
     switch (spec.type) {
       case "feature": {
         const asset = assetFor(p, id);
-        const fine = spec.density === "fine" || spec.spacing !== void 0 || spec.edgeLength !== void 0;
-        const budget = fine ? void 0 : artistBudget(p.width, p.height);
-        const hullVertices = spec.hullVertices ?? budget?.hull, interiorVertices = spec.interiorVertices ?? budget?.interior;
+        const fine = spec.density === "fine" || spec.spacing !== void 0 || spec.edgeLength !== void 0, deforms = spec.deform === true || keyed.has(p.key);
         const options = {
           ...spec.spacing !== void 0 ? { spacing: spec.spacing } : {},
           ...spec.edgeLength !== void 0 ? { edgeLength: spec.edgeLength } : {},
           ...spec.minHoleFraction !== void 0 ? { minHoleFraction: spec.minHoleFraction } : {},
-          ...hullVertices !== void 0 ? { hullVertices } : {},
-          ...interiorVertices !== void 0 ? { interiorVertices } : {},
-          ...hullVertices !== void 0 && spec.density !== "artist" ? { keepHoles: true } : {}
+          ...spec.hullVertices !== void 0 ? { hullVertices: spec.hullVertices } : {},
+          ...spec.interiorVertices !== void 0 ? { interiorVertices: spec.interiorVertices } : {},
+          ...fine ? {} : { bones: imageBones(bones, p), ...deforms ? { deforms } : {} },
+          ...(!fine || spec.hullVertices !== void 0) && spec.density !== "artist" ? { keepHoles: true } : {}
         };
         const r = generateFeatureMesh(asset.parts[0], p.alpha, options);
         if (r.discarded) evidence[`${p.key}:alphaPrep`] = { discarded: r.discarded };
@@ -33703,7 +33900,7 @@ function planAttachments(plan, index, rigged, regionBone) {
     const p = index.part(m.part);
     if (meshes.has(m.part))
       failStage("mesh", "PLAN_MESH_DUPLICATE", `Part ${m.part} has two mesh plans`);
-    const built = shape(m.mesh, p);
+    const built = shape(m.mesh, p, weightBones(m.weights));
     let weights;
     const w = m.weights;
     switch (w.type) {
@@ -37186,7 +37383,10 @@ function prepareReference(artist, imagesOnly, options) {
     throw new Error("REFERENCE_PROBE: probes need a face part (or a chain) for the unit");
   const unit = headUnit(img, unitPart);
   const structure = structureOf(skeleton);
-  const animations = skeleton.data.animations.map((a) => a.name);
+  const animations = skeleton.data.animations.map((a) => a.name).filter((a) => !options.compared || options.compared.includes(a));
+  for (const a of options.compared ?? [])
+    if (!animations.includes(a))
+      throw new Error(`REFERENCE_ANIMATION: the artist file has no ${a}`);
   const exclude = (options.deformExclude ?? []).map((p) => new RegExp(p));
   const ref = {
     skeleton,
@@ -38078,6 +38278,7 @@ function fitRestPose(document2, animation, reference, image, options) {
           dx: 0,
           dy: 0,
           rotate: 0,
+          shift: 0,
           used: false
         });
       continue;
@@ -38181,6 +38382,12 @@ function fitRestPose(document2, animation, reference, image, options) {
         const q = move(D, x.s.w0);
         return n2 + hit(x.s, q[0], q[1]);
       }, 0) / mine.length;
+      const shift = Math.sqrt(
+        list.reduce((n2, s2) => {
+          const q = move(D, s2.w0);
+          return n2 + (q[0] - s2.w0[0]) ** 2 + (q[1] - s2.w0[1]) ** 2;
+        }, 0) / list.length
+      );
       const centre = list.reduce(
         (m, s2) => [m[0] + s2.w0[0] / list.length, m[1] + s2.w0[1] / list.length],
         [0, 0]
@@ -38194,7 +38401,8 @@ function fitRestPose(document2, animation, reference, image, options) {
         dx: +(moved[0] - centre[0]).toFixed(2),
         dy: +(moved[1] - centre[1]).toFixed(2),
         rotate: +D.r.toFixed(2),
-        used: used2
+        used: used2,
+        shift: +shift.toFixed(2)
       });
       if (!used2) continue;
       const k = Math.max(1, Math.floor(list.length / 16));
@@ -38328,6 +38536,10 @@ function fitRestPose(document2, animation, reference, image, options) {
     },
     iterations
   };
+}
+function shiftedShare(parts, distance) {
+  const used = parts.filter((p) => p.used), all = used.reduce((n, p) => n + p.samples, 0);
+  return all ? used.filter((p) => p.shift > distance).reduce((n, p) => n + p.samples, 0) / all : 0;
 }
 function agreePoses(a, b, bones, limits) {
   const pose2 = {}, disagree = [];
@@ -38707,6 +38919,9 @@ function mirrorSimilarity(img, tpl) {
   }
   const flipped = { ...tpl, xs, box: { ...tpl.box, x0, x1 } };
   return Math.max(0, matchPart(img, flipped, 3).score);
+}
+function clearlyMirrored(flipped, unflipped, symmetry) {
+  return flipped - unflipped >= 0.5 * (1 - symmetry);
 }
 function mirroredRun(flags, minRun) {
   let best = null, start = -1, last = -1;
@@ -40887,6 +41102,8 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   for (const s2 of built.specs)
     await writeFile2(join2(outDir, `keypose-${s2.name.replace(/[^A-Za-z0-9_-]/g, "_")}.json`), json(s2));
   const record = {
+    // The engine that built it: a stale MCP server builds with an older one.
+    engineVersion: AUTOSPINE_VERSION,
     plan: { id: plan.id, sha256: sha256(await readFile3(planPath)) },
     imagesOnly: { sha256: sha256(await readFile3(paths.imagesOnly)) },
     params: { ...plan.motion.params, ...params },
@@ -40908,6 +41125,7 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   }
   return {
     output: join2(outDir, name),
+    engineVersion: AUTOSPINE_VERSION,
     bones: built.rigging.rigged.rig.bones.length,
     slots: built.rigging.slots.length,
     setupDeviationPx: record.setupDeviationPx,
@@ -40923,7 +41141,23 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
   };
 }
 var loopNames = (plan) => plan.motion.animations.filter((a) => a.loop !== false).map((a) => a.name);
-async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
+function comparedAnimations(plan, artist, only) {
+  const planned = plan.motion.animations.map((a) => a.name);
+  const drawn = Object.keys(artist.animations ?? {});
+  if (only !== void 0 && !planned.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the plan has no animation ${only}`);
+  if (only !== void 0 && !drawn.includes(only))
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has no animation ${only}`);
+  const animations = planned.filter((a) => drawn.includes(a) && (only === void 0 || a === only));
+  if (!animations.length)
+    throw new Error(`CLI_COMPARE_ANIMATION: the artist file has none of the plan's animations (${planned.join(", ")}); it has ${drawn.join(", ") || "none"}`);
+  return {
+    animations,
+    artistOnly: drawn.filter((a) => !planned.includes(a)),
+    planOnly: planned.filter((a) => !drawn.includes(a))
+  };
+}
+async function compareReferenceFiles(planPath, buildDir, artistPath, outDir, opts = {}) {
   const plan = await readPlan(planPath);
   const paths = planPaths(planPath, plan);
   const probes = plan.qa?.probes;
@@ -40931,6 +41165,7 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     throw new Error("CLI_PLAN_QA: comparison needs qa.probes in the plan");
   const tex = textures(paths.images);
   const artist = JSON.parse(await readFile3(artistPath, "utf8"));
+  const compared = comparedAnimations(plan, artist, opts.animation);
   const imagesOnly = JSON.parse(await readFile3(paths.imagesOnly, "utf8"));
   const generated = JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8"));
   const ir = JSON.parse(await readFile3(join2(buildDir, "ir.json"), "utf8"));
@@ -40940,7 +41175,8 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: loopNames(plan)
+    loop: loopNames(plan),
+    compared: compared.animations
   };
   const reference = prepareReference(artist, imagesOnly, options);
   const { result: result2, sheets } = compareToReference(reference, generated, imagesOnly, {
@@ -40958,7 +41194,7 @@ async function compareReferenceFiles(planPath, buildDir, artistPath, outDir) {
     png.data.set(s2.rgba);
     await writeFile2(join2(outDir, `compare-${a.replace(/[^A-Za-z0-9_-]/g, "_")}.png`), import_pngjs2.PNG.sync.write(png));
   }
-  return check;
+  return { ...check, ...compared };
 }
 async function optimizeMotionFiles(planPath, artistPath, stateDir, opts) {
   const plan = await readPlan(planPath);
@@ -40978,7 +41214,8 @@ async function optimizeMotionFiles(planPath, artistPath, stateDir, opts) {
     deformExclude: plan.qa?.deformExclude ?? [],
     alpha: tex.alpha,
     name: plan.name,
-    loop: loopNames(plan)
+    loop: loopNames(plan),
+    compared: comparedAnimations(plan, artist).animations
   });
   const rigging = rigCharacter(plan, layout);
   const evaluate = makeObjective(rigging, reference, {
@@ -41310,6 +41547,7 @@ function runSpine(exe, args) {
     });
   });
 }
+var DELIVERY_RECORD = join2("_work", "delivery.json");
 async function videoSize(path) {
   if (!existsSync2(path))
     throw new Error(`CLI_VIDEO: ${path} not found`);
@@ -41637,7 +41875,10 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
           flips.push(null);
           continue;
         }
-        flips.push(hit.mirrored);
+        flips.push(hit.mirrored && {
+          flipped: hit.score,
+          unflipped: Math.max(0, matchPart(gr, tpl, radius, { dx: hit.dx, dy: hit.dy, angle: hit.angle }).score)
+        });
         if (f % 8 === 0) {
           const sym = symmetryByPart.get(name) ?? [];
           sym.push(mirrorSimilarity(gb, tpl));
@@ -41715,9 +41956,9 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
       return e.length ? +(e[e.length >> 1] * 100).toFixed(3) : null;
     });
     const median2 = (v) => [...v].sort((a, b) => a - b)[v.length >> 1] ?? 1;
-    const mirrored = [...mirroredByPart].filter(([part]) => median2(symmetryByPart.get(part) ?? []) < 0.8).map(([part, flags]) => ({
+    const mirrored = [...mirroredByPart].map(([part, flips]) => ({ part, flips, symmetry: median2(symmetryByPart.get(part) ?? []) })).filter((p) => p.symmetry < 0.8).map(({ part, flips, symmetry }) => ({
       part,
-      frames: mirroredRun(flags, Math.max(4, Math.round(count / 10)))
+      frames: mirroredRun(flips.map((m) => m && clearlyMirrored(m.flipped, m.unflipped, symmetry)), Math.max(4, Math.round(count / 10)))
     })).filter((m) => m.frames !== null);
     const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored);
     if (whole)
@@ -41769,6 +42010,7 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
 }
 var FIT_TOLERANCE = 0.5;
 var REFIT_ERROR = VIDEO_ACCEPTANCE.partMedian * 100;
+var ZERO_SHIFTED = 0.25;
 function planAt(plan, fromPath, toPath) {
   const from = dirname3(resolve3(fromPath)), to = dirname3(resolve3(toPath));
   const rel = (p) => relative3(to, resolve3(from, p)).split(sep).join("/");
@@ -41980,12 +42222,18 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   let zero;
   if (zeroOn) {
     const r = fitRestPose(baseDoc, name, await picture(0), image, { ...options, time: 0 });
-    const offset = Math.max(0, ...Object.values(r.pose).flatMap((p) => [
-      Math.abs(p.rotate ?? 0),
-      Math.abs(p.x ?? 0),
-      Math.abs(p.y ?? 0)
-    ]));
-    zero = { ...r, offset };
+    let largest;
+    for (const [bone, p] of Object.entries(r.pose))
+      for (const channel of ["rotate", "x", "y"]) {
+        const value = p[channel];
+        if (value !== void 0 && Math.abs(value) > Math.abs(largest?.value ?? 0))
+          largest = { bone, channel, value };
+      }
+    zero = {
+      ...r,
+      shifted: shiftedShare(r.parts, VIDEO_ACCEPTANCE.partP90 * unit),
+      ...largest ? { largest } : {}
+    };
   }
   const first = zero ?? await fitFrame(baseDoc, 0, options);
   if (first.coverage < 0.6)
@@ -42113,8 +42361,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     let info;
     let window;
     if (loop) {
-      const moving = series.filter((s2) => spread(s2) >= tolerance);
-      const figure = [0, 1].map((k) => centroid.map((c) => Number.isFinite(c[k]) ? c[k] : null)).filter((s2) => spread(s2) >= tolerance);
+      const moving = series.filter((s2) => spread2(s2) >= tolerance);
+      const figure = [0, 1].map((k) => centroid.map((c) => Number.isFinite(c[k]) ? c[k] : null)).filter((s2) => spread2(s2) >= tolerance);
       const est = periodHint ?? sharedPeriod([...moving, ...figure])?.period;
       let period, oneCycle = false;
       if (est !== void 0 && count >= 2 * est - 1)
@@ -42336,8 +42584,10 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const hints = [];
   for (const [bone, u] of missing)
     hints.push(`${bone} (${u.parts.join(", ")}): drawn differently in the video in ${Math.round((1 - u.share) * 100)}% of the frames; not fitted, its plan motion stays`);
-  if (zero && zero.offset > 2)
-    hints.push(`frame 0 of the video is ${zero.offset.toFixed(1)} degrees or px off the build's frame 0: fit the rest pose from it first (fit-pose), or pass --no-zero`);
+  if (zero && zero.shifted > ZERO_SHIFTED) {
+    const far = zero.parts.filter((p) => p.used && p.shift > VIDEO_ACCEPTANCE.partP90 * unit).sort((a, b) => b.samples - a.samples);
+    hints.push(`frame 0 of the video draws ${Math.round(zero.shifted * 100)}% of the matched parts (by area: ${far.slice(0, 4).map((p) => p.slot).join(", ")}${far.length > 4 ? ", ..." : ""}) more than ${VIDEO_ACCEPTANCE.partP90 * 100}% of the figure height from the build's frame 0: its rest pose is off; fit the rest pose from it first (fit-pose), or pass --no-zero`);
+  }
   const fold = shaped?.loop;
   if (fold?.oneCycle)
     hints.push(`no repeat found in the video: its first ${N} frames are taken as one loop`);
@@ -42381,7 +42631,11 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       frame: 0,
       coverage: zero.coverage,
       residual: zero.residual,
-      offset: +zero.offset.toFixed(2)
+      // Share of the matched parts (by texels) more than the V2 p90 limit from the build's
+      // frame 0; above ZERO_SHIFTED the rest pose is off. The largest single offset is
+      // usually the matching's own error.
+      shifted: +zero.shifted.toFixed(3),
+      largestOffset: zero.largest ? { ...zero.largest, value: +zero.largest.value.toFixed(2) } : null
     } : null,
     searchWindow,
     tracking: trackOn ? {
@@ -43086,7 +43340,8 @@ var toolSchemas = {
     planPath: WorkspacePath,
     buildDir: WorkspacePath,
     artistPath: WorkspacePath,
-    outputDir: WorkspacePath
+    outputDir: WorkspacePath,
+    animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 }))
   }, strict5),
   autospine_optimize_motion: Type.Object({
     planPath: WorkspacePath,
@@ -43195,7 +43450,7 @@ var descriptions = {
   autospine_gradient_weights: "Linear two-bone gradient between two bone origins (eyelids, jaws, flaps); fold-free until full collapse (ADR-015).",
   autospine_measure_overlap: "Skin two weighted meshes in an optional pose and report overlap seam drift plus inversions per mesh; numeric QA, not artist approval.",
   autospine_review_performance: "Measure performance metrics from sampled probes (parallax, pupil, holds, saccade speed, delay-chain peaks, hand vs body, key density) and compare them with an artist-statistics profile; findings only, not artist approval.",
-  autospine_get_status: "Read engineering status and explicit unverified capabilities; no writes.",
+  autospine_get_status: "Read the engine version (compare it with the command line's `--version`: a server left running from an earlier plugin version reports an older one), the workspace and explicit unverified capabilities; no writes.",
   autospine_validate_plan: "Validate an explicit chain proposal; low confidence is review-required.",
   autospine_execute_plan: "Run a validated plan in memory and measure it; no files or art approval.",
   autospine_build: "Build a host-approved job within the configured workspace into a NEW directory.",
@@ -43203,12 +43458,12 @@ var descriptions = {
   autospine_apply_correction: "Rebuild in memory from a fingerprint-bound correction and remeasure.",
   autospine_lint_character_plan: "Check a character plan (CharacterPlan-0.1, ADR-017) in memory: schema errors, then joints, bones, meshes, constraints, motion controls, parameter references and expressions; with partNames also every named part and that each image has a mesh or region bone. Run after every plan edit.",
   autospine_build_character: "Build a workspace-local character plan (images-only layout + images) into a NEW workspace-local directory: Spine 4.0 JSON, IR, keypose specs, build record and copied images. The plan is linted first; no artist approval.",
-  autospine_compare_reference: "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Numeric acceptance, not artist approval.",
+  autospine_compare_reference: "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Compares the plan's animations the artist file also has (or only `animation`); a full artist export may hold more, which are listed as artistOnly. Numeric acceptance, not artist approval.",
   autospine_optimize_motion: "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
   autospine_merge_plans: "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose: "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
-  autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video draws mirrored (left-right) and on which frames (ADR-035 `mirror`). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
-  autospine_fit_video: "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. Results are reference-fitted, not blind.",
+  autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video clearly draws mirrored (left-right) and on which frames (ADR-035 `mirror`; a part only redrawn, such as an expression, is not counted). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
+  autospine_fit_video: "Take one animation's motion from a reference video (ADR-036; needs ffmpeg, plan.qa.view and motion.fps): every frame of the video (plain background, starting at the animation's frame 0) is placed over the build and fitted like a key-pose picture over a base that has the plan's guessed main motion taken out; a loop's tracks are folded onto the period the video repeats with, a one-shot's smoothed, and both reduced to key poses on shared key frames (at most twice the artists' key density). Each round builds and compares with the video (compare-video rows); later rounds refit the frames still off and rescale or re-time chain waves from the comparison. Writes a NEW workspace-local directory: pictures/, base/, round-k/{plan.json, build/, compare/}, best/ (the lowest penalty) and summary.json. The source plan is not changed; put best/plan.json's keyposes into the plan, or deliver best/. Each part is followed from the frame before, forward and then backward through the clip (ADR-039); a bone the two passes disagree on is left as a gap on that frame and named in hints (`track: false` fits every frame alone). A bone that trails or leads the others in the video keeps that timing as `keyposeLag` in the plan, frames off the shared key frames (ADR-040; `lag: false` keys every bone on them). Expressions, mesh deforms, scale and parts the video redraws are not fitted and are named in hints. summary.json `zero.shifted` is the share of frame 0's matched parts drawn more than 1.5% of the figure height from the build's frame 0; above a quarter a hint asks to fit the rest pose from frame 0 first. Results are reference-fitted, not blind.",
   autospine_review_video: "Render a NEW workspace-local MP4 review video (needs ffmpeg): every plan animation as artist | build (reference video | build with referenceVideoPath, its frame i beside animation frame i; the build alone without either), first with the mesh wireframe, then with the bones, then the plain motion, on the official runtime. For the human review (criterion E); not an approval."
 };
 var writingTools = /* @__PURE__ */ new Set([
@@ -43335,8 +43590,11 @@ function characterFailure(error) {
     throw new Error(`MCP_${code}: ${fit[code]}`);
   if (code === "FIT_VIDEO")
     throw new Error(`MCP_FIT_VIDEO: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
-  if (code === "PLAN_QA" || code === "PLAN_SEARCH")
+  if (code === "PLAN_QA" || code === "PLAN_SEARCH" || code === "COMPARE_ANIMATION")
     throw new Error(`MCP_${code}: ${message.slice(message.indexOf(": ") + 2).split("\n")[0]}`);
+  const reference = message.match(/^REFERENCE_([A-Z_]+): ([^\n]+)/);
+  if (reference)
+    throw new Error(`MCP_REFERENCE_${reference[1]}: ${reference[2]}`);
   throw error;
 }
 var result = (value, isError = false) => ({
@@ -43460,13 +43718,14 @@ var AutoSpineMcpServer = class {
           return result(reviewPerformance(args.sample, args.profile, keyStats));
         }
         case "autospine_get_status": {
-          let status = { available: false };
+          let status;
           try {
             status = JSON.parse(await readFile5(resolve6(this.workspace, "docs/reviews/GATE_5_17_STATUS.json"), "utf8"));
           } catch {
           }
           return result({
-            status,
+            version: AUTOSPINE_VERSION,
+            ...status === void 0 ? {} : { status },
             // Plans, images-only inputs, artist files and outputs must sit inside this folder.
             workspace: this.workspace,
             capabilities: {
@@ -43562,7 +43821,9 @@ var AutoSpineMcpServer = class {
           const build = await guardDirectory(root, args.buildDir);
           const artist = await guardFile(root, args.artistPath, 256 * 1024 * 1024);
           const output = await guardOutput(root, args.outputDir, true);
-          const check = await compareReferenceFiles(plan, build, artist, output).catch(characterFailure);
+          const check = await compareReferenceFiles(plan, build, artist, output, {
+            ...args.animation === void 0 ? {} : { animation: args.animation }
+          }).catch(characterFailure);
           return result({
             ...check,
             output: relative4(root, output),
@@ -43775,7 +44036,7 @@ var AutoSpineMcpServer = class {
       return response({
         protocolVersion: params.protocolVersion === "2025-06-18" ? "2025-06-18" : "2025-11-25",
         capabilities: { tools: { listChanged: false } },
-        serverInfo: { name: "autospine", version: "0.0.0" },
+        serverInfo: { name: "autospine", version: AUTOSPINE_VERSION },
         instructions: "Legacy MCP v1; chain-wave file build, explicit character IR compilation, in-memory engine tools (pose-table animation, feature meshes, dome/transfer/chain/gradient weights, overlap QA) and character plans (lint, build, compare with an artist baseline, motion optimisation). No live visual AI or artist approval. File tools require host authorization and workspace-local paths; builds and comparisons write new directories only."
       });
     }

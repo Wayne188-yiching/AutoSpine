@@ -1,0 +1,176 @@
+{
+  "fps": 120,
+  "animations": {
+    "clap": {
+      "inversions": {},
+      "visibleInversions": {},
+      "maxCharacterStretch": {
+        "slot": "mnm/jio_r_2s",
+        "value": 0.798
+      },
+      "topStretch": [
+        [
+          "mnm/jio_r_2s",
+          0.798
+        ],
+        [
+          "jio_r_2",
+          0.664
+        ],
+        [
+          "mnm/shenti_1s",
+          0.573
+        ],
+        [
+          "jio_l_3",
+          0.557
+        ],
+        [
+          "tou_1_1",
+          0.549
+        ],
+        [
+          "shenti_1",
+          0.534
+        ]
+      ]
+    },
+    "idle": {
+      "inversions": {},
+      "visibleInversions": {},
+      "maxCharacterStretch": {
+        "slot": "yanpi_1",
+        "value": 0.991
+      },
+      "topStretch": [
+        [
+          "yanpi_1",
+          0.991
+        ],
+        [
+          "yanpi_2",
+          0.991
+        ],
+        [
+          "mnm/jio_r_2s",
+          0.772
+        ],
+        [
+          "jio_r_2",
+          0.715
+        ],
+        [
+          "mnm/jio_l_3s",
+          0.715
+        ],
+        [
+          "jio_l_2",
+          0.684
+        ]
+      ]
+    },
+    "idle2": {
+      "inversions": {},
+      "visibleInversions": {},
+      "maxCharacterStretch": {
+        "slot": "yanpi_2",
+        "value": 0.989
+      },
+      "topStretch": [
+        [
+          "yanpi_2",
+          0.989
+        ],
+        [
+          "yanpi_1",
+          0.989
+        ],
+        [
+          "mnm/jio_r_2s",
+          0.772
+        ],
+        [
+          "jio_r_2",
+          0.715
+        ],
+        [
+          "tou_1_1",
+          0.715
+        ],
+        [
+          "mnm/jio_l_3s",
+          0.715
+        ]
+      ]
+    },
+    "idle_clap": {
+      "inversions": {},
+      "visibleInversions": {},
+      "maxCharacterStretch": {
+        "slot": "yanpi_1",
+        "value": 0.876
+      },
+      "topStretch": [
+        [
+          "yanpi_1",
+          0.876
+        ],
+        [
+          "yanpi_2",
+          0.876
+        ],
+        [
+          "mnm/jio_r_2s",
+          0.728
+        ],
+        [
+          "jio_r_2",
+          0.595
+        ],
+        [
+          "jio_l_3",
+          0.526
+        ],
+        [
+          "jio_l_2",
+          0.472
+        ]
+      ]
+    },
+    "in": {
+      "inversions": {},
+      "visibleInversions": {},
+      "maxCharacterStretch": {
+        "slot": "mnm/shenti_1s",
+        "value": 0.638
+      },
+      "topStretch": [
+        [
+          "mnm/shenti_1s",
+          0.638
+        ],
+        [
+          "shenti_1",
+          0.631
+        ],
+        [
+          "weiba_1",
+          0.514
+        ],
+        [
+          "tou_1_1",
+          0.514
+        ],
+        [
+          "mnm/weiba_1s",
+          0.48
+        ],
+        [
+          "tou_1_2",
+          0.444
+        ]
+      ]
+    }
+  },
+  "pass": true
+}

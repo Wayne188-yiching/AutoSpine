@@ -183,7 +183,7 @@ describe("fit-video: a reference video drives the motion (ADR-036)", () => {
       expect(fit.label).toBe("reference-fitted");
       expect(fit.pass).toBe(true);
       // What the run read: the plan, the images-only file and its images, the build and the video.
-      const read = fit.inputs.map((i) => relative(ws, i.path));
+      const read = fit.inputs.map((i) => relative(ws, i.path).replaceAll("\\", "/"));
       expect(read).toEqual(
         expect.arrayContaining(["plan.json", "build/fixture_character.json", "idle.mp4"]),
       );
@@ -191,6 +191,9 @@ describe("fit-video: a reference video drives the motion (ADR-036)", () => {
       for (const i of fit.inputs) expect(i.sha256).toMatch(/^[0-9a-f]{64}$/);
       expect(fit.rounds.length).toBeLessThanOrEqual(3);
       expect(fit.zero!.coverage).toBeGreaterThan(0.9);
+      // Frame 0 is the build's own pose: no part is off, and nothing asks to refit the rest pose.
+      expect(fit.zero!.shifted).toBe(0);
+      expect(fit.hints.join(" ")).not.toMatch(/frame 0/);
       // The video repeats every 40 frames; two loops of it are folded into the plan's one.
       expect(Math.abs(fit.loop!.period - 40)).toBeLessThan(1);
       expect(fit.loop!.cycles).toBe(2);
@@ -233,6 +236,32 @@ describe("fit-video: a reference video drives the motion (ADR-036)", () => {
       expect(lines.some((l) => l.startsWith("round 1: penalty 0 (passed)"))).toBe(true);
     },
     600_000,
+  );
+
+  it.skipIf(!hasFfmpeg)(
+    "asks for the rest pose only when the video's frame 0 is off the build's",
+    async () => {
+      const { ws, plan } = await workspace();
+      // The video starts from another rest pose: spine and arm turned on every frame.
+      const target = moving(plan);
+      target.motion.animations[0]!.pose = { spine: { rotate: 8 }, arm_r: { rotate: -15 } };
+      await writeFile(join(ws, "target.json"), JSON.stringify(target));
+      await buildCharacterFiles(join(ws, "plan.json"), join(ws, "build"));
+      await buildCharacterFiles(join(ws, "target.json"), join(ws, "target"));
+      const clip = await video(ws, join(ws, "target"), join(ws, "off.mp4"));
+      const fit = await fitVideoFiles(join(ws, "plan.json"), join(ws, "build"), join(ws, "fit"), {
+        video: clip,
+        every: 4,
+        rounds: 1,
+      });
+      // Half the figure by area is drawn away from the build's frame 0: the hint names it.
+      expect(fit.zero!.shifted).toBeGreaterThan(0.25);
+      expect(fit.zero!.largestOffset).toMatchObject({ channel: "rotate" });
+      expect(fit.hints.join("\n")).toMatch(
+        /frame 0 of the video draws \d+% of the matched parts \(by area: .*Body.*\) more than 1.5% of the figure height .*rest pose is off/,
+      );
+    },
+    300_000,
   );
 
   it.skipIf(!hasFfmpeg)(

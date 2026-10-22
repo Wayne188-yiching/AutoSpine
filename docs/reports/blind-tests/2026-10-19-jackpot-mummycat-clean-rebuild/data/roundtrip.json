@@ -1,0 +1,44 @@
+{
+  "bones": 51,
+  "slots": 77,
+  "meshes": 91,
+  "vertices": 1457,
+  "ik": 0,
+  "transform": 3,
+  "animations": [
+    {
+      "name": "clap",
+      "boneTimelines": 20
+    },
+    {
+      "name": "idle",
+      "boneTimelines": 14
+    },
+    {
+      "name": "idle2",
+      "boneTimelines": 13
+    },
+    {
+      "name": "idle_clap",
+      "boneTimelines": 12
+    },
+    {
+      "name": "in",
+      "boneTimelines": 15
+    }
+  ],
+  "maxVertexDeltaPx": 0.03690809623685709,
+  "samples": 1102,
+  "semanticMismatch": [],
+  "pass": true,
+  "method": "Official Spine 4.0.64 binary export read by official spine-core 4.0 runtime",
+  "sampling": "120 FPS +100 microseconds away from float32/key-time boundaries; final sample before duration",
+  "where": {
+    "animation": "idle2",
+    "frame120": 244,
+    "time": 2.0334333333333334,
+    "slot": "tou_1_1",
+    "vertex": 127
+  },
+  "diagnostic": "The first JSON-export comparison was not a valid storage test: JSON export rounded curve times to 0.001 seconds. Official binary export preserves them."
+}

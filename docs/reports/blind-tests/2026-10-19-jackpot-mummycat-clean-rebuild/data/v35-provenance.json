@@ -1,0 +1,24 @@
+{
+  "method": "Mechanism-informed, independently authored; not blind.",
+  "base": "plan-27-logic.json",
+  "excluded": "Plans 28-32 contain direct sampled artist channel transfer. They are excluded from this deliverable.",
+  "rules": {
+    "feet": "Four independently constructed two-bone IK chains plant feet and reach wrist goals.",
+    "hands": "Analytic 15-frame contacts carried by a 60-frame lean, bounded to arm reach.",
+    "torso": "30-frame breaths alternate strong and weak. A new hips-to-head weight gradient bridges the neck.",
+    "face": "Independent dome, follower eyes, pupil looks and eyelid controls.",
+    "fingers": "Small analytic curls, never sampled source rotations.",
+    "tail": "Independent harmonic curves from summarized range and relative phase; bounded entry whip.",
+    "entry": "Sparse semantic arrival, stretch, squash and settle poses, measured from reference behavior, not original key arrays.",
+    "transition": "Own idle wrist and palm controls interpolate smoothly into own clap-ready controls over four frames."
+  },
+  "notCopied": [
+    "artist bone records",
+    "artist mesh/UV/triangles",
+    "artist weights",
+    "artist deform arrays",
+    "artist animation key arrays",
+    "direct sampled artist channels"
+  ],
+  "finalPlan": "plan-35-independent.json"
+}

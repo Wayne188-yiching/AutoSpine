@@ -1,0 +1,827 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Jackpot 木乃伊貓 · 重建與驗收</title><style>body{max-width:1080px;margin:40px auto;padding:0 20px;background:#08131b;color:#f3f6f7;font:17px/1.7 "Microsoft JhengHei",sans-serif}a{color:#ff9a5c}video{width:100%;background:#050d12}table{width:100%;border-collapse:collapse}th,td{border:1px solid #375264;padding:12px;text-align:left}pre{overflow:auto;white-space:pre-wrap;font-size:13px}details{padding:12px;border:1px solid #375264;margin:10px 0}small{color:#a9bcc3}</style><h1>Jackpot Game 木乃伊貓 · 五段重建</h1><p>2026-10-19 · 參考原作演出，從圖片擺位重新製作。屬參考仿作／影像擬合，未列入未見原作盲測成績，尚未獲美術認可。</p><video controls playsinline preload="metadata" poster="video/JackpotMummyCat-idle.jpg"><source src="video/JackpotMummyCat-all5-review.mp4" type="video/mp4"></video><p>左人工，右實際交付的 AutoSpine 專案官方重新匯出；每段依序佈線、骨架、完整動態。in → idle → idle2 → idle_clap → clap。四幀銜接各階段重播四次便於查看；進場採較寬取景。</p><h2>清除與來源保護</h2><p>原專案與 273 份圖片已備份並核對一致。乾淨副本只有一根 root、零人工骨架、零權重、零約束、零動畫。保留 92 個圖片 region 及 14 個由 strip-images 生成的四角擺位載體，用來表達靜態圖片斜切；並非沿用人工佈線。原作 95 個人工網格均已清除。</p><p>原 setup 有非仿射拉形，17 個附件無法僅以圖片擺位重現，最大落差 53.27 px。此限制保留在紀錄中，沒有複製原網格、UV 裁切、權重或變形鍵來消除誤差。</p><h2>交付</h2><p>51 根骨，91 個網格，1457 頂點，0 個 IK、3 個 Transform 約束。官方 Spine 4.0.64 存檔往返 PASS，1102 次取樣，最大頂點差 0.0369 px。</p><p>新骨架包含主身體骨、左右臂與手指、雙腿、耳朵與尾巴骨鏈、臉部滑動和雙眼跟隨控制。腿部姿勢固定，避免相似繃帶被追蹤成左右腿交叉。</p><h2>V1–V4 參考比對</h2><p>依序為輪廓、部件位置、整體節奏與幅度、循環接點。單次動畫沒有 V4；數字通過也不等於美術認可。</p><table><thead><tr><th>事件</th><th>V1 輪廓</th><th>V2 部件</th><th>V3 節奏／幅度</th><th>V4 接點（循環）</th></tr></thead><tbody><tr><th>in</th><td>FAIL<br><small>[0.515,0.384]</small></td><td>FAIL<br><small>[13.45,24.05,&quot;10 parts&quot;]</small></td><td>PASS<br><small>[0,0.79]</small></td><td>不適用</td></tr><tr><th>idle</th><td>FAIL<br><small>[0.8,0.719]</small></td><td>FAIL<br><small>[3.26,10.49,&quot;40 parts&quot;]</small></td><td>FAIL<br><small>[9,0.32]</small></td><td>PASS<br><small>0</small></td></tr><tr><th>idle2</th><td>FAIL<br><small>[0.562,0.083]</small></td><td>FAIL<br><small>[4.9,25.8,&quot;30 parts&quot;]</small></td><td>FAIL<br><small>[-12,7.43]</small></td><td>PASS<br><small>0</small></td></tr><tr><th>idle_clap</th><td>FAIL<br><small>[0.792,0.731]</small></td><td>FAIL<br><small>[0.77,3.24,&quot;10 parts&quot;]</small></td><td>PASS<br><small>[-1,0.87]</small></td><td>不適用</td></tr><tr><th>clap</th><td>FAIL<br><small>[0.651,0.555]</small></td><td>FAIL<br><small>[2.65,34.39,&quot;22 parts&quot;]</small></td><td>FAIL<br><small>[12,0.12]</small></td><td>PASS<br><small>0</small></td></tr></tbody></table><h2>製作方式與限制</h2><p>idle、idle2、idle_clap 使用影像擬合，最多三輪；擬合器只讀乾淨圖片擺位、PNG 與原作渲染影片，輸入雜湊列於紀錄。光暈、眼皮及雙腿不參與剛性部件擬合。眨眼由影片綠色眼睛像素判定：idle 第 20–22 幀，idle2 第 3–4、73–75 幀，idle_clap 第 1 幀起閉眼。</p><p>in 的首幀擬合覆蓋率 0.525、clap 0.438，低於 0.6，該兩次擬合被拒絕，沒有採用。兩段改依可見事件獨立編排升起、過衝、頭臂跟隨、閉眼與左右擺身，再由 AutoSpine 產生骨骼時間軸。沒有複製人工骨架、動畫鍵或每幀頂點。原作的局部網格表情、四肢拉形與光暈裁切尚未完全重現。</p><details><summary>idle：3 輪，第 1 輪最佳，43/48 個取樣接受</summary><p>關鍵姿勢 3 組；{}。</p><pre>{
+  &quot;tracking&quot;: {
+    &quot;span&quot;: {
+      &quot;move&quot;: 99.37,
+      &quot;turn&quot;: 36
+    },
+    &quot;agreement&quot;: {
+      &quot;turn&quot;: 8,
+      &quot;move&quot;: 14.09
+    },
+    &quot;disagree&quot;: {
+      &quot;hips&quot;: [
+        3,
+        6,
+        9,
+        15,
+        18,
+        30,
+        33,
+        36,
+        39
+      ],
+      &quot;spine&quot;: [
+        3,
+        6,
+        9,
+        15,
+        18,
+        30,
+        33,
+        36,
+        39
+      ],
+      &quot;chest&quot;: [
+        15,
+        30,
+        33,
+        60
+      ],
+      &quot;forearm_r&quot;: [
+        36,
+        39
+      ],
+      &quot;hand_r&quot;: [
+        36,
+        39
+      ],
+      &quot;arm_r&quot;: [
+        39,
+        60
+      ],
+      &quot;head&quot;: [
+        60
+      ],
+      &quot;arm_l&quot;: [
+        60
+      ],
+      &quot;forearm_l&quot;: [
+        60
+      ]
+    },
+    &quot;singlePass&quot;: [
+      12,
+      27,
+      45
+    ],
+    &quot;lost&quot;: {
+      &quot;forward&quot;: 17,
+      &quot;backward&quot;: 17
+    }
+  },
+  &quot;unfitted&quot;: [
+    {
+      &quot;bone&quot;: &quot;arm_r&quot;,
+      &quot;parts&quot;: [
+        &quot;shoubi_r_2&quot;
+      ],
+      &quot;share&quot;: 0.42
+    }
+  ],
+  &quot;keys&quot;: {
+    &quot;frames&quot;: 3,
+    &quot;bones&quot;: 27,
+    &quot;perSecond&quot;: 1.5,
+    &quot;prior&quot;: {
+      &quot;category&quot;: &quot;idle&quot;,
+      &quot;perSecond&quot;: 1.5
+    },
+    &quot;error&quot;: 0.604,
+    &quot;capped&quot;: false,
+    &quot;lag&quot;: {}
+  },
+  &quot;hints&quot;: [
+    &quot;arm_r (shoubi_r_2): drawn differently in the video in 58% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;no repeat found in the video: its first 60 frames are taken as one loop&quot;,
+    &quot;folded 1 cycles (frames 0-59); the clip's last cycle comes 0 frames late&quot;,
+    &quot;hips: the forward and backward tracks disagree on 9 of 20 frames (3-9, 15-18, 30-39); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)&quot;,
+    &quot;spine: the forward and backward tracks disagree on 9 of 20 frames (3-9, 15-18, 30-39); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)&quot;,
+    &quot;chest: the forward and backward tracks disagree on 4 of 20 frames (15, 30-33, 60); left as gaps and filled from the frames around them&quot;,
+    &quot;forearm_r: the forward and backward tracks disagree on 2 of 20 frames (36-39); left as gaps and filled from the frames around them&quot;,
+    &quot;hand_r: the forward and backward tracks disagree on 2 of 20 frames (36-39); left as gaps and filled from the frames around them&quot;,
+    &quot;arm_r: the forward and backward tracks disagree on 2 of 20 frames (39, 60); left as gaps and filled from the frames around them&quot;,
+    &quot;head: the forward and backward tracks disagree on 1 of 20 frames (60); left as gaps and filled from the frames around them&quot;,
+    &quot;arm_l: the forward and backward tracks disagree on 1 of 20 frames (60); left as gaps and filled from the frames around them&quot;,
+    &quot;forearm_l: the forward and backward tracks disagree on 1 of 20 frames (60); left as gaps and filled from the frames around them&quot;
+  ]
+}</pre></details><details><summary>idle2：3 輪，第 3 輪最佳，62/70 個取樣接受</summary><p>關鍵姿勢 12 組；{&quot;hips&quot;:7,&quot;spine&quot;:8,&quot;chest&quot;:7,&quot;arm_l&quot;:7,&quot;forearm_l&quot;:8,&quot;hand_l&quot;:8,&quot;forearm_r&quot;:7,&quot;hand_r&quot;:7,&quot;thigh_l&quot;:7,&quot;calf_l&quot;:7,&quot;foot_l&quot;:7,&quot;thigh_r&quot;:7,&quot;calf_r&quot;:7,&quot;foot_r&quot;:7}。</p><pre>{
+  &quot;tracking&quot;: {
+    &quot;span&quot;: {
+      &quot;move&quot;: 104.64,
+      &quot;turn&quot;: 40
+    },
+    &quot;agreement&quot;: {
+      &quot;turn&quot;: 8,
+      &quot;move&quot;: 14.09
+    },
+    &quot;disagree&quot;: {
+      &quot;hips&quot;: [
+        4,
+        8,
+        16,
+        20,
+        36,
+        40,
+        60,
+        68,
+        76,
+        80,
+        88,
+        92,
+        96,
+        100,
+        104,
+        108,
+        116,
+        120
+      ],
+      &quot;spine&quot;: [
+        4,
+        8,
+        20,
+        36,
+        60,
+        68,
+        76,
+        80,
+        88,
+        96,
+        104,
+        108,
+        116,
+        120
+      ],
+      &quot;chest&quot;: [
+        4,
+        8,
+        20,
+        36,
+        60,
+        68,
+        88,
+        92,
+        96,
+        100,
+        104,
+        116,
+        120
+      ],
+      &quot;arm_r&quot;: [
+        8,
+        16,
+        48,
+        60,
+        68,
+        88,
+        92,
+        96,
+        100,
+        104,
+        108,
+        116,
+        120
+      ],
+      &quot;forearm_r&quot;: [
+        16,
+        48,
+        68,
+        76,
+        80,
+        88,
+        104,
+        108,
+        116
+      ],
+      &quot;hand_r&quot;: [
+        16,
+        48,
+        60,
+        76,
+        80,
+        88,
+        92,
+        100,
+        108,
+        116
+      ],
+      &quot;arm_l&quot;: [
+        60,
+        100,
+        104,
+        108,
+        116,
+        120
+      ],
+      &quot;forearm_l&quot;: [
+        76,
+        80,
+        88,
+        92,
+        96,
+        100,
+        104,
+        108
+      ],
+      &quot;hand_l&quot;: [
+        88,
+        92,
+        96,
+        100,
+        104,
+        108,
+        116
+      ],
+      &quot;head&quot;: [
+        104,
+        108,
+        116,
+        120
+      ]
+    },
+    &quot;singlePass&quot;: [
+      28,
+      32,
+      56
+    ],
+    &quot;lost&quot;: {
+      &quot;forward&quot;: 27,
+      &quot;backward&quot;: 28
+    }
+  },
+  &quot;unfitted&quot;: [
+    {
+      &quot;bone&quot;: &quot;arm_r&quot;,
+      &quot;parts&quot;: [
+        &quot;shoubi_r_2&quot;
+      ],
+      &quot;share&quot;: 0.39
+    },
+    {
+      &quot;bone&quot;: &quot;head&quot;,
+      &quot;parts&quot;: [
+        &quot;er_2&quot;,
+        &quot;er_1&quot;,
+        &quot;yanbai_2&quot;,
+        &quot;yanbai_1&quot;,
+        &quot;yan_2&quot;,
+        &quot;yan_1&quot;,
+        &quot;tou_1_2&quot;,
+        &quot;tou_1_1&quot;
+      ],
+      &quot;share&quot;: 0.23
+    }
+  ],
+  &quot;keys&quot;: {
+    &quot;frames&quot;: 12,
+    &quot;bones&quot;: 96,
+    &quot;perSecond&quot;: 3,
+    &quot;prior&quot;: {
+      &quot;category&quot;: &quot;idle&quot;,
+      &quot;perSecond&quot;: 1.5
+    },
+    &quot;error&quot;: 13.106,
+    &quot;capped&quot;: false,
+    &quot;lag&quot;: {
+      &quot;hips&quot;: 7,
+      &quot;spine&quot;: 8,
+      &quot;chest&quot;: 7,
+      &quot;arm_l&quot;: 7,
+      &quot;forearm_l&quot;: 8,
+      &quot;hand_l&quot;: 8,
+      &quot;forearm_r&quot;: 7,
+      &quot;hand_r&quot;: 7,
+      &quot;thigh_l&quot;: 7,
+      &quot;calf_l&quot;: 7,
+      &quot;foot_l&quot;: 7,
+      &quot;thigh_r&quot;: 7,
+      &quot;calf_r&quot;: 7,
+      &quot;foot_r&quot;: 7
+    }
+  },
+  &quot;hints&quot;: [
+    &quot;arm_r (shoubi_r_2): drawn differently in the video in 61% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;head (er_2, er_1, yanbai_2, yanbai_1, yan_2, yan_1, tou_1_2, tou_1_1): drawn differently in the video in 77% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;no repeat found in the video: its first 120 frames are taken as one loop&quot;,
+    &quot;folded 1 cycles (frames 0-119); the clip's last cycle comes 0 frames late&quot;,
+    &quot;hips: the forward and backward tracks disagree on 18 of 30 frames (4-8, 16-20, 36-40, 60, 68, 76-80, 88-108, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)&quot;,
+    &quot;spine: the forward and backward tracks disagree on 14 of 30 frames (4-8, 20, 36, 60, 68, 76-80, 88, 96, 104-108, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)&quot;,
+    &quot;chest: the forward and backward tracks disagree on 13 of 30 frames (4-8, 20, 36, 60, 68, 88-104, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)&quot;,
+    &quot;arm_r: the forward and backward tracks disagree on 13 of 30 frames (8, 16, 48, 60, 68, 88-108, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)&quot;,
+    &quot;forearm_r: the forward and backward tracks disagree on 9 of 30 frames (16, 48, 68, 76-80, 88, 104-108, 116); left as gaps and filled from the frames around them&quot;,
+    &quot;hand_r: the forward and backward tracks disagree on 10 of 30 frames (16, 48, 60, 76-80, 88-92, 100, 108, 116); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)&quot;,
+    &quot;arm_l: the forward and backward tracks disagree on 6 of 30 frames (60, 100-108, 116-120); left as gaps and filled from the frames around them&quot;,
+    &quot;forearm_l: the forward and backward tracks disagree on 8 of 30 frames (76-80, 88-108); left as gaps and filled from the frames around them&quot;,
+    &quot;hand_l: the forward and backward tracks disagree on 7 of 30 frames (88-108, 116); left as gaps and filled from the frames around them&quot;,
+    &quot;head: the forward and backward tracks disagree on 4 of 30 frames (104-108, 116-120); left as gaps and filled from the frames around them&quot;
+  ]
+}</pre></details><details><summary>idle_clap：3 輪，第 2 輪最佳，4/5 個取樣接受</summary><p>關鍵姿勢 2 組；{}。</p><pre>{
+  &quot;tracking&quot;: {
+    &quot;span&quot;: {
+      &quot;move&quot;: 58.76,
+      &quot;turn&quot;: 12
+    },
+    &quot;agreement&quot;: {
+      &quot;turn&quot;: 8,
+      &quot;move&quot;: 14.1
+    },
+    &quot;disagree&quot;: {
+      &quot;forearm_l&quot;: [
+        4
+      ],
+      &quot;hand_l&quot;: [
+        4
+      ]
+    },
+    &quot;singlePass&quot;: [
+      2
+    ],
+    &quot;lost&quot;: {
+      &quot;forward&quot;: 4,
+      &quot;backward&quot;: 3
+    }
+  },
+  &quot;unfitted&quot;: [
+    {
+      &quot;bone&quot;: &quot;arm_r&quot;,
+      &quot;parts&quot;: [
+        &quot;shoubi_r_2&quot;
+      ],
+      &quot;share&quot;: 0.25
+    },
+    {
+      &quot;bone&quot;: &quot;head&quot;,
+      &quot;parts&quot;: [
+        &quot;er_2&quot;,
+        &quot;er_1&quot;,
+        &quot;yanbai_2&quot;,
+        &quot;yanbai_1&quot;,
+        &quot;yan_2&quot;,
+        &quot;yan_1&quot;,
+        &quot;tou_1_2&quot;,
+        &quot;tou_1_1&quot;
+      ],
+      &quot;share&quot;: 0.25
+    }
+  ],
+  &quot;keys&quot;: {
+    &quot;frames&quot;: 2,
+    &quot;bones&quot;: 14,
+    &quot;perSecond&quot;: 15,
+    &quot;prior&quot;: {
+      &quot;category&quot;: &quot;transition&quot;,
+      &quot;perSecond&quot;: 3.33
+    },
+    &quot;error&quot;: 85.621,
+    &quot;capped&quot;: true,
+    &quot;lag&quot;: {}
+  },
+  &quot;hints&quot;: [
+    &quot;arm_r (shoubi_r_2): drawn differently in the video in 75% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;head (er_2, er_1, yanbai_2, yanbai_1, yan_2, yan_1, tou_1_2, tou_1_1): drawn differently in the video in 75% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;the key cap (twice the transition key density) held: the keys stay within 85.621x their tolerance (0.5 degree or px, or twice a channel's fit noise)&quot;,
+    &quot;forearm_l: the forward and backward tracks disagree on 1 of 4 frames (4); left as gaps and filled from the frames around them&quot;,
+    &quot;hand_l: the forward and backward tracks disagree on 1 of 4 frames (4); left as gaps and filled from the frames around them&quot;
+  ]
+}</pre></details><h2>可見品質缺陷</h2><p><strong>idle2 有可見翻折：</strong>身體 26、身體光暈 7、右臂與光暈共 5 個翻折紀錄；接縫最大漂移 38.219 px，超過 11 px 門檻。這版可供檢視與接手，尚未達可直接投入正式使用的美術品質。</p><p>存檔驗證使用官方二進位匯出，120 FPS 加 100 微秒避開時間邊界，共 1,102 次取樣。初次 JSON 匯出將曲線時間捨入到 0.001 秒，產生約 11 px 的假性存檔差異；二進位驗證確認實際 .spine 最大差異為 0.0369 px。</p><h2>A–D 人工版本對照</h2><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;A1 imagesOnly fit (shown slots) &lt;= 2 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.017
+    },
+    {
+      &quot;id&quot;: &quot;A2 setup placement &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.011
+    },
+    {
+      &quot;id&quot;: &quot;A4 loop seam clap &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.001
+    },
+    {
+      &quot;id&quot;: &quot;A4 loop seam idle &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    },
+    {
+      &quot;id&quot;: &quot;A4 loop seam idle2 &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose clap: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.0241 / 0.0912&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose idle: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.026 / 0.0523&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose idle2: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;0.0569 / 0.0875&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose idle_clap: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.0225 / 0.0704&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose in: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;0.1863 / 0.339&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions clap = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions idle = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions idle2 = 0&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: {
+        &quot;mnm/shenti_1s&quot;: 7,
+        &quot;shenti_1&quot;: 26,
+        &quot;shoubi_r_1s&quot;: 1,
+        &quot;shoubi_r_1&quot;: 1,
+        &quot;mnm/shoubi_r_2s&quot;: 2,
+        &quot;shoubi_r_2&quot;: 1
+      }
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions idle_clap = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions in = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B2 seam drift &lt;= 11 px&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 38.219
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch clap &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.539 / 1.325&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch idle &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.663 / 1.187&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch idle2 &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.992 / 1.431&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch idle_clap &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.902 / 1.401&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch in &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.514 / 1.355&quot;
+    },
+    {
+      &quot;id&quot;: &quot;C1 attachments = 106&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 106
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall clap &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 0.778
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision clap &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall idle &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 0.792
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision idle &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall idle2 &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 0.792
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision idle2 &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall idle_clap &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 0.792
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision idle_clap &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall in &gt;= 0.8&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision in &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic clap &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;3/13&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic idle &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;5/13&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic idle2 &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;4/13&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic idle_clap &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;12/16&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic in &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;4/16&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude clap &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 0.057
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude idle &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 0.526
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude idle2 &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: 0
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude idle_clap &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.816
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude in &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;pass&quot;: false
+}</pre><h2>全部量測與提示</h2><details><summary>in · 未通過</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.515,
+        0.384
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        13.45,
+        24.05,
+        &quot;10 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: [
+        0,
+        0.79
+      ]
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 0-6: shoubi_r_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 1-26: weiba_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 5-30: jio_l_2, jio_l_1, shoubi_l_1, jio_r_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 6-10: shoubi_l_2s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 11-30: shouzhi_l_3, mnm/jio_r_2s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 11-23: mnm/jio_l_2s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 12-15: mnm/jio_r_1s&quot;,
+    &quot;outline differs most at frame 2 (0.07s, overlap 0.38): pose, placement or size&quot;,
+    &quot;shouzhi_r_2: off by 22.5% of the height, moves 1.44x (too big)&quot;,
+    &quot;shouzhi_l_3: off by 20.3% of the height, moves 0.11x (too small)&quot;,
+    &quot;shouzhi_l_1: off by 18.2% of the height, moves 0.40x (too small)&quot;,
+    &quot;shouzhi_r_3: off by 17.2% of the height, moves 2.03x (too big)&quot;
+  ]
+}</pre></details><details><summary>idle · 未通過</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.8,
+        0.719
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        3.26,
+        10.49,
+        &quot;40 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        9,
+        0.32
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 0-15: shoubi_r_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 1-7: weiba_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 9-16: shouzhi_l_5s&quot;,
+    &quot;outline differs most at frame 27 (0.90s, overlap 0.72): pose, placement or size&quot;,
+    &quot;the whole figure moves 9 frames later than the reference&quot;,
+    &quot;the whole figure moves 0.32x as far as the reference (too small)&quot;,
+    &quot;shouzhi_r_3: off by 6.9% of the height, moving differently&quot;,
+    &quot;shoubi_r_1: off by 6.6% of the height, moving differently&quot;,
+    &quot;shouzhi_r_2: off by 6.3% of the height, moving differently&quot;,
+    &quot;mnm/er_2s: off by 5.5% of the height, 12 frames late, moves 0.21x (too small)&quot;
+  ]
+}</pre></details><details><summary>idle2 · 未通過</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.562,
+        0.083
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        4.9,
+        25.8,
+        &quot;30 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        -12,
+        7.43
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 2-50: yan_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 24-97: shoubi_r_1s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 31-44: mnm/shoubi_r_2s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 69-119: shouzhi_r_3&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 71-97: shouzhi_r_1, er_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 76-87: mnm/shenti_1s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 81-102: shoubi_r_2, shouzhi_r_4&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 96-112: shoubi_r_1&quot;,
+    &quot;outline differs most at frame 57 (1.90s, overlap 0.08): pose, placement or size&quot;,
+    &quot;the whole figure moves 12 frames earlier than the reference&quot;,
+    &quot;the whole figure moves 7.43x as far as the reference (too big)&quot;,
+    &quot;mnm/er_1s: off by 14.6% of the height&quot;,
+    &quot;shouzhi_r_3: off by 9.9% of the height, 12 frames early&quot;,
+    &quot;er_1: off by 9.7% of the height&quot;,
+    &quot;yan_2: off by 8.7% of the height&quot;
+  ]
+}</pre></details><details><summary>idle_clap · 未通過</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.792,
+        0.731
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.77,
+        3.24,
+        &quot;10 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: [
+        -1,
+        0.87
+      ]
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 0-3: shoubi_l_2&quot;,
+    &quot;outline differs most at frame 4 (0.13s, overlap 0.73): pose, placement or size&quot;,
+    &quot;shenti_1: off by 2.5% of the height, moving differently&quot;,
+    &quot;mnm/jio_l_1s: off by 1.0% of the height, moving differently&quot;,
+    &quot;jio_l_1: off by 0.9% of the height, moving differently&quot;,
+    &quot;jio_l_2: off by 0.8% of the height, moving differently&quot;
+  ]
+}</pre></details><details><summary>clap · 未通過</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.651,
+        0.555
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        2.65,
+        34.39,
+        &quot;22 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        12,
+        0.12
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 0-33: shoubi_l_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 4-26: mnm/tou_1_2s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 22-28: shoubi_r_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 27-42: shoubi_l_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 44-55: shouzhi_l2_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 50-56: shouzhi_l2_8&quot;,
+    &quot;outline differs most at frame 8 (0.27s, overlap 0.55): pose, placement or size&quot;,
+    &quot;the whole figure moves 12 frames later than the reference&quot;,
+    &quot;the whole figure moves 0.12x as far as the reference (too small)&quot;,
+    &quot;mnm/er_2s: off by 30.9% of the height, moving differently&quot;,
+    &quot;shouzhi_l2_3: off by 27.4% of the height, moving differently&quot;,
+    &quot;shouzhi_l2_2: off by 26.1% of the height, moving differently&quot;,
+    &quot;er_1: off by 24.5% of the height, moving differently&quot;
+  ]
+}</pre></details><p><a href="data/reference.json">V1–V4 原始結果</a> · <a href="data/artistAcceptance.json">A–D 原始結果</a> · <a href="data/fitRuns.json">擬合各輪、週期、伸縮、鍵數與輸入雜湊</a> · <a href="data/roundtrip.json">官方往返</a> · <a href="data/sourceProtection.json">來源保護</a></p><p><a href="data/HANDOVER.md">完整骨架、權重與動畫接手說明</a></p></html>

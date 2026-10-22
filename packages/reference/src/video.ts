@@ -487,6 +487,17 @@ export function mirrorSimilarity(
 }
 
 /**
+ * Whether a part found mirrored shows flipped rather than redrawn: the mirror image must match
+ * better than the part the right way round (`flipped`, `unflipped`: their best scores in the frame)
+ * by at least half of what a flip gives a part this asymmetric (1 - `symmetry`, its
+ * `mirrorSimilarity`). A part whose drawing changes, such as an expression or a mesh deform,
+ * matches poorly either way round, and either may win by a little.
+ */
+export function clearlyMirrored(flipped: number, unflipped: number, symmetry: number): boolean {
+  return flipped - unflipped >= 0.5 * (1 - symmetry);
+}
+
+/**
  * The longest run of frames in which a part showed mirrored, as [first, last], when it covers at
  * least `minRun` frames; null otherwise. Frames where it was not found neither break nor extend it.
  */

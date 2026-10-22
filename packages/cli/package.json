@@ -15,6 +15,10 @@
       "types": "./dist/character.d.ts",
       "import": "./dist/character.js"
     },
+    "./version": {
+      "types": "./dist/version.d.ts",
+      "import": "./dist/version.js"
+    },
     "./keys": {
       "types": "./dist/keys.d.ts",
       "import": "./dist/keys.js"

@@ -1,0 +1,419 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>木乃伊貓 · 動作邏輯重建</title><style>body{max-width:1080px;margin:40px auto;padding:0 20px;background:#08131b;color:#f3f6f7;font:17px/1.7 "Microsoft JhengHei",sans-serif}a{color:#ff9a5c}video{width:100%;background:#050d12}table{width:100%;border-collapse:collapse}th,td{border:1px solid #375264;padding:12px;text-align:left}pre{overflow:auto;white-space:pre-wrap;font-size:13px}details{padding:12px;border:1px solid #375264;margin:10px 0}small{color:#a9bcc3}</style><h1>Jackpot Game 木乃伊貓 · 動作邏輯重建</h1><p>2026-10-19 · 版本 35 · 參考調校，未列入盲測，尚未獲美術認可。</p><video controls playsinline preload="metadata" poster="video/JackpotMummyCat-v35-idle.jpg"><source src="video/JackpotMummyCat-v35-all5-review.mp4" type="video/mp4"></video><p>左人工；右實際交付 .spine 經官方 Spine 4.0.64 重新匯出。每段佈線 → 骨架 → 完整動態。in → idle → idle2 → idle_clap → clap；四幀銜接段各模式重播四次。</p><h2>推得的規則與重建方式</h2><p>人工動畫有可重建的控制邏輯：腳掌固定、腿追隨身體；手腕目標與掌面旋轉分開；拍手每 15 幀一次、身體每 60 幀左右擺；待機每 30 幀呼吸且強弱交替；轉頭由頭、臉部滑動、眼白跟隨、瞳孔和眼皮分層完成；尾巴用根部至尾端的相位差形成彎曲。</p><p>新版使用乾淨圖片擺位，重新產生骨架、網格、權重及時間軸。手腳使用四組新的雙骨 IK；頸部由骨盆至頭部的漸變權重銜接；合掌與尾巴由獨立公式產生，進場採重新編排的少量語意姿勢。沒有照搬人工骨架、網格、UV、權重、變形鍵或動畫鍵陣列。直接取樣原骨骼軌跡的中間實驗已排除，並未用於此交付版。此結果是參考原作邏輯的調校，不能列為盲測。</p><h2>本次改善與驗證</h2><p>首輪接縫漂移 38.219 px → 本版標準取樣 10.462 px（門檻 11 px）。五段標準檢查均無可見翻折，另以 120 FPS 全段檢查確認零可見翻折。五段動態部件召回率 95.6–100%，動作幅度 D2 全部通過。拍手、idle、idle_clap 的節奏與表演 D1 通過；idle2 與 in 仍未通過。</p><p>交付含 57 根新骨、4 組 IK、3 組 Transform。官方存檔往返 PASS，120 FPS 取樣 1101 次、最大頂點差 0.0089 px。原專案及 273 份圖片均與備份一致。</p><h2>V1–V4 參考影片檢查</h2><table><thead><tr><th>動畫</th><th>V1 輪廓</th><th>V2 部件位置</th><th>V3 整體節奏／幅度</th><th>V4 循環接點</th></tr></thead><tbody><tr><th>clap</th><td>FAIL<br><small>[0.845,0.791]</small></td><td>FAIL<br><small>[1.58,7.04,&quot;24 parts&quot;]</small></td><td>PASS<br><small>[0,0.9]</small></td><td>PASS<br><small>0</small></td></tr><tr><th>idle</th><td>FAIL<br><small>[0.896,0.864]</small></td><td>FAIL<br><small>[0.97,2.82,&quot;41 parts&quot;]</small></td><td>PASS<br><small>[-1,1.21]</small></td><td>PASS<br><small>0</small></td></tr><tr><th>idle2</th><td>FAIL<br><small>[0.875,0.845]</small></td><td>FAIL<br><small>[0.95,5.17,&quot;41 parts&quot;]</small></td><td>FAIL<br><small>[0,1.44]</small></td><td>PASS<br><small>0</small></td></tr><tr><th>idle_clap</th><td>FAIL<br><small>[0.84,0.798]</small></td><td>FAIL<br><small>[0.7,1.15,&quot;13 parts&quot;]</small></td><td>PASS<br><small>[0,0.76]</small></td><td>不適用</td></tr><tr><th>in</th><td>FAIL<br><small>[0.746,0.679]</small></td><td>FAIL<br><small>[5.44,11.68,&quot;28 parts&quot;]</small></td><td>PASS<br><small>[0,0.97]</small></td><td>不適用</td></tr></tbody></table><h2>已知差異</h2><p><strong>仍未達完整人工品質：</strong>進場首姿勢及 idle2、in 的細部表演檢查未通過；五段的部件位置比對仍未全面達標。原 setup 的非仿射拉形、臉部局部表情、手指曲線和光暈裁切仍有差異。原始非仿射擺位有 17 個附件實例無法只用圖片擺位保留，最大差 53.27 px。對照影片的軟體渲染未重現原作的局部光暈遮罩，因此光暈差異也會影響分數。數值通過不等於美術認可。</p><h2>A–D 原始驗收</h2><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;A1 imagesOnly fit (shown slots) &lt;= 2 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.017
+    },
+    {
+      &quot;id&quot;: &quot;A2 setup placement &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.011
+    },
+    {
+      &quot;id&quot;: &quot;A4 loop seam clap &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.002
+    },
+    {
+      &quot;id&quot;: &quot;A4 loop seam idle &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.001
+    },
+    {
+      &quot;id&quot;: &quot;A4 loop seam idle2 &lt;= 0.5 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.001
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose clap: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.0244 / 0.0544&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose idle: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.002 / 0.0279&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose idle2: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.002 / 0.0279&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose idle_clap: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.0043 / 0.0294&quot;
+    },
+    {
+      &quot;id&quot;: &quot;A6 rest pose in: median &lt;= 0.03, p90 &lt;= 0.1 hw&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;0.0552 / 0.0842&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions clap = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions idle = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions idle2 = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions idle_clap = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B1 visible inversions in = 0&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: {}
+    },
+    {
+      &quot;id&quot;: &quot;B2 seam drift &lt;= 11 px&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 10.462
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch clap &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.798 / 1.325&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch idle &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.972 / 1.187&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch idle2 &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.964 / 1.431&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch idle_clap &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.728 / 1.401&quot;
+    },
+    {
+      &quot;id&quot;: &quot;B3 stretch in &lt;= 1.5 x artist&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;0.637 / 1.355&quot;
+    },
+    {
+      &quot;id&quot;: &quot;C1 attachments = 106&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 106
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall clap &gt;= 0.8&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.956
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision clap &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall idle &gt;= 0.8&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.958
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision idle &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall idle2 &gt;= 0.8&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.958
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision idle2 &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall idle_clap &gt;= 0.8&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.958
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision idle_clap &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C2 recall in &gt;= 0.8&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;C3 precision in &gt;= 0.7&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic clap &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;10/13&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic idle &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;8/13&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic idle2 &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;4/13&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic idle_clap &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: &quot;11/16&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D1 critic in &gt;= 60%&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: &quot;8/16&quot;
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude clap &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.953
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude idle &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.957
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude idle2 &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.957
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude idle_clap &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0.63
+    },
+    {
+      &quot;id&quot;: &quot;D2 amplitude in &gt;= 60%&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 1
+    }
+  ],
+  &quot;pass&quot;: false
+}</pre><h2>各段提示</h2><details><summary>clap</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.845,
+        0.791
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        1.58,
+        7.04,
+        &quot;24 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: [
+        0,
+        0.9
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 5-13: shoubi_l_2s&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 22-28: shouzhi_l2_8&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 33-40: shoubi_l_2, shoubi_l_1, shoubi_r_2&quot;,
+    &quot;outline differs most at frame 22 (0.73s, overlap 0.79): pose, placement or size&quot;,
+    &quot;mnm/er_2s: off by 6.2% of the height&quot;,
+    &quot;er_2: off by 5.3% of the height&quot;,
+    &quot;er_1: off by 4.0% of the height&quot;,
+    &quot;yanpi_1: off by 3.1% of the height&quot;
+  ]
+}</pre></details><details><summary>idle</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.896,
+        0.864
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.97,
+        2.82,
+        &quot;41 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: [
+        -1,
+        1.21
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 25-35: shoubi_r_1&quot;,
+    &quot;outline differs most at frame 30 (1.00s, overlap 0.86): pose, placement or size&quot;,
+    &quot;shouzhi_l_4: off by 2.2% of the height&quot;,
+    &quot;mnm/er_1s: off by 1.4% of the height&quot;,
+    &quot;yan_2: off by 1.4% of the height, moves 1.61x (too big)&quot;,
+    &quot;yanbai_2: off by 1.4% of the height, moves 1.46x (too big)&quot;
+  ]
+}</pre></details><details><summary>idle2</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.875,
+        0.845
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.95,
+        5.17,
+        &quot;41 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0,
+        1.44
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: 0
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 6-21: yan_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 25-43: shoubi_r_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 42-72: shouzhi_l_2&quot;,
+    &quot;outline differs most at frame 86 (2.87s, overlap 0.85): pose, placement or size&quot;,
+    &quot;the whole figure moves 1.44x as far as the reference (too big)&quot;,
+    &quot;yan_1: off by 4.2% of the height, moves 0.57x (too small)&quot;,
+    &quot;yan_2: off by 4.1% of the height, moves 0.69x (too small)&quot;,
+    &quot;mnm/er_2s: off by 3.5% of the height&quot;,
+    &quot;shouzhi_l_4: off by 3.4% of the height, moves 0.71x (too small)&quot;
+  ]
+}</pre></details><details><summary>idle_clap</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.84,
+        0.798
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.7,
+        1.15,
+        &quot;13 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: [
+        0,
+        0.76
+      ]
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 0-4: shoubi_l_2, shoubi_r_2&quot;,
+    &quot;outline differs most at frame 2 (0.07s, overlap 0.80): pose, placement or size&quot;,
+    &quot;mnm/jio_l_1s: off by 1.0% of the height, moving differently&quot;,
+    &quot;jio_l_1: off by 0.9% of the height, moving differently&quot;,
+    &quot;shenti_1_1: off by 0.8% of the height, moving differently&quot;,
+    &quot;jio_l_3: off by 0.8% of the height, moving differently&quot;
+  ]
+}</pre></details><details><summary>in</summary><pre>{
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        0.746,
+        0.679
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+      &quot;ok&quot;: false,
+      &quot;value&quot;: [
+        5.44,
+        11.68,
+        &quot;28 parts&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+      &quot;ok&quot;: true,
+      &quot;value&quot;: [
+        0,
+        0.97
+      ]
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;drawn mirrored (left-right) in the reference on frames 0-4: yan_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 0-8: shoubi_l_1&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 8-30: shouzhi_l_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 10-15: shoubi_r_2&quot;,
+    &quot;drawn mirrored (left-right) in the reference on frames 25-29: shoubi_r_1&quot;,
+    &quot;outline differs most at frame 9 (0.30s, overlap 0.68): pose, placement or size&quot;,
+    &quot;shouzhi_l_3: off by 11.0% of the height&quot;,
+    &quot;shouzhi_l_2: off by 10.1% of the height&quot;,
+    &quot;shouzhi_r_3: off by 8.9% of the height&quot;,
+    &quot;yan_1: off by 5.9% of the height&quot;
+  ]
+}</pre></details><p><a href="data/v35-provenance.json">重建來源</a> · <a href="data/v35-reference.json">V1–V4</a> · <a href="data/v35-artistAcceptance.json">A–D</a> · <a href="data/v35-denseDeformation.json">120 FPS 翻折檢查</a> · <a href="data/v35-roundtrip.json">官方存檔往返</a> · <a href="data/v35-sourceProtection.json">來源保護</a> · <a href="quality-report.html">第一輪紀錄</a></p></html>

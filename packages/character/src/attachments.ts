@@ -23,7 +23,7 @@ import {
   transferWeights,
   type DomePin,
 } from "@autospine/weights";
-import { apply, type CharacterPart, type Vec } from "./geometry.js";
+import { apply, invert, type CharacterPart, type Vec } from "./geometry.js";
 import type { PartIndex } from "./joints.js";
 import type { PlannedRig } from "./rig.js";
 
@@ -41,18 +41,6 @@ type Mesh2D = {
 };
 
 const safeId = (s: string) => s.replace(/[^A-Za-z0-9_]/g, "_");
-/**
- * Artist vertex budget (ADR-024), from 423 artist character meshes (HorseYearFish, mummy cat):
- * s = sqrt(image width x height) px; hull round(sqrt s) in 6..40; interior 0 below s 100, else
- * round(s / 80).
- */
-export function artistBudget(width: number, height: number): { hull: number; interior: number } {
-  const s = Math.sqrt(width * height);
-  return {
-    hull: Math.min(40, Math.max(6, Math.round(Math.sqrt(s)))),
-    interior: s < 100 ? 0 : Math.round(s / 80),
-  };
-}
 const collapsed = (p: CharacterPart) =>
   Math.abs(p.affine[0] * p.affine[3] - p.affine[1] * p.affine[2]) < 1e-9;
 export function assetFor(p: CharacterPart, id: string, alpha: Uint8Array = p.alpha): AssetSpec {
@@ -131,28 +119,81 @@ export function planAttachments(
     if (!b) failStage("weights", "PLAN_BONE", `Weights reference unknown bone ${id}`);
     return b.length;
   };
+  /** Bones that will weight a planned mesh (ADR-041); rigid weights bend nothing. */
+  const weightBones = (w: MeshPlan["weights"]): string[] => {
+    switch (w.type) {
+      case "chain":
+        return w.bones ?? (w.chain ? (rigged.chains[w.chain] ?? []) : []);
+      case "gradient":
+        return [w.from, w.to];
+      case "nearest":
+        return w.bones;
+      case "dome":
+        return plan.face
+          ? [plan.face.base, plan.face.control, ...(plan.face.counter ? [plan.face.counter] : [])]
+          : [];
+      case "transfer": {
+        const ids = w.sources.flatMap(
+          (name) =>
+            meshes.get(name)?.weights.vertices.flatMap((v) => v.influences.map((i) => i.boneId)) ??
+            [],
+        );
+        return [...new Set([...ids, ...(w.proxies ?? []).map((x) => x.bone)])];
+      }
+      case "rigid":
+        return [];
+    }
+  };
+  /** Those bones in the part's image pixels; a joint where the parent is one of them too. */
+  const imageBones = (ids: string[], p: CharacterPart) => {
+    if (collapsed(p)) return [];
+    const inv = invert(p.affine),
+      set = new Set(ids);
+    return ids.flatMap((id) => {
+      const f = rigged.world.get(id),
+        b = rig.bones.find((x) => x.id === id);
+      if (!f || !b) return [];
+      const r = (f.a * Math.PI) / 180;
+      return [
+        {
+          origin: apply(inv, f.o),
+          tip: apply(inv, [f.o[0] + b.length * Math.cos(r), f.o[1] + b.length * Math.sin(r)]),
+          joint: b.parentId !== undefined && set.has(b.parentId),
+        },
+      ];
+    });
+  };
+  // ADR-042: parts that control-point deforms move bend like parts on bones.
+  const keyed = new Set(
+    (plan.motion.deforms ?? []).flatMap((d) => d.parts.map((n) => index.part(n).key)),
+  );
   const shape = (
     spec: MeshPlan["mesh"],
     p: CharacterPart,
+    bones: string[] = [],
   ): { asset: AssetSpec; mesh: MeshSpec; rings?: number[][] } => {
     const id = safeId(p.key === p.slot ? p.slot : p.key);
     switch (spec.type) {
       case "feature": {
         const asset = assetFor(p, id);
-        // ADR-038: the artist budget unless the plan asks for the engine's fine lattice; a
-        // default budget keeps hole rings (eye sockets), `density: "artist"` covers them (ADR-024).
+        // ADR-041: artist wiring from the outline and the weighting bones unless the plan asks for
+        // the engine's fine lattice; it keeps hole rings (eye sockets, ADR-038) unless
+        // `density: "artist"`, which covers them (ADR-024). Explicit counts override.
         const fine =
-          spec.density === "fine" || spec.spacing !== undefined || spec.edgeLength !== undefined;
-        const budget = fine ? undefined : artistBudget(p.width, p.height);
-        const hullVertices = spec.hullVertices ?? budget?.hull,
-          interiorVertices = spec.interiorVertices ?? budget?.interior;
+            spec.density === "fine" || spec.spacing !== undefined || spec.edgeLength !== undefined,
+          deforms = spec.deform === true || keyed.has(p.key);
         const options = {
           ...(spec.spacing !== undefined ? { spacing: spec.spacing } : {}),
           ...(spec.edgeLength !== undefined ? { edgeLength: spec.edgeLength } : {}),
           ...(spec.minHoleFraction !== undefined ? { minHoleFraction: spec.minHoleFraction } : {}),
-          ...(hullVertices !== undefined ? { hullVertices } : {}),
-          ...(interiorVertices !== undefined ? { interiorVertices } : {}),
-          ...(hullVertices !== undefined && spec.density !== "artist" ? { keepHoles: true } : {}),
+          ...(spec.hullVertices !== undefined ? { hullVertices: spec.hullVertices } : {}),
+          ...(spec.interiorVertices !== undefined
+            ? { interiorVertices: spec.interiorVertices }
+            : {}),
+          ...(fine ? {} : { bones: imageBones(bones, p), ...(deforms ? { deforms } : {}) }),
+          ...((!fine || spec.hullVertices !== undefined) && spec.density !== "artist"
+            ? { keepHoles: true }
+            : {}),
         };
         const r = generateFeatureMesh(asset.parts[0]!, p.alpha, options);
         if (r.discarded) evidence[`${p.key}:alphaPrep`] = { discarded: r.discarded };
@@ -196,7 +237,7 @@ export function planAttachments(
     const p = index.part(m.part);
     if (meshes.has(m.part))
       failStage("mesh", "PLAN_MESH_DUPLICATE", `Part ${m.part} has two mesh plans`);
-    const built = shape(m.mesh, p);
+    const built = shape(m.mesh, p, weightBones(m.weights));
     let weights: WeightSpec;
     const w = m.weights;
     switch (w.type) {
@@ -321,7 +362,7 @@ export function planAttachments(
       mesh = toWorldMesh(quad(p), p, id);
     meshes.set(p.key, { asset: assetFor(p, id), mesh, weights: rigidWeights(mesh, rig, bone) });
   }
-  // ADR-024: every shown region part becomes an artist-density mesh, rigid to its region bone.
+  // ADR-024: every shown region part becomes an artist-wired mesh (ADR-041), rigid to its bone.
   if (plan.meshing?.all) {
     const sets = plan.motion.animations.filter((a) => a.show?.length);
     const shown = (p: CharacterPart) =>

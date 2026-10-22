@@ -136,16 +136,23 @@ export const MeshPlanSchema = Type.Object(
           edgeLength: Type.Optional(Type.Number({ exclusiveMinimum: 0 })),
           minHoleFraction: Type.Optional(Type.Number({ minimum: 0, maximum: 1 })),
           /**
-           * Vertex budget (ADR-024, ADR-038). The default: the artist budget, s = sqrt(image width x
-           * height) px, hull round(sqrt s) clamped to 6..40, interior 0 below s 100 else
-           * round(s / 80) (median of 423 artist character meshes), with enclosed holes kept as
-           * rings. `artist` names that budget but covers holes (as `meshing.all` does). `fine`, or
-           * an explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
-           * whatever the size). Explicit counts override the budget.
+           * Wiring (ADR-041, ADR-038). The default: artist wiring measured on 205 artist meshes,
+           * the hull as many vertices as the opaque outline has corners at 3 % of sqrt(image width
+           * x height), times 0.67 (rigid), 0.9 (one or two weighting bones) or 1.5 (three or more);
+           * interior rows across the joints on two or more bones; enclosed holes kept as rings.
+           * `artist` names that wiring but covers holes (as `meshing.all` does). `fine`, or an
+           * explicit `spacing` or `edgeLength`, is the engine's dense lattice (about 100 vertices
+           * whatever the size). Explicit counts override the wiring.
            */
           density: Type.Optional(Type.Union([Type.Literal("artist"), Type.Literal("fine")])),
           hullVertices: Type.Optional(Type.Integer({ minimum: 3, maximum: 512 })),
           interiorVertices: Type.Optional(Type.Integer({ minimum: 0, maximum: 2048 })),
+          /**
+           * The part is also deformed by mesh deform keys (ADR-042), so it is wired as a part
+           * that bends: hull x0.9 at least and spread interior points. Parts in
+           * `motion.deforms` are marked automatically.
+           */
+          deform: Type.Optional(Type.Boolean()),
         },
         strict,
       ),
@@ -859,7 +866,7 @@ export const CharacterPlanSchema = Type.Object(
     regions: Type.Optional(Type.Record(PartNameSchema, IdSchema)),
     /**
      * ADR-024. `all`: every region part an animation shows (all of them when no animation has
-     * `show`) is meshed at artist density and weighted rigidly to its region bone. Collapsed and
+     * `show`) is meshed with artist wiring and weighted rigidly to its region bone. Collapsed and
      * sheared placements keep their region or quad. `parts` gives chosen region parts their own
      * vertex counts (a mouth that deforms, ADR-037) and meshes them even without `all`.
      */
