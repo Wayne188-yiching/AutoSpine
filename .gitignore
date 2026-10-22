@@ -8,7 +8,7 @@
 # Local acceptance reports containing private artwork and artist mesh data
 /docs/local-reviews/
 
-# Report videos are restored from the archived revision only when needed.
+# Only videos the blind report shows are committed, one by one with git add -f.
 /docs/reports/**/*.mp4
 
 # Dependencies and generated output

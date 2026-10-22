@@ -1,0 +1,2234 @@
+{
+  "idle": {
+    "animation": "idle",
+    "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-idle.mp4",
+    "start": 0,
+    "fps": 30,
+    "label": "reference-fitted",
+    "pass": false,
+    "inputs": [
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\plans\\plan-06-idle.json",
+        "bytes": 25043,
+        "sha256": "6f616456ff85abc93541668b87a72c2653429f91672c36f0c181dd42f82eb3a9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\imagesOnly.json",
+        "bytes": 38626,
+        "sha256": "a46b3096288c88bb825f9068f78ca02aeddb14f293f4c212dd8f856706461245"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_1ss.png",
+        "bytes": 9123,
+        "sha256": "f664fe75b02962f4ab8e6d10a5e15233289a3580c67a6a67ca3eff4f8729c9f1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_2ss.png",
+        "bytes": 8824,
+        "sha256": "698de7b43817303d0898cce60466b3bfe6dd996329849d969cea4d945be41cf7"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_2ss.png",
+        "bytes": 17053,
+        "sha256": "588b31bfadaf3535263345dd3b666fb3c2abb4f85ce822485632e5ba86fe87c8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1ss.png",
+        "bytes": 10108,
+        "sha256": "1ef506453cffa707061f4599949b776466282850745c39f3189f95abdb20ebf4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\weiba_1ss.png",
+        "bytes": 7533,
+        "sha256": "6589f9a57976f653c0dc930fc2b7bb43a14aca58cb720b442dc22616495f9167"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_2ss.png",
+        "bytes": 6439,
+        "sha256": "c8083a6fe786251a6bb8c45017e5acea44020d185e6bb108ce1501b7ec68f298"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_3.png",
+        "bytes": 13102,
+        "sha256": "e001623a15dbb79c47fcd9ee6aacf7f1209130b98d787127f1ee922bddfbf72f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_3ss.png",
+        "bytes": 6279,
+        "sha256": "bc848d529193d6d5c6e31811577f28ad53511870bda6108309d5841ab7cd3911"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_3.png",
+        "bytes": 14489,
+        "sha256": "a28dc4014a3a442357df7893d5db17fc75bfd086f1dcd19bf65f9f966771a450"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_3ss.png",
+        "bytes": 6258,
+        "sha256": "b1ba0e617ecafd6f5bc4e8b23ee3925a286795b2acb34a6592ea11099158c68d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_2.png",
+        "bytes": 20063,
+        "sha256": "795705d595415c2a59505a16d750e63fbe7e00625c86246379e097271521cf41"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_2ss.png",
+        "bytes": 5985,
+        "sha256": "412fd201c6b63d345dba5fdc25c6159d990bca0c31cbe726fff2f1b9fd4360da"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_1.png",
+        "bytes": 24675,
+        "sha256": "e1488819ede153be852e6e66ff92b0bc6fcdabc055abaf1e6e2be34a8c3c3865"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_1ss.png",
+        "bytes": 5893,
+        "sha256": "3ed07c7e451049e3bcde4c9144397c623e69393be7e5e82303c2026ba00645de"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_4ss.png",
+        "bytes": 7508,
+        "sha256": "f7ed7af8829b840c8359c848d52ea05f8bf3e4d72197ed07ad8b4e94dbcc2f63"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l3.png",
+        "bytes": 71293,
+        "sha256": "7b2f199fa5adf0cf43d929b33ec82915ebc9818063ece61a45194fd123bed3e4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_1ss.png",
+        "bytes": 7854,
+        "sha256": "8359ac7dcfe0c57081b50b20a95aaae7b2a3aa40074359cc02ac4b64df7f18bc"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_1ss.png",
+        "bytes": 6973,
+        "sha256": "13efc6ed502fb90219cee22f5f5b44a345ba2ed3ad522f0846934d184d432290"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_5.png",
+        "bytes": 35608,
+        "sha256": "4c4611b9c814559e75906792cd1e9c038c5af5900eba8b63f5daa3263845e667"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_2.png",
+        "bytes": 33825,
+        "sha256": "e6e7c782323756d827d3f0664fee573b10084d0a77d60e0625fa02e8780ffcb4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_3.png",
+        "bytes": 62677,
+        "sha256": "2df377a2fe4b2067f5c82ec53e3592799dc1bfdf38db48c042288cd8a73fe5aa"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_4.png",
+        "bytes": 58731,
+        "sha256": "65f8d42b35c5cb3af3729a7723eb6e0341dabcc484fe67ea5f8e651118158391"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_1ss.png",
+        "bytes": 5252,
+        "sha256": "7051b441852fc9fbb998f74ae3b75833a468961bb092747c3eb1d42d7ad47fa4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_2ss.png",
+        "bytes": 6540,
+        "sha256": "97562344b8d8c0c9e1e8ee9482c17c79f84fd66a50cf05ba528da41952ded3a0"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shou_r_1s.png",
+        "bytes": 17509,
+        "sha256": "a07fbd8b81c271601a6be4e5556c55af9d4525ba48f88d820901e4cda1bae1be"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shou_r_1ss.png",
+        "bytes": 8481,
+        "sha256": "39c9509c396368e4f678a3b1df559dec9db3d92e515c36fe8e9c314fd220b724"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_1.png",
+        "bytes": 31229,
+        "sha256": "ae719bc9ac6506530af2c522e8aeb43d9b1a5ba9365cd52d847b4c819dc24495"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_2.png",
+        "bytes": 12766,
+        "sha256": "2e6689560e5bcc9f085de8d2cf029209059165c6e25b9f8ffdad20824d3c85cb"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_1ss.png",
+        "bytes": 6051,
+        "sha256": "ae3227755c50fea3aac37cca156d4d7ccf827331ce7d932ef6ea4310b4477899"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\weiba_1.png",
+        "bytes": 73640,
+        "sha256": "853af86b352090c2845eb840a555e8d31c015e306a7ec57ef61ad1e95b5aed89"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_3.png",
+        "bytes": 29483,
+        "sha256": "7f5492ef06c80d8b69a98a0d40f4efeffb0fcdcfa52d1867e3f80cb08cb4ba71"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_1.png",
+        "bytes": 15793,
+        "sha256": "cc9a119e6da6433bc9bf2d5fe6351b8b2ae4e0e2d18827b5ff5489e14ec403f1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_2.png",
+        "bytes": 33355,
+        "sha256": "bfe5c9f0a92ba4c6aadd76fd0af3ec14414589decacfcda51e00827e0e1811f9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_1.png",
+        "bytes": 30805,
+        "sha256": "1bd52d126cb62f780bba47646b48bb73008b36ce029c2451ae6f72a632914a4e"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_3.png",
+        "bytes": 22614,
+        "sha256": "6f129027a5f50fc0cff183ac87483c1de767a1fe740c7776f1a3ce44646d39f2"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_2.png",
+        "bytes": 25755,
+        "sha256": "147b43fba59c9fdf2ebb1df929dfc1bc45f5294e79a11513caec0e47e8520f7b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_1.png",
+        "bytes": 36481,
+        "sha256": "39b36995ca7d5f64a51e3f38745f306453e80bb9cb1cdf9a08a9589a5c47c859"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_2.png",
+        "bytes": 34613,
+        "sha256": "1400fe8a57a3678fe0292e206d09cb0f4ad34f67ee37ec5949c89e3c21ecad42"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1_1.png",
+        "bytes": 9277,
+        "sha256": "38f478375bbf8c02b59e2a7504ad9df5d40659cf6760a079d393ac58a6e9d7c6"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1.png",
+        "bytes": 101138,
+        "sha256": "7de5a0e105b02aef96bd97a798014efbbffeda83f8de95042b3db15a340f9d0d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_2.png",
+        "bytes": 69638,
+        "sha256": "0f97f09fbf62773365708c9f058cc574bfd99ffec907f1161bd0525ff888c67b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_2.png",
+        "bytes": 100105,
+        "sha256": "214887db8dfe350a9de32293970033ab35d5a416e969df3a1af56167cbe825f0"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_1.png",
+        "bytes": 90094,
+        "sha256": "4618cdc3397cbcbc6a82d7dc62257e98d3735d10b22bab1afa20a854eaae969a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanbai_2.png",
+        "bytes": 62188,
+        "sha256": "7fdc8ea32435fd62a9380c78c1f3869f49e691030a94a5beaee066ab91d8d80f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanbai_1.png",
+        "bytes": 52639,
+        "sha256": "f69c2629649a8c5ed50133fd7fb438e773e1b785881d02f02488801ab4d27861"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yan_2.png",
+        "bytes": 14714,
+        "sha256": "0ede5d5cff5deddba9035ab2442e120135b6f73afd98a37186cf52fcaebb3878"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yan_1.png",
+        "bytes": 18004,
+        "sha256": "22e8d0abfba7f4b27735641135a7a4eb0d58c489c1ed78632acce5688276b79f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_2.png",
+        "bytes": 450623,
+        "sha256": "931737e279852495177721d5c7557a8a9453b7bedf9b6ce34d6c6421d4627ea8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_2.png",
+        "bytes": 58478,
+        "sha256": "f63dca843db143c50de955c377950f35c8a6d34e927dcfef64b76819536b3f6c"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_2_1.png",
+        "bytes": 21022,
+        "sha256": "ec8ee574ccaf8452b8f2f2f360a9e3e490f2e2386f9ea6f98ed62c7d989603cb"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_1.png",
+        "bytes": 54539,
+        "sha256": "e9123bd052db844924c58b66a300cff0ecd7824268b857f1d3465fd64f1071f9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_1_1.png",
+        "bytes": 21446,
+        "sha256": "2f8503f9d390b002f4f8f03ef8d6801a88dc4d2f2bab3376c7a1a4c1957da6c8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_1.png",
+        "bytes": 513175,
+        "sha256": "3fe819fb84554c3e882f9258e4a7a2e482a60e88845e9c52a9f6335dc5435629"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_1.png",
+        "bytes": 34796,
+        "sha256": "19c5e8a569ea15d36485e004be1ca36b83e3efd04cb4e3b4e82724e10d1780cd"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_4.png",
+        "bytes": 63874,
+        "sha256": "8233606106c0ff3e8167ac3dbea8dcea5562007985a09cddcdc194aaca99e8c1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_5.png",
+        "bytes": 43716,
+        "sha256": "385c8889dcedcd8ff8c729a5f24cfd37ed0c62296da5fe754bd87ec9b8bdef70"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_4.png",
+        "bytes": 24031,
+        "sha256": "a2feb77d2b4911e596b21b8b8e1f73c07879905ec6b70007808c999ffd5751a1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_3.png",
+        "bytes": 15244,
+        "sha256": "f542a5117ef1d9f578dc15ad03724a892477d0721882129af983d29f3a52ba95"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_2.png",
+        "bytes": 18912,
+        "sha256": "b4648e4a2c95542a86eba844f776776ce481aa5420ec37ad447e4a042fd270be"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_1.png",
+        "bytes": 25416,
+        "sha256": "4912113560ba2725a156434e642b7506431e291dca84ab04a64cc85b6ad15de4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_5.png",
+        "bytes": 52166,
+        "sha256": "2221c1035f966bffe9cfd49fcc7207827ce9812b2b8867670671ab507e2cb6c9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_4.png",
+        "bytes": 9063,
+        "sha256": "62dc0223174d5b8d7cc690a32745acbd9659805c5bb013c66f9bf24e1cf10245"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_3.png",
+        "bytes": 18961,
+        "sha256": "9bb248bf291611415edc923d06fada05eb3be76aad2820c02931a04e15470859"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_2.png",
+        "bytes": 27720,
+        "sha256": "9f26709428dceb861c2edb61fe639a30ef7189a618ef919d250fa80141fb7c3d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_1.png",
+        "bytes": 18137,
+        "sha256": "579b876f34b26405e07740eb98d93718a127267c19763b8a2064bbf4a578554a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_3.png",
+        "bytes": 12319,
+        "sha256": "6c05194aa099135805f312228144691e08b6280a116c2f19872d07efbd74ff1e"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_2.png",
+        "bytes": 15450,
+        "sha256": "86a1c55a7b2b6bb68537dfa521c0bcf20f5f292b1e588588d0159177c77fc6e4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_1.png",
+        "bytes": 12941,
+        "sha256": "995689c47656ea29cd0582c44fae4ad2ea90278c95902660156db13bfef9093b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\sdx.png",
+        "bytes": 8535,
+        "sha256": "06c39886c699317add410c8f858d29d25dd2a90ab2aa388a98fab48dc5bfff4a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\SUPER_xx.png",
+        "bytes": 54526,
+        "sha256": "3ce3e25602dee31bd78f29bee9f44382d604188f1142a614769f4dd7cbda106f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\yanwu2.png",
+        "bytes": 22596,
+        "sha256": "4972ba6b6f80f302247b3ddf9ad0139cd3889c4a55daa14bfcfae0730343decf"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\big_xd.png",
+        "bytes": 10939,
+        "sha256": "0bdd07b21dae2d654a689493c9a0b7fc6636ca9817d8afe16864605efbceed00"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-06-idle\\JackpotMummyCat.json",
+        "bytes": 347374,
+        "sha256": "e85cf4e150e75e203eb2b2f148c3356af250200b48940a914e59b473fde31e66"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-idle.mp4",
+        "bytes": 478053,
+        "sha256": "f97422c38f90d65998b7aa39edfafe084e8304596b34bf75abeb86ee50053f5e"
+      }
+    ],
+    "best": {
+      "round": 1,
+      "dir": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle\\best",
+      "plan": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle\\best\\plan.json",
+      "build": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle\\best\\build"
+    },
+    "frames": {
+      "video": 61,
+      "fitted": 48,
+      "accepted": 43,
+      "rejected": [
+        21,
+        24,
+        42,
+        51,
+        54
+      ]
+    },
+    "zero": null,
+    "searchWindow": 99.37,
+    "tracking": {
+      "span": {
+        "move": 99.37,
+        "turn": 36
+      },
+      "agreement": {
+        "turn": 8,
+        "move": 14.09
+      },
+      "disagree": {
+        "hips": [
+          3,
+          6,
+          9,
+          15,
+          18,
+          30,
+          33,
+          36,
+          39
+        ],
+        "spine": [
+          3,
+          6,
+          9,
+          15,
+          18,
+          30,
+          33,
+          36,
+          39
+        ],
+        "chest": [
+          15,
+          30,
+          33,
+          60
+        ],
+        "forearm_r": [
+          36,
+          39
+        ],
+        "hand_r": [
+          36,
+          39
+        ],
+        "arm_r": [
+          39,
+          60
+        ],
+        "head": [
+          60
+        ],
+        "arm_l": [
+          60
+        ],
+        "forearm_l": [
+          60
+        ]
+      },
+      "singlePass": [
+        12,
+        27,
+        45
+      ],
+      "lost": {
+        "forward": 17,
+        "backward": 17
+      }
+    },
+    "loop": {
+      "period": 60,
+      "cycles": 1,
+      "foldFrames": 60,
+      "drift": 0,
+      "cyclesInAnimation": 1,
+      "stretch": 0,
+      "wholeCycles": {
+        "frames": 60,
+        "cycles": 1,
+        "stretch": 0
+      },
+      "oneCycle": true
+    },
+    "unfitted": [
+      {
+        "bone": "arm_r",
+        "parts": [
+          "shoubi_r_2"
+        ],
+        "share": 0.42
+      }
+    ],
+    "freed": [],
+    "rounds": [
+      {
+        "round": 1,
+        "dir": "round-1",
+        "pass": false,
+        "penalty": 14.6201,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.799,
+              0.719
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              3.2,
+              10.5,
+              "40 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              9,
+              0.32
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 0-15: shoubi_r_1",
+          "drawn mirrored (left-right) in the reference on frames 1-7: weiba_1",
+          "drawn mirrored (left-right) in the reference on frames 9-16: shouzhi_l_5s",
+          "outline differs most at frame 27 (0.90s, overlap 0.72): pose, placement or size",
+          "the whole figure moves 9 frames later than the reference",
+          "the whole figure moves 0.32x as far as the reference (too small)",
+          "shouzhi_r_3: off by 6.9% of the height, moving differently",
+          "shouzhi_r_2: off by 6.4% of the height, moving differently",
+          "shoubi_r_1: off by 5.7% of the height, moving differently",
+          "er_2: off by 5.5% of the height, 12 frames late, moves 0.21x (too small)"
+        ],
+        "fitted": 21,
+        "accepted": 16,
+        "keys": {
+          "frames": 3,
+          "bones": 27,
+          "perSecond": 1.5,
+          "prior": {
+            "category": "idle",
+            "perSecond": 1.5
+          },
+          "error": 0.604,
+          "capped": false,
+          "lag": {}
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 9.2
+      },
+      {
+        "round": 2,
+        "dir": "round-2",
+        "pass": false,
+        "penalty": 18.7976,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.769,
+              0.546
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              3.38,
+              18.55,
+              "38 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              3,
+              3.77
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 0-7: shoubi_r_1",
+          "drawn mirrored (left-right) in the reference on frames 9-24: shoubi_l_2s",
+          "drawn mirrored (left-right) in the reference on frames 19-24: yan_2",
+          "drawn mirrored (left-right) in the reference on frames 19-41: mnm/shenti_1s, shenti_1_1",
+          "drawn mirrored (left-right) in the reference on frames 32-43: mnm/shoubi_r_2s",
+          "outline differs most at frame 42 (1.40s, overlap 0.55): pose, placement or size",
+          "the whole figure moves 3 frames later than the reference",
+          "the whole figure moves 3.77x as far as the reference (too big)",
+          "shouzhi_r_3: off by 14.4% of the height, 12 frames early",
+          "shouzhi_r_2: off by 10.4% of the height, moving differently",
+          "shouzhi_l_3: off by 8.7% of the height, moves 1.37x (too big)",
+          "shouzhi_l_2: off by 7.7% of the height, moving differently"
+        ],
+        "fitted": 60,
+        "accepted": 33,
+        "keys": {
+          "frames": 6,
+          "bones": 54,
+          "perSecond": 3,
+          "prior": {
+            "category": "idle",
+            "perSecond": 1.5
+          },
+          "error": 7.8,
+          "capped": true,
+          "lag": {}
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 179.9
+      },
+      {
+        "round": 3,
+        "dir": "round-3",
+        "pass": false,
+        "penalty": 17.1955,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.76,
+              0.611
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              2.84,
+              14.66,
+              "35 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              9,
+              2.39
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 1-13: shoubi_r_1",
+          "drawn mirrored (left-right) in the reference on frames 7-19: shoubi_l_2s",
+          "drawn mirrored (left-right) in the reference on frames 17-30: mnm/shenti_1s",
+          "drawn mirrored (left-right) in the reference on frames 19-24: yan_2",
+          "drawn mirrored (left-right) in the reference on frames 20-39: shenti_1_1",
+          "drawn mirrored (left-right) in the reference on frames 25-30: weiba_1",
+          "drawn mirrored (left-right) in the reference on frames 36-55: shoubi_l_2",
+          "drawn mirrored (left-right) in the reference on frames 40-59: shouzhi_l_1",
+          "drawn mirrored (left-right) in the reference on frames 44-54: jio_l_3",
+          "outline differs most at frame 35 (1.17s, overlap 0.61): pose, placement or size",
+          "the whole figure moves 9 frames later than the reference",
+          "the whole figure moves 2.39x as far as the reference (too big)",
+          "shouzhi_l_3: off by 18.3% of the height, 5 frames early, moves 0.54x (too small)",
+          "shouzhi_l_4: off by 9.5% of the height",
+          "shouzhi_l_2: off by 7.0% of the height",
+          "shouzhi_r_2: off by 6.0% of the height"
+        ],
+        "fitted": 60,
+        "accepted": 30,
+        "keys": {
+          "frames": 6,
+          "bones": 54,
+          "perSecond": 3,
+          "prior": {
+            "category": "idle",
+            "perSecond": 1.5
+          },
+          "error": 4.786,
+          "capped": true,
+          "lag": {}
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 181.5
+      }
+    ],
+    "hints": [
+      "arm_r (shoubi_r_2): drawn differently in the video in 58% of the frames; not fitted, its plan motion stays",
+      "no repeat found in the video: its first 60 frames are taken as one loop",
+      "folded 1 cycles (frames 0-59); the clip's last cycle comes 0 frames late",
+      "hips: the forward and backward tracks disagree on 9 of 20 frames (3-9, 15-18, 30-39); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)",
+      "spine: the forward and backward tracks disagree on 9 of 20 frames (3-9, 15-18, 30-39); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)",
+      "chest: the forward and backward tracks disagree on 4 of 20 frames (15, 30-33, 60); left as gaps and filled from the frames around them",
+      "forearm_r: the forward and backward tracks disagree on 2 of 20 frames (36-39); left as gaps and filled from the frames around them",
+      "hand_r: the forward and backward tracks disagree on 2 of 20 frames (36-39); left as gaps and filled from the frames around them",
+      "arm_r: the forward and backward tracks disagree on 2 of 20 frames (39, 60); left as gaps and filled from the frames around them",
+      "head: the forward and backward tracks disagree on 1 of 20 frames (60); left as gaps and filled from the frames around them",
+      "arm_l: the forward and backward tracks disagree on 1 of 20 frames (60); left as gaps and filled from the frames around them",
+      "forearm_l: the forward and backward tracks disagree on 1 of 20 frames (60); left as gaps and filled from the frames around them"
+    ],
+    "note": "Reference-fitted, not a blind result. Look at best/compare; the numbers do not replace it."
+  },
+  "idle2": {
+    "animation": "idle2",
+    "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-idle2.mp4",
+    "start": 0,
+    "fps": 30,
+    "label": "reference-fitted",
+    "pass": false,
+    "inputs": [
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\plans\\plan-06-idle2.json",
+        "bytes": 25425,
+        "sha256": "a7085ad8b5c7ad1d9fcfd47e719de2f70fcda4126da07b6f96a080b49df30410"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\imagesOnly.json",
+        "bytes": 38626,
+        "sha256": "a46b3096288c88bb825f9068f78ca02aeddb14f293f4c212dd8f856706461245"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_1ss.png",
+        "bytes": 9123,
+        "sha256": "f664fe75b02962f4ab8e6d10a5e15233289a3580c67a6a67ca3eff4f8729c9f1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_2ss.png",
+        "bytes": 8824,
+        "sha256": "698de7b43817303d0898cce60466b3bfe6dd996329849d969cea4d945be41cf7"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_2ss.png",
+        "bytes": 17053,
+        "sha256": "588b31bfadaf3535263345dd3b666fb3c2abb4f85ce822485632e5ba86fe87c8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1ss.png",
+        "bytes": 10108,
+        "sha256": "1ef506453cffa707061f4599949b776466282850745c39f3189f95abdb20ebf4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\weiba_1ss.png",
+        "bytes": 7533,
+        "sha256": "6589f9a57976f653c0dc930fc2b7bb43a14aca58cb720b442dc22616495f9167"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_2ss.png",
+        "bytes": 6439,
+        "sha256": "c8083a6fe786251a6bb8c45017e5acea44020d185e6bb108ce1501b7ec68f298"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_3.png",
+        "bytes": 13102,
+        "sha256": "e001623a15dbb79c47fcd9ee6aacf7f1209130b98d787127f1ee922bddfbf72f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_3ss.png",
+        "bytes": 6279,
+        "sha256": "bc848d529193d6d5c6e31811577f28ad53511870bda6108309d5841ab7cd3911"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_3.png",
+        "bytes": 14489,
+        "sha256": "a28dc4014a3a442357df7893d5db17fc75bfd086f1dcd19bf65f9f966771a450"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_3ss.png",
+        "bytes": 6258,
+        "sha256": "b1ba0e617ecafd6f5bc4e8b23ee3925a286795b2acb34a6592ea11099158c68d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_2.png",
+        "bytes": 20063,
+        "sha256": "795705d595415c2a59505a16d750e63fbe7e00625c86246379e097271521cf41"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_2ss.png",
+        "bytes": 5985,
+        "sha256": "412fd201c6b63d345dba5fdc25c6159d990bca0c31cbe726fff2f1b9fd4360da"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_1.png",
+        "bytes": 24675,
+        "sha256": "e1488819ede153be852e6e66ff92b0bc6fcdabc055abaf1e6e2be34a8c3c3865"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_1ss.png",
+        "bytes": 5893,
+        "sha256": "3ed07c7e451049e3bcde4c9144397c623e69393be7e5e82303c2026ba00645de"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_4ss.png",
+        "bytes": 7508,
+        "sha256": "f7ed7af8829b840c8359c848d52ea05f8bf3e4d72197ed07ad8b4e94dbcc2f63"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l3.png",
+        "bytes": 71293,
+        "sha256": "7b2f199fa5adf0cf43d929b33ec82915ebc9818063ece61a45194fd123bed3e4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_1ss.png",
+        "bytes": 7854,
+        "sha256": "8359ac7dcfe0c57081b50b20a95aaae7b2a3aa40074359cc02ac4b64df7f18bc"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_1ss.png",
+        "bytes": 6973,
+        "sha256": "13efc6ed502fb90219cee22f5f5b44a345ba2ed3ad522f0846934d184d432290"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_5.png",
+        "bytes": 35608,
+        "sha256": "4c4611b9c814559e75906792cd1e9c038c5af5900eba8b63f5daa3263845e667"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_2.png",
+        "bytes": 33825,
+        "sha256": "e6e7c782323756d827d3f0664fee573b10084d0a77d60e0625fa02e8780ffcb4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_3.png",
+        "bytes": 62677,
+        "sha256": "2df377a2fe4b2067f5c82ec53e3592799dc1bfdf38db48c042288cd8a73fe5aa"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_4.png",
+        "bytes": 58731,
+        "sha256": "65f8d42b35c5cb3af3729a7723eb6e0341dabcc484fe67ea5f8e651118158391"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_1ss.png",
+        "bytes": 5252,
+        "sha256": "7051b441852fc9fbb998f74ae3b75833a468961bb092747c3eb1d42d7ad47fa4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_2ss.png",
+        "bytes": 6540,
+        "sha256": "97562344b8d8c0c9e1e8ee9482c17c79f84fd66a50cf05ba528da41952ded3a0"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shou_r_1s.png",
+        "bytes": 17509,
+        "sha256": "a07fbd8b81c271601a6be4e5556c55af9d4525ba48f88d820901e4cda1bae1be"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shou_r_1ss.png",
+        "bytes": 8481,
+        "sha256": "39c9509c396368e4f678a3b1df559dec9db3d92e515c36fe8e9c314fd220b724"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_1.png",
+        "bytes": 31229,
+        "sha256": "ae719bc9ac6506530af2c522e8aeb43d9b1a5ba9365cd52d847b4c819dc24495"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_2.png",
+        "bytes": 12766,
+        "sha256": "2e6689560e5bcc9f085de8d2cf029209059165c6e25b9f8ffdad20824d3c85cb"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_1ss.png",
+        "bytes": 6051,
+        "sha256": "ae3227755c50fea3aac37cca156d4d7ccf827331ce7d932ef6ea4310b4477899"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\weiba_1.png",
+        "bytes": 73640,
+        "sha256": "853af86b352090c2845eb840a555e8d31c015e306a7ec57ef61ad1e95b5aed89"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_3.png",
+        "bytes": 29483,
+        "sha256": "7f5492ef06c80d8b69a98a0d40f4efeffb0fcdcfa52d1867e3f80cb08cb4ba71"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_1.png",
+        "bytes": 15793,
+        "sha256": "cc9a119e6da6433bc9bf2d5fe6351b8b2ae4e0e2d18827b5ff5489e14ec403f1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_2.png",
+        "bytes": 33355,
+        "sha256": "bfe5c9f0a92ba4c6aadd76fd0af3ec14414589decacfcda51e00827e0e1811f9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_1.png",
+        "bytes": 30805,
+        "sha256": "1bd52d126cb62f780bba47646b48bb73008b36ce029c2451ae6f72a632914a4e"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_3.png",
+        "bytes": 22614,
+        "sha256": "6f129027a5f50fc0cff183ac87483c1de767a1fe740c7776f1a3ce44646d39f2"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_2.png",
+        "bytes": 25755,
+        "sha256": "147b43fba59c9fdf2ebb1df929dfc1bc45f5294e79a11513caec0e47e8520f7b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_1.png",
+        "bytes": 36481,
+        "sha256": "39b36995ca7d5f64a51e3f38745f306453e80bb9cb1cdf9a08a9589a5c47c859"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_2.png",
+        "bytes": 34613,
+        "sha256": "1400fe8a57a3678fe0292e206d09cb0f4ad34f67ee37ec5949c89e3c21ecad42"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1_1.png",
+        "bytes": 9277,
+        "sha256": "38f478375bbf8c02b59e2a7504ad9df5d40659cf6760a079d393ac58a6e9d7c6"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1.png",
+        "bytes": 101138,
+        "sha256": "7de5a0e105b02aef96bd97a798014efbbffeda83f8de95042b3db15a340f9d0d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_2.png",
+        "bytes": 69638,
+        "sha256": "0f97f09fbf62773365708c9f058cc574bfd99ffec907f1161bd0525ff888c67b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_2.png",
+        "bytes": 100105,
+        "sha256": "214887db8dfe350a9de32293970033ab35d5a416e969df3a1af56167cbe825f0"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_1.png",
+        "bytes": 90094,
+        "sha256": "4618cdc3397cbcbc6a82d7dc62257e98d3735d10b22bab1afa20a854eaae969a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanbai_2.png",
+        "bytes": 62188,
+        "sha256": "7fdc8ea32435fd62a9380c78c1f3869f49e691030a94a5beaee066ab91d8d80f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanbai_1.png",
+        "bytes": 52639,
+        "sha256": "f69c2629649a8c5ed50133fd7fb438e773e1b785881d02f02488801ab4d27861"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yan_2.png",
+        "bytes": 14714,
+        "sha256": "0ede5d5cff5deddba9035ab2442e120135b6f73afd98a37186cf52fcaebb3878"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yan_1.png",
+        "bytes": 18004,
+        "sha256": "22e8d0abfba7f4b27735641135a7a4eb0d58c489c1ed78632acce5688276b79f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_2.png",
+        "bytes": 450623,
+        "sha256": "931737e279852495177721d5c7557a8a9453b7bedf9b6ce34d6c6421d4627ea8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_2.png",
+        "bytes": 58478,
+        "sha256": "f63dca843db143c50de955c377950f35c8a6d34e927dcfef64b76819536b3f6c"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_2_1.png",
+        "bytes": 21022,
+        "sha256": "ec8ee574ccaf8452b8f2f2f360a9e3e490f2e2386f9ea6f98ed62c7d989603cb"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_1.png",
+        "bytes": 54539,
+        "sha256": "e9123bd052db844924c58b66a300cff0ecd7824268b857f1d3465fd64f1071f9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_1_1.png",
+        "bytes": 21446,
+        "sha256": "2f8503f9d390b002f4f8f03ef8d6801a88dc4d2f2bab3376c7a1a4c1957da6c8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_1.png",
+        "bytes": 513175,
+        "sha256": "3fe819fb84554c3e882f9258e4a7a2e482a60e88845e9c52a9f6335dc5435629"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_1.png",
+        "bytes": 34796,
+        "sha256": "19c5e8a569ea15d36485e004be1ca36b83e3efd04cb4e3b4e82724e10d1780cd"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_4.png",
+        "bytes": 63874,
+        "sha256": "8233606106c0ff3e8167ac3dbea8dcea5562007985a09cddcdc194aaca99e8c1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_5.png",
+        "bytes": 43716,
+        "sha256": "385c8889dcedcd8ff8c729a5f24cfd37ed0c62296da5fe754bd87ec9b8bdef70"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_4.png",
+        "bytes": 24031,
+        "sha256": "a2feb77d2b4911e596b21b8b8e1f73c07879905ec6b70007808c999ffd5751a1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_3.png",
+        "bytes": 15244,
+        "sha256": "f542a5117ef1d9f578dc15ad03724a892477d0721882129af983d29f3a52ba95"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_2.png",
+        "bytes": 18912,
+        "sha256": "b4648e4a2c95542a86eba844f776776ce481aa5420ec37ad447e4a042fd270be"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_1.png",
+        "bytes": 25416,
+        "sha256": "4912113560ba2725a156434e642b7506431e291dca84ab04a64cc85b6ad15de4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_5.png",
+        "bytes": 52166,
+        "sha256": "2221c1035f966bffe9cfd49fcc7207827ce9812b2b8867670671ab507e2cb6c9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_4.png",
+        "bytes": 9063,
+        "sha256": "62dc0223174d5b8d7cc690a32745acbd9659805c5bb013c66f9bf24e1cf10245"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_3.png",
+        "bytes": 18961,
+        "sha256": "9bb248bf291611415edc923d06fada05eb3be76aad2820c02931a04e15470859"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_2.png",
+        "bytes": 27720,
+        "sha256": "9f26709428dceb861c2edb61fe639a30ef7189a618ef919d250fa80141fb7c3d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_1.png",
+        "bytes": 18137,
+        "sha256": "579b876f34b26405e07740eb98d93718a127267c19763b8a2064bbf4a578554a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_3.png",
+        "bytes": 12319,
+        "sha256": "6c05194aa099135805f312228144691e08b6280a116c2f19872d07efbd74ff1e"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_2.png",
+        "bytes": 15450,
+        "sha256": "86a1c55a7b2b6bb68537dfa521c0bcf20f5f292b1e588588d0159177c77fc6e4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_1.png",
+        "bytes": 12941,
+        "sha256": "995689c47656ea29cd0582c44fae4ad2ea90278c95902660156db13bfef9093b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\sdx.png",
+        "bytes": 8535,
+        "sha256": "06c39886c699317add410c8f858d29d25dd2a90ab2aa388a98fab48dc5bfff4a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\SUPER_xx.png",
+        "bytes": 54526,
+        "sha256": "3ce3e25602dee31bd78f29bee9f44382d604188f1142a614769f4dd7cbda106f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\yanwu2.png",
+        "bytes": 22596,
+        "sha256": "4972ba6b6f80f302247b3ddf9ad0139cd3889c4a55daa14bfcfae0730343decf"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\big_xd.png",
+        "bytes": 10939,
+        "sha256": "0bdd07b21dae2d654a689493c9a0b7fc6636ca9817d8afe16864605efbceed00"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-06-idle2\\JackpotMummyCat.json",
+        "bytes": 347653,
+        "sha256": "effa1f813a43ef3ff90a00222f608447a8f85b89786362e2a3b9aeca311d1475"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-idle2.mp4",
+        "bytes": 950715,
+        "sha256": "8da89543c6120e069d406d453c964b9f8d54a6f19772a04bb30828a33fae20bc"
+      }
+    ],
+    "best": {
+      "round": 3,
+      "dir": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle2\\best",
+      "plan": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle2\\best\\plan.json",
+      "build": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle2\\best\\build"
+    },
+    "frames": {
+      "video": 121,
+      "fitted": 70,
+      "accepted": 62,
+      "rejected": [
+        12,
+        24,
+        44,
+        52,
+        64,
+        72,
+        84,
+        112
+      ]
+    },
+    "zero": null,
+    "searchWindow": 104.64,
+    "tracking": {
+      "span": {
+        "move": 104.64,
+        "turn": 40
+      },
+      "agreement": {
+        "turn": 8,
+        "move": 14.09
+      },
+      "disagree": {
+        "hips": [
+          4,
+          8,
+          16,
+          20,
+          36,
+          40,
+          60,
+          68,
+          76,
+          80,
+          88,
+          92,
+          96,
+          100,
+          104,
+          108,
+          116,
+          120
+        ],
+        "spine": [
+          4,
+          8,
+          20,
+          36,
+          60,
+          68,
+          76,
+          80,
+          88,
+          96,
+          104,
+          108,
+          116,
+          120
+        ],
+        "chest": [
+          4,
+          8,
+          20,
+          36,
+          60,
+          68,
+          88,
+          92,
+          96,
+          100,
+          104,
+          116,
+          120
+        ],
+        "arm_r": [
+          8,
+          16,
+          48,
+          60,
+          68,
+          88,
+          92,
+          96,
+          100,
+          104,
+          108,
+          116,
+          120
+        ],
+        "forearm_r": [
+          16,
+          48,
+          68,
+          76,
+          80,
+          88,
+          104,
+          108,
+          116
+        ],
+        "hand_r": [
+          16,
+          48,
+          60,
+          76,
+          80,
+          88,
+          92,
+          100,
+          108,
+          116
+        ],
+        "arm_l": [
+          60,
+          100,
+          104,
+          108,
+          116,
+          120
+        ],
+        "forearm_l": [
+          76,
+          80,
+          88,
+          92,
+          96,
+          100,
+          104,
+          108
+        ],
+        "hand_l": [
+          88,
+          92,
+          96,
+          100,
+          104,
+          108,
+          116
+        ],
+        "head": [
+          104,
+          108,
+          116,
+          120
+        ]
+      },
+      "singlePass": [
+        28,
+        32,
+        56
+      ],
+      "lost": {
+        "forward": 27,
+        "backward": 28
+      }
+    },
+    "loop": {
+      "period": 120,
+      "cycles": 1,
+      "foldFrames": 120,
+      "drift": 0,
+      "cyclesInAnimation": 1,
+      "stretch": 0,
+      "wholeCycles": {
+        "frames": 120,
+        "cycles": 1,
+        "stretch": 0
+      },
+      "oneCycle": true
+    },
+    "unfitted": [
+      {
+        "bone": "arm_r",
+        "parts": [
+          "shoubi_r_2"
+        ],
+        "share": 0.39
+      },
+      {
+        "bone": "head",
+        "parts": [
+          "er_2",
+          "er_1",
+          "yanbai_2",
+          "yanbai_1",
+          "yan_2",
+          "yan_1",
+          "tou_1_2",
+          "tou_1_1"
+        ],
+        "share": 0.23
+      }
+    ],
+    "freed": [],
+    "rounds": [
+      {
+        "round": 1,
+        "dir": "round-1",
+        "pass": false,
+        "penalty": 52.79,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.624,
+              0.556
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              12.32,
+              39.46,
+              "30 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              -12,
+              4.44
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 0-14: shouzhi_l_1, weiba_1, shoubi_l_1",
+          "drawn mirrored (left-right) in the reference on frames 0-40: shoubi_r_2",
+          "drawn mirrored (left-right) in the reference on frames 0-119: mnm/jio_r_2s, jio_l_2, jio_l_1",
+          "drawn mirrored (left-right) in the reference on frames 4-91: mnm/shenti_1s",
+          "drawn mirrored (left-right) in the reference on frames 55-76: yan_2",
+          "drawn mirrored (left-right) in the reference on frames 60-119: jio_l_3",
+          "drawn mirrored (left-right) in the reference on frames 67-119: shoubi_r_1",
+          "outline differs most at frame 101 (3.37s, overlap 0.56): pose, placement or size",
+          "the whole figure moves 12 frames earlier than the reference",
+          "the whole figure moves 4.44x as far as the reference (too big)",
+          "mnm/er_2s: off by 20.7% of the height, 12 frames early, moves 3.41x (too big)",
+          "mnm/er_1s: off by 20.4% of the height, moving differently",
+          "er_1: off by 18.7% of the height, moving differently",
+          "er_2: off by 18.5% of the height, moving differently"
+        ],
+        "fitted": 31,
+        "accepted": 23,
+        "keys": {
+          "frames": 8,
+          "bones": 64,
+          "perSecond": 2,
+          "prior": {
+            "category": "idle",
+            "perSecond": 1.5
+          },
+          "error": 0.873,
+          "capped": false,
+          "lag": {}
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 11.7
+      },
+      {
+        "round": 2,
+        "dir": "round-2",
+        "pass": false,
+        "penalty": 42.8389,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.569,
+              0.062
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              9.58,
+              30.45,
+              "22 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              -9,
+              6.36
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 0-70: jio_r_2",
+          "drawn mirrored (left-right) in the reference on frames 14-28: shoubi_r_1s",
+          "drawn mirrored (left-right) in the reference on frames 15-45: shenti_1_1",
+          "drawn mirrored (left-right) in the reference on frames 51-65: shouzhi_r_5s",
+          "drawn mirrored (left-right) in the reference on frames 55-69: shoubi_l_2s, mnm/shoubi_r_2s",
+          "drawn mirrored (left-right) in the reference on frames 56-73: shoubi_l_1",
+          "drawn mirrored (left-right) in the reference on frames 69-94: yan_1",
+          "drawn mirrored (left-right) in the reference on frames 71-84: shouzhi_r_4",
+          "drawn mirrored (left-right) in the reference on frames 83-95: yanbai_2",
+          "drawn mirrored (left-right) in the reference on frames 86-112: yan_2",
+          "drawn mirrored (left-right) in the reference on frames 93-113: shoubi_r_1",
+          "outline differs most at frame 65 (2.17s, overlap 0.06): pose, placement or size",
+          "the whole figure moves 9 frames earlier than the reference",
+          "the whole figure moves 6.36x as far as the reference (too big)",
+          "shouzhi_l_4: off by 27.8% of the height, moves 0.74x (too small)",
+          "shouzhi_r_1: off by 25.0% of the height, moving differently",
+          "shouzhi_l_1: off by 22.5% of the height, moving differently",
+          "shouzhi_l_3: off by 14.3% of the height"
+        ],
+        "fitted": 120,
+        "accepted": 47,
+        "keys": {
+          "frames": 12,
+          "bones": 96,
+          "perSecond": 3,
+          "prior": {
+            "category": "idle",
+            "perSecond": 1.5
+          },
+          "error": 10.946,
+          "capped": true,
+          "lag": {
+            "hips": 5,
+            "spine": 6,
+            "chest": 7,
+            "arm_l": 6,
+            "forearm_l": 6,
+            "hand_l": 6,
+            "forearm_r": 7,
+            "hand_r": 7,
+            "thigh_l": 5,
+            "calf_l": 5,
+            "foot_l": 5,
+            "thigh_r": 5,
+            "calf_r": 5,
+            "foot_r": 5
+          }
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 353
+      },
+      {
+        "round": 3,
+        "dir": "round-3",
+        "pass": false,
+        "penalty": 33.8314,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.563,
+              0.083
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              4.71,
+              25.63,
+              "29 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              -12,
+              7.48
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 5-56: yan_2",
+          "drawn mirrored (left-right) in the reference on frames 25-78: weiba_1",
+          "drawn mirrored (left-right) in the reference on frames 32-56: mnm/shoubi_r_2s",
+          "drawn mirrored (left-right) in the reference on frames 50-87: mnm/shenti_1s",
+          "drawn mirrored (left-right) in the reference on frames 57-76: shouzhi_l_2",
+          "drawn mirrored (left-right) in the reference on frames 69-119: shouzhi_r_3",
+          "drawn mirrored (left-right) in the reference on frames 71-82: shouzhi_r_1",
+          "drawn mirrored (left-right) in the reference on frames 74-98: er_1",
+          "drawn mirrored (left-right) in the reference on frames 81-101: shoubi_r_2, shouzhi_r_4",
+          "drawn mirrored (left-right) in the reference on frames 90-112: shoubi_r_1",
+          "outline differs most at frame 57 (1.90s, overlap 0.08): pose, placement or size",
+          "the whole figure moves 12 frames earlier than the reference",
+          "the whole figure moves 7.48x as far as the reference (too big)",
+          "mnm/er_1s: off by 14.6% of the height",
+          "shouzhi_l_1: off by 13.5% of the height, 12 frames early, moves 0.31x (too small)",
+          "shouzhi_r_3: off by 10.4% of the height, 12 frames early",
+          "er_1: off by 10.0% of the height"
+        ],
+        "fitted": 120,
+        "accepted": 22,
+        "keys": {
+          "frames": 12,
+          "bones": 96,
+          "perSecond": 3,
+          "prior": {
+            "category": "idle",
+            "perSecond": 1.5
+          },
+          "error": 13.106,
+          "capped": false,
+          "lag": {
+            "hips": 7,
+            "spine": 8,
+            "chest": 7,
+            "arm_l": 7,
+            "forearm_l": 8,
+            "hand_l": 8,
+            "forearm_r": 7,
+            "hand_r": 7,
+            "thigh_l": 7,
+            "calf_l": 7,
+            "foot_l": 7,
+            "thigh_r": 7,
+            "calf_r": 7,
+            "foot_r": 7
+          }
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 332
+      }
+    ],
+    "hints": [
+      "arm_r (shoubi_r_2): drawn differently in the video in 61% of the frames; not fitted, its plan motion stays",
+      "head (er_2, er_1, yanbai_2, yanbai_1, yan_2, yan_1, tou_1_2, tou_1_1): drawn differently in the video in 77% of the frames; not fitted, its plan motion stays",
+      "no repeat found in the video: its first 120 frames are taken as one loop",
+      "folded 1 cycles (frames 0-119); the clip's last cycle comes 0 frames late",
+      "hips: the forward and backward tracks disagree on 18 of 30 frames (4-8, 16-20, 36-40, 60, 68, 76-80, 88-108, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)",
+      "spine: the forward and backward tracks disagree on 14 of 30 frames (4-8, 20, 36, 60, 68, 76-80, 88, 96, 104-108, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)",
+      "chest: the forward and backward tracks disagree on 13 of 30 frames (4-8, 20, 36, 60, 68, 88-104, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)",
+      "arm_r: the forward and backward tracks disagree on 13 of 30 frames (8, 16, 48, 60, 68, 88-108, 116-120); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)",
+      "forearm_r: the forward and backward tracks disagree on 9 of 30 frames (16, 48, 68, 76-80, 88, 104-108, 116); left as gaps and filled from the frames around them",
+      "hand_r: the forward and backward tracks disagree on 10 of 30 frames (16, 48, 60, 76-80, 88-92, 100, 108, 116); left as gaps and filled from the frames around them: its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)",
+      "arm_l: the forward and backward tracks disagree on 6 of 30 frames (60, 100-108, 116-120); left as gaps and filled from the frames around them",
+      "forearm_l: the forward and backward tracks disagree on 8 of 30 frames (76-80, 88-108); left as gaps and filled from the frames around them",
+      "hand_l: the forward and backward tracks disagree on 7 of 30 frames (88-108, 116); left as gaps and filled from the frames around them",
+      "head: the forward and backward tracks disagree on 4 of 30 frames (104-108, 116-120); left as gaps and filled from the frames around them"
+    ],
+    "note": "Reference-fitted, not a blind result. Look at best/compare; the numbers do not replace it."
+  },
+  "idle_clap": {
+    "animation": "idle_clap",
+    "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-idle_clap.mp4",
+    "start": 0,
+    "fps": 30,
+    "label": "reference-fitted",
+    "pass": false,
+    "inputs": [
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\plans\\plan-06-idle_clap.json",
+        "bytes": 24891,
+        "sha256": "92c62ecd9a07a509802ef113ec41ae6b7f869332c436d0f23531824623e7685c"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\imagesOnly.json",
+        "bytes": 38626,
+        "sha256": "a46b3096288c88bb825f9068f78ca02aeddb14f293f4c212dd8f856706461245"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_1ss.png",
+        "bytes": 9123,
+        "sha256": "f664fe75b02962f4ab8e6d10a5e15233289a3580c67a6a67ca3eff4f8729c9f1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_2ss.png",
+        "bytes": 8824,
+        "sha256": "698de7b43817303d0898cce60466b3bfe6dd996329849d969cea4d945be41cf7"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_2ss.png",
+        "bytes": 17053,
+        "sha256": "588b31bfadaf3535263345dd3b666fb3c2abb4f85ce822485632e5ba86fe87c8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1ss.png",
+        "bytes": 10108,
+        "sha256": "1ef506453cffa707061f4599949b776466282850745c39f3189f95abdb20ebf4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\weiba_1ss.png",
+        "bytes": 7533,
+        "sha256": "6589f9a57976f653c0dc930fc2b7bb43a14aca58cb720b442dc22616495f9167"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_2ss.png",
+        "bytes": 6439,
+        "sha256": "c8083a6fe786251a6bb8c45017e5acea44020d185e6bb108ce1501b7ec68f298"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_3.png",
+        "bytes": 13102,
+        "sha256": "e001623a15dbb79c47fcd9ee6aacf7f1209130b98d787127f1ee922bddfbf72f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_3ss.png",
+        "bytes": 6279,
+        "sha256": "bc848d529193d6d5c6e31811577f28ad53511870bda6108309d5841ab7cd3911"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_3.png",
+        "bytes": 14489,
+        "sha256": "a28dc4014a3a442357df7893d5db17fc75bfd086f1dcd19bf65f9f966771a450"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_3ss.png",
+        "bytes": 6258,
+        "sha256": "b1ba0e617ecafd6f5bc4e8b23ee3925a286795b2acb34a6592ea11099158c68d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_2.png",
+        "bytes": 20063,
+        "sha256": "795705d595415c2a59505a16d750e63fbe7e00625c86246379e097271521cf41"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_2ss.png",
+        "bytes": 5985,
+        "sha256": "412fd201c6b63d345dba5fdc25c6159d990bca0c31cbe726fff2f1b9fd4360da"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l2_1.png",
+        "bytes": 24675,
+        "sha256": "e1488819ede153be852e6e66ff92b0bc6fcdabc055abaf1e6e2be34a8c3c3865"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_1ss.png",
+        "bytes": 5893,
+        "sha256": "3ed07c7e451049e3bcde4c9144397c623e69393be7e5e82303c2026ba00645de"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_4ss.png",
+        "bytes": 7508,
+        "sha256": "f7ed7af8829b840c8359c848d52ea05f8bf3e4d72197ed07ad8b4e94dbcc2f63"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l3.png",
+        "bytes": 71293,
+        "sha256": "7b2f199fa5adf0cf43d929b33ec82915ebc9818063ece61a45194fd123bed3e4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_1ss.png",
+        "bytes": 7854,
+        "sha256": "8359ac7dcfe0c57081b50b20a95aaae7b2a3aa40074359cc02ac4b64df7f18bc"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_1ss.png",
+        "bytes": 6973,
+        "sha256": "13efc6ed502fb90219cee22f5f5b44a345ba2ed3ad522f0846934d184d432290"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_5.png",
+        "bytes": 35608,
+        "sha256": "4c4611b9c814559e75906792cd1e9c038c5af5900eba8b63f5daa3263845e667"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_2.png",
+        "bytes": 33825,
+        "sha256": "e6e7c782323756d827d3f0664fee573b10084d0a77d60e0625fa02e8780ffcb4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_3.png",
+        "bytes": 62677,
+        "sha256": "2df377a2fe4b2067f5c82ec53e3592799dc1bfdf38db48c042288cd8a73fe5aa"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_4.png",
+        "bytes": 58731,
+        "sha256": "65f8d42b35c5cb3af3729a7723eb6e0341dabcc484fe67ea5f8e651118158391"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_1ss.png",
+        "bytes": 5252,
+        "sha256": "7051b441852fc9fbb998f74ae3b75833a468961bb092747c3eb1d42d7ad47fa4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_2ss.png",
+        "bytes": 6540,
+        "sha256": "97562344b8d8c0c9e1e8ee9482c17c79f84fd66a50cf05ba528da41952ded3a0"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shou_r_1s.png",
+        "bytes": 17509,
+        "sha256": "a07fbd8b81c271601a6be4e5556c55af9d4525ba48f88d820901e4cda1bae1be"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shou_r_1ss.png",
+        "bytes": 8481,
+        "sha256": "39c9509c396368e4f678a3b1df559dec9db3d92e515c36fe8e9c314fd220b724"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_1.png",
+        "bytes": 31229,
+        "sha256": "ae719bc9ac6506530af2c522e8aeb43d9b1a5ba9365cd52d847b4c819dc24495"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_2.png",
+        "bytes": 12766,
+        "sha256": "2e6689560e5bcc9f085de8d2cf029209059165c6e25b9f8ffdad20824d3c85cb"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_1ss.png",
+        "bytes": 6051,
+        "sha256": "ae3227755c50fea3aac37cca156d4d7ccf827331ce7d932ef6ea4310b4477899"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\weiba_1.png",
+        "bytes": 73640,
+        "sha256": "853af86b352090c2845eb840a555e8d31c015e306a7ec57ef61ad1e95b5aed89"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_3.png",
+        "bytes": 29483,
+        "sha256": "7f5492ef06c80d8b69a98a0d40f4efeffb0fcdcfa52d1867e3f80cb08cb4ba71"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_rl2_1.png",
+        "bytes": 15793,
+        "sha256": "cc9a119e6da6433bc9bf2d5fe6351b8b2ae4e0e2d18827b5ff5489e14ec403f1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_2.png",
+        "bytes": 33355,
+        "sha256": "bfe5c9f0a92ba4c6aadd76fd0af3ec14414589decacfcda51e00827e0e1811f9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_r_1.png",
+        "bytes": 30805,
+        "sha256": "1bd52d126cb62f780bba47646b48bb73008b36ce029c2451ae6f72a632914a4e"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_3.png",
+        "bytes": 22614,
+        "sha256": "6f129027a5f50fc0cff183ac87483c1de767a1fe740c7776f1a3ce44646d39f2"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\jio_l_2.png",
+        "bytes": 25755,
+        "sha256": "147b43fba59c9fdf2ebb1df929dfc1bc45f5294e79a11513caec0e47e8520f7b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_l_1.png",
+        "bytes": 36481,
+        "sha256": "39b36995ca7d5f64a51e3f38745f306453e80bb9cb1cdf9a08a9589a5c47c859"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_2.png",
+        "bytes": 34613,
+        "sha256": "1400fe8a57a3678fe0292e206d09cb0f4ad34f67ee37ec5949c89e3c21ecad42"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1_1.png",
+        "bytes": 9277,
+        "sha256": "38f478375bbf8c02b59e2a7504ad9df5d40659cf6760a079d393ac58a6e9d7c6"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_1.png",
+        "bytes": 101138,
+        "sha256": "7de5a0e105b02aef96bd97a798014efbbffeda83f8de95042b3db15a340f9d0d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shenti_2.png",
+        "bytes": 69638,
+        "sha256": "0f97f09fbf62773365708c9f058cc574bfd99ffec907f1161bd0525ff888c67b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_2.png",
+        "bytes": 100105,
+        "sha256": "214887db8dfe350a9de32293970033ab35d5a416e969df3a1af56167cbe825f0"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\er_1.png",
+        "bytes": 90094,
+        "sha256": "4618cdc3397cbcbc6a82d7dc62257e98d3735d10b22bab1afa20a854eaae969a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanbai_2.png",
+        "bytes": 62188,
+        "sha256": "7fdc8ea32435fd62a9380c78c1f3869f49e691030a94a5beaee066ab91d8d80f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanbai_1.png",
+        "bytes": 52639,
+        "sha256": "f69c2629649a8c5ed50133fd7fb438e773e1b785881d02f02488801ab4d27861"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yan_2.png",
+        "bytes": 14714,
+        "sha256": "0ede5d5cff5deddba9035ab2442e120135b6f73afd98a37186cf52fcaebb3878"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yan_1.png",
+        "bytes": 18004,
+        "sha256": "22e8d0abfba7f4b27735641135a7a4eb0d58c489c1ed78632acce5688276b79f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_2.png",
+        "bytes": 450623,
+        "sha256": "931737e279852495177721d5c7557a8a9453b7bedf9b6ce34d6c6421d4627ea8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_2.png",
+        "bytes": 58478,
+        "sha256": "f63dca843db143c50de955c377950f35c8a6d34e927dcfef64b76819536b3f6c"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_2_1.png",
+        "bytes": 21022,
+        "sha256": "ec8ee574ccaf8452b8f2f2f360a9e3e490f2e2386f9ea6f98ed62c7d989603cb"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_1.png",
+        "bytes": 54539,
+        "sha256": "e9123bd052db844924c58b66a300cff0ecd7824268b857f1d3465fd64f1071f9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\yanpi_1_1.png",
+        "bytes": 21446,
+        "sha256": "2f8503f9d390b002f4f8f03ef8d6801a88dc4d2f2bab3376c7a1a4c1957da6c8"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\tou_1_1.png",
+        "bytes": 513175,
+        "sha256": "3fe819fb84554c3e882f9258e4a7a2e482a60e88845e9c52a9f6335dc5435629"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shoubi_r_1.png",
+        "bytes": 34796,
+        "sha256": "19c5e8a569ea15d36485e004be1ca36b83e3efd04cb4e3b4e82724e10d1780cd"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_4.png",
+        "bytes": 63874,
+        "sha256": "8233606106c0ff3e8167ac3dbea8dcea5562007985a09cddcdc194aaca99e8c1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_5.png",
+        "bytes": 43716,
+        "sha256": "385c8889dcedcd8ff8c729a5f24cfd37ed0c62296da5fe754bd87ec9b8bdef70"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_4.png",
+        "bytes": 24031,
+        "sha256": "a2feb77d2b4911e596b21b8b8e1f73c07879905ec6b70007808c999ffd5751a1"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_3.png",
+        "bytes": 15244,
+        "sha256": "f542a5117ef1d9f578dc15ad03724a892477d0721882129af983d29f3a52ba95"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_2.png",
+        "bytes": 18912,
+        "sha256": "b4648e4a2c95542a86eba844f776776ce481aa5420ec37ad447e4a042fd270be"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_r_1.png",
+        "bytes": 25416,
+        "sha256": "4912113560ba2725a156434e642b7506431e291dca84ab04a64cc85b6ad15de4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_5.png",
+        "bytes": 52166,
+        "sha256": "2221c1035f966bffe9cfd49fcc7207827ce9812b2b8867670671ab507e2cb6c9"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_4.png",
+        "bytes": 9063,
+        "sha256": "62dc0223174d5b8d7cc690a32745acbd9659805c5bb013c66f9bf24e1cf10245"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_3.png",
+        "bytes": 18961,
+        "sha256": "9bb248bf291611415edc923d06fada05eb3be76aad2820c02931a04e15470859"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_2.png",
+        "bytes": 27720,
+        "sha256": "9f26709428dceb861c2edb61fe639a30ef7189a618ef919d250fa80141fb7c3d"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l_1.png",
+        "bytes": 18137,
+        "sha256": "579b876f34b26405e07740eb98d93718a127267c19763b8a2064bbf4a578554a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_3.png",
+        "bytes": 12319,
+        "sha256": "6c05194aa099135805f312228144691e08b6280a116c2f19872d07efbd74ff1e"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_2.png",
+        "bytes": 15450,
+        "sha256": "86a1c55a7b2b6bb68537dfa521c0bcf20f5f292b1e588588d0159177c77fc6e4"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\mnm\\shouzhi_l2_1.png",
+        "bytes": 12941,
+        "sha256": "995689c47656ea29cd0582c44fae4ad2ea90278c95902660156db13bfef9093b"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\sdx.png",
+        "bytes": 8535,
+        "sha256": "06c39886c699317add410c8f858d29d25dd2a90ab2aa388a98fab48dc5bfff4a"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\SUPER_xx.png",
+        "bytes": 54526,
+        "sha256": "3ce3e25602dee31bd78f29bee9f44382d604188f1142a614769f4dd7cbda106f"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\yanwu2.png",
+        "bytes": 22596,
+        "sha256": "4972ba6b6f80f302247b3ddf9ad0139cd3889c4a55daa14bfcfae0730343decf"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\images\\big_xd.png",
+        "bytes": 10939,
+        "sha256": "0bdd07b21dae2d654a689493c9a0b7fc6636ca9817d8afe16864605efbceed00"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-06-idle_clap\\JackpotMummyCat.json",
+        "bytes": 348591,
+        "sha256": "f31f82956dbb611df0698ca1b7a50917096f8eb8c690ac991674a173503fca32"
+      },
+      {
+        "path": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-idle_clap.mp4",
+        "bytes": 62590,
+        "sha256": "2fbf4faef9f98a8dae521509a7aee31ebf51163d8c4db5b3723060d61e3182e0"
+      }
+    ],
+    "best": {
+      "round": 2,
+      "dir": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle_clap\\best",
+      "plan": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle_clap\\best\\plan.json",
+      "build": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\fit-02-idle_clap\\best\\build"
+    },
+    "frames": {
+      "video": 5,
+      "fitted": 5,
+      "accepted": 4,
+      "rejected": [
+        3
+      ]
+    },
+    "zero": null,
+    "searchWindow": 91.06,
+    "tracking": {
+      "span": {
+        "move": 58.76,
+        "turn": 12
+      },
+      "agreement": {
+        "turn": 8,
+        "move": 14.1
+      },
+      "disagree": {
+        "forearm_l": [
+          4
+        ],
+        "hand_l": [
+          4
+        ]
+      },
+      "singlePass": [
+        2
+      ],
+      "lost": {
+        "forward": 4,
+        "backward": 3
+      }
+    },
+    "unfitted": [
+      {
+        "bone": "arm_r",
+        "parts": [
+          "shoubi_r_2"
+        ],
+        "share": 0.25
+      },
+      {
+        "bone": "head",
+        "parts": [
+          "er_2",
+          "er_1",
+          "yanbai_2",
+          "yanbai_1",
+          "yan_2",
+          "yan_1",
+          "tou_1_2",
+          "tou_1_1"
+        ],
+        "share": 0.25
+      }
+    ],
+    "freed": [],
+    "rounds": [
+      {
+        "round": 1,
+        "dir": "round-1",
+        "pass": false,
+        "penalty": 4.4044,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.797,
+              0.736
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              1.33,
+              5.53,
+              "13 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              -1,
+              0.52
+            ]
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 2 (0.07s, overlap 0.74): pose, placement or size",
+          "the whole figure moves 0.52x as far as the reference (too small)",
+          "weiba_1: off by 6.7% of the height, moving differently",
+          "shenti_1_1: off by 4.8% of the height, moving differently",
+          "mnm/shenti_1s: off by 3.0% of the height, moving differently",
+          "mnm/jio_l_1s: off by 1.4% of the height, moving differently"
+        ],
+        "fitted": 5,
+        "accepted": 4,
+        "keys": {
+          "frames": 2,
+          "bones": 14,
+          "perSecond": 15,
+          "prior": {
+            "category": "transition",
+            "perSecond": 3.33
+          },
+          "error": 49.038,
+          "capped": true,
+          "lag": {}
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 5.8
+      },
+      {
+        "round": 2,
+        "dir": "round-2",
+        "pass": false,
+        "penalty": 1.1964,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.793,
+              0.73
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              0.75,
+              2.61,
+              "10 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": true,
+            "value": [
+              -1,
+              0.88
+            ]
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 0-3: shoubi_l_2",
+          "outline differs most at frame 4 (0.13s, overlap 0.73): pose, placement or size",
+          "jio_l_3: off by 2.0% of the height, moving differently",
+          "mnm/jio_l_1s: off by 1.0% of the height, moving differently",
+          "jio_l_1: off by 0.9% of the height, moving differently",
+          "jio_l_2: off by 0.9% of the height, moving differently"
+        ],
+        "fitted": 5,
+        "accepted": 2,
+        "keys": {
+          "frames": 2,
+          "bones": 14,
+          "perSecond": 15,
+          "prior": {
+            "category": "transition",
+            "perSecond": 3.33
+          },
+          "error": 85.621,
+          "capped": true,
+          "lag": {}
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 19.4
+      },
+      {
+        "round": 3,
+        "dir": "round-3",
+        "pass": false,
+        "penalty": 1.52,
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.792,
+              0.728
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              1.01,
+              2.44,
+              "10 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": true,
+            "value": [
+              -1,
+              0.85
+            ]
+          }
+        ],
+        "hints": [
+          "drawn mirrored (left-right) in the reference on frames 0-3: shoubi_l_2",
+          "outline differs most at frame 4 (0.13s, overlap 0.73): pose, placement or size",
+          "jio_l_3: off by 1.9% of the height, moving differently",
+          "jio_r_3: off by 1.3% of the height, moving differently",
+          "jio_r_1: off by 1.1% of the height, moving differently",
+          "mnm/jio_r_1s: off by 1.1% of the height, moving differently"
+        ],
+        "fitted": 5,
+        "accepted": 2,
+        "keys": {
+          "frames": 2,
+          "bones": 14,
+          "perSecond": 15,
+          "prior": {
+            "category": "transition",
+            "perSecond": 3.33
+          },
+          "error": 88.899,
+          "capped": true,
+          "lag": {}
+        },
+        "waves": [],
+        "freed": [],
+        "seconds": 19.6
+      }
+    ],
+    "hints": [
+      "arm_r (shoubi_r_2): drawn differently in the video in 75% of the frames; not fitted, its plan motion stays",
+      "head (er_2, er_1, yanbai_2, yanbai_1, yan_2, yan_1, tou_1_2, tou_1_1): drawn differently in the video in 75% of the frames; not fitted, its plan motion stays",
+      "the key cap (twice the transition key density) held: the keys stay within 85.621x their tolerance (0.5 degree or px, or twice a channel's fit noise)",
+      "forearm_l: the forward and backward tracks disagree on 1 of 4 frames (4); left as gaps and filled from the frames around them",
+      "hand_l: the forward and backward tracks disagree on 1 of 4 frames (4); left as gaps and filled from the frames around them"
+    ],
+    "note": "Reference-fitted, not a blind result. Look at best/compare; the numbers do not replace it."
+  }
+}

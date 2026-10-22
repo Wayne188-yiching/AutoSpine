@@ -1,0 +1,2726 @@
+{
+  "pass": false,
+  "animations": [
+    {
+      "animation": "in",
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-fullprecision-in.mp4",
+      "start": 0,
+      "pass": false,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.515,
+            0.384
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            13.45,
+            24.05,
+            "10 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            0.79
+          ]
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 0-6: shoubi_r_2",
+        "drawn mirrored (left-right) in the reference on frames 1-26: weiba_1",
+        "drawn mirrored (left-right) in the reference on frames 5-30: jio_l_2, jio_l_1, shoubi_l_1, jio_r_1",
+        "drawn mirrored (left-right) in the reference on frames 6-10: shoubi_l_2s",
+        "drawn mirrored (left-right) in the reference on frames 11-30: shouzhi_l_3, mnm/jio_r_2s",
+        "drawn mirrored (left-right) in the reference on frames 11-23: mnm/jio_l_2s",
+        "drawn mirrored (left-right) in the reference on frames 12-15: mnm/jio_r_1s",
+        "outline differs most at frame 2 (0.07s, overlap 0.38): pose, placement or size",
+        "shouzhi_r_2: off by 22.5% of the height, moves 1.44x (too big)",
+        "shouzhi_l_3: off by 20.3% of the height, moves 0.11x (too small)",
+        "shouzhi_l_1: off by 18.2% of the height, moves 0.40x (too small)",
+        "shouzhi_r_3: off by 17.2% of the height, moves 2.03x (too big)"
+      ],
+      "frameError": [
+        7.15,
+        7.052,
+        7.573,
+        8.684,
+        8.048,
+        10.223,
+        9.399,
+        10.592,
+        8.206,
+        9.509,
+        9.473,
+        10.416,
+        9.914,
+        10.739,
+        11.443,
+        11.205,
+        10.473,
+        9.567,
+        11.289,
+        10.703,
+        10.881,
+        10.586,
+        10.362,
+        9.374,
+        9.293,
+        11.23,
+        11.391,
+        12.116,
+        12.488,
+        12.731,
+        12.68
+      ],
+      "parts": [
+        {
+          "part": "shouzhi_r_2",
+          "frames": 22,
+          "median": 0.22548256823693397,
+          "p90": 0.24051742063517534,
+          "lag": 0,
+          "amplitude": 1.4406688543402744,
+          "correlation": 0.8847830885629983
+        },
+        {
+          "part": "shouzhi_l_3",
+          "frames": 16,
+          "median": 0.20343513137393948,
+          "p90": 0.21724052663649665,
+          "lag": 2,
+          "amplitude": 0.11267967154350322,
+          "correlation": 0.8030850132308396
+        },
+        {
+          "part": "shouzhi_l_1",
+          "frames": 19,
+          "median": 0.18249270456068512,
+          "p90": 0.23396756940719218,
+          "lag": 2,
+          "amplitude": 0.40086484415581325,
+          "correlation": 0.8422775529902184
+        },
+        {
+          "part": "shouzhi_l_4",
+          "frames": 15,
+          "median": 0.17375098388524257,
+          "p90": 0.22991627561395309,
+          "lag": 0,
+          "amplitude": 1.0518491298225325,
+          "correlation": 0.976204018043519
+        },
+        {
+          "part": "shouzhi_r_3",
+          "frames": 16,
+          "median": 0.17161558486622958,
+          "p90": 0.1999478353891756,
+          "lag": 0,
+          "amplitude": 2.0348363004622017,
+          "correlation": 0.9240521482590559
+        },
+        {
+          "part": "mnm/jio_l_1s",
+          "frames": 22,
+          "median": 0.1345404816652231,
+          "p90": 0.14914065253444997,
+          "lag": 0,
+          "amplitude": 3.9634419531601432,
+          "correlation": 0.7237573671924882
+        },
+        {
+          "part": "weiba_1",
+          "frames": 2,
+          "median": 0.13142892514110946,
+          "p90": 0.13142892514110946,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "tou_1_2",
+          "frames": 1,
+          "median": 0.12747803952033795,
+          "p90": 0.12747803952033795,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_r_1",
+          "frames": 22,
+          "median": 0.12631517792042016,
+          "p90": 0.1385130207562044,
+          "lag": 0,
+          "amplitude": 1.1945290303120117,
+          "correlation": 0.9736864539602399
+        },
+        {
+          "part": "yan_2",
+          "frames": 19,
+          "median": 0.12517397849010437,
+          "p90": 0.15936746437050972,
+          "lag": 0,
+          "amplitude": 0.4736756423310487,
+          "correlation": 0.9706390057036643
+        },
+        {
+          "part": "shouzhi_l_2",
+          "frames": 3,
+          "median": 0.12115602090461414,
+          "p90": 0.12398172685913186,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "tou_1_1",
+          "frames": 1,
+          "median": 0.12096106306675668,
+          "p90": 0.12096106306675668,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_5",
+          "frames": 13,
+          "median": 0.11391379103240043,
+          "p90": 0.1415021616058664,
+          "lag": 0,
+          "amplitude": 0.7316988620832652,
+          "correlation": 0.966710641766568
+        },
+        {
+          "part": "shouzhi_r_4",
+          "frames": 13,
+          "median": 0.1122962268554166,
+          "p90": 0.13553231827754322,
+          "lag": 0,
+          "amplitude": 0.9488935687122202,
+          "correlation": 0.9627452739680064
+        },
+        {
+          "part": "mnm/tou_1_2s",
+          "frames": 5,
+          "median": 0.10956076603194422,
+          "p90": 0.1133848829322521,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_l_5",
+          "frames": 10,
+          "median": 0.10703386364812288,
+          "p90": 0.14134007269145543,
+          "lag": 0,
+          "amplitude": 0.7966947114273942,
+          "correlation": 0.987004180183852
+        },
+        {
+          "part": "shouzhi_l_5s",
+          "frames": 2,
+          "median": 0.10688880868250819,
+          "p90": 0.10688880868250819,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_l_1",
+          "frames": 17,
+          "median": 0.10676165108326569,
+          "p90": 0.15981723956357646,
+          "lag": 0,
+          "amplitude": 0.8562375856563946,
+          "correlation": 0.9738724811554295
+        },
+        {
+          "part": "mnm/shoubi_l_1s",
+          "frames": 1,
+          "median": 0.10613864842416144,
+          "p90": 0.10613864842416144,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_3",
+          "frames": 11,
+          "median": 0.10534783426210051,
+          "p90": 0.11420776824883966,
+          "lag": 0,
+          "amplitude": 0.6643406878514589,
+          "correlation": 0.6418797061126177
+        },
+        {
+          "part": "shouzhi_r_1",
+          "frames": 13,
+          "median": 0.10424162510243157,
+          "p90": 0.12116960046897332,
+          "lag": 0,
+          "amplitude": 0.8999945677791594,
+          "correlation": 0.9762195086583392
+        },
+        {
+          "part": "mnm/weiba_1s",
+          "frames": 5,
+          "median": 0.10415691116648498,
+          "p90": 0.10945478190648297,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_l_2",
+          "frames": 2,
+          "median": 0.09739303071607978,
+          "p90": 0.09739303071607978,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_1",
+          "frames": 23,
+          "median": 0.09537054360183655,
+          "p90": 0.11840842966905472,
+          "lag": 0,
+          "amplitude": 1.0870253234656786,
+          "correlation": 0.9807606687898671
+        },
+        {
+          "part": "shoubi_r_2",
+          "frames": 9,
+          "median": 0.0939832445524724,
+          "p90": 0.10673520026997374,
+          "lag": -2,
+          "amplitude": 0.35572664652408725,
+          "correlation": 0.3628977303352748
+        },
+        {
+          "part": "er_1",
+          "frames": 12,
+          "median": 0.09293489511709836,
+          "p90": 0.11259811003488318,
+          "lag": 0,
+          "amplitude": 1.1252982726880296,
+          "correlation": 0.9490996089090854
+        },
+        {
+          "part": "shouzhi_r_5s",
+          "frames": 11,
+          "median": 0.0925257840174687,
+          "p90": 0.13640014043241208,
+          "lag": 0,
+          "amplitude": 0.9352499313211985,
+          "correlation": 0.9702855963526894
+        },
+        {
+          "part": "mnm/er_1s",
+          "frames": 13,
+          "median": 0.08818415359367679,
+          "p90": 0.11171613080894599,
+          "lag": 0,
+          "amplitude": 0.9781005240183098,
+          "correlation": 0.9615042724627422
+        },
+        {
+          "part": "mnm/jio_l_2s",
+          "frames": 8,
+          "median": 0.08491938531011946,
+          "p90": 0.1102290049700822,
+          "lag": 0,
+          "amplitude": 1.029442505619102,
+          "correlation": 0.9961042482372189
+        },
+        {
+          "part": "shoubi_l_2s",
+          "frames": 5,
+          "median": 0.08076795974955303,
+          "p90": 0.12348949027566408,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "er_2",
+          "frames": 13,
+          "median": 0.0765653365774798,
+          "p90": 0.12862805424472706,
+          "lag": 0,
+          "amplitude": 0.9178169381086634,
+          "correlation": 0.9876798710251166
+        },
+        {
+          "part": "mnm/shenti_1s",
+          "frames": 1,
+          "median": 0.07546649151183354,
+          "p90": 0.07546649151183354,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shenti_1_1",
+          "frames": 10,
+          "median": 0.07261283433418979,
+          "p90": 0.07899154698676644,
+          "lag": 0,
+          "amplitude": 0.8641083153276279,
+          "correlation": 0.9823208426103007
+        },
+        {
+          "part": "mnm/er_2s",
+          "frames": 13,
+          "median": 0.06961930480965386,
+          "p90": 0.13550553893732822,
+          "lag": 0,
+          "amplitude": 0.7115210485749608,
+          "correlation": 0.9933526688431016
+        },
+        {
+          "part": "shoubi_r_1",
+          "frames": 7,
+          "median": 0.06432890207900885,
+          "p90": 0.0865719623786709,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_2",
+          "frames": 22,
+          "median": 0.06207880158044236,
+          "p90": 0.08411891966199982,
+          "lag": 0,
+          "amplitude": 3.6597130155259037,
+          "correlation": 0.6825676094261943
+        },
+        {
+          "part": "mnm/jio_r_2s",
+          "frames": 7,
+          "median": 0.05118046145848157,
+          "p90": 0.07455772956431551,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yan_1",
+          "frames": 5,
+          "median": 0.0509392806096488,
+          "p90": 0.09068835346101171,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_r_2",
+          "frames": 1,
+          "median": 0.05080408125646715,
+          "p90": 0.05080408125646715,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_1s",
+          "frames": 12,
+          "median": 0.02030068535229329,
+          "p90": 0.1047206469058371,
+          "lag": 0,
+          "amplitude": 0.9033416420528521,
+          "correlation": 0.9902757175870748
+        },
+        {
+          "part": "yanbai_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yanbai_2",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shenti_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_r_1s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shoubi_r_2s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_l_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_r_3",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        }
+      ],
+      "output": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-in\\in\\compare.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-in\\in\\report.json"
+    },
+    {
+      "animation": "idle",
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-fullprecision-idle.mp4",
+      "start": 0,
+      "pass": false,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.8,
+            0.719
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            3.26,
+            10.49,
+            "40 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": false,
+          "value": [
+            9,
+            0.32
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 0-15: shoubi_r_1",
+        "drawn mirrored (left-right) in the reference on frames 1-7: weiba_1",
+        "drawn mirrored (left-right) in the reference on frames 9-16: shouzhi_l_5s",
+        "outline differs most at frame 27 (0.90s, overlap 0.72): pose, placement or size",
+        "the whole figure moves 9 frames later than the reference",
+        "the whole figure moves 0.32x as far as the reference (too small)",
+        "shouzhi_r_3: off by 6.9% of the height, moving differently",
+        "shoubi_r_1: off by 6.6% of the height, moving differently",
+        "shouzhi_r_2: off by 6.3% of the height, moving differently",
+        "mnm/er_2s: off by 5.5% of the height, 12 frames late, moves 0.21x (too small)"
+      ],
+      "frameError": [
+        1.41,
+        1.434,
+        1.356,
+        1.383,
+        1.457,
+        1.447,
+        1.463,
+        1.622,
+        2.155,
+        2.677,
+        2.697,
+        3.36,
+        3.927,
+        4.624,
+        4.741,
+        5.391,
+        5.61,
+        6.028,
+        6.048,
+        6.475,
+        6.6,
+        5.806,
+        5.704,
+        5.282,
+        5.047,
+        4.911,
+        4.319,
+        4.181,
+        3.435,
+        3.331,
+        2.922,
+        2.852,
+        2.786,
+        3.01,
+        2.857,
+        3.028,
+        2.726,
+        2.665,
+        2.361,
+        2.347,
+        1.897,
+        2.142,
+        2.032,
+        2.131,
+        2.523,
+        2.332,
+        2.277,
+        2.447,
+        2.343,
+        2.075,
+        1.944,
+        1.708,
+        1.42,
+        1.52,
+        1.517,
+        2.043,
+        1.941,
+        1.413,
+        1.696,
+        1.475
+      ],
+      "parts": [
+        {
+          "part": "weiba_1",
+          "frames": 17,
+          "median": 0.0973242917070126,
+          "p90": 0.10962003483561568,
+          "lag": 3,
+          "amplitude": 0.13173332682819283,
+          "correlation": 0.5785174069213755
+        },
+        {
+          "part": "shouzhi_r_3",
+          "frames": 60,
+          "median": 0.06853081168700499,
+          "p90": 0.10301405624608868,
+          "lag": 12,
+          "amplitude": 0.8966654809639285,
+          "correlation": 0.3738454036883088
+        },
+        {
+          "part": "yanpi_1",
+          "frames": 3,
+          "median": 0.06755306662320812,
+          "p90": 0.07593104914848453,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_r_1",
+          "frames": 33,
+          "median": 0.06606737310696585,
+          "p90": 0.08987689994807688,
+          "lag": 6,
+          "amplitude": 0.0792586253321305,
+          "correlation": 0.3293638649642866
+        },
+        {
+          "part": "shouzhi_r_2",
+          "frames": 60,
+          "median": 0.06280697960403907,
+          "p90": 0.08915236560664833,
+          "lag": 12,
+          "amplitude": 0.9732727166226699,
+          "correlation": 0.44070556795656946
+        },
+        {
+          "part": "mnm/er_2s",
+          "frames": 60,
+          "median": 0.05517168710472845,
+          "p90": 0.11152873486502195,
+          "lag": 12,
+          "amplitude": 0.2142630076177262,
+          "correlation": 0.7576638565740375
+        },
+        {
+          "part": "er_2",
+          "frames": 60,
+          "median": 0.054928146128109555,
+          "p90": 0.10494157948966433,
+          "lag": 12,
+          "amplitude": 0.21169855127552253,
+          "correlation": 0.8012842578597584
+        },
+        {
+          "part": "shoubi_l_2s",
+          "frames": 24,
+          "median": 0.05339105510352585,
+          "p90": 0.06598801708581863,
+          "lag": 4,
+          "amplitude": 0.42144651916277387,
+          "correlation": 0.8394728590233589
+        },
+        {
+          "part": "shouzhi_r_5s",
+          "frames": 58,
+          "median": 0.051698850169018165,
+          "p90": 0.08477230392266427,
+          "lag": 12,
+          "amplitude": 1.4518155241047859,
+          "correlation": 0.496398041798301
+        },
+        {
+          "part": "shoubi_l_2",
+          "frames": 30,
+          "median": 0.05067688468450544,
+          "p90": 0.06378020407404683,
+          "lag": 5,
+          "amplitude": 0.4394344764268295,
+          "correlation": 0.9872092224754283
+        },
+        {
+          "part": "mnm/weiba_1s",
+          "frames": 8,
+          "median": 0.04926116491702867,
+          "p90": 0.08589629959089663,
+          "lag": -2,
+          "amplitude": 0.09544253161408776,
+          "correlation": 0.3142060630260071
+        },
+        {
+          "part": "shouzhi_r_5",
+          "frames": 60,
+          "median": 0.04773109389402002,
+          "p90": 0.07629325106353163,
+          "lag": 12,
+          "amplitude": 0.5800053247283903,
+          "correlation": 0.16727152219277053
+        },
+        {
+          "part": "shouzhi_l_3",
+          "frames": 60,
+          "median": 0.04755628568220866,
+          "p90": 0.08771140408625172,
+          "lag": 3,
+          "amplitude": 0.8720006568898956,
+          "correlation": 0.6708130900039824
+        },
+        {
+          "part": "shouzhi_r_1",
+          "frames": 60,
+          "median": 0.046872358659615816,
+          "p90": 0.06832437889652675,
+          "lag": 7,
+          "amplitude": 0.19811507863370525,
+          "correlation": 0.5953175131045773
+        },
+        {
+          "part": "shouzhi_l_4",
+          "frames": 57,
+          "median": 0.04664308392981423,
+          "p90": 0.10357933601618521,
+          "lag": 4,
+          "amplitude": 0.8505170036493169,
+          "correlation": 0.7077539976321825
+        },
+        {
+          "part": "er_1",
+          "frames": 60,
+          "median": 0.0424790617026063,
+          "p90": 0.1091862983483288,
+          "lag": 12,
+          "amplitude": 0.19235697819322092,
+          "correlation": 0.8425115420438103
+        },
+        {
+          "part": "shouzhi_l_5s",
+          "frames": 51,
+          "median": 0.04240442649410017,
+          "p90": 0.07553251495754938,
+          "lag": 2,
+          "amplitude": 0.654808111305435,
+          "correlation": 0.8735780238190021
+        },
+        {
+          "part": "mnm/er_1s",
+          "frames": 60,
+          "median": 0.04215966372140652,
+          "p90": 0.12043986040016412,
+          "lag": 12,
+          "amplitude": 0.20281529089619252,
+          "correlation": 0.8315985720000602
+        },
+        {
+          "part": "mnm/shenti_1s",
+          "frames": 40,
+          "median": 0.04192869841927667,
+          "p90": 0.05894812431416626,
+          "lag": -2,
+          "amplitude": 0.46688259716060854,
+          "correlation": 0.4395759223752929
+        },
+        {
+          "part": "shouzhi_l_5",
+          "frames": 60,
+          "median": 0.03506429855065396,
+          "p90": 0.06844791137428088,
+          "lag": 4,
+          "amplitude": 0.6435848149509197,
+          "correlation": 0.7702500063269808
+        },
+        {
+          "part": "shouzhi_l_1",
+          "frames": 60,
+          "median": 0.03467988724917714,
+          "p90": 0.07439201716252798,
+          "lag": 5,
+          "amplitude": 0.3909784740348231,
+          "correlation": 0.7122935822178702
+        },
+        {
+          "part": "shouzhi_l_2",
+          "frames": 58,
+          "median": 0.033432821507375386,
+          "p90": 0.06409193867166278,
+          "lag": 3,
+          "amplitude": 0.8485469626389269,
+          "correlation": 0.7618013705081428
+        },
+        {
+          "part": "shouzhi_r_4",
+          "frames": 60,
+          "median": 0.03342022094709358,
+          "p90": 0.0647149012324623,
+          "lag": -12,
+          "amplitude": 0.14467293165813747,
+          "correlation": -0.08369567598154304
+        },
+        {
+          "part": "mnm/tou_1_2s",
+          "frames": 60,
+          "median": 0.03259009194738922,
+          "p90": 0.05883282395926816,
+          "lag": 7,
+          "amplitude": 0.5303144111027983,
+          "correlation": 0.9336917223931037
+        },
+        {
+          "part": "shoubi_r_2",
+          "frames": 57,
+          "median": 0.030378185534532576,
+          "p90": 0.06252208502969789,
+          "lag": -12,
+          "amplitude": 0.14680820184110008,
+          "correlation": 0.5539116582090153
+        },
+        {
+          "part": "shenti_1_1",
+          "frames": 38,
+          "median": 0.02686519168087981,
+          "p90": 0.03961491026677858,
+          "lag": 9,
+          "amplitude": 1.1300574623559372,
+          "correlation": 0.8273973726829745
+        },
+        {
+          "part": "shoubi_r_1s",
+          "frames": 6,
+          "median": 0.025656374476192626,
+          "p90": 0.07749249807691778,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "tou_1_1",
+          "frames": 60,
+          "median": 0.02548883520082351,
+          "p90": 0.05179476115841966,
+          "lag": 9,
+          "amplitude": 0.3665211132215971,
+          "correlation": 0.9663943596341794
+        },
+        {
+          "part": "yanbai_2",
+          "frames": 55,
+          "median": 0.02538864558857917,
+          "p90": 0.05390411618245359,
+          "lag": 12,
+          "amplitude": 0.2102176599884696,
+          "correlation": 0.812218708984509
+        },
+        {
+          "part": "yan_2",
+          "frames": 53,
+          "median": 0.025028986284207477,
+          "p90": 0.05352250371111829,
+          "lag": 12,
+          "amplitude": 0.19161841221130285,
+          "correlation": 0.7703631513961234
+        },
+        {
+          "part": "shoubi_l_1",
+          "frames": 44,
+          "median": 0.02419457133634786,
+          "p90": 0.09328405591793906,
+          "lag": -2,
+          "amplitude": 0.217924497367451,
+          "correlation": 0.8463777407686214
+        },
+        {
+          "part": "shenti_1",
+          "frames": 60,
+          "median": 0.020504327339862315,
+          "p90": 0.034469671741010205,
+          "lag": -12,
+          "amplitude": 0.13163511120541957,
+          "correlation": 0.6869884162569542
+        },
+        {
+          "part": "tou_1_2",
+          "frames": 60,
+          "median": 0.019082977427445153,
+          "p90": 0.054653994500555775,
+          "lag": 12,
+          "amplitude": 0.30749648877706054,
+          "correlation": 0.6939320181604475
+        },
+        {
+          "part": "mnm/jio_l_3s",
+          "frames": 18,
+          "median": 0.015166561430944726,
+          "p90": 0.018406069961028393,
+          "lag": 4,
+          "amplitude": 0.18941913609583677,
+          "correlation": 0.8926293529569419
+        },
+        {
+          "part": "mnm/jio_l_2s",
+          "frames": 60,
+          "median": 0.014486649031326942,
+          "p90": 0.02638306157790884,
+          "lag": -12,
+          "amplitude": 0,
+          "correlation": 1
+        },
+        {
+          "part": "mnm/jio_l_1s",
+          "frames": 60,
+          "median": 0.013975596926213482,
+          "p90": 0.014144297433418152,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_1",
+          "frames": 60,
+          "median": 0.013950407580794652,
+          "p90": 0.013999428903211247,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_2s",
+          "frames": 60,
+          "median": 0.013495257969227363,
+          "p90": 0.030182142765126378,
+          "lag": 1,
+          "amplitude": 0.5402912875592341,
+          "correlation": 0.8712468845459899
+        },
+        {
+          "part": "jio_l_2",
+          "frames": 60,
+          "median": 0.013424466547942987,
+          "p90": 0.02068050296991842,
+          "lag": -12,
+          "amplitude": 3.190945386043173e-14,
+          "correlation": 1
+        },
+        {
+          "part": "jio_r_2",
+          "frames": 60,
+          "median": 0.01299947418610296,
+          "p90": 0.03373754975366931,
+          "lag": 2,
+          "amplitude": 0.3342150146380323,
+          "correlation": 0.8172151118020327
+        },
+        {
+          "part": "yan_1",
+          "frames": 52,
+          "median": 0.012259522856551278,
+          "p90": 0.051251609694243985,
+          "lag": 12,
+          "amplitude": 0.2342115470231377,
+          "correlation": 0.8716757109696401
+        },
+        {
+          "part": "jio_r_3",
+          "frames": 60,
+          "median": 0.011120023768945666,
+          "p90": 0.021475804808758433,
+          "lag": -12,
+          "amplitude": 1.0464148399523828e-13,
+          "correlation": 1
+        },
+        {
+          "part": "yanbai_1",
+          "frames": 53,
+          "median": 0.010618745247509179,
+          "p90": 0.05023749176646679,
+          "lag": 12,
+          "amplitude": 0.21410044184150326,
+          "correlation": 0.9098483235429501
+        },
+        {
+          "part": "jio_l_3",
+          "frames": 60,
+          "median": 0.010209302076044013,
+          "p90": 0.019855575171788833,
+          "lag": -3,
+          "amplitude": 0.2589250266669898,
+          "correlation": 0.18540967624866408
+        },
+        {
+          "part": "jio_r_1",
+          "frames": 60,
+          "median": 0.009954344718652421,
+          "p90": 0.009978168649658555,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_1s",
+          "frames": 60,
+          "median": 0.009841978908281758,
+          "p90": 0.009904164480226928,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shoubi_l_1s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shoubi_r_2s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yanpi_2",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        }
+      ],
+      "output": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-idle\\idle\\compare.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-idle\\idle\\report.json"
+    },
+    {
+      "animation": "idle2",
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-fullprecision-idle2.mp4",
+      "start": 0,
+      "pass": false,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.562,
+            0.083
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            4.9,
+            25.8,
+            "30 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": false,
+          "value": [
+            -12,
+            7.43
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 2-50: yan_2",
+        "drawn mirrored (left-right) in the reference on frames 24-97: shoubi_r_1s",
+        "drawn mirrored (left-right) in the reference on frames 31-44: mnm/shoubi_r_2s",
+        "drawn mirrored (left-right) in the reference on frames 69-119: shouzhi_r_3",
+        "drawn mirrored (left-right) in the reference on frames 71-97: shouzhi_r_1, er_1",
+        "drawn mirrored (left-right) in the reference on frames 76-87: mnm/shenti_1s",
+        "drawn mirrored (left-right) in the reference on frames 81-102: shoubi_r_2, shouzhi_r_4",
+        "drawn mirrored (left-right) in the reference on frames 96-112: shoubi_r_1",
+        "outline differs most at frame 57 (1.90s, overlap 0.08): pose, placement or size",
+        "the whole figure moves 12 frames earlier than the reference",
+        "the whole figure moves 7.43x as far as the reference (too big)",
+        "mnm/er_1s: off by 14.6% of the height",
+        "shouzhi_r_3: off by 9.9% of the height, 12 frames early",
+        "er_1: off by 9.7% of the height",
+        "yan_2: off by 8.7% of the height"
+      ],
+      "frameError": [
+        3.604,
+        3.505,
+        3.489,
+        3.521,
+        3.56,
+        3.62,
+        3.334,
+        3.432,
+        3.385,
+        3.376,
+        3.389,
+        3.412,
+        3.714,
+        3.408,
+        3.377,
+        3.406,
+        3.481,
+        3.606,
+        3.912,
+        4.234,
+        4.172,
+        3.965,
+        3.858,
+        3.76,
+        3.745,
+        3.597,
+        3.503,
+        3.515,
+        3.519,
+        3.468,
+        4.168,
+        4.229,
+        4.586,
+        6.47,
+        7.849,
+        4.227,
+        4.153,
+        4.075,
+        4.767,
+        3.836,
+        4.046,
+        4.281,
+        4.238,
+        3.95,
+        4.687,
+        5.672,
+        5.682,
+        4.732,
+        4.075,
+        3.649,
+        4.393,
+        6.073,
+        4.798,
+        8.087,
+        9.353,
+        7.287,
+        3.713,
+        3.531,
+        3.465,
+        3.465,
+        3.466,
+        3.458,
+        3.478,
+        3.48,
+        3.481,
+        3.486,
+        3.469,
+        3.459,
+        3.448,
+        4.229,
+        5.94,
+        7.373,
+        6.516,
+        5.235,
+        6.68,
+        5.28,
+        5.788,
+        4.467,
+        4.227,
+        3.843,
+        5.415,
+        5.988,
+        6.184,
+        7.659,
+        7.135,
+        7.194,
+        7.47,
+        8.362,
+        8.748,
+        10.892,
+        10.663,
+        11.484,
+        11.178,
+        10.88,
+        11.584,
+        11.499,
+        11.484,
+        11.707,
+        11.913,
+        5.699,
+        6.114,
+        5.513,
+        5.015,
+        6.364,
+        5.277,
+        7.777,
+        6.833,
+        7.063,
+        7.118,
+        7.137,
+        6.005,
+        5.721,
+        5.055,
+        4.195,
+        3.623,
+        3.474,
+        3.603,
+        3.632,
+        3.505,
+        3.613
+      ],
+      "parts": [
+        {
+          "part": "mnm/er_1s",
+          "frames": 78,
+          "median": 0.14600875826543847,
+          "p90": 0.3548771916180331,
+          "lag": 0,
+          "amplitude": 1.237254155552796,
+          "correlation": 0.9641545398793949
+        },
+        {
+          "part": "mnm/weiba_1s",
+          "frames": 14,
+          "median": 0.12985206576375097,
+          "p90": 0.1357443084084965,
+          "lag": 0,
+          "amplitude": 0.4195755011869765,
+          "correlation": 0.34270524434227767
+        },
+        {
+          "part": "shenti_1_1",
+          "frames": 2,
+          "median": 0.11040641881474463,
+          "p90": 0.11040641881474463,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_3",
+          "frames": 86,
+          "median": 0.0987610743817235,
+          "p90": 0.3367608136354974,
+          "lag": -12,
+          "amplitude": 1.0891088210150965,
+          "correlation": 0.7981117740832079
+        },
+        {
+          "part": "er_1",
+          "frames": 76,
+          "median": 0.0974022305093631,
+          "p90": 0.14853172733346942,
+          "lag": 0,
+          "amplitude": 1.0254273630716921,
+          "correlation": 0.9860024845596244
+        },
+        {
+          "part": "shoubi_r_1s",
+          "frames": 16,
+          "median": 0.09338029502873206,
+          "p90": 0.1429719678036756,
+          "lag": 0,
+          "amplitude": 0.6912190086013926,
+          "correlation": 0.9511837396490073
+        },
+        {
+          "part": "yan_2",
+          "frames": 73,
+          "median": 0.08725875529811035,
+          "p90": 0.1459720188904498,
+          "lag": 0,
+          "amplitude": 0.7746683732246614,
+          "correlation": 0.9131560377512538
+        },
+        {
+          "part": "shouzhi_r_2",
+          "frames": 88,
+          "median": 0.08491912579415217,
+          "p90": 0.21168813716238596,
+          "lag": 1,
+          "amplitude": 1.6420117005598078,
+          "correlation": 0.9572640659457282
+        },
+        {
+          "part": "shouzhi_l_1",
+          "frames": 91,
+          "median": 0.08065159792935389,
+          "p90": 0.2579873602974252,
+          "lag": -12,
+          "amplitude": 0.18966230650696642,
+          "correlation": 0.5119167314320953
+        },
+        {
+          "part": "yan_1",
+          "frames": 36,
+          "median": 0.075943723381674,
+          "p90": 0.1105100582313777,
+          "lag": 0,
+          "amplitude": 0.9063914647414048,
+          "correlation": 0.9317723089152288
+        },
+        {
+          "part": "yanbai_2",
+          "frames": 64,
+          "median": 0.07556518573379431,
+          "p90": 0.09489608609811089,
+          "lag": 0,
+          "amplitude": 0.8836885037171301,
+          "correlation": 0.9802350306899807
+        },
+        {
+          "part": "shoubi_r_1",
+          "frames": 45,
+          "median": 0.07410531884987726,
+          "p90": 0.11899918247435358,
+          "lag": 0,
+          "amplitude": 0.9445394353209654,
+          "correlation": 0.9045853069274102
+        },
+        {
+          "part": "shouzhi_l_4",
+          "frames": 82,
+          "median": 0.07350987514172189,
+          "p90": 0.14573438023641855,
+          "lag": 0,
+          "amplitude": 0.9000051185291814,
+          "correlation": 0.5251768333293335
+        },
+        {
+          "part": "mnm/er_2s",
+          "frames": 57,
+          "median": 0.07131048023532488,
+          "p90": 0.18161530264841866,
+          "lag": 0,
+          "amplitude": 1.016954951465381,
+          "correlation": 0.659995460268329
+        },
+        {
+          "part": "shouzhi_l_5s",
+          "frames": 78,
+          "median": 0.07022920123375952,
+          "p90": 0.12899527331511412,
+          "lag": 8,
+          "amplitude": 1.3810213058040057,
+          "correlation": 0.13229153347949255
+        },
+        {
+          "part": "shouzhi_r_1",
+          "frames": 85,
+          "median": 0.0686451886589233,
+          "p90": 0.10089414939032161,
+          "lag": 0,
+          "amplitude": 1.1001158006325937,
+          "correlation": 0.9591906156269977
+        },
+        {
+          "part": "shouzhi_l_3",
+          "frames": 89,
+          "median": 0.06726370848452999,
+          "p90": 0.22282732346457815,
+          "lag": -12,
+          "amplitude": 0.6890988191246749,
+          "correlation": 0.6778494020352334
+        },
+        {
+          "part": "er_2",
+          "frames": 57,
+          "median": 0.0670564597524503,
+          "p90": 0.17013024442646182,
+          "lag": -12,
+          "amplitude": 0.5850592455004864,
+          "correlation": 0.4302098546626517
+        },
+        {
+          "part": "shouzhi_l_2",
+          "frames": 77,
+          "median": 0.06526101690321554,
+          "p90": 0.12005349455037008,
+          "lag": 0,
+          "amplitude": 0.7493799320660122,
+          "correlation": 0.1214346271886886
+        },
+        {
+          "part": "shoubi_r_2",
+          "frames": 74,
+          "median": 0.0563063912726375,
+          "p90": 0.13880685330426654,
+          "lag": -10,
+          "amplitude": 1.0046816903530293,
+          "correlation": 0.8831975354322918
+        },
+        {
+          "part": "shouzhi_l_5",
+          "frames": 88,
+          "median": 0.05407377942441411,
+          "p90": 0.10792241982304962,
+          "lag": 4,
+          "amplitude": 0.9095215782879594,
+          "correlation": -0.1476432254006612
+        },
+        {
+          "part": "shouzhi_r_5s",
+          "frames": 78,
+          "median": 0.04901103007907151,
+          "p90": 0.11647265507456381,
+          "lag": 0,
+          "amplitude": 1.187632153739255,
+          "correlation": 0.9689147593075813
+        },
+        {
+          "part": "shouzhi_r_5",
+          "frames": 81,
+          "median": 0.04891025880838853,
+          "p90": 0.12566361768511256,
+          "lag": 0,
+          "amplitude": 1.4794422430597935,
+          "correlation": 0.9456438582436124
+        },
+        {
+          "part": "shoubi_l_2",
+          "frames": 68,
+          "median": 0.0475455059205452,
+          "p90": 0.1105066661752089,
+          "lag": -12,
+          "amplitude": 0.6114417105732473,
+          "correlation": 0.41881263175616146
+        },
+        {
+          "part": "mnm/tou_1_2s",
+          "frames": 61,
+          "median": 0.047435247855096355,
+          "p90": 0.09449768150887587,
+          "lag": -12,
+          "amplitude": 0.741040488025338,
+          "correlation": 0.3606623191179209
+        },
+        {
+          "part": "yanpi_1",
+          "frames": 2,
+          "median": 0.04706511763645456,
+          "p90": 0.04706511763645456,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_4",
+          "frames": 79,
+          "median": 0.0419347049924854,
+          "p90": 0.11505760720830771,
+          "lag": 0,
+          "amplitude": 0.8617522837082235,
+          "correlation": 0.960872582982137
+        },
+        {
+          "part": "shoubi_l_2s",
+          "frames": 11,
+          "median": 0.04178430203147273,
+          "p90": 0.06889824548070832,
+          "lag": 0,
+          "amplitude": 0.8350410742455218,
+          "correlation": 0.4898688867106527
+        },
+        {
+          "part": "tou_1_1",
+          "frames": 51,
+          "median": 0.03945688353627423,
+          "p90": 0.09152334215980931,
+          "lag": -9,
+          "amplitude": 0.550917030913438,
+          "correlation": 0.39604587970972216
+        },
+        {
+          "part": "yanpi_2",
+          "frames": 2,
+          "median": 0.03912797293529804,
+          "p90": 0.03912797293529804,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yanbai_1",
+          "frames": 16,
+          "median": 0.03705950855043777,
+          "p90": 0.07792426789691288,
+          "lag": -2,
+          "amplitude": 0.8630681646788502,
+          "correlation": 0.6556987850620688
+        },
+        {
+          "part": "mnm/jio_r_2s",
+          "frames": 98,
+          "median": 0.03676998272413568,
+          "p90": 0.052497827801755374,
+          "lag": 0,
+          "amplitude": 0.9870175335370175,
+          "correlation": 0.9208899354694868
+        },
+        {
+          "part": "jio_r_2",
+          "frames": 98,
+          "median": 0.036313359559889666,
+          "p90": 0.05510217005893022,
+          "lag": -1,
+          "amplitude": 0.48430756292772614,
+          "correlation": 0.5216393986850827
+        },
+        {
+          "part": "mnm/shoubi_r_2s",
+          "frames": 6,
+          "median": 0.03539511185970251,
+          "p90": 0.12060872642669769,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_l_2s",
+          "frames": 117,
+          "median": 0.035307008618298344,
+          "p90": 0.039265534452191345,
+          "lag": 0,
+          "amplitude": 0.1312156246914501,
+          "correlation": 0.3617161611782698
+        },
+        {
+          "part": "jio_r_3",
+          "frames": 101,
+          "median": 0.035102472825429075,
+          "p90": 0.043879790422579085,
+          "lag": 0,
+          "amplitude": 0.4314092846445685,
+          "correlation": 0.5152159179454487
+        },
+        {
+          "part": "mnm/jio_l_1s",
+          "frames": 119,
+          "median": 0.03495827696530454,
+          "p90": 0.03517432250126149,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_1",
+          "frames": 119,
+          "median": 0.03479611669373172,
+          "p90": 0.03489235988377817,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_3",
+          "frames": 106,
+          "median": 0.03453634371954954,
+          "p90": 0.04014953444055348,
+          "lag": -3,
+          "amplitude": 1.1166491058951966,
+          "correlation": 0.6026980893936899
+        },
+        {
+          "part": "shoubi_l_1",
+          "frames": 87,
+          "median": 0.03430110090924735,
+          "p90": 0.1848632041183422,
+          "lag": 0,
+          "amplitude": 0.2550943365233454,
+          "correlation": 0.7710269934094081
+        },
+        {
+          "part": "jio_l_2",
+          "frames": 119,
+          "median": 0.03422501480606384,
+          "p90": 0.035704260164071716,
+          "lag": 0,
+          "amplitude": 0.2164020724469189,
+          "correlation": 0.441911866622917
+        },
+        {
+          "part": "mnm/jio_l_3s",
+          "frames": 33,
+          "median": 0.03361076262704786,
+          "p90": 0.035137660126870036,
+          "lag": -2,
+          "amplitude": 0.657748673982159,
+          "correlation": 0.7531160784362625
+        },
+        {
+          "part": "mnm/jio_r_1s",
+          "frames": 102,
+          "median": 0.03329141046496456,
+          "p90": 0.03351554634701854,
+          "lag": 0,
+          "amplitude": 1.0086094517263375,
+          "correlation": 0.9927732456970362
+        },
+        {
+          "part": "jio_r_1",
+          "frames": 108,
+          "median": 0.03318313090033187,
+          "p90": 0.03325512975309153,
+          "lag": 0,
+          "amplitude": 0.8587251755481916,
+          "correlation": 0.9822697439638222
+        },
+        {
+          "part": "weiba_1",
+          "frames": 3,
+          "median": 0.03228837123375363,
+          "p90": 0.09151981322414887,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "tou_1_2",
+          "frames": 26,
+          "median": 0.025684515524678233,
+          "p90": 0.05746399360928809,
+          "lag": -4,
+          "amplitude": 0.3514169748389957,
+          "correlation": 0.3295247122420755
+        },
+        {
+          "part": "mnm/shenti_1s",
+          "frames": 37,
+          "median": 0.024213871154717695,
+          "p90": 0.08596448711264389,
+          "lag": -1,
+          "amplitude": 0.8355383134313724,
+          "correlation": 0.8811062112449757
+        },
+        {
+          "part": "mnm/shoubi_l_1s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shenti_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        }
+      ],
+      "output": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-idle2\\idle2\\compare.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-idle2\\idle2\\report.json"
+    },
+    {
+      "animation": "idle_clap",
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-fullprecision-idle_clap.mp4",
+      "start": 0,
+      "pass": false,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.792,
+            0.731
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            0.77,
+            3.24,
+            "10 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            -1,
+            0.87
+          ]
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 0-3: shoubi_l_2",
+        "outline differs most at frame 4 (0.13s, overlap 0.73): pose, placement or size",
+        "shenti_1: off by 2.5% of the height, moving differently",
+        "mnm/jio_l_1s: off by 1.0% of the height, moving differently",
+        "jio_l_1: off by 0.9% of the height, moving differently",
+        "jio_l_2: off by 0.8% of the height, moving differently"
+      ],
+      "frameError": [
+        1.411,
+        3.786,
+        7.101,
+        5.225,
+        5.533
+      ],
+      "parts": [
+        {
+          "part": "shouzhi_l_5s",
+          "frames": 1,
+          "median": 0.10996366718751784,
+          "p90": 0.10996366718751784,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_r_1",
+          "frames": 2,
+          "median": 0.10932132195024591,
+          "p90": 0.10932132195024591,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/weiba_1s",
+          "frames": 2,
+          "median": 0.08790007325817861,
+          "p90": 0.08790007325817861,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shenti_1s",
+          "frames": 2,
+          "median": 0.08053309803431878,
+          "p90": 0.08053309803431878,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "tou_1_2",
+          "frames": 2,
+          "median": 0.05559581761973991,
+          "p90": 0.05559581761973991,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shenti_1_1",
+          "frames": 3,
+          "median": 0.055330802030476904,
+          "p90": 0.0640335980821683,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "tou_1_1",
+          "frames": 2,
+          "median": 0.053807634844660765,
+          "p90": 0.053807634844660765,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yanpi_2",
+          "frames": 1,
+          "median": 0.04318185819078122,
+          "p90": 0.04318185819078122,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/tou_1_2s",
+          "frames": 1,
+          "median": 0.04068440375626211,
+          "p90": 0.04068440375626211,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shoubi_l_1s",
+          "frames": 1,
+          "median": 0.030433392794794546,
+          "p90": 0.030433392794794546,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_l_1",
+          "frames": 2,
+          "median": 0.028906689593726196,
+          "p90": 0.028906689593726196,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shenti_1",
+          "frames": 4,
+          "median": 0.025132430905816426,
+          "p90": 0.03239595558469228,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_3",
+          "frames": 3,
+          "median": 0.020628737871347544,
+          "p90": 0.026542362068067128,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shoubi_r_2s",
+          "frames": 3,
+          "median": 0.018127388769316417,
+          "p90": 0.019891696297004456,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_l_1s",
+          "frames": 5,
+          "median": 0.0095951506998565,
+          "p90": 0.009599977097843368,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_1",
+          "frames": 5,
+          "median": 0.009244366761038375,
+          "p90": 0.009332499133502085,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yanbai_1",
+          "frames": 1,
+          "median": 0.008546650107119408,
+          "p90": 0.008546650107119408,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_l_2",
+          "frames": 5,
+          "median": 0.008488970816192574,
+          "p90": 0.008810239135746493,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yan_1",
+          "frames": 1,
+          "median": 0.008364839998547799,
+          "p90": 0.008364839998547799,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_l_2s",
+          "frames": 5,
+          "median": 0.007720027696527879,
+          "p90": 0.009490389519058855,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_r_1",
+          "frames": 5,
+          "median": 0.006473745232259421,
+          "p90": 0.006499779087806016,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_1s",
+          "frames": 5,
+          "median": 0.006065935303857248,
+          "p90": 0.006250877586817872,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_2s",
+          "frames": 5,
+          "median": 0.005766080037781669,
+          "p90": 0.009156650707805027,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_r_3",
+          "frames": 5,
+          "median": 0.005748752305723022,
+          "p90": 0.006849503484511166,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "jio_r_2",
+          "frames": 5,
+          "median": 0.004380959765139842,
+          "p90": 0.008223469960127117,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yan_2",
+          "frames": 1,
+          "median": 0.002456150350223232,
+          "p90": 0.002456150350223232,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yanbai_2",
+          "frames": 1,
+          "median": 0.002146885135269986,
+          "p90": 0.002146885135269986,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/er_1s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "er_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/er_2s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "er_2",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_5s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_2",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_3",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_l_2",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_4",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_r_5",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_l_5",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_l_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_l_3",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_r_2",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_l_2",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_r_1s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shouzhi_l_4",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "weiba_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_l_2s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_l_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "yanpi_1",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        }
+      ],
+      "output": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-idle_clap\\idle_clap\\compare.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-idle_clap\\idle_clap\\report.json"
+    },
+    {
+      "animation": "clap",
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\input\\reference-fullprecision-clap.mp4",
+      "start": 0,
+      "pass": false,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.651,
+            0.555
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            2.65,
+            34.39,
+            "22 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": false,
+          "value": [
+            12,
+            0.12
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 0-33: shoubi_l_2",
+        "drawn mirrored (left-right) in the reference on frames 4-26: mnm/tou_1_2s",
+        "drawn mirrored (left-right) in the reference on frames 22-28: shoubi_r_2",
+        "drawn mirrored (left-right) in the reference on frames 27-42: shoubi_l_1",
+        "drawn mirrored (left-right) in the reference on frames 44-55: shouzhi_l2_1",
+        "drawn mirrored (left-right) in the reference on frames 50-56: shouzhi_l2_8",
+        "outline differs most at frame 8 (0.27s, overlap 0.55): pose, placement or size",
+        "the whole figure moves 12 frames later than the reference",
+        "the whole figure moves 0.12x as far as the reference (too small)",
+        "mnm/er_2s: off by 30.9% of the height, moving differently",
+        "shouzhi_l2_3: off by 27.4% of the height, moving differently",
+        "shouzhi_l2_2: off by 26.1% of the height, moving differently",
+        "er_1: off by 24.5% of the height, moving differently"
+      ],
+      "frameError": [
+        2.692,
+        2.188,
+        3.815,
+        6.267,
+        7.704,
+        2.833,
+        3.232,
+        3.498,
+        4.872,
+        5.33,
+        5.173,
+        5.773,
+        4.699,
+        2.696,
+        4.783,
+        6.017,
+        5.236,
+        4.216,
+        4.003,
+        2.883,
+        2.92,
+        3.099,
+        3.593,
+        3.832,
+        3.811,
+        3.717,
+        2.896,
+        4.24,
+        4.479,
+        3.933,
+        3.248,
+        2.961,
+        2.372,
+        3.161,
+        3.711,
+        5.471,
+        3.931,
+        6.248,
+        5.804,
+        4.669,
+        4.492,
+        4.222,
+        2.697,
+        2.675,
+        6.259,
+        6.818,
+        7.166,
+        6.443,
+        6.711,
+        2.689,
+        3,
+        3.237,
+        4.752,
+        6.825,
+        6.616,
+        3.061,
+        2.863,
+        4.299,
+        2.651,
+        3.082
+      ],
+      "parts": [
+        {
+          "part": "mnm/er_2s",
+          "frames": 35,
+          "median": 0.3086285508895501,
+          "p90": 0.3439463658437449,
+          "lag": 8,
+          "amplitude": 0.12429919325558605,
+          "correlation": 0.29775370724579636
+        },
+        {
+          "part": "shouzhi_l2_3",
+          "frames": 33,
+          "median": 0.2743135917112623,
+          "p90": 0.40392686334536554,
+          "lag": 8,
+          "amplitude": 0.04617876782014561,
+          "correlation": -0.2334155958637098
+        },
+        {
+          "part": "shouzhi_l2_2",
+          "frames": 34,
+          "median": 0.2612374211004986,
+          "p90": 0.3662665517551395,
+          "lag": -8,
+          "amplitude": 0.042424372453943246,
+          "correlation": -0.230909411637657
+        },
+        {
+          "part": "er_1",
+          "frames": 35,
+          "median": 0.24451240431640422,
+          "p90": 0.31940169866532003,
+          "lag": 8,
+          "amplitude": 0.11097630804745752,
+          "correlation": 0.02956784212517138
+        },
+        {
+          "part": "er_2",
+          "frames": 60,
+          "median": 0.24165804948207945,
+          "p90": 0.3092012984811584,
+          "lag": 12,
+          "amplitude": 0.11252925931608818,
+          "correlation": -0.1638247508823483
+        },
+        {
+          "part": "yanpi_2",
+          "frames": 31,
+          "median": 0.13405969213767924,
+          "p90": 0.15087627232303444,
+          "lag": -7,
+          "amplitude": 0.17651693527755402,
+          "correlation": -0.1252874839765428
+        },
+        {
+          "part": "shouzhi_r_5",
+          "frames": 5,
+          "median": 0.11202698893698881,
+          "p90": 0.11423041703365551,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "weiba_1",
+          "frames": 9,
+          "median": 0.09754499509453562,
+          "p90": 0.1476738748902318,
+          "lag": -2,
+          "amplitude": 0.31595731250053494,
+          "correlation": 0.5052170213593964
+        },
+        {
+          "part": "shoubi_l_1",
+          "frames": 18,
+          "median": 0.09523969590027878,
+          "p90": 0.10403826482491378,
+          "lag": -4,
+          "amplitude": 0.06617007101654883,
+          "correlation": -0.015227052322661026
+        },
+        {
+          "part": "shoubi_r_1s",
+          "frames": 23,
+          "median": 0.09319510831506331,
+          "p90": 0.11955905320780336,
+          "lag": 3,
+          "amplitude": 0.07194944025729953,
+          "correlation": 0.8208606850704446
+        },
+        {
+          "part": "tou_1_2",
+          "frames": 20,
+          "median": 0.09181802030567898,
+          "p90": 0.11916002786602481,
+          "lag": 5,
+          "amplitude": 0.17636361375643125,
+          "correlation": -0.17938245782763287
+        },
+        {
+          "part": "shoubi_l_2s",
+          "frames": 35,
+          "median": 0.09149226982739794,
+          "p90": 0.1209669942803686,
+          "lag": -8,
+          "amplitude": 0.1404480197006827,
+          "correlation": -0.06826358431530692
+        },
+        {
+          "part": "shouzhi_l2_7",
+          "frames": 30,
+          "median": 0.09019304636915144,
+          "p90": 0.1946504835374548,
+          "lag": -7,
+          "amplitude": 0.10191307149462812,
+          "correlation": 0.06661895028787129
+        },
+        {
+          "part": "shouzhi_l_5",
+          "frames": 8,
+          "median": 0.08606926944797876,
+          "p90": 0.12494863054196904,
+          "lag": -2,
+          "amplitude": 0.18497699489390423,
+          "correlation": 0.24384730208964692
+        },
+        {
+          "part": "shouzhi_l2_6",
+          "frames": 21,
+          "median": 0.08065010019004341,
+          "p90": 0.14627007005835846,
+          "lag": -5,
+          "amplitude": 0.1803861798716464,
+          "correlation": 0.22730477663729307
+        },
+        {
+          "part": "shouzhi_l2_8",
+          "frames": 16,
+          "median": 0.07953719478917327,
+          "p90": 0.11336634244185019,
+          "lag": -3,
+          "amplitude": 0.07255867569344043,
+          "correlation": 0.41743604316857297
+        },
+        {
+          "part": "mnm/tou_1_2s",
+          "frames": 20,
+          "median": 0.07828534492154948,
+          "p90": 0.15665320142388606,
+          "lag": 3,
+          "amplitude": 0.0744832135354186,
+          "correlation": 0.590297454680972
+        },
+        {
+          "part": "shouzhi_l2_1",
+          "frames": 15,
+          "median": 0.07747661178338631,
+          "p90": 0.2845425055490481,
+          "lag": 3,
+          "amplitude": 0.04280057771019295,
+          "correlation": -0.24568833456461384
+        },
+        {
+          "part": "shouzhi_r_5s",
+          "frames": 3,
+          "median": 0.07592230680128503,
+          "p90": 0.07953989754067478,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_l_2",
+          "frames": 11,
+          "median": 0.06868063183396612,
+          "p90": 0.10347591004112085,
+          "lag": -2,
+          "amplitude": 0.2139107833366593,
+          "correlation": -0.3639623694235324
+        },
+        {
+          "part": "mnm/weiba_1s",
+          "frames": 7,
+          "median": 0.06062367570375354,
+          "p90": 0.1167244688511257,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_r_1",
+          "frames": 1,
+          "median": 0.05416092084933602,
+          "p90": 0.05416092084933602,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shoubi_r_2",
+          "frames": 9,
+          "median": 0.049410837232395734,
+          "p90": 0.13609088758397156,
+          "lag": 1,
+          "amplitude": 0.1352794560782934,
+          "correlation": 0.6519991546508402
+        },
+        {
+          "part": "yanpi_1",
+          "frames": 10,
+          "median": 0.04121545282609986,
+          "p90": 0.15076004067749277,
+          "lag": 2,
+          "amplitude": 0.21977914986912506,
+          "correlation": 0.10418092353107553
+        },
+        {
+          "part": "shouzhi_l_5s",
+          "frames": 7,
+          "median": 0.03922361906755668,
+          "p90": 0.08507921603509461,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shoubi_l_1s",
+          "frames": 30,
+          "median": 0.03892768110673081,
+          "p90": 0.06979788298186024,
+          "lag": -7,
+          "amplitude": 0.2513640845380685,
+          "correlation": 0.014250177850006072
+        },
+        {
+          "part": "mnm/jio_r_2s",
+          "frames": 60,
+          "median": 0.028608475657682757,
+          "p90": 0.03331514249285083,
+          "lag": -6,
+          "amplitude": 0.35287847819180457,
+          "correlation": 0.17107878054499465
+        },
+        {
+          "part": "jio_r_3",
+          "frames": 60,
+          "median": 0.026525566722484264,
+          "p90": 0.028896897086792682,
+          "lag": -12,
+          "amplitude": 2.4924409347624954e-14,
+          "correlation": 1
+        },
+        {
+          "part": "jio_r_2",
+          "frames": 48,
+          "median": 0.025609214532128985,
+          "p90": 0.030605378932256715,
+          "lag": -9,
+          "amplitude": 0.11972307114827929,
+          "correlation": 0.23545831818982882
+        },
+        {
+          "part": "tou_1_1",
+          "frames": 12,
+          "median": 0.02543368503286389,
+          "p90": 0.12591864272062878,
+          "lag": 3,
+          "amplitude": 0.14197051291900006,
+          "correlation": 0.4207760383749981
+        },
+        {
+          "part": "jio_r_1",
+          "frames": 60,
+          "median": 0.02298345307122048,
+          "p90": 0.02303332118582287,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_1s",
+          "frames": 60,
+          "median": 0.022902361764866923,
+          "p90": 0.02303179971780235,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shenti_1",
+          "frames": 46,
+          "median": 0.017221207915904615,
+          "p90": 0.021918167886118882,
+          "lag": 6,
+          "amplitude": 0.20976448916069057,
+          "correlation": 0.2524384966691049
+        },
+        {
+          "part": "jio_l_3",
+          "frames": 60,
+          "median": 0.014879527495998518,
+          "p90": 0.023496101418955608,
+          "lag": 0,
+          "amplitude": 0.16070445615877557,
+          "correlation": 0.0702005168038371
+        },
+        {
+          "part": "mnm/jio_l_2s",
+          "frames": 60,
+          "median": 0.014557957891644173,
+          "p90": 0.018081148156106862,
+          "lag": -12,
+          "amplitude": 2.7784173545990816e-13,
+          "correlation": 1
+        },
+        {
+          "part": "mnm/shenti_1s",
+          "frames": 60,
+          "median": 0.013792029599068063,
+          "p90": 0.031164629881056435,
+          "lag": 0,
+          "amplitude": 0.7639481993336575,
+          "correlation": 0.9760695913534411
+        },
+        {
+          "part": "jio_l_1",
+          "frames": 60,
+          "median": 0.012522155792158398,
+          "p90": 0.012564080810657543,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "shenti_1_1",
+          "frames": 59,
+          "median": 0.012101168893051574,
+          "p90": 0.027491286048185522,
+          "lag": -12,
+          "amplitude": 0.26329299555115276,
+          "correlation": 0.3464666207765764
+        },
+        {
+          "part": "jio_l_2",
+          "frames": 60,
+          "median": 0.011374292224329449,
+          "p90": 0.01385559972779329,
+          "lag": -12,
+          "amplitude": 0,
+          "correlation": 1
+        },
+        {
+          "part": "mnm/jio_l_1s",
+          "frames": 60,
+          "median": 0.011184676412713776,
+          "p90": 0.011873514280063323,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/shoubi_r_2s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_l_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        },
+        {
+          "part": "mnm/jio_r_3s",
+          "frames": 0,
+          "median": null,
+          "p90": null,
+          "lag": null,
+          "amplitude": null,
+          "correlation": null
+        }
+      ],
+      "output": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-clap\\clap\\compare.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\checks\\video-fullprecision-clap\\clap\\report.json"
+    }
+  ]
+}
