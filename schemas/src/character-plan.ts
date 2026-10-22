@@ -513,6 +513,41 @@ export const MotionPlanSchema = Type.Object(
      * every compiled key.
      */
     keyTolerance: Type.Optional(Type.Number({ minimum: 0, maximum: 5 })),
+    /**
+     * Key reduction (ADR-044) on the compiled Spine file, checked on the official runtime against
+     * the exact compiled motion: `fidelity` keeps the fewest keys within the limit, `posable` keys
+     * shared pose frames for the main bones and own turns for follow parts. Limits are world
+     * vertex px (default by mode from the skeleton's size). With this set, the ADR-038 cleanup is
+     * skipped (`keyTolerance` is not used): the exact motion is the reference.
+     */
+    keyReduction: Type.Optional(
+      Type.Object(
+        {
+          mode: Type.Union([Type.Literal("fidelity"), Type.Literal("posable")]),
+          maxError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 })),
+          rmsError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 })),
+          colorTolerance: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 1 })),
+          animations: Type.Optional(Type.Array(NameSchema, { maxItems: 256 })),
+          skip: Type.Optional(
+            Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 4096 }),
+          ),
+          lock: Type.Optional(
+            Type.Array(
+              Type.Object(
+                {
+                  animation: Type.Optional(NameSchema),
+                  timeline: Type.Optional(Type.String({ minLength: 1, maxLength: 256 })),
+                  time: Type.Optional(Type.Number({ minimum: 0 })),
+                },
+                { additionalProperties: false },
+              ),
+              { maxItems: 4096 },
+            ),
+          ),
+        },
+        { additionalProperties: false },
+      ),
+    ),
     params: Type.Record(Type.String({ pattern: "^[A-Za-z_][A-Za-z0-9_]*$" }), Type.Number()),
     search: Type.Optional(Type.Record(Type.String(), SearchRangeSchema)),
     animations: Type.Array(

@@ -16,6 +16,8 @@ import {
   mergePlanFiles,
   stripImages,
 } from "./character.js";
+import { reduceKeysFiles, type ReduceKeysFileOptions } from "./keys.js";
+import type { KeyLock, KeyReductionMode } from "@autospine/reference";
 import {
   AssetParseError,
   decodeAlphaMask,
@@ -94,7 +96,8 @@ const characterUsage = `Character commands (ADR-017):
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
-  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]`;
+  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]
+  autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
     args
@@ -285,6 +288,96 @@ async function characterCommand(args: string[]): Promise<boolean> {
         reference: !flags.has("no-reference"),
       };
       console.log(JSON.stringify(await deliverFiles(p[1]!, p[2]!, p[3]!, p[4], opts)));
+      return true;
+    }
+    case "reduce-keys": {
+      if (p.length !== 3) throw new Error(characterUsage);
+      known(
+        "mode",
+        "fidelity-max",
+        "fidelity-rms",
+        "posable-max",
+        "posable-rms",
+        "fps",
+        "animations",
+        "kinds",
+        "skip",
+        "lock",
+        "loops",
+        "baseline",
+        "color-tolerance",
+        "local-share",
+        "substeps",
+        "max-insertions",
+        "no-protect-events",
+        "spine",
+        "spine-version",
+        "no-spine",
+        "images",
+        "no-video",
+        "height",
+        "font",
+      );
+      const list = (k: string) =>
+        flags.get(k)
+          ? flags
+              .get(k)!
+              .split(",")
+              .map((x) => x.trim())
+              .filter(Boolean)
+          : undefined;
+      const mode = flags.get("mode") || "both";
+      if (!["both", "fidelity", "posable"].includes(mode))
+        throw new Error(`--mode is both, fidelity or posable\n${characterUsage}`);
+      // --lock=idle::bone:hip/rotate@0.5 — animation optional, time optional (whole timeline).
+      const lock: KeyLock[] | undefined = list("lock")?.map((item) => {
+        const [anim, rest] = item.includes("::") ? item.split("::") : [undefined, item];
+        const [timeline, at] = rest!.split("@");
+        return {
+          ...(anim ? { animation: anim } : {}),
+          ...(timeline ? { timeline } : {}),
+          ...(at !== undefined ? { time: Number(at) } : {}),
+        };
+      });
+      const limit = (m: KeyReductionMode) => ({
+        ...(numberFlag(`${m}-max`) !== undefined ? { maxError: numberFlag(`${m}-max`)! } : {}),
+        ...(numberFlag(`${m}-rms`) !== undefined ? { rmsError: numberFlag(`${m}-rms`)! } : {}),
+      });
+      const opts: ReduceKeysFileOptions = {
+        modes: mode === "both" ? ["fidelity", "posable"] : [mode as KeyReductionMode],
+        limits: { fidelity: limit("fidelity"), posable: limit("posable") },
+        ...(numberFlag("fps") !== undefined ? { fps: numberFlag("fps")! } : {}),
+        ...(list("animations") ? { animations: list("animations")! } : {}),
+        ...(list("kinds") ? { kinds: list("kinds") as ReduceKeysFileOptions["kinds"] } : {}),
+        ...(list("skip") ? { skip: list("skip")! } : {}),
+        ...(lock ? { lock } : {}),
+        ...(list("loops") ? { loops: list("loops")! } : {}),
+        ...(flags.get("baseline") ? { baseline: flags.get("baseline")! } : {}),
+        ...(numberFlag("color-tolerance") !== undefined
+          ? { colorTolerance: numberFlag("color-tolerance")! }
+          : {}),
+        ...(numberFlag("local-share") !== undefined
+          ? { localShare: numberFlag("local-share")! }
+          : {}),
+        ...(numberFlag("substeps") !== undefined ? { substeps: numberFlag("substeps")! } : {}),
+        ...(numberFlag("max-insertions") !== undefined
+          ? { maxInsertions: numberFlag("max-insertions")! }
+          : {}),
+        ...(flags.has("no-protect-events") ? { protectEvents: false } : {}),
+        ...(flags.has("no-spine")
+          ? { spine: false as const }
+          : flags.get("spine")
+            ? { spine: flags.get("spine")! }
+            : {}),
+        ...(flags.get("spine-version") ? { spineVersion: flags.get("spine-version")! } : {}),
+        ...(flags.get("images") ? { images: flags.get("images")! } : {}),
+        ...(flags.has("no-video") ? { video: false } : {}),
+        ...(numberFlag("height") !== undefined ? { height: numberFlag("height")! } : {}),
+        ...(flags.get("font") ? { font: flags.get("font")! } : {}),
+      };
+      const summary = await reduceKeysFiles(p[1]!, p[2]!, opts);
+      console.log(JSON.stringify({ ...summary, features: undefined }, null, 1));
+      if (summary.runs.some((r) => !r.pass)) process.exitCode = 2;
       return true;
     }
     case "merge-plans": {

@@ -287,10 +287,10 @@ var require_filter_parse = __commonJS({
     "use strict";
     var interlaceUtils = require_interlace();
     var paethPredictor = require_paeth_predictor();
-    function getByteWidth(width, bpp, depth) {
+    function getByteWidth(width, bpp, depth2) {
       let byteWidth = width * bpp;
-      if (depth !== 8) {
-        byteWidth = Math.ceil(byteWidth / (8 / depth));
+      if (depth2 !== 8) {
+        byteWidth = Math.ceil(byteWidth / (8 / depth2));
       }
       return byteWidth;
     }
@@ -299,7 +299,7 @@ var require_filter_parse = __commonJS({
       let height = bitmapInfo.height;
       let interlace = bitmapInfo.interlace;
       let bpp = bitmapInfo.bpp;
-      let depth = bitmapInfo.depth;
+      let depth2 = bitmapInfo.depth;
       this.read = dependencies.read;
       this.write = dependencies.write;
       this.complete = dependencies.complete;
@@ -309,21 +309,21 @@ var require_filter_parse = __commonJS({
         let passes = interlaceUtils.getImagePasses(width, height);
         for (let i = 0; i < passes.length; i++) {
           this._images.push({
-            byteWidth: getByteWidth(passes[i].width, bpp, depth),
+            byteWidth: getByteWidth(passes[i].width, bpp, depth2),
             height: passes[i].height,
             lineIndex: 0
           });
         }
       } else {
         this._images.push({
-          byteWidth: getByteWidth(width, bpp, depth),
+          byteWidth: getByteWidth(width, bpp, depth2),
           height,
           lineIndex: 0
         });
       }
-      if (depth === 8) {
+      if (depth2 === 8) {
         this._xComparison = bpp;
-      } else if (depth === 16) {
+      } else if (depth2 === 16) {
         this._xComparison = bpp * 2;
       } else {
         this._xComparison = 1;
@@ -617,13 +617,13 @@ var require_parser = __commonJS({
       this._crc.write(data);
       let width = data.readUInt32BE(0);
       let height = data.readUInt32BE(4);
-      let depth = data[8];
+      let depth2 = data[8];
       let colorType = data[9];
       let compr = data[10];
       let filter = data[11];
       let interlace = data[12];
-      if (depth !== 8 && depth !== 4 && depth !== 2 && depth !== 1 && depth !== 16) {
-        this.error(new Error("Unsupported bit depth " + depth));
+      if (depth2 !== 8 && depth2 !== 4 && depth2 !== 2 && depth2 !== 1 && depth2 !== 16) {
+        this.error(new Error("Unsupported bit depth " + depth2));
         return;
       }
       if (!(colorType in constants.COLORTYPE_TO_BPP_MAP)) {
@@ -648,7 +648,7 @@ var require_parser = __commonJS({
       this.metadata({
         width,
         height,
-        depth,
+        depth: depth2,
         interlace: Boolean(interlace),
         palette: Boolean(colorType & constants.COLORTYPE_PALETTE),
         color: Boolean(colorType & constants.COLORTYPE_COLOR),
@@ -839,7 +839,7 @@ var require_bitmapper = __commonJS({
         pxData[pxPos + 3] = pixelData[3];
       }
     ];
-    function bitRetriever(data, depth) {
+    function bitRetriever(data, depth2) {
       let leftOver = [];
       let i = 0;
       function split() {
@@ -849,7 +849,7 @@ var require_bitmapper = __commonJS({
         let byte = data[i];
         i++;
         let byte8, byte7, byte6, byte5, byte4, byte3, byte2, byte1;
-        switch (depth) {
+        switch (depth2) {
           default:
             throw new Error("unrecognised depth");
           case 16:
@@ -930,20 +930,20 @@ var require_bitmapper = __commonJS({
     exports.dataToBitMap = function(data, bitmapInfo) {
       let width = bitmapInfo.width;
       let height = bitmapInfo.height;
-      let depth = bitmapInfo.depth;
+      let depth2 = bitmapInfo.depth;
       let bpp = bitmapInfo.bpp;
       let interlace = bitmapInfo.interlace;
       let bits;
-      if (depth !== 8) {
-        bits = bitRetriever(data, depth);
+      if (depth2 !== 8) {
+        bits = bitRetriever(data, depth2);
       }
       let pxData;
-      if (depth <= 8) {
+      if (depth2 <= 8) {
         pxData = Buffer.alloc(width * height * 4);
       } else {
         pxData = new Uint16Array(width * height * 4);
       }
-      let maxBit = Math.pow(2, depth) - 1;
+      let maxBit = Math.pow(2, depth2) - 1;
       let rawPos = 0;
       let images;
       let getPxPos;
@@ -960,7 +960,7 @@ var require_bitmapper = __commonJS({
         images = [{ width, height }];
       }
       for (let imageIndex = 0; imageIndex < images.length; imageIndex++) {
-        if (depth === 8) {
+        if (depth2 === 8) {
           rawPos = mapImage8Bit(
             images[imageIndex],
             pxData,
@@ -980,7 +980,7 @@ var require_bitmapper = __commonJS({
           );
         }
       }
-      if (depth === 8) {
+      if (depth2 === 8) {
         if (rawPos !== data.length) {
           throw new Error("extra data found");
         }
@@ -1032,9 +1032,9 @@ var require_format_normaliser = __commonJS({
         }
       }
     }
-    function scaleDepth(indata, outdata, width, height, depth) {
+    function scaleDepth(indata, outdata, width, height, depth2) {
       let maxOutSample = 255;
-      let maxInSample = Math.pow(2, depth) - 1;
+      let maxInSample = Math.pow(2, depth2) - 1;
       let pxPos = 0;
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
@@ -1048,7 +1048,7 @@ var require_format_normaliser = __commonJS({
       }
     }
     module.exports = function(indata, imageData, skipRescale = false) {
-      let depth = imageData.depth;
+      let depth2 = imageData.depth;
       let width = imageData.width;
       let height = imageData.height;
       let colorType = imageData.colorType;
@@ -1061,11 +1061,11 @@ var require_format_normaliser = __commonJS({
         if (transColor) {
           replaceTransparentColor(indata, outdata, width, height, transColor);
         }
-        if (depth !== 8 && !skipRescale) {
-          if (depth === 16) {
+        if (depth2 !== 8 && !skipRescale) {
+          if (depth2 === 16) {
             outdata = Buffer.alloc(width * height * 4);
           }
-          scaleDepth(indata, outdata, width, height, depth);
+          scaleDepth(indata, outdata, width, height, depth2);
         }
       }
       return outdata;
@@ -2419,10 +2419,10 @@ var require_trees = __commonJS({
       s2.bi_buf = 0;
       s2.bi_valid = 0;
     };
-    var smaller = (tree, n, m, depth) => {
+    var smaller = (tree, n, m, depth2) => {
       const _n2 = n * 2;
       const _m2 = m * 2;
-      return tree[_n2] < tree[_m2] || tree[_n2] === tree[_m2] && depth[n] <= depth[m];
+      return tree[_n2] < tree[_m2] || tree[_n2] === tree[_m2] && depth2[n] <= depth2[m];
     };
     var pqdownheap = (s2, tree, k) => {
       const v = s2.heap[k];
@@ -7843,8 +7843,8 @@ var require_base64_js = __commonJS({
       }
       return arr;
     }
-    function tripletToBase64(num2) {
-      return lookup[num2 >> 18 & 63] + lookup[num2 >> 12 & 63] + lookup[num2 >> 6 & 63] + lookup[num2 & 63];
+    function tripletToBase64(num3) {
+      return lookup[num3 >> 18 & 63] + lookup[num3 >> 12 & 63] + lookup[num3 >> 6 & 63] + lookup[num3 & 63];
     }
     function encodeChunk(uint8, start, end) {
       var tmp;
@@ -10343,7 +10343,7 @@ var require_imageResources = __commonJS({
     var LOG_MOCK_HANDLERS = false;
     var RESOLUTION_UNITS = [void 0, "PPI", "PPCM"];
     var MEASUREMENT_UNITS = [void 0, "Inches", "Centimeters", "Points", "Picas", "Columns"];
-    var hex = "0123456789abcdef";
+    var hex3 = "0123456789abcdef";
     function charToNibble(code) {
       if (code <= 57)
         return code - 48;
@@ -10407,8 +10407,8 @@ var require_imageResources = __commonJS({
       let captionDigest = "";
       for (let i = 0; i < 16; i++) {
         const byte = (0, psdReader_1.readUint8)(reader);
-        captionDigest += hex[byte >> 4];
-        captionDigest += hex[byte & 15];
+        captionDigest += hex3[byte >> 4];
+        captionDigest += hex3[byte & 15];
       }
       target.captionDigest = captionDigest;
     }, (writer, target) => {
@@ -12566,7 +12566,7 @@ var require_psdReader = __commonJS({
       }
       recoverMemory(reader, lengths.byteLength);
     }
-    function readSection(reader, round2, func, skipEmpty = true, eightBytes = false) {
+    function readSection(reader, round3, func, skipEmpty = true, eightBytes = false) {
       let length = readUint32(reader);
       if (eightBytes) {
         if (length !== 0)
@@ -12586,7 +12586,7 @@ var require_psdReader = __commonJS({
           warnOrThrow(reader, `Unread section data`);
         }
       }
-      while (length % round2) {
+      while (length % round3) {
         length++;
         end++;
       }
@@ -13727,15 +13727,15 @@ var require_text = __commonJS({
         const styleValue = base[key];
         if (styleValue !== void 0) {
           for (const r of runs) {
-            let same2 = false;
+            let same3 = false;
             if (Array.isArray(value)) {
-              same2 = arraysEqual(r.style[key], value);
+              same3 = arraysEqual(r.style[key], value);
             } else if (typeof value === "object") {
-              same2 = objectsEqual(r.style[key], value);
+              same3 = objectsEqual(r.style[key], value);
             } else {
-              same2 = r.style[key] === value;
+              same3 = r.style[key] === value;
             }
-            if (same2)
+            if (same3)
               delete r.style[key];
           }
         }
@@ -15777,7 +15777,7 @@ var require_additionalInfo = __commonJS({
               }))
             } });
           case "PbPl": {
-            const parameters = [];
+            const parameters2 = [];
             const Flrt = f.Fltr;
             for (let i = 0; i < fromAtoZ.length; i++) {
               if (!Flrt[`PN${fromAtoZ[i]}a`])
@@ -15785,7 +15785,7 @@ var require_additionalInfo = __commonJS({
               for (let j = 0; j < fromAtoZ.length; j++) {
                 if (!Flrt[`PN${fromAtoZ[i]}${fromAtoZ[j]}`])
                   break;
-                parameters.push({
+                parameters2.push({
                   name: Flrt[`PN${fromAtoZ[i]}${fromAtoZ[j]}`],
                   value: Flrt[`PF${fromAtoZ[i]}${fromAtoZ[j]}`]
                 });
@@ -15795,7 +15795,7 @@ var require_additionalInfo = __commonJS({
               name: f.Fltr.KnNm,
               gpu: f.Fltr.GpuY,
               lighting: f.Fltr.LIWy,
-              parameters
+              parameters: parameters2
             } });
           }
           // case 2089: return {
@@ -17719,7 +17719,7 @@ var require_additionalInfo = __commonJS({
         const left = (0, psdReader_1.readInt32)(reader);
         const bottom = (0, psdReader_1.readInt32)(reader);
         const right = (0, psdReader_1.readInt32)(reader);
-        const depth = (0, psdReader_1.readInt32)(reader);
+        const depth2 = (0, psdReader_1.readInt32)(reader);
         const maxChannels = (0, psdReader_1.readInt32)(reader);
         const channels = [];
         for (let i = 0; i < maxChannels + 2; i++) {
@@ -17737,7 +17737,7 @@ var require_additionalInfo = __commonJS({
             channels.push(void 0);
           }
         }
-        target.filterEffectsMasks.push({ id, top, left, bottom, right, depth, channels });
+        target.filterEffectsMasks.push({ id, top, left, bottom, right, depth: depth2, channels });
         if (reader.offset < end && (0, psdReader_1.readUint8)(reader)) {
           const top2 = (0, psdReader_1.readInt32)(reader);
           const left2 = (0, psdReader_1.readInt32)(reader);
@@ -18119,7 +18119,7 @@ var require_psdWriter = __commonJS({
       }
       return max;
     }
-    function writeSection(writer, round2, func, writeTotalLength = false, large = false) {
+    function writeSection(writer, round3, func, writeTotalLength = false, large = false) {
       if (large)
         writeUint32(writer, 0);
       const offset = writer.offset;
@@ -18127,7 +18127,7 @@ var require_psdWriter = __commonJS({
       func();
       let length = writer.offset - offset - 4;
       let len = length;
-      while (len % round2) {
+      while (len % round3) {
         writeUint8(writer, 0);
         len++;
       }
@@ -19337,8 +19337,8 @@ import { mkdirSync } from "node:fs";
 import process2 from "node:process";
 
 // packages/mcp/dist/index.js
-import { lstat as lstat2, readFile as readFile4, realpath as realpath2 } from "node:fs/promises";
-import { dirname as dirname4, isAbsolute as isAbsolute3, relative as relative4, resolve as resolve5 } from "node:path";
+import { lstat as lstat2, readFile as readFile5, realpath as realpath2 } from "node:fs/promises";
+import { dirname as dirname5, isAbsolute as isAbsolute3, relative as relative4, resolve as resolve6 } from "node:path";
 
 // node_modules/@sinclair/typebox/build/esm/type/guard/value.mjs
 var value_exports = {};
@@ -20137,8 +20137,8 @@ function AsyncIterator(items, options) {
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/computed/computed.mjs
-function Computed(target, parameters, options) {
-  return CreateType({ [Kind]: "Computed", target, parameters }, options);
+function Computed(target, parameters2, options) {
+  return CreateType({ [Kind]: "Computed", target, parameters: parameters2 }, options);
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/discard/discard.mjs
@@ -20164,13 +20164,13 @@ function MappedResult(properties) {
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/constructor/constructor.mjs
-function Constructor(parameters, returns, options) {
-  return CreateType({ [Kind]: "Constructor", type: "Constructor", parameters, returns }, options);
+function Constructor(parameters2, returns, options) {
+  return CreateType({ [Kind]: "Constructor", type: "Constructor", parameters: parameters2, returns }, options);
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/function/function.mjs
-function Function(parameters, returns, options) {
-  return CreateType({ [Kind]: "Function", type: "Function", parameters, returns }, options);
+function Function(parameters2, returns, options) {
+  return CreateType({ [Kind]: "Function", type: "Function", parameters: parameters2, returns }, options);
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/union/union-create.mjs
@@ -20763,8 +20763,8 @@ function Ref(...args) {
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/awaited/awaited.mjs
-function FromComputed(target, parameters) {
-  return Computed("Awaited", [Computed(target, parameters)]);
+function FromComputed(target, parameters2) {
+  return Computed("Awaited", [Computed(target, parameters2)]);
 }
 function FromRef($ref) {
   return Computed("Awaited", [Ref($ref)]);
@@ -20832,8 +20832,8 @@ function KeyOfPattern(schema) {
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/keyof/keyof.mjs
-function FromComputed2(target, parameters) {
-  return Computed("KeyOf", [Computed(target, parameters)]);
+function FromComputed2(target, parameters2) {
+  return Computed("KeyOf", [Computed(target, parameters2)]);
 }
 function FromRef2($ref) {
   return Computed("KeyOf", [Ref($ref)]);
@@ -21047,14 +21047,14 @@ function FromNever(left, right) {
   return ExtendsResult.True;
 }
 function UnwrapTNot(schema) {
-  let [current, depth] = [schema, 0];
+  let [current, depth2] = [schema, 0];
   while (true) {
     if (!type_exports.IsNot(current))
       break;
     current = current.not;
-    depth += 1;
+    depth2 += 1;
   }
-  return depth % 2 === 0 ? current : Unknown();
+  return depth2 % 2 === 0 ? current : Unknown();
 }
 function FromNot(left, right) {
   return type_exports.IsNot(left) ? Visit3(UnwrapTNot(left), right) : type_exports.IsNot(right) ? Visit3(left, UnwrapTNot(right)) : Throw("Invalid fallthrough for Not");
@@ -21707,8 +21707,8 @@ function PickFromMappedKey(type, mappedKey, options) {
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/partial/partial.mjs
-function FromComputed3(target, parameters) {
-  return Computed("Partial", [Computed(target, parameters)]);
+function FromComputed3(target, parameters2) {
+  return Computed("Partial", [Computed(target, parameters2)]);
 }
 function FromRef3($ref) {
   return Computed("Partial", [Ref($ref)]);
@@ -21763,8 +21763,8 @@ function PartialFromMappedResult(R, options) {
 }
 
 // node_modules/@sinclair/typebox/build/esm/type/required/required.mjs
-function FromComputed4(target, parameters) {
-  return Computed("Required", [Computed(target, parameters)]);
+function FromComputed4(target, parameters2) {
+  return Computed("Required", [Computed(target, parameters2)]);
 }
 function FromRef4($ref) {
   return Computed("Required", [Ref($ref)]);
@@ -21827,29 +21827,29 @@ function DereferenceParameters(moduleProperties, types) {
 function Dereference(moduleProperties, ref) {
   return ref in moduleProperties ? IsRef(moduleProperties[ref]) ? Dereference(moduleProperties, moduleProperties[ref].$ref) : FromType2(moduleProperties, moduleProperties[ref]) : Never();
 }
-function FromAwaited(parameters) {
-  return Awaited(parameters[0]);
+function FromAwaited(parameters2) {
+  return Awaited(parameters2[0]);
 }
-function FromIndex(parameters) {
-  return Index(parameters[0], parameters[1]);
+function FromIndex(parameters2) {
+  return Index(parameters2[0], parameters2[1]);
 }
-function FromKeyOf(parameters) {
-  return KeyOf(parameters[0]);
+function FromKeyOf(parameters2) {
+  return KeyOf(parameters2[0]);
 }
-function FromPartial(parameters) {
-  return Partial(parameters[0]);
+function FromPartial(parameters2) {
+  return Partial(parameters2[0]);
 }
-function FromOmit(parameters) {
-  return Omit(parameters[0], parameters[1]);
+function FromOmit(parameters2) {
+  return Omit(parameters2[0], parameters2[1]);
 }
-function FromPick(parameters) {
-  return Pick(parameters[0], parameters[1]);
+function FromPick(parameters2) {
+  return Pick(parameters2[0], parameters2[1]);
 }
-function FromRequired(parameters) {
-  return Required(parameters[0]);
+function FromRequired(parameters2) {
+  return Required(parameters2[0]);
 }
-function FromComputed5(moduleProperties, target, parameters) {
-  const dereferenced = DereferenceParameters(moduleProperties, parameters);
+function FromComputed5(moduleProperties, target, parameters2) {
+  const dereferenced = DereferenceParameters(moduleProperties, parameters2);
   return target === "Awaited" ? FromAwaited(dereferenced) : target === "Index" ? FromIndex(dereferenced) : target === "KeyOf" ? FromKeyOf(dereferenced) : target === "Partial" ? FromPartial(dereferenced) : target === "Omit" ? FromOmit(dereferenced) : target === "Pick" ? FromPick(dereferenced) : target === "Required" ? FromRequired(dereferenced) : Never();
 }
 function FromArray6(moduleProperties, type) {
@@ -21858,11 +21858,11 @@ function FromArray6(moduleProperties, type) {
 function FromAsyncIterator3(moduleProperties, type) {
   return AsyncIterator(FromType2(moduleProperties, type));
 }
-function FromConstructor3(moduleProperties, parameters, instanceType) {
-  return Constructor(FromTypes2(moduleProperties, parameters), FromType2(moduleProperties, instanceType));
+function FromConstructor3(moduleProperties, parameters2, instanceType) {
+  return Constructor(FromTypes2(moduleProperties, parameters2), FromType2(moduleProperties, instanceType));
 }
-function FromFunction3(moduleProperties, parameters, returnType) {
-  return Function(FromTypes2(moduleProperties, parameters), FromType2(moduleProperties, returnType));
+function FromFunction3(moduleProperties, parameters2, returnType) {
+  return Function(FromTypes2(moduleProperties, parameters2), FromType2(moduleProperties, returnType));
 }
 function FromIntersect8(moduleProperties, types) {
   return Intersect(FromTypes2(moduleProperties, types));
@@ -26348,6 +26348,41 @@ var MotionPlanSchema = Type.Object(
      * every compiled key.
      */
     keyTolerance: Type.Optional(Type.Number({ minimum: 0, maximum: 5 })),
+    /**
+     * Key reduction (ADR-044) on the compiled Spine file, checked on the official runtime against
+     * the exact compiled motion: `fidelity` keeps the fewest keys within the limit, `posable` keys
+     * shared pose frames for the main bones and own turns for follow parts. Limits are world
+     * vertex px (default by mode from the skeleton's size). With this set, the ADR-038 cleanup is
+     * skipped (`keyTolerance` is not used): the exact motion is the reference.
+     */
+    keyReduction: Type.Optional(
+      Type.Object(
+        {
+          mode: Type.Union([Type.Literal("fidelity"), Type.Literal("posable")]),
+          maxError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 })),
+          rmsError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 })),
+          colorTolerance: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 1 })),
+          animations: Type.Optional(Type.Array(NameSchema, { maxItems: 256 })),
+          skip: Type.Optional(
+            Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 4096 })
+          ),
+          lock: Type.Optional(
+            Type.Array(
+              Type.Object(
+                {
+                  animation: Type.Optional(NameSchema),
+                  timeline: Type.Optional(Type.String({ minLength: 1, maxLength: 256 })),
+                  time: Type.Optional(Type.Number({ minimum: 0 }))
+                },
+                { additionalProperties: false }
+              ),
+              { maxItems: 4096 }
+            )
+          )
+        },
+        { additionalProperties: false }
+      )
+    ),
     params: Type.Record(Type.String({ pattern: "^[A-Za-z_][A-Za-z0-9_]*$" }), Type.Number()),
     search: Type.Optional(Type.Record(Type.String(), SearchRangeSchema)),
     animations: Type.Array(
@@ -27183,21 +27218,21 @@ function generateChainRig(input) {
   const stepX = Math.cos(radians) * segmentLength;
   const stepY = Math.sin(radians) * segmentLength;
   let worldX = start[0];
-  let worldY = start[1];
+  let worldY2 = start[1];
   for (let joint = 0; joint <= boneCount; joint++) {
     const fraction = joint / boneCount;
     const relativeError = Math.hypot(
       (worldX - start[0]) / length - dx / length * fraction,
-      (worldY - start[1]) / length - dy / length * fraction
+      (worldY2 - start[1]) / length - dy / length * fraction
     );
-    if (!Number.isFinite(worldX) || !Number.isFinite(worldY) || !Number.isFinite(relativeError) || relativeError > 1e-10)
+    if (!Number.isFinite(worldX) || !Number.isFinite(worldY2) || !Number.isFinite(relativeError) || relativeError > 1e-10)
       fail(
         "RIG_NUMERIC_PRECISION",
         `Joint ${joint} exceeds 1e-10 of chain length in world-coordinate transforms; reduce coordinate magnitudes or relocate endpoints nearer the origin`
       );
     if (joint < boneCount) {
       worldX += stepX;
-      worldY += stepY;
+      worldY2 += stepY;
     }
   }
   return { schemaVersion: "0.1", kind: "rig", id, name, type: "chain", bones };
@@ -27339,18 +27374,18 @@ async function readPngInside(directory, file) {
     failAsset("DIRECTORY_UNREADABLE", "PNG parts directory cannot be read", directory);
   }
   const candidate = resolve(root, normalized);
-  const inside2 = (path) => {
+  const inside3 = (path) => {
     const subpath = relative(root, path);
     return subpath && subpath !== ".." && !subpath.startsWith(`..\\`) && !subpath.startsWith("../") && !isAbsolute(subpath);
   };
-  if (!inside2(candidate)) failAsset("PATH_ESCAPE", "PNG path escapes the parts directory", file);
+  if (!inside3(candidate)) failAsset("PATH_ESCAPE", "PNG path escapes the parts directory", file);
   let actual;
   try {
     actual = await realpath(candidate);
   } catch {
     failAsset("PNG_MISSING", "Referenced PNG does not exist", file);
   }
-  if (!inside2(actual)) failAsset("PATH_ESCAPE", "PNG symlink escapes the parts directory", file);
+  if (!inside3(actual)) failAsset("PATH_ESCAPE", "PNG symlink escapes the parts directory", file);
   let bytes;
   try {
     bytes = await readFile(actual);
@@ -27887,16 +27922,16 @@ function locallyInside(a, b) {
 }
 function middleInside(a, b) {
   let p = a;
-  let inside2 = false;
+  let inside3 = false;
   const px = (a.x + b.x) / 2;
   const py = (a.y + b.y) / 2;
   do {
     const n = p.next;
     if (p.y > py !== n.y > py && px < (n.x - p.x) * (py - p.y) / (n.y - p.y) + p.x)
-      inside2 = !inside2;
+      inside3 = !inside3;
     p = n;
   } while (p !== a);
-  return inside2;
+  return inside3;
 }
 function splitPolygon(a, b) {
   const a2 = createNode(a.i, a.x, a.y), b2 = createNode(b.i, b.x, b.y), an = a.next, bp = b.prev;
@@ -28005,17 +28040,17 @@ function segmentsMeet(a, b, c, d, lengthEps, areaEps) {
   return (abC > areaEps && abD < -areaEps || abC < -areaEps && abD > areaEps) && (cdA > areaEps && cdB < -areaEps || cdA < -areaEps && cdB > areaEps);
 }
 function insidePolygon(point3, polygon, eps, areaEps) {
-  let inside2 = false;
+  let inside3 = false;
   for (let index = 0; index < polygon.length; index++) {
     const a = polygon[index], b = polygon[(index + 1) % polygon.length];
     if (onSegment2(a, b, point3, eps, areaEps)) return true;
     const aboveA = a[1] > point3[1], aboveB = b[1] > point3[1];
     if (aboveA !== aboveB) {
       const x = a[0] + (point3[1] - a[1]) * (b[0] - a[0]) / (b[1] - a[1]);
-      if (x > point3[0]) inside2 = !inside2;
+      if (x > point3[0]) inside3 = !inside3;
     }
   }
-  return inside2;
+  return inside3;
 }
 function validateMeshSpec(value) {
   if (!value_exports2.Check(MeshSpecSchema, value))
@@ -28301,10 +28336,10 @@ function rasterDifference(simplified, alpha, width, height) {
     }
     for (let x = 0; x < width; x++) {
       const filled = alpha[y * width + x] > 0;
-      const inside2 = covered[x] > 0;
+      const inside3 = covered[x] > 0;
       if (filled) foreground++;
-      if (filled && !inside2) missed++;
-      if (!filled && inside2) added++;
+      if (filled && !inside3) missed++;
+      if (!filled && inside3) added++;
     }
   }
   return { foreground, missed, added };
@@ -28789,8 +28824,8 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
     if (missedFits(grow(middle))) high = middle;
     else low = middle;
   }
-  const rows = grow(high), coverage = inspect(rows);
-  if (coverage.added / coverage.foreground > padding)
+  const rows = grow(high), coverage2 = inspect(rows);
+  if (coverage2.added / coverage2.foreground > padding)
     failMesh("STRIP_PADDING_BUDGET", "Strip exceeds same-attachment transparent padding");
   const cells = rows.map(() => []), points = [], hull = [];
   const put = (r, c, boundary) => {
@@ -29013,17 +29048,17 @@ function cross2(a, b, c) {
   return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
 }
 function strictlyInside(point3, polygon) {
-  let inside2 = false;
+  let inside3 = false;
   for (let index = 0; index < polygon.length; index++) {
     const a = polygon[index], b = polygon[(index + 1) % polygon.length];
     if (Math.abs(cross2(a, b, point3)) < 1e-9 && point3[0] >= Math.min(a[0], b[0]) && point3[0] <= Math.max(a[0], b[0]) && point3[1] >= Math.min(a[1], b[1]) && point3[1] <= Math.max(a[1], b[1]))
       return false;
     if (a[1] > point3[1] !== b[1] > point3[1]) {
       const x = a[0] + (point3[1] - a[1]) * (b[0] - a[0]) / (b[1] - a[1]);
-      if (x > point3[0]) inside2 = !inside2;
+      if (x > point3[0]) inside3 = !inside3;
     }
   }
-  return inside2;
+  return inside3;
 }
 function canonicalTriangle(indices) {
   const smallest = Math.min(...indices);
@@ -30396,7 +30431,7 @@ function buildKeyposeAnimation(rig, spec) {
       fail2("KEYPOSE_RULE", `A [x, y] gain needs a two-channel control (${id})`);
     return typeof gain === "number" ? Array(arity(id)).fill(gain) : [...gain];
   };
-  const resolve6 = (r) => {
+  const resolve7 = (r) => {
     const rest = REST[controls.get(r.control).channel];
     if (r.rule === "settle") {
       const to = r.to === void 0 ? rest : vec(r.control, r.to, "settle to");
@@ -30441,7 +30476,7 @@ function buildKeyposeAnimation(rig, spec) {
     const waiting = [];
     for (const r of pending2)
       if ((r.rule === "follow" || r.rule === "saccade") && !tracks.has(r.source)) waiting.push(r);
-      else tracks.set(r.control, resolve6(r));
+      else tracks.set(r.control, resolve7(r));
     if (waiting.length === pending2.length)
       fail2(
         "KEYPOSE_CYCLE",
@@ -30802,7 +30837,7 @@ function sharedPeriod(channels, opts = {}) {
     const v = per.map((r2) => r2[lag3]).filter(known);
     return v.length ? mean(v) : -1;
   });
-  const peaks = [];
+  const peaks2 = [];
   let low = avg[1];
   for (let lag3 = 2; lag3 <= maxLag; lag3++) {
     const r2 = avg[lag3], reach = Math.max(1, Math.round(0.1 * lag3));
@@ -30812,11 +30847,11 @@ function sharedPeriod(channels, opts = {}) {
       if (avg[j] > r2) top = false;
     if (!top || r2 < minCorrelation || low > r2 - 0.2) continue;
     if (per.some((c) => (c[lag3] ?? 1) < 0.2)) continue;
-    peaks.push({ lag: lag3, r: r2 });
+    peaks2.push({ lag: lag3, r: r2 });
   }
-  if (!peaks.length) return null;
-  const highest = Math.max(...peaks.map((p) => p.r));
-  const { lag: lag2, r } = peaks.find((p) => p.r >= 0.85 * highest);
+  if (!peaks2.length) return null;
+  const highest = Math.max(...peaks2.map((p) => p.r));
+  const { lag: lag2, r } = peaks2.find((p) => p.r >= 0.85 * highest);
   const a = avg[lag2 - 1], b = avg[lag2 + 1], d = a - 2 * r + b;
   const shift = Math.abs(d) > 1e-9 ? Math.max(-0.5, Math.min(0.5, 0.5 * (a - b) / d)) : 0;
   return { period: lag2 + shift, correlation: +r.toFixed(3) };
@@ -31228,9 +31263,9 @@ function lagKeys(targets, tolerance, groups, opts) {
   });
   const N = Math.max(1, ...targets.map((t) => t.length - 1));
   const total = groups.map(() => void 0);
-  const lagOf = (k, depth = 0) => {
+  const lagOf = (k, depth2 = 0) => {
     if (total[k] === void 0) {
-      const p = behind[k].parent, sum = behind[k].lag + (p === void 0 || depth > groups.length ? 0 : lagOf(p, depth + 1));
+      const p = behind[k].parent, sum = behind[k].lag + (p === void 0 || depth2 > groups.length ? 0 : lagOf(p, depth2 + 1));
       total[k] = loop ? ((sum + Math.floor(N / 2)) % N + N) % N - Math.floor(N / 2) : Math.max(-Math.floor(N / 2), Math.min(Math.floor(N / 2), sum));
     }
     return total[k];
@@ -31493,18 +31528,18 @@ function pinAt(pins2, p) {
   let best = { blend: 0, value: 0 };
   for (const pin of pins2) {
     const poly = pin.polygon;
-    let inside2 = false, distance = Infinity;
+    let inside3 = false, distance = Infinity;
     for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
       const a = poly[i], b = poly[j];
       if (a[1] > p[1] !== b[1] > p[1] && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0])
-        inside2 = !inside2;
+        inside3 = !inside3;
       const dx = b[0] - a[0], dy = b[1] - a[1], t = Math.max(
         0,
         Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy || 1))
       );
       distance = Math.min(distance, Math.hypot(p[0] - a[0] - dx * t, p[1] - a[1] - dy * t));
     }
-    const u = inside2 ? 0 : Math.min(1, distance / pin.margin), blend = 1 - u * u * (3 - 2 * u);
+    const u = inside3 ? 0 : Math.min(1, distance / pin.margin), blend = 1 - u * u * (3 - 2 * u);
     if (blend > best.blend) best = { blend, value: pin.value };
   }
   return best;
@@ -31652,10 +31687,10 @@ function transferWeights(target, rig, sources, maxInfluences = 4) {
           best = distance;
           blend = /* @__PURE__ */ new Map();
           ids.forEach((i, k) => {
-            for (const influence of byVertex.get(i))
+            for (const influence2 of byVertex.get(i))
               blend.set(
-                influence.boneId,
-                (blend.get(influence.boneId) ?? 0) + influence.weight * bary[k]
+                influence2.boneId,
+                (blend.get(influence2.boneId) ?? 0) + influence2.weight * bary[k]
               );
           });
         }
@@ -31986,13 +32021,13 @@ function skinVertices(mesh2, rig, weights, rotations = {}, adjustments = {}) {
   const bind = evaluateRig(rig), posed = evaluateRig(rig, rotations, adjustments), local = new Map([...bind].map(([id, m]) => [id, inverseAffine(m)]));
   const output = mesh2.vertices.map(() => [0, 0]);
   for (const v of weights.vertices)
-    for (const influence of v.influences) {
+    for (const influence2 of v.influences) {
       const p = transformPoint(
-        posed.get(influence.boneId),
-        transformPoint(local.get(influence.boneId), mesh2.vertices[v.vertexIndex])
+        posed.get(influence2.boneId),
+        transformPoint(local.get(influence2.boneId), mesh2.vertices[v.vertexIndex])
       );
-      output[v.vertexIndex][0] += p[0] * influence.weight;
-      output[v.vertexIndex][1] += p[1] * influence.weight;
+      output[v.vertexIndex][0] += p[0] * influence2.weight;
+      output[v.vertexIndex][1] += p[1] * influence2.weight;
     }
   if (output.some((p) => !p.every(Number.isFinite)))
     failStage("weights", "WEIGHT_NUMERIC", "Skinned vertex is nonfinite");
@@ -32165,9 +32200,9 @@ function compileWeightedSpine40(input) {
   for (const index of order) {
     const influences = vertexWeights.get(index);
     vertices.push(influences.length);
-    for (const influence of influences) {
-      const p = transformPoint(inverse.get(influence.boneId), mesh2.vertices[index]);
-      vertices.push(byId.get(influence.boneId), p[0], -p[1], influence.weight);
+    for (const influence2 of influences) {
+      const p = transformPoint(inverse.get(influence2.boneId), mesh2.vertices[index]);
+      vertices.push(byId.get(influence2.boneId), p[0], -p[1], influence2.weight);
     }
   }
   const edges = [
@@ -32731,7 +32766,7 @@ function compileCharacterSpine40(input) {
     const { doc } = checkChannel(t.animationName, t.slotName, "rgba", t.keys);
     doc.slots ??= {};
     doc.slots[t.slotName] ??= {};
-    const unit = (hex) => [0, 2, 4, 6].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+    const unit = (hex3) => [0, 2, 4, 6].map((i) => parseInt(hex3.slice(i, i + 2), 16) / 255);
     doc.slots[t.slotName].rgba = t.keys.map((k, i, keys) => {
       const n = keys[i + 1] ?? k, a = unit(k.color), b = unit(n.color);
       return {
@@ -32773,8 +32808,8 @@ function compileCharacterSpine40(input) {
       // Spine deform curves interpolate a 0..1 blend between whole vertex arrays.
       ...spineCurve(k.curve, k.time, (keys[i + 1] ?? k).time, [[0, 1]]),
       vertices: order.flatMap(
-        (i2) => weights2.get(i2).flatMap((influence) => {
-          const m = inverse.get(influence.boneId), p = k.offsets[i2];
+        (i2) => weights2.get(i2).flatMap((influence2) => {
+          const m = inverse.get(influence2.boneId), p = k.offsets[i2];
           return [m[0] * p[0] + m[2] * p[1], -(m[1] * p[0] + m[3] * p[1])];
         })
       )
@@ -33877,7 +33912,7 @@ function buildMotionSpecs(motion, ctx, params) {
   });
   const main = motion.main;
   const breath = main.shape === "breath";
-  const depth = n(main.depth, "main.depth"), tDown = Math.round(n(main.down, "main.down"));
+  const depth2 = n(main.depth, "main.depth"), tDown = Math.round(n(main.down, "main.down"));
   let rise = 0, tUp = 0, hold = 0, holdDepth = 1;
   if (breath) {
     if (!(0 < tDown && tDown < C))
@@ -33933,7 +33968,7 @@ function buildMotionSpecs(motion, ctx, params) {
         }
       else if (s2.kind === "face") {
         const slide = faceSlide.get(s2.id);
-        const fy = !depth ? 0 : breath ? slide * y / Math.abs(depth) : y >= 0 ? slide * y / depth : (s2.upRatio ?? 2 / 3) * y;
+        const fy = !depth2 ? 0 : breath ? slide * y / Math.abs(depth2) : y >= 0 ? slide * y / depth2 : (s2.upRatio ?? 2 / 3) * y;
         out[s2.id] = [r3(n(s2.x, "face.x") * fy), r3(fy)];
       } else if (s2.track) {
         if (s2.amount !== void 0)
@@ -33946,7 +33981,7 @@ function buildMotionSpecs(motion, ctx, params) {
         if (s2.amount === void 0)
           failStage("animation", "PLAN_MOTION_SQUASH", `${s2.id}: give amount or track`);
         const amount = n(s2.amount, `${s2.id}.amount`);
-        out[s2.id] = [depth ? +(1 - amount * y / depth).toFixed(4) : 1, 1];
+        out[s2.id] = [depth2 ? +(1 - amount * y / depth2).toFixed(4) : 1, 1];
       }
     }
     return out;
@@ -33979,7 +34014,7 @@ function buildMotionSpecs(motion, ctx, params) {
     return side * n(f.travel, `${f.id}.travel`) * 180 / Math.PI / reach;
   };
   const looks = (k, raw, frames, loop) => {
-    const move = Math.round(n(k.move, `${k.id}.move`)), restValue = v2(k.rest, `${k.id}.rest`), same2 = (a, b) => JSON.stringify(a) === JSON.stringify(b), out = [];
+    const move = Math.round(n(k.move, `${k.id}.move`)), restValue = v2(k.rest, `${k.id}.rest`), same3 = (a, b) => JSON.stringify(a) === JSON.stringify(b), out = [];
     if (move < 1) failStage("animation", "PLAN_MOTION_TIMING", `${k.id}: move must be >= 1 frame`);
     let prev = restValue, free = 0;
     for (const key of [...raw].sort((a, b) => a.frame - b.frame)) {
@@ -33995,7 +34030,7 @@ function buildMotionSpecs(motion, ctx, params) {
       free = key.frame + move;
       out.push({ frame: free, value: prev, ease: key.ease ?? "out" });
     }
-    const end = !loop || same2(prev, restValue) ? free : frames - move;
+    const end = !loop || same3(prev, restValue) ? free : frames - move;
     if (end < free || free > frames || loop && free >= frames)
       failStage(
         "animation",
@@ -34039,16 +34074,16 @@ function buildMotionSpecs(motion, ctx, params) {
       };
       beats.push({ frame: o, ease: eases.rest, poses: { ...rest } });
       if (breath) {
-        beats.push({ frame: o + tDown, ease: eases.down, poses: at2("down", depth * s2) });
+        beats.push({ frame: o + tDown, ease: eases.down, poses: at2("down", depth2 * s2) });
         continue;
       }
       beats.push({ frame: o + tUp, ease: eases.up, poses: at2("up", -rise * s2) });
-      beats.push({ frame: o + tDown, ease: eases.down, poses: at2("down", depth) });
+      beats.push({ frame: o + tDown, ease: eases.down, poses: at2("down", depth2) });
       if (hold >= 1)
         beats.push({
           frame: o + tDown + hold,
           ease: eases.hold,
-          poses: at2("hold", depth + holdDepth)
+          poses: at2("hold", depth2 + holdDepth)
         });
     }
     if (!loop) beats.push({ frame: frames, ease: eases.rest, poses: { ...rest } });
@@ -35323,7 +35358,9 @@ function animateCharacter(rigging, params = {}) {
   return {
     specs,
     // The rest pose and the key poses (ADR-024, ADR-033) are offsets over the compiled motion;
-    // the key cleanup (ADR-038) then keeps as few keys as play within the tolerance.
+    // the key cleanup (ADR-038) then keeps as few keys as play within the tolerance. A plan with
+    // `keyReduction` (ADR-044) keeps every compiled key here: the reduction runs on the compiled
+    // file, against this exact motion.
     animations: specs.map(
       (s2, i) => simplifyAnimation(
         applyKeyposes(
@@ -35333,7 +35370,7 @@ function animateCharacter(rigging, params = {}) {
           plan.animations[i].keyposeLag
         ),
         s2.fps,
-        plan.keyTolerance ?? KEY_TOLERANCE
+        plan.keyReduction ? 0 : plan.keyTolerance ?? KEY_TOLERANCE
       )
     ),
     // Shown transparent slots are judged over the whole plan, not per animation.
@@ -36649,17 +36686,17 @@ function measurePerformance(sample, options = {}, keyStats) {
       out.handVsBodyRange = range(hh.map((v, i) => v - root[i]));
     }
   } else if (chain.length) {
-    const height = (p) => (sample.yDown ? -p[1] : p[1]) / u, first = Math.min(frames - 1, Math.ceil(ignoreBefore * sample.fps - 1e-9)), peaks = /* @__PURE__ */ new Map();
+    const height = (p) => (sample.yDown ? -p[1] : p[1]) / u, first = Math.min(frames - 1, Math.ceil(ignoreBefore * sample.fps - 1e-9)), peaks2 = /* @__PURE__ */ new Map();
     for (const name of chain) {
       const h = probe(name).map(height);
       let best = first;
       for (let i = first + 1; i < frames; i++) if (h[i] > h[best]) best = i;
-      peaks.set(name, best / sample.fps);
+      peaks2.set(name, best / sample.fps);
       out["peakTime:" + name] = best / sample.fps;
       out["overshoot:" + name] = h[best] - h[frames - 1];
     }
     for (const name of chain.slice(1))
-      out["peakDelay:" + name] = peaks.get(name) - peaks.get(chain[0]);
+      out["peakDelay:" + name] = peaks2.get(name) - peaks2.get(chain[0]);
     if (hand) {
       const root = probe(chain[0]), rel = probe(hand).map((p, i) => height(p) - height(root[i]));
       out.handVsBodyRange = range(rel.slice(Math.floor(frames / 10)));
@@ -38868,6 +38905,1827 @@ function videoPenalty(rows) {
   return +penalty.toFixed(4);
 }
 
+// packages/reference/src/keys-fit.ts
+function bezierPoints(t0, v0, cx1, cy1, cx2, cy2, t1, v1) {
+  const out = new Float64Array(18);
+  const tmpx = (t0 - cx1 * 2 + cx2) * 0.03, tmpy = (v0 - cy1 * 2 + cy2) * 0.03;
+  const dddx = ((cx1 - cx2) * 3 - t0 + t1) * 6e-3, dddy = ((cy1 - cy2) * 3 - v0 + v1) * 6e-3;
+  let ddx = tmpx * 2 + dddx, ddy = tmpy * 2 + dddy;
+  let dx = (cx1 - t0) * 0.3 + tmpx + dddx * 0.16666667, dy = (cy1 - v0) * 0.3 + tmpy + dddy * 0.16666667;
+  let x = t0 + dx, y = v0 + dy;
+  for (let i = 0; i < 18; i += 2) {
+    out[i] = x;
+    out[i + 1] = y;
+    dx += ddx;
+    dy += ddy;
+    ddx += dddx;
+    ddy += dddy;
+    x += dx;
+    y += dy;
+  }
+  return out;
+}
+function bezierValue(points, t0, v0, t1, v1, t) {
+  if (points[0] > t) {
+    const span2 = points[0] - t0;
+    return span2 > 0 ? v0 + (t - t0) / span2 * (points[1] - v0) : points[1];
+  }
+  for (let i = 2; i < 18; i += 2)
+    if (points[i] >= t) {
+      const x2 = points[i - 2], y2 = points[i - 1], span2 = points[i] - x2;
+      return span2 > 0 ? y2 + (t - x2) / span2 * (points[i + 1] - y2) : points[i + 1];
+    }
+  const x = points[16], y = points[17], span = t1 - x;
+  return span > 0 ? y + (t - x) / span * (v1 - y) : v1;
+}
+function curveValue(curve, t0, v0, t1, v1, t, points) {
+  if (t <= t0) return v0;
+  if (t >= t1) return curve === "stepped" ? v0 : v1;
+  if (curve === "stepped") return v0;
+  if (curve === "linear") return v0 + (t - t0) / (t1 - t0) * (v1 - v0);
+  const p = points ?? bezierPoints(t0, v0, curve[0], curve[1], curve[2], curve[3], t1, v1);
+  return bezierValue(p, t0, v0, t1, v1, t);
+}
+function maxError(curve, t0, v0, t1, v1, ts, vs) {
+  const p = curve === "linear" ? void 0 : bezierPoints(t0, v0, curve[0], curve[1], curve[2], curve[3], t1, v1);
+  let e = 0;
+  for (let k = 0; k < ts.length; k++) {
+    const d = Math.abs(curveValue(curve, t0, v0, t1, v1, ts[k], p) - vs[k]);
+    if (d > e) e = d;
+  }
+  return e;
+}
+function parameters(x1, x2, us) {
+  const N = 48, xs = new Float64Array(N + 1);
+  for (let i = 0; i <= N; i++) {
+    const s2 = i / N, m = 1 - s2;
+    xs[i] = 3 * m * m * s2 * x1 + 3 * m * s2 * s2 * x2 + s2 * s2 * s2;
+  }
+  const out = new Float64Array(us.length);
+  for (let k = 0; k < us.length; k++) {
+    const u = us[k];
+    let lo = 0, hi = N;
+    while (hi - lo > 1) {
+      const mid = lo + hi >> 1;
+      if (xs[mid] < u) lo = mid;
+      else hi = mid;
+    }
+    const span = xs[hi] - xs[lo];
+    let s2 = (lo + (span > 0 ? (u - xs[lo]) / span : 0)) / N;
+    for (let it = 0; it < 2; it++) {
+      const m = 1 - s2;
+      const x = 3 * m * m * s2 * x1 + 3 * m * s2 * s2 * x2 + s2 * s2 * s2 - u;
+      const dx = 3 * m * m * x1 + 6 * m * s2 * (x2 - x1) + 3 * s2 * s2 * (1 - x2);
+      if (Math.abs(dx) > 1e-9) s2 = Math.min(1, Math.max(0, s2 - x / dx));
+    }
+    out[k] = s2;
+  }
+  return out;
+}
+function solveValues(x1, x2, us, vs, v0, v1, w) {
+  const s2 = parameters(x1, x2, us);
+  let a11 = 0, a12 = 0, a22 = 0, r1 = 0, r2 = 0;
+  for (let k = 0; k < us.length; k++) {
+    const t = s2[k], m = 1 - t, wk = w ? w[k] : 1;
+    const b1 = 3 * m * m * t, b2 = 3 * m * t * t, r = vs[k] - (v0 * m * m * m + v1 * t * t * t);
+    a11 += wk * b1 * b1;
+    a12 += wk * b1 * b2;
+    a22 += wk * b2 * b2;
+    r1 += wk * b1 * r;
+    r2 += wk * b2 * r;
+  }
+  const lambda = 1e-4 * (a11 + a22 + 1e-9);
+  const l1 = v0 + (v1 - v0) * x1, l2 = v0 + (v1 - v0) * x2;
+  a11 += lambda;
+  a22 += lambda;
+  r1 += lambda * l1;
+  r2 += lambda * l2;
+  const det = a11 * a22 - a12 * a12;
+  if (Math.abs(det) < 1e-18) return [l1, l2];
+  return [(r1 * a22 - r2 * a12) / det, (a11 * r2 - a12 * r1) / det];
+}
+var GRID = [0, 0.15, 0.33, 0.5, 0.67, 0.85, 1];
+function fitChannel(ts, vs, t0, v0, t1, v1, tolerance) {
+  const linear = maxError("linear", t0, v0, t1, v1, ts, vs);
+  if (linear <= tolerance || ts.length === 0) return { curve: "linear", error: linear };
+  const span = t1 - t0;
+  const us = Float64Array.from(ts, (t) => (t - t0) / span);
+  let lo = Math.min(v0, v1), hi = Math.max(v0, v1);
+  for (let k = 0; k < vs.length; k++) {
+    lo = Math.min(lo, vs[k]);
+    hi = Math.max(hi, vs[k]);
+  }
+  const reach = Math.max(hi - lo, 1e-6) * 3;
+  const make = (x1, x2, w) => {
+    let [y1, y2] = solveValues(x1, x2, us, vs, v0, v1, w);
+    y1 = Math.min(hi + reach, Math.max(lo - reach, y1));
+    y2 = Math.min(hi + reach, Math.max(lo - reach, y2));
+    const curve = [t0 + x1 * span, y1, t0 + x2 * span, y2];
+    return { curve, error: maxError(curve, t0, v0, t1, v1, ts, vs) };
+  };
+  let best = { curve: "linear", error: linear }, bx = [0.33, 0.67];
+  for (const x1 of GRID)
+    for (const x2 of GRID) {
+      if (x1 > x2) continue;
+      const f = make(x1, x2);
+      if (f.error < best.error) [best, bx] = [f, [x1, x2]];
+    }
+  for (const step of [0.08, 0.04, 0.02, 0.01]) {
+    let moved = true;
+    while (moved) {
+      moved = false;
+      for (const [d1, d2] of [
+        [step, 0],
+        [-step, 0],
+        [0, step],
+        [0, -step]
+      ]) {
+        const x1 = Math.min(1, Math.max(0, bx[0] + d1)), x2 = Math.min(1, Math.max(0, bx[1] + d2));
+        if (x1 > x2) continue;
+        const f = make(x1, x2);
+        if (f.error < best.error - 1e-12) {
+          [best, bx, moved] = [f, [x1, x2], true];
+        }
+      }
+    }
+  }
+  if (best.curve !== "linear" && best.error > tolerance) {
+    const w = new Float64Array(us.length).fill(1);
+    for (let it = 0; it < 4; it++) {
+      const c = best.curve;
+      const p = bezierPoints(t0, v0, c[0], c[1], c[2], c[3], t1, v1);
+      let sum = 0;
+      for (let k = 0; k < us.length; k++) {
+        w[k] = w[k] * (Math.abs(bezierValue(p, t0, v0, t1, v1, ts[k]) - vs[k]) + 1e-9);
+        sum += w[k];
+      }
+      for (let k = 0; k < us.length; k++) w[k] = w[k] / sum * us.length;
+      const f = make(bx[0], bx[1], w);
+      if (f.error < best.error) best = f;
+    }
+  }
+  return best;
+}
+function fitShared(ts, vectors, t0, a, t1, b, tolerance) {
+  const n = a.length;
+  let dd = 0;
+  for (let i = 0; i < n; i++) dd += (b[i] - a[i]) ** 2;
+  const fractions = new Float64Array(ts.length);
+  for (let k = 0; k < ts.length; k++) {
+    if (dd < 1e-12) continue;
+    let dot = 0;
+    const v = vectors[k];
+    for (let i = 0; i < n; i++) dot += (v[i] - a[i]) * (b[i] - a[i]);
+    fractions[k] = dot / dd;
+  }
+  const error = (curve) => {
+    const p = curve === "linear" ? void 0 : bezierPoints(t0, 0, curve[0], curve[1], curve[2], curve[3], t1, 1);
+    let e2 = 0;
+    for (let k = 0; k < ts.length; k++) {
+      const f = curveValue(curve, t0, 0, t1, 1, ts[k], p), v = vectors[k];
+      for (let i = 0; i + 1 < n; i += 2) {
+        const dx = a[i] + (b[i] - a[i]) * f - v[i], dy = a[i + 1] + (b[i + 1] - a[i + 1]) * f - v[i + 1];
+        const d = dx * dx + dy * dy;
+        if (d > e2) e2 = d;
+      }
+    }
+    return Math.sqrt(e2);
+  };
+  const linear = error("linear");
+  if (linear <= tolerance || dd < 1e-12) return { curve: "linear", error: linear };
+  let reach = 0;
+  for (let i = 0; i + 1 < n; i += 2)
+    reach = Math.max(reach, Math.hypot(b[i] - a[i], b[i + 1] - a[i + 1]));
+  const paced = fitChannel(ts, fractions, t0, 0, t1, 1, tolerance / Math.max(reach, 1e-9));
+  const e = paced.curve === "linear" ? linear : error(paced.curve);
+  return e < linear ? { curve: paced.curve, error: e } : { curve: "linear", error: linear };
+}
+
+// packages/reference/src/keys-timeline.ts
+var BONE_CHANNELS = {
+  rotate: { names: ["value"], base: 0 },
+  translate: { names: ["x", "y"], base: 0 },
+  translatex: { names: ["value"], base: 0 },
+  translatey: { names: ["value"], base: 0 },
+  scale: { names: ["x", "y"], base: 1 },
+  scalex: { names: ["value"], base: 1 },
+  scaley: { names: ["value"], base: 1 },
+  shear: { names: ["x", "y"], base: 0 },
+  shearx: { names: ["value"], base: 0 },
+  sheary: { names: ["value"], base: 0 }
+};
+var COLOR_PROPS = {
+  rgba: { light: 4, dark: 0 },
+  rgb: { light: 3, dark: 0 },
+  rgba2: { light: 4, dark: 3 },
+  rgb2: { light: 3, dark: 3 }
+};
+var hex = (s2, n) => Array.from({ length: n }, (_, i) => parseInt(s2.slice(i * 2, i * 2 + 2), 16) / 255);
+var toHex = (vs) => vs.map(
+  (v) => Math.round(Math.min(1, Math.max(0, v)) * 255).toString(16).padStart(2, "0")
+).join("");
+var num2 = (k, name, base) => typeof k[name] === "number" ? k[name] : base;
+var keyTime = (k) => typeof k.time === "number" ? k.time : 0;
+var round2 = (v, digits = 4) => {
+  const r = +v.toFixed(digits);
+  return Object.is(r, -0) ? 0 : r;
+};
+function boneCodec(prop) {
+  const spec = BONE_CHANNELS[prop];
+  if (!spec) return void 0;
+  return {
+    channels: spec.names.length,
+    shared: false,
+    discrete: [],
+    read: (k) => spec.names.map((n) => num2(k, n, spec.base)),
+    write: (values) => Object.fromEntries(spec.names.map((n, i) => [n, round2(values[i])]))
+  };
+}
+function colorCodec(prop) {
+  if (prop === "alpha")
+    return {
+      channels: 1,
+      shared: false,
+      discrete: [],
+      read: (k) => [num2(k, "value", 1)],
+      write: (values) => ({ value: round2(values[0]) })
+    };
+  const spec = COLOR_PROPS[prop];
+  if (!spec) return void 0;
+  return {
+    channels: spec.light + spec.dark,
+    shared: false,
+    discrete: [],
+    read: (k) => [
+      ...hex(String(k.color ?? "ffffffff"), spec.light),
+      ...spec.dark ? hex(String(k.dark ?? "000000"), spec.dark) : []
+    ],
+    write: (values) => ({
+      color: toHex(values.slice(0, spec.light)),
+      ...spec.dark ? { dark: toHex(values.slice(spec.light)) } : {}
+    })
+  };
+}
+var IK = {
+  channels: 2,
+  shared: false,
+  discrete: ["bendPositive", "compress", "stretch"],
+  read: (k) => [num2(k, "mix", 1), num2(k, "softness", 0)],
+  write: (values) => ({ mix: round2(values[0], 5), softness: round2(values[1]) })
+};
+var TRANSFORM = {
+  channels: 6,
+  shared: false,
+  discrete: [],
+  read: (k) => {
+    const x = num2(k, "mixX", 1), sx = num2(k, "mixScaleX", 1);
+    return [
+      num2(k, "mixRotate", 1),
+      x,
+      num2(k, "mixY", x),
+      sx,
+      num2(k, "mixScaleY", sx),
+      num2(k, "mixShearY", 1)
+    ];
+  },
+  write: (v) => ({
+    mixRotate: round2(v[0], 5),
+    mixX: round2(v[1], 5),
+    mixY: round2(v[2], 5),
+    mixScaleX: round2(v[3], 5),
+    mixScaleY: round2(v[4], 5),
+    mixShearY: round2(v[5], 5)
+  })
+};
+var PATH_MIX = {
+  channels: 3,
+  shared: false,
+  discrete: [],
+  read: (k) => {
+    const x = num2(k, "mixX", 1);
+    return [num2(k, "mixRotate", 1), x, num2(k, "mixY", x)];
+  },
+  write: (v) => ({ mixRotate: round2(v[0], 5), mixX: round2(v[1], 5), mixY: round2(v[2], 5) })
+};
+var PATH_VALUE = {
+  channels: 1,
+  shared: false,
+  discrete: [],
+  read: (k) => [num2(k, "value", 0)],
+  write: (v) => ({ value: round2(v[0]) })
+};
+function deformCodec(length) {
+  return {
+    channels: length,
+    shared: true,
+    discrete: [],
+    read: (k) => {
+      const out = new Array(length).fill(0);
+      const vs = k.vertices;
+      if (vs) {
+        const start = num2(k, "offset", 0);
+        for (let i = 0; i < vs.length && start + i < length; i++) out[start + i] = vs[i];
+      }
+      return out;
+    },
+    // Leading and trailing zeros are left out, as Spine writes them; all zeros is the setup shape.
+    write: (values) => {
+      const r = values.map((v) => round2(v, 5));
+      let a = 0, b = r.length;
+      while (a < b && r[a] === 0) a++;
+      while (b > a && r[b - 1] === 0) b--;
+      if (a === b) return {};
+      return { ...a ? { offset: a } : {}, vertices: r.slice(a, b) };
+    }
+  };
+}
+function deformLength(doc, skin, slot, attachment) {
+  const skins = doc.skins;
+  const find = (skinName, name) => skins.find((s2) => s2.name === skinName)?.attachments?.[slot]?.[name];
+  let att = find(skin, attachment);
+  if (!att) return void 0;
+  for (let guard = 0; att && att.type === "linkedmesh" && guard < 8; guard++)
+    att = find(String(att.skin ?? "default"), String(att.parent));
+  if (!att) return void 0;
+  const vertices = att.vertices, uvs = att.uvs;
+  if (vertices.length === uvs.length) return vertices.length;
+  let pairs = 0;
+  for (let i = 0; i < vertices.length; ) {
+    const n = vertices[i];
+    pairs += n;
+    i += 1 + n * 4;
+  }
+  return pairs * 2;
+}
+function segmentCurves(k, codec, next) {
+  const c = k.curve;
+  const n = codec.shared ? 1 : codec.channels;
+  if (c === "stepped") return new Array(n).fill("stepped");
+  if (!Array.isArray(c)) return new Array(n).fill("linear");
+  void next;
+  return Array.from({ length: n }, (_, i) => {
+    const h = c.slice(i * 4, i * 4 + 4);
+    return h.length === 4 ? h : "linear";
+  });
+}
+function makeTimeline(id, kind, owner, prop, keys, codec, skin) {
+  const times = keys.map(keyTime);
+  const values = keys.map((k) => codec.read(k));
+  return {
+    id,
+    kind,
+    owner,
+    prop,
+    ...skin ? { skin } : {},
+    keys,
+    times,
+    values,
+    curves: keys.slice(0, -1).map((k, i) => segmentCurves(k, codec, keys[i + 1])),
+    shared: codec.shared,
+    discrete: codec.discrete
+  };
+}
+function codecFor(doc, tl) {
+  if (tl.kind === "bone") return boneCodec(tl.prop);
+  if (tl.kind === "slot") return colorCodec(tl.prop);
+  if (tl.kind === "ik") return IK;
+  if (tl.kind === "transform") return TRANSFORM;
+  if (tl.kind === "path") return tl.prop === "mix" ? PATH_MIX : PATH_VALUE;
+  const [, slot] = tl.id.slice("deform:".length).split("/");
+  return deformCodec(deformLength(doc, tl.skin, slot, tl.prop) ?? tl.values[0].length);
+}
+function readTimelines(doc, animation) {
+  const anim = doc.animations[animation];
+  if (!anim) throw new Error(`KEYS_ANIMATION: no animation ${animation}`);
+  const curves = [];
+  const discrete = [];
+  let duration = 0;
+  const seen = (keys) => {
+    for (const k of keys) duration = Math.max(duration, keyTime(k));
+  };
+  for (const [bone, props] of Object.entries(
+    anim.bones ?? {}
+  ))
+    for (const [prop, keys] of Object.entries(props)) {
+      seen(keys);
+      const codec = boneCodec(prop);
+      if (codec && keys.length)
+        curves.push(makeTimeline(`bone:${bone}/${prop}`, "bone", bone, prop, keys, codec));
+    }
+  for (const [slot, props] of Object.entries(
+    anim.slots ?? {}
+  ))
+    for (const [prop, keys] of Object.entries(props)) {
+      seen(keys);
+      if (prop === "attachment") {
+        for (const k of keys) discrete.push({ kind: "attachment", owner: slot, time: keyTime(k) });
+        continue;
+      }
+      const codec = colorCodec(prop);
+      if (codec && keys.length)
+        curves.push(makeTimeline(`slot:${slot}/${prop}`, "slot", slot, prop, keys, codec));
+    }
+  for (const [name, keys] of Object.entries(anim.ik ?? {})) {
+    seen(keys);
+    if (keys.length) curves.push(makeTimeline(`ik:${name}`, "ik", name, "mix", keys, IK));
+  }
+  for (const [name, keys] of Object.entries(anim.transform ?? {})) {
+    seen(keys);
+    if (keys.length)
+      curves.push(makeTimeline(`transform:${name}`, "transform", name, "mix", keys, TRANSFORM));
+  }
+  for (const [name, props] of Object.entries(
+    anim.path ?? {}
+  ))
+    for (const [prop, keys] of Object.entries(props)) {
+      seen(keys);
+      if (keys.length)
+        curves.push(
+          makeTimeline(
+            `path:${name}/${prop}`,
+            "path",
+            name,
+            prop,
+            keys,
+            prop === "mix" ? PATH_MIX : PATH_VALUE
+          )
+        );
+    }
+  for (const [skin, slots] of Object.entries(
+    anim.deform ?? {}
+  ))
+    for (const [slot, atts] of Object.entries(slots))
+      for (const [att, keys] of Object.entries(atts)) {
+        seen(keys);
+        const length = deformLength(doc, skin, slot, att);
+        if (length === void 0 || !keys.length) continue;
+        curves.push(
+          makeTimeline(
+            `deform:${skin}/${slot}/${att}`,
+            "deform",
+            slot,
+            att,
+            keys,
+            deformCodec(length),
+            skin
+          )
+        );
+      }
+  for (const k of anim.drawOrder ?? []) {
+    duration = Math.max(duration, keyTime(k));
+    discrete.push({ kind: "drawOrder", owner: "", time: keyTime(k) });
+  }
+  for (const k of anim.events ?? []) {
+    duration = Math.max(duration, keyTime(k));
+    discrete.push({ kind: "event", owner: String(k.name), time: keyTime(k) });
+  }
+  return { curves, discrete, duration };
+}
+function timelineValue(times, values, curves, shared, t) {
+  const n = times.length;
+  if (t <= times[0]) return [...values[0]];
+  if (t >= times[n - 1]) return [...values[n - 1]];
+  let i = 0;
+  while (i < n - 2 && times[i + 1] <= t) i++;
+  const t0 = times[i], t1 = times[i + 1], a = values[i], b = values[i + 1];
+  const seg = curves[i];
+  if (shared) {
+    const c = seg[0];
+    if (c === "stepped") return [...a];
+    let f;
+    if (c === "linear") f = (t - t0) / (t1 - t0);
+    else f = bezierValue(bezierPoints(t0, 0, c[0], c[1], c[2], c[3], t1, 1), t0, 0, t1, 1, t);
+    return a.map((v, j) => v + (b[j] - v) * f);
+  }
+  return a.map((v, j) => {
+    const c = seg[j] ?? "linear";
+    if (c === "stepped") return v;
+    if (c === "linear") return v + (t - t0) / (t1 - t0) * (b[j] - v);
+    return bezierValue(bezierPoints(t0, v, c[0], c[1], c[2], c[3], t1, b[j]), t0, v, t1, b[j], t);
+  });
+}
+var roundCurve = (c) => c.map((v) => round2(v, 5));
+function writeKeys(doc, tl, keys) {
+  const codec = codecFor(doc, tl);
+  return keys.map((k, i) => {
+    const last = i === keys.length - 1;
+    if (k.verbatim && k.source !== void 0) {
+      const raw = { ...tl.keys[k.source] };
+      if (last) delete raw.curve;
+      return raw;
+    }
+    const template = tl.keys[k.source ?? k.state ?? 0] ?? {};
+    const out = {};
+    const time = k.source !== void 0 ? keyTime(tl.keys[k.source]) : round2(k.time, 4);
+    if (time !== 0) out.time = time;
+    Object.assign(out, codec.write(k.values, template));
+    for (const d of codec.discrete) if (template[d] !== void 0) out[d] = template[d];
+    if (!last && k.curve) {
+      if (k.curve.every((c) => c === "stepped")) out.curve = "stepped";
+      else if (!k.curve.every((c) => c === "linear"))
+        out.curve = roundCurve(
+          k.curve.flatMap((c, j) => {
+            if (c !== "linear" && c !== "stepped") return c;
+            const t0 = k.time, t1 = keys[i + 1].time;
+            const v0 = tl.shared ? 0 : k.values[j], v1 = tl.shared ? 1 : keys[i + 1].values[j];
+            return [
+              t0 + (t1 - t0) / 3,
+              v0 + (v1 - v0) / 3,
+              t0 + (t1 - t0) * 2 / 3,
+              v0 + (v1 - v0) * 2 / 3
+            ];
+          })
+        );
+    }
+    return out;
+  });
+}
+function setTimelineKeys(anim, tl, keys) {
+  const at2 = (o, ...path) => path.reduce((x, p) => x[p], o);
+  switch (tl.kind) {
+    case "bone":
+      at2(anim, "bones", tl.owner)[tl.prop] = keys;
+      return;
+    case "slot":
+      at2(anim, "slots", tl.owner)[tl.prop] = keys;
+      return;
+    case "ik":
+      at2(anim, "ik")[tl.owner] = keys;
+      return;
+    case "transform":
+      at2(anim, "transform")[tl.owner] = keys;
+      return;
+    case "path":
+      at2(anim, "path", tl.owner)[tl.prop] = keys;
+      return;
+    case "deform":
+      at2(anim, "deform", tl.skin, tl.owner)[tl.prop] = keys;
+      return;
+  }
+}
+
+// packages/reference/src/keys-world.ts
+function samplePose(sk, animation, time) {
+  const spine = spineRuntime();
+  pose(sk, animation, time);
+  const slots = sk.skeleton.slots;
+  const atts = new Array(slots.length).fill(null);
+  const verts = new Array(slots.length).fill(null);
+  const alpha = new Float32Array(slots.length);
+  slots.forEach((slot, i) => {
+    const att = slot.getAttachment();
+    if (!att) return;
+    atts[i] = att.name;
+    alpha[i] = slot.color.a * att.color.a;
+    if (att instanceof spine.RegionAttachment) {
+      const v = new Array(8).fill(0);
+      att.computeWorldVertices(slot.bone, v, 0, 2);
+      verts[i] = Float32Array.from(v);
+    } else if (att instanceof spine.MeshAttachment) {
+      const n = att.worldVerticesLength;
+      const v = new Array(n).fill(0);
+      att.computeWorldVertices(slot, 0, n, v, 0, 2);
+      verts[i] = Float32Array.from(v);
+    }
+  });
+  const order = sk.skeleton.drawOrder.map((s2) => s2.data.index).join(",");
+  const bs = sk.skeleton.bones;
+  const bones = new Float32Array(bs.length * 4);
+  bs.forEach((b, i) => {
+    bones[i * 4] = b.worldX;
+    bones[i * 4 + 1] = b.worldY;
+    bones[i * 4 + 2] = b.getWorldRotationX();
+    bones[i * 4 + 3] = Math.sqrt(Math.abs(b.a * b.d - b.b * b.c));
+  });
+  return { atts, verts, alpha, order, bones };
+}
+var VISIBLE = 2e-3;
+function poseDifference(a, b) {
+  let max = 0, slot = -1, sumSq = 0, count = 0;
+  const stateMismatches = [], perSlot = /* @__PURE__ */ new Map();
+  for (let i = 0; i < a.atts.length; i++) {
+    const va = a.alpha[i] > VISIBLE && a.atts[i] !== null, vb = b.alpha[i] > VISIBLE && b.atts[i] !== null;
+    if (!va && !vb) continue;
+    if (va !== vb || a.atts[i] !== b.atts[i]) {
+      stateMismatches.push(i);
+      continue;
+    }
+    const pa = a.verts[i], pb = b.verts[i];
+    if (!pa || !pb || pa.length !== pb.length) continue;
+    let slotMax = 0;
+    for (let k = 0; k + 1 < pa.length; k += 2) {
+      const d2 = (pa[k] - pb[k]) ** 2 + (pa[k + 1] - pb[k + 1]) ** 2;
+      sumSq += d2;
+      count++;
+      if (d2 > slotMax) slotMax = d2;
+    }
+    slotMax = Math.sqrt(slotMax);
+    perSlot.set(i, slotMax);
+    if (slotMax > max) [max, slot] = [slotMax, i];
+  }
+  return { max, slot, sumSq, count, stateMismatches, orderMismatch: a.order !== b.order, perSlot };
+}
+function influence(doc) {
+  const bones = doc.bones.map((b) => String(b.name));
+  const index = new Map(bones.map((b, i) => [b, i]));
+  const parent = doc.bones.map(
+    (b) => b.parent === void 0 ? -1 : index.get(String(b.parent)) ?? -1
+  );
+  const slots = doc.slots.map((s2) => String(s2.name));
+  const slotBone = doc.slots.map((s2) => index.get(String(s2.bone)) ?? 0);
+  const constraints = /* @__PURE__ */ new Map();
+  for (const kind of ["ik", "transform", "path"])
+    for (const c of doc[kind] ?? []) {
+      const target = kind === "path" ? slotBone[slots.indexOf(String(c.target))] ?? 0 : index.get(String(c.target)) ?? 0;
+      constraints.set(String(c.name), {
+        kind,
+        bones: c.bones.map((b) => index.get(b) ?? 0),
+        target
+      });
+    }
+  const ancestors = (b, into) => {
+    for (let x = b; x >= 0 && !into.has(x); x = parent[x]) into.add(x);
+  };
+  const weighted = slots.map(() => /* @__PURE__ */ new Set());
+  for (const skin of doc.skins ?? [])
+    for (const [slot, atts] of Object.entries(skin.attachments ?? {})) {
+      const si = slots.indexOf(slot);
+      if (si < 0) continue;
+      for (const att of Object.values(atts)) {
+        const v = att.vertices, uv = att.uvs;
+        if (!v || !uv || v.length === uv.length) continue;
+        for (let i = 0; i < v.length; ) {
+          const n = v[i];
+          for (let j = 0; j < n; j++) weighted[si].add(v[i + 1 + j * 4]);
+          i += 1 + n * 4;
+        }
+      }
+    }
+  const slotBones = slots.map((_, si) => {
+    const set = /* @__PURE__ */ new Set();
+    ancestors(slotBone[si], set);
+    for (const b of weighted[si]) ancestors(b, set);
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (const c of constraints.values())
+        if (c.bones.some((b) => set.has(b)) && !set.has(c.target)) {
+          ancestors(c.target, set);
+          grew = true;
+        }
+    }
+    return set;
+  });
+  return { bones, parent, slots, slotBones, constraints };
+}
+function boneReach(inf, poses) {
+  const reach = new Float64Array(inf.bones.length);
+  for (const p of poses)
+    p.verts.forEach((v, si) => {
+      if (!v || p.alpha[si] <= VISIBLE) return;
+      for (const b of inf.slotBones[si]) {
+        const bx = p.bones[b * 4], by = p.bones[b * 4 + 1];
+        let r = reach[b];
+        for (let k = 0; k + 1 < v.length; k += 2) {
+          const d = Math.hypot(v[k] - bx, v[k + 1] - by);
+          if (d > r) r = d;
+        }
+        reach[b] = r;
+      }
+    });
+  return reach;
+}
+function parentScale(inf, poses) {
+  const out = new Float64Array(inf.bones.length).fill(1);
+  inf.parent.forEach((p, b) => {
+    if (p < 0) return;
+    let s2 = 0;
+    for (const q of poses) s2 = Math.max(s2, q.bones[p * 4 + 3]);
+    out[b] = s2 || 1;
+  });
+  return out;
+}
+
+// packages/reference/src/keys-reduce.ts
+var KEY_LIMITS = {
+  fidelity: { max: 1e-3, rms: 3e-4 },
+  posable: { max: 3e-3, rms: 1e-3 }
+};
+var EPS2 = 1e-4;
+var UNITS = {
+  rotate: "deg",
+  shear: "deg",
+  shearx: "deg",
+  sheary: "deg",
+  translate: "px (parent space)",
+  translatex: "px (parent space)",
+  translatey: "px (parent space)",
+  scale: "scale factor",
+  scalex: "scale factor",
+  scaley: "scale factor",
+  deform: "px (mesh space)",
+  color: "0..1 per channel",
+  mix: "0..1"
+};
+var unitOf = (tl) => tl.kind === "bone" ? UNITS[tl.prop] : tl.kind === "deform" ? UNITS.deform : tl.kind === "slot" ? UNITS.color : tl.kind === "path" && tl.prop !== "mix" ? "path units" : "0..1 mix, px softness";
+function skeletonSize(doc, sk) {
+  const h = doc.skeleton?.height;
+  if (typeof h === "number" && h > 0) return h;
+  let lx = Infinity, ly = Infinity, hx = -Infinity, hy = -Infinity;
+  for (const v of samplePose(sk, null, 0).verts)
+    if (v)
+      for (let k = 0; k + 1 < v.length; k += 2) {
+        [lx, hx] = [Math.min(lx, v[k]), Math.max(hx, v[k])];
+        [ly, hy] = [Math.min(ly, v[k + 1]), Math.max(hy, v[k + 1])];
+      }
+  const size = Math.max(hx - lx, hy - ly);
+  return Number.isFinite(size) && size > 0 ? size : 100;
+}
+function frameValues(tl, fps, from, to) {
+  const frames = [];
+  for (let f = Math.ceil(from * fps - EPS2); f / fps <= to + EPS2; f++) frames.push(f);
+  return {
+    frames,
+    v: frames.map(
+      (f) => timelineValue(tl.times, tl.values, tl.curves, tl.shared, Math.min(to, f / fps))
+    )
+  };
+}
+function turningFrames(frames, v, tolerance, shared) {
+  if (frames.length < 3) return [];
+  let signals;
+  let tols;
+  if (shared) {
+    const a = v[0];
+    let far = 0, fd = 0;
+    v.forEach((x, i) => {
+      const d = x.reduce((s2, y, j) => s2 + (y - a[j]) ** 2, 0);
+      if (d > fd) [far, fd] = [i, d];
+    });
+    const axis = v[far].map((y, j) => y - a[j]), len = Math.sqrt(fd) || 1;
+    signals = [
+      v.map(
+        (x) => Math.sqrt(x.reduce((s2, y, j) => s2 + (y - a[j]) ** 2, 0) / Math.max(1, x.length / 2))
+      ),
+      v.map((x) => x.reduce((s2, y, j) => s2 + (y - a[j]) * axis[j], 0) / len)
+    ];
+    tols = [tolerance[0], tolerance[0]];
+  } else {
+    signals = tolerance.map((_, c) => v.map((x) => x[c]));
+    tols = tolerance;
+  }
+  const out = /* @__PURE__ */ new Set();
+  signals.forEach((s2, c) => {
+    const tol = tols[c];
+    const ext = [];
+    for (let i = 1; i < s2.length - 1; i++) {
+      const up = s2[i] - s2[i - 1], down = s2[i + 1] - s2[i];
+      if (up > 0 && down <= 0 || up < 0 && down >= 0 || up === 0 && down !== 0 && i > 0)
+        ext.push(i);
+    }
+    const pts = [0, ...ext, s2.length - 1];
+    let changed = true;
+    while (changed && pts.length > 2) {
+      changed = false;
+      for (let k = 1; k < pts.length - 1; k++) {
+        const a = s2[pts[k - 1]], b = s2[pts[k]], d = s2[pts[k + 1]];
+        if (Math.min(Math.abs(b - a), Math.abs(b - d)) < tol) {
+          pts.splice(k, 1);
+          changed = true;
+          break;
+        }
+      }
+    }
+    for (const k of pts.slice(1, -1)) out.add(frames[k]);
+    const still = (i) => Math.abs(s2[i + 1] - s2[i]) < tol * 0.1;
+    for (let i = 0; i < s2.length - 1; ) {
+      if (!still(i)) {
+        i++;
+        continue;
+      }
+      let j = i;
+      while (j < s2.length - 1 && still(j)) j++;
+      if (j - i >= 2 && Math.abs(s2[j] - s2[0]) + Math.abs(s2[i] - s2.at(-1)) >= tol) {
+        if (i > 0) out.add(frames[i]);
+        if (j < s2.length - 1) out.add(frames[j]);
+      }
+      i = j;
+    }
+  });
+  return [...out].sort((a, b) => a - b);
+}
+var same2 = (a, b, eps = 1e-6) => a.every((v, i) => Math.abs(v - b[i]) <= eps);
+function originalIndexAt(tl, t) {
+  const i = tl.times.findIndex((x) => Math.abs(x - t) <= EPS2);
+  return i < 0 ? void 0 : i;
+}
+function stateIndex(tl, t) {
+  let i = 0;
+  while (i < tl.times.length - 1 && tl.times[i + 1] <= t + EPS2) i++;
+  return i;
+}
+var valueAt = (tl, t) => timelineValue(tl.times, tl.values, tl.curves, tl.shared, t);
+function inside2(w, a, b) {
+  let lo = 0, hi = w.st.length;
+  while (lo < hi) {
+    const m = lo + hi >> 1;
+    if (w.st[m] <= a + 1e-9) lo = m + 1;
+    else hi = m;
+  }
+  const ts = [], vs = [];
+  for (let k = lo; k < w.st.length && w.st[k] < b - 1e-9; k++) {
+    ts.push(w.st[k]);
+    vs.push(w.sv[k]);
+  }
+  return { ts, vs };
+}
+function fitSegment2(w, a, b) {
+  if (a.source !== void 0 && b.source !== void 0 && b.source === a.source + 1)
+    return { curve: w.tl.curves[a.source], ratio: 0, error: 0, verbatim: true };
+  const { ts, vs } = inside2(w, a.time, b.time);
+  if (w.tl.shared) {
+    const f = fitShared(ts, vs, a.time, a.values, b.time, b.values, w.tol[0]);
+    return { curve: [f.curve], ratio: f.error / w.tol[0], error: f.error, verbatim: false };
+  }
+  let ratio = 0, error = 0;
+  const curve = a.values.map((v0, c) => {
+    const f = fitChannel(
+      ts,
+      vs.map((x) => x[c]),
+      a.time,
+      v0,
+      b.time,
+      b.values[c],
+      w.tol[c]
+    );
+    ratio = Math.max(ratio, f.error / w.tol[c]);
+    error = Math.max(error, f.error);
+    return f.curve;
+  });
+  return { curve, ratio, error, verbatim: false };
+}
+function keyFromOriginal(tl, i) {
+  return { time: tl.times[i], values: tl.values[i], source: i, state: i };
+}
+function keyAt(tl, t) {
+  const src = originalIndexAt(tl, t);
+  if (src !== void 0) return keyFromOriginal(tl, src);
+  return { time: t, values: valueAt(tl, t), state: stateIndex(tl, t) };
+}
+function refit(w) {
+  let worst = 0, err = 0;
+  for (let i = 0; i < w.keys.length - 1; i++) {
+    const a = w.keys[i], b = w.keys[i + 1];
+    const f = fitSegment2(w, a, b);
+    a.curve = f.curve;
+    a.verbatim = f.verbatim;
+    worst = Math.max(worst, f.ratio);
+    err = Math.max(err, f.error);
+  }
+  const last = w.keys.at(-1);
+  last.verbatim = last.source !== void 0 && last.source === w.tl.keys.length - 1;
+  w.channelError = err;
+  return worst;
+}
+function reduceSubset(w) {
+  const n = w.tl.times.length;
+  const must = [...w.must].sort((a, b) => a - b);
+  const kept = [];
+  for (let r = 0; r < must.length - 1; r++) {
+    const from = must[r], to = must[r + 1];
+    const cost = /* @__PURE__ */ new Map([
+      [from, { keys: 0, err: 0, prev: -1 }]
+    ]);
+    for (let i = from; i < to; i++) {
+      const ci = cost.get(i);
+      if (!ci) continue;
+      let failures = 0;
+      for (let j = i + 1; j <= to; j++) {
+        let ok, ratio;
+        if (j === i + 1) [ok, ratio] = [true, 0];
+        else {
+          const f = fitSegment2(w, keyFromOriginal(w.tl, i), keyFromOriginal(w.tl, j));
+          ratio = f.ratio;
+          ok = ratio <= 1;
+        }
+        if (!ok) {
+          if (++failures >= 3) break;
+          continue;
+        }
+        failures = 0;
+        const next = { keys: ci.keys + 1, err: ci.err + ratio * ratio, prev: i };
+        const cj = cost.get(j);
+        if (!cj || next.keys < cj.keys || next.keys === cj.keys && next.err < cj.err - 1e-12)
+          cost.set(j, next);
+      }
+    }
+    const path = [];
+    for (let j = to; j !== from && j >= 0; j = cost.get(j).prev) path.push(j);
+    kept.push(from, ...path.reverse().slice(0, -1));
+  }
+  kept.push(must.at(-1));
+  w.keys = [...new Set(kept)].sort((a, b) => a - b).map((i) => keyFromOriginal(w.tl, i));
+  void n;
+  refit(w);
+}
+function reduceRefine(w, times, fps, wholeFrames) {
+  const first = w.tl.times[0], last = w.tl.times.at(-1);
+  const set = /* @__PURE__ */ new Map();
+  const add = (k) => set.set(k.time.toFixed(6), k);
+  for (const i of w.must) add(keyFromOriginal(w.tl, i));
+  for (const t of times) if (t > first + EPS2 && t < last - EPS2) add(keyAt(w.tl, t));
+  w.keys = [...set.values()].sort((a, b) => a.time - b.time);
+  for (let guard = 0; guard < 1e4; guard++) {
+    let worst = -1, worstRatio = 1;
+    for (let i = 0; i < w.keys.length - 1; i++) {
+      const f = fitSegment2(w, w.keys[i], w.keys[i + 1]);
+      w.keys[i].curve = f.curve;
+      w.keys[i].verbatim = f.verbatim;
+      if (f.ratio > worstRatio) [worst, worstRatio] = [i, f.ratio];
+    }
+    if (worst < 0) break;
+    const t = insertionTime(w, worst, fps, wholeFrames);
+    if (t === void 0) break;
+    w.keys.splice(worst + 1, 0, keyAt(w.tl, t));
+  }
+  refit(w);
+}
+function insertionTime(w, i, fps, wholeFrames, near) {
+  const a = w.keys[i], b = w.keys[i + 1];
+  const { ts, vs } = inside2(w, a.time, b.time);
+  if (!ts.length) return void 0;
+  let at2 = near ?? ts[0];
+  if (near === void 0) {
+    let worst = -1;
+    const cur = a.curve ?? [];
+    ts.forEach((t, k) => {
+      const played = timelineValue([a.time, b.time], [a.values, b.values], [cur], w.tl.shared, t);
+      const r = w.tl.shared ? Math.sqrt(played.reduce((s2, v, j) => s2 + (v - vs[k][j]) ** 2, 0)) : Math.max(...played.map((v, j) => Math.abs(v - vs[k][j]) / w.tol[j]));
+      if (r > worst) [worst, at2] = [r, t];
+    });
+  }
+  const originals = w.tl.times.filter((t) => t > a.time + EPS2 && t < b.time - EPS2);
+  if (wholeFrames) {
+    const f = Math.round(at2 * fps), t = f / fps;
+    if (t > a.time + EPS2 && t < b.time - EPS2) return t;
+    const g = at2 * fps > f ? f + 1 : f - 1;
+    if (g / fps > a.time + EPS2 && g / fps < b.time - EPS2) return g / fps;
+  }
+  if (originals.length)
+    return originals.reduce(
+      (best, t) => Math.abs(t - at2) < Math.abs(best - at2) ? t : best,
+      originals[0]
+    );
+  return void 0;
+}
+function checkTimes(timelines, duration, fps, substeps) {
+  const end = Math.max(0, duration - 1e-5);
+  const set = /* @__PURE__ */ new Set();
+  const add = (t) => set.add(+Math.min(end, Math.max(0, t)).toFixed(7));
+  const steps = Math.round(duration * fps * substeps);
+  for (let k = 0; k <= steps; k++) add(k / (fps * substeps));
+  for (const tl of timelines.curves) for (const t of tl.times) [t - 1e-4, t, t + 1e-4].forEach(add);
+  for (const d of timelines.discrete) [d.time - 1e-4, d.time + 1e-4].forEach(add);
+  add(end);
+  return [...set].sort((a, b) => a - b);
+}
+function summarize(diffs) {
+  let max = 0, worst = 0, sum = 0, count = 0;
+  diffs.forEach((d, i) => {
+    sum += d.sumSq;
+    count += d.count;
+    if (d.max > max) [max, worst] = [d.max, i];
+  });
+  return { diffs, max, rms: count ? Math.sqrt(sum / count) : 0, worst };
+}
+function lagStrength(a, b, loop, maxLag = 12) {
+  const sa = loop ? a.slice(0, -1) : a, sb = loop ? b.slice(0, -1) : b;
+  const speed = (s2) => s2.map((v, i) => loop ? s2[(i + 1) % s2.length] - v : i + 1 < s2.length ? s2[i + 1] - v : NaN);
+  const da = speed(sa).filter((x) => !Number.isNaN(x)), db = speed(sb).filter((x) => !Number.isNaN(x));
+  const n = Math.min(da.length, db.length);
+  if (n < 4) return { lag: 0, strength: 0 };
+  const ra = Math.sqrt(da.reduce((s2, x) => s2 + x * x, 0) / n), rb = Math.sqrt(db.reduce((s2, x) => s2 + x * x, 0) / n);
+  const corr = (lag2) => {
+    let s2 = 0, m = 0;
+    for (let i = 0; i < n; i++) {
+      let j = i + lag2;
+      if (loop) j = (j % n + n) % n;
+      else if (j < 0 || j >= n) continue;
+      s2 += da[i] * db[j];
+      m++;
+    }
+    return m && ra && rb ? s2 / m / (ra * rb) : 0;
+  };
+  let best = 0, bv = -Infinity;
+  for (let lag2 = -maxLag; lag2 <= maxLag; lag2++) {
+    const c = corr(lag2);
+    if (c > bv) [best, bv] = [lag2, c];
+  }
+  const l = corr(best - 1), r = corr(best + 1), den = l - 2 * bv + r;
+  return {
+    lag: den < 0 && Math.abs(best) < maxLag ? best + 0.5 * (l - r) / den : best,
+    strength: bv
+  };
+}
+function prominentTurns(v, prominence) {
+  const pts = [0];
+  for (let i = 1; i < v.length - 1; i++) {
+    const l = v[i] - v[i - 1];
+    let j = i;
+    while (j < v.length - 1 && v[j + 1] === v[i]) j++;
+    const r = j < v.length - 1 ? v[j + 1] - v[j] : 0;
+    if (l * r < 0) pts.push(i + j >> 1);
+    i = j;
+  }
+  pts.push(v.length - 1);
+  for (let changed = true; changed && pts.length > 2; ) {
+    changed = false;
+    for (let k = 1; k < pts.length - 1; k++) {
+      const b = v[pts[k]];
+      if (Math.min(Math.abs(b - v[pts[k - 1]]), Math.abs(b - v[pts[k + 1]])) < prominence) {
+        pts.splice(k, 1);
+        changed = true;
+        break;
+      }
+    }
+  }
+  return pts.slice(1, -1);
+}
+function peaks(s2, step, prominence) {
+  const out = [];
+  const pts = [0];
+  for (let i = 1; i < s2.length - 1; i++)
+    if ((s2[i] - s2[i - 1]) * (s2[i + 1] - s2[i]) < 0 || s2[i] !== s2[i - 1] && s2[i + 1] === s2[i])
+      pts.push(i);
+  pts.push(s2.length - 1);
+  let changed = true;
+  while (changed && pts.length > 2) {
+    changed = false;
+    for (let k = 1; k < pts.length - 1; k++) {
+      const b = s2[pts[k]];
+      if (Math.min(Math.abs(b - s2[pts[k - 1]]), Math.abs(b - s2[pts[k + 1]])) < prominence) {
+        pts.splice(k, 1);
+        changed = true;
+        break;
+      }
+    }
+  }
+  for (const i of pts.slice(1, -1)) {
+    const l = s2[i - 1], c = s2[i], r = s2[i + 1], den = l - 2 * c + r;
+    out.push((i + (Math.abs(den) > 1e-12 ? 0.5 * (l - r) / den : 0)) * step);
+  }
+  return out;
+}
+function reduceSpineKeys(document2, options) {
+  const sources = [];
+  const original = structuredClone(document2);
+  if (options.baseline) adoptBaseline(original, options, sources);
+  const out = structuredClone(original);
+  const skel = original.skeleton ?? {};
+  const fps = options.fps ?? (typeof skel.fps === "number" ? skel.fps : 30);
+  const sk0 = loadSkeleton(original);
+  const size = skeletonSize(original, sk0);
+  const limits = {
+    maxError: options.maxError ?? +(size * KEY_LIMITS[options.mode].max).toFixed(3),
+    rmsError: options.rmsError ?? +(size * KEY_LIMITS[options.mode].rms).toFixed(3),
+    colorTolerance: options.colorTolerance ?? 1 / 255,
+    localShare: options.localShare ?? 0.5
+  };
+  const substeps = options.substeps ?? 4;
+  const inf = influence(original);
+  const names = Object.keys(original.animations ?? {}).filter(
+    (n) => !options.animations || options.animations.includes(n)
+  );
+  const reports = names.map(
+    (name) => reduceAnimation(original, out, sk0, inf, name, options, { fps, size, limits, substeps })
+  );
+  const keys = reports.reduce(
+    (s2, r) => ({ before: s2.before + r.keys.before, after: s2.after + r.keys.after }),
+    { before: 0, after: 0 }
+  );
+  return {
+    document: out,
+    report: {
+      mode: options.mode,
+      spine: String(skel.spine ?? "unknown"),
+      fps,
+      size,
+      limits,
+      sampling: `${substeps} samples a frame from 0 to the end, every key time and 0.1 ms either side, 0.1 ms either side of every attachment, draw order and event key, the last instant before the loop wraps; then quarter points of every interval with an end over half the limit (up to three rounds)`,
+      units: {
+        world: "skeleton units (Spine px at skeleton scale 1, before any display scale)",
+        rms: "square root of the mean squared vertex distance over every compared vertex of every sample",
+        ...UNITS
+      },
+      animations: reports,
+      keys,
+      sources,
+      pass: reports.every((r) => r.pass)
+    }
+  };
+}
+function adoptBaseline(doc, options, sources) {
+  const base = options.baseline;
+  const setup = (d) => JSON.stringify([d.bones, d.slots, d.ik, d.transform, d.path, d.skins]);
+  const anims = doc.animations ?? {}, baseAnims = base.animations ?? {};
+  const names = Object.keys(anims).filter(
+    (n) => !options.animations || options.animations.includes(n)
+  );
+  if (setup(doc) !== setup(base)) {
+    for (const n of names)
+      sources.push({ animation: n, from: "input", reason: "the baseline's skeleton differs" });
+    return;
+  }
+  const fps = options.fps ?? (typeof doc.skeleton?.fps === "number" ? doc.skeleton.fps : 30);
+  const skIn = loadSkeleton(doc), skBase = loadSkeleton(base);
+  const size = skeletonSize(doc, skIn);
+  const limit2 = options.maxError ?? size * KEY_LIMITS[options.mode].max;
+  for (const n of names) {
+    if (!baseAnims[n]) {
+      sources.push({ animation: n, from: "input", reason: "not in the baseline" });
+      continue;
+    }
+    const d0 = readTimelines(doc, n).duration, d1 = readTimelines(base, n).duration;
+    if (Math.abs(d0 - d1) > 1e-6) {
+      sources.push({
+        animation: n,
+        from: "input",
+        reason: "its length differs from the baseline's"
+      });
+      continue;
+    }
+    let worst = 0;
+    const steps = Math.max(1, Math.round(d0 * fps * 2));
+    for (let k = 0; k <= steps; k++) {
+      const t = Math.min(d0 - 1e-5, k / (fps * 2));
+      worst = Math.max(worst, poseDifference(samplePose(skIn, n, t), samplePose(skBase, n, t)).max);
+    }
+    if (worst <= limit2 + 1e-6) {
+      anims[n] = structuredClone(baseAnims[n]);
+      sources.push({
+        animation: n,
+        from: "baseline",
+        reason: `plays within ${worst.toFixed(3)} px of the baseline`
+      });
+    } else
+      sources.push({
+        animation: n,
+        from: "input",
+        reason: `edited: ${worst.toFixed(3)} px from the baseline, reduced as it is now`
+      });
+  }
+}
+function reduceAnimation(original, out, sk0, inf, name, options, ctx) {
+  const { fps, limits, substeps, size } = ctx;
+  const mode = options.mode;
+  const T = readTimelines(original, name);
+  const duration = T.duration;
+  const notes = [];
+  const times = checkTimes(T, duration, fps, substeps);
+  const origPoses = times.map((t) => samplePose(sk0, name, t));
+  const frameCount = Math.round(duration * fps);
+  const frameIndex = Array.from({ length: frameCount + 1 }, (_, f) => {
+    const t = Math.min(f / fps, Math.max(0, duration - 1e-5));
+    let best = 0;
+    times.forEach((x, i) => {
+      if (Math.abs(x - t) < Math.abs(times[best] - t)) best = i;
+    });
+    return best;
+  });
+  const framePoses = frameIndex.map((i) => origPoses[i]);
+  const reach = boneReach(inf, framePoses.length ? framePoses : origPoses.slice(0, 1));
+  const pscale = parentScale(inf, framePoses.length ? framePoses : origPoses.slice(0, 1));
+  const boneIndex = new Map(inf.bones.map((b, i) => [b, i]));
+  const slotIndex = new Map(inf.slots.map((s2, i) => [s2, i]));
+  const e = limits.maxError * limits.localShare;
+  const minReach = size * 0.05;
+  const leverOf = (b) => Math.max(reach[b] ?? 0, minReach);
+  const eventTimes = T.discrete.filter((d) => d.kind === "event").map((d) => d.time);
+  const locks = (options.lock ?? []).filter((l) => !l.animation || l.animation === name);
+  const inScope = (tl) => (!options.kinds || options.kinds.includes(tl.kind)) && !(options.skip ?? []).some((s2) => s2 === tl.id || s2 === tl.owner);
+  const work = T.curves.map((tl) => {
+    let tol, lever;
+    if (tl.kind === "bone") {
+      const b = boneIndex.get(tl.owner) ?? 0;
+      if (tl.prop.startsWith("rotate") || tl.prop.startsWith("shear")) {
+        lever = leverOf(b) * Math.PI / 180;
+      } else if (tl.prop.startsWith("translate")) lever = pscale[b];
+      else lever = leverOf(b);
+      tol = tl.values[0].map(() => e / lever);
+    } else if (tl.kind === "deform") {
+      lever = 1;
+      tol = [e];
+    } else if (tl.kind === "slot") {
+      lever = 0;
+      tol = tl.values[0].map(() => limits.colorTolerance);
+    } else {
+      const c = inf.constraints.get(tl.owner);
+      const r = c ? Math.max(...c.bones.map(leverOf)) : minReach;
+      lever = r * Math.PI;
+      tol = tl.kind === "ik" ? [e / lever, e] : tl.kind === "path" && tl.prop !== "mix" ? [e / 100] : tl.values[0].map(() => e / lever);
+    }
+    const first = tl.times[0], last = tl.times.at(-1);
+    const st = new Set(tl.times);
+    for (let k = Math.ceil(first * fps * substeps); k / (fps * substeps) < last; k++)
+      st.add(k / (fps * substeps));
+    const sts = [...st].filter((t) => t >= first && t <= last).sort((a, b) => a - b);
+    const must = /* @__PURE__ */ new Set([0, tl.times.length - 1]);
+    const frozen = /* @__PURE__ */ new Set();
+    for (let i = 0; i < tl.times.length - 1; i++) {
+      const jump = tl.curves[i].some((c) => c === "stepped") && !same2(tl.values[i], tl.values[i + 1]);
+      if (jump || tl.times[i + 1] - tl.times[i] < 1e-6) {
+        frozen.add(i);
+        must.add(i);
+        must.add(i + 1);
+      }
+      if (tl.discrete.some((d) => tl.keys[i][d] !== tl.keys[i + 1][d])) must.add(i + 1);
+    }
+    for (const l of locks)
+      if (l.timeline === void 0 || l.timeline === tl.id || l.timeline === tl.owner) {
+        if (l.time !== void 0) {
+          const i = originalIndexAt(tl, l.time);
+          if (i !== void 0) must.add(i);
+        }
+      }
+    if (!tl.shared)
+      for (let c = 0; c < tl.values[0].length; c++)
+        for (const i of prominentTurns(
+          tl.values.map((x) => x[c]),
+          tol[c] / limits.localShare
+        ))
+          must.add(i);
+    if (options.protectEvents !== false)
+      for (const t of eventTimes) {
+        const i = originalIndexAt(tl, t);
+        if (i !== void 0) must.add(i);
+      }
+    return {
+      tl,
+      tol: tol.map((x) => Math.max(1e-6, x)),
+      lever,
+      st: sts,
+      sv: sts.map((t) => valueAt(tl, t)),
+      must,
+      frozen,
+      keys: tl.times.map((_, i) => ({ ...keyFromOriginal(tl, i), verbatim: true })),
+      status: "unchanged",
+      inserted: 0,
+      channelError: 0
+    };
+  });
+  const turns = /* @__PURE__ */ new Map();
+  for (const w of work) {
+    if (w.tl.kind !== "bone" || w.tl.times.length < 2 || !inScope(w.tl)) continue;
+    const { frames, v } = frameValues(w.tl, fps, w.tl.times[0], w.tl.times.at(-1));
+    const b = boneIndex.get(w.tl.owner) ?? 0;
+    const set = turns.get(b) ?? /* @__PURE__ */ new Set();
+    for (const f of turningFrames(
+      frames,
+      v,
+      w.tol.map((x) => x / limits.localShare),
+      false
+    ))
+      set.add(f);
+    turns.set(b, set);
+  }
+  const animated = [...turns.keys()].filter((b) => turns.get(b).size > 0);
+  const groupOf = new Map(animated.map((b) => [b, b]));
+  const find = (b) => groupOf.get(b) === b ? b : find(groupOf.get(b));
+  const nearestAnimated = (b) => {
+    for (let p = inf.parent[b]; p >= 0; p = inf.parent[p]) if (groupOf.has(p)) return p;
+    return -1;
+  };
+  const jaccard = (a, b) => {
+    let n = 0;
+    for (const x of a) if (b.has(x)) n++;
+    return n / (a.size + b.size - n || 1);
+  };
+  for (const b of animated) {
+    const p = nearestAnimated(b);
+    if (p >= 0 && jaccard(turns.get(b), turns.get(p)) >= 0.5) groupOf.set(find(b), find(p));
+  }
+  const members = /* @__PURE__ */ new Map();
+  for (const b of animated) members.set(find(b), [...members.get(find(b)) ?? [], b]);
+  const groups = [...members.values()].map(
+    (ids) => {
+      const count = /* @__PURE__ */ new Map();
+      for (const b of ids) for (const f of turns.get(b)) count.set(f, (count.get(f) ?? 0) + 1);
+      const frames = [...count.entries()].filter(([, n]) => n >= Math.ceil(ids.length / 2)).map(([f]) => f).sort((a, b) => a - b);
+      const top = ids.reduce((t, b) => depth(inf, b) < depth(inf, t) ? b : t, ids[0]);
+      return {
+        root: top,
+        ids,
+        bones: ids.map((b) => inf.bones[b]),
+        frames,
+        role: ids.length > 1 ? "main" : "single"
+      };
+    }
+  );
+  const loop = options.loops?.includes(name) ?? (origPoses.length > 1 && poseDifference(origPoses[0], origPoses.at(-1)).max <= Math.max(limits.maxError, 0.5));
+  const worldRot = (poses, b) => poses.map((p) => p.bones[b * 4 + 2]);
+  const unwrap = (s2) => {
+    const o = [...s2];
+    for (let i = 1; i < o.length; i++)
+      o[i] = o[i - 1] + ((o[i] - o[i - 1]) % 360 + 540) % 360 - 180;
+    return o;
+  };
+  const anchorOf = /* @__PURE__ */ new Map();
+  for (const g of groups) {
+    const p = nearestAnimated(g.root);
+    if (p < 0) continue;
+    const { lag: lag2, strength } = lagStrength(
+      unwrap(worldRot(framePoses, p)),
+      unwrap(worldRot(framePoses, g.root)),
+      loop
+    );
+    if (lag2 >= 0.5 && lag2 <= 10 && strength >= 0.5) {
+      g.role = "follow";
+      g.lagFrames = +lag2.toFixed(2);
+      anchorOf.set(g.root, p);
+    }
+  }
+  const groupFrames = /* @__PURE__ */ new Map();
+  for (const g of groups)
+    for (const b of g.ids) groupFrames.set(b, g.role === "main" ? g.frames : [...turns.get(b)]);
+  const mainRoot = groups.filter((g) => g.role === "main").sort((a, b) => depth(inf, a.root) - depth(inf, b.root) || b.ids.length - a.ids.length)[0];
+  const contacts = findContacts(framePoses, size);
+  const nodes = poseNodes(
+    mainRoot ? worldY(framePoses, mainRoot.root) : [],
+    contacts,
+    frameCount,
+    loop,
+    limits.maxError
+  );
+  if (mainRoot) {
+    const g = groupFrames.get(mainRoot.root);
+    for (const n of nodes) if (!g.includes(n.frame)) g.push(n.frame);
+    for (const b of mainRoot.ids) groupFrames.set(b, g);
+  }
+  for (const w of work) {
+    const tl = w.tl;
+    if (!inScope(tl)) {
+      [w.status, w.reason] = ["skipped", "outside the requested scope"];
+      continue;
+    }
+    if (locks.some(
+      (l) => l.time === void 0 && (l.timeline === void 0 || l.timeline === tl.id || l.timeline === tl.owner)
+    )) {
+      [w.status, w.reason] = ["locked", "locked by the request"];
+      continue;
+    }
+    if (tl.times.length < 2) continue;
+    if (tl.values.every((v) => same2(v, tl.values[0]))) {
+      w.keys = [{ ...keyFromOriginal(tl, 0), verbatim: false, curve: void 0 }];
+      w.status = tl.times.length > 1 ? "constant" : "unchanged";
+      if (tl.times.length > 1) w.reason = "constant: one key keeps the value for mixing";
+      continue;
+    }
+    if (tl.times.length <= 2) continue;
+    if (tl.kind === "deform") {
+      const { frames, v } = frameValues(tl, fps, tl.times[0], tl.times.at(-1));
+      const shapes = turningFrames(
+        frames,
+        v,
+        w.tol.map((x) => x / limits.localShare),
+        true
+      ).map((f) => snap(tl, f / fps, fps, mode)).filter((t) => t !== void 0);
+      reduceRefine(w, shapes, fps, mode === "posable");
+    } else if (mode === "fidelity") reduceSubset(w);
+    else {
+      const b = tl.kind === "bone" ? boneIndex.get(tl.owner) : void 0;
+      let frames;
+      if (b !== void 0 && groupFrames.has(b)) frames = groupFrames.get(b);
+      else {
+        const fv = frameValues(tl, fps, tl.times[0], tl.times.at(-1));
+        frames = turningFrames(
+          fv.frames,
+          fv.v,
+          w.tol.map((x) => x / limits.localShare),
+          false
+        );
+      }
+      reduceRefine(
+        w,
+        frames.map((f) => snap(tl, f / fps, fps, mode)).filter((t) => t !== void 0),
+        fps,
+        true
+      );
+    }
+    w.status = w.keys.length < tl.times.length ? "reduced" : "unchanged";
+    if (w.status === "unchanged")
+      w.keys = tl.times.map((_, i) => ({ ...keyFromOriginal(tl, i), verbatim: true }));
+  }
+  const insertions = [];
+  const fallbacks = [];
+  const maxInsertions = options.maxInsertions ?? 400;
+  const candidate = () => {
+    const doc = structuredClone(original);
+    const anims = doc.animations;
+    for (const n of Object.keys(anims)) if (n !== name) delete anims[n];
+    const anim2 = anims[name];
+    for (const w of work)
+      if (w.status === "reduced" || w.status === "constant")
+        setTimelineKeys(anim2, w.tl, writeKeys(original, w.tl, w.keys));
+    keepDuration(original, anim2, work, duration);
+    return doc;
+  };
+  let check;
+  let candPoses = [];
+  let checkTimesNow = [...times];
+  let origNow = origPoses;
+  let dirty = null;
+  let adaptive = 0;
+  const exhausted = /* @__PURE__ */ new Set();
+  for (let round3 = 0; round3 < maxInsertions * 2 + 200; round3++) {
+    const sk = loadSkeleton(candidate());
+    candPoses = checkTimesNow.map(
+      (t2, i) => !dirty || !candPoses[i] || t2 >= dirty[0] - 1e-6 && t2 <= dirty[1] + 1e-6 ? samplePose(sk, name, t2) : candPoses[i]
+    );
+    check = summarize(origNow.map((p, i) => poseDifference(p, candPoses[i])));
+    const passing = check.max <= limits.maxError && check.rms <= limits.rmsError;
+    if (passing) {
+      const added = [];
+      for (let i = 0; i < checkTimesNow.length - 1; i++) {
+        const a = check.diffs[i].max, b = check.diffs[i + 1].max;
+        if (Math.max(a, b) > limits.maxError * 0.5 && checkTimesNow[i + 1] - checkTimesNow[i] > 1e-4) {
+          const t0 = checkTimesNow[i], t1 = checkTimesNow[i + 1];
+          added.push(t0 + (t1 - t0) / 4, t0 + (t1 - t0) / 2, t0 + (t1 - t0) * 3 / 4);
+        }
+      }
+      if (!added.length || adaptive > 2) break;
+      adaptive++;
+      const merged = [.../* @__PURE__ */ new Set([...checkTimesNow, ...added.map((t2) => +t2.toFixed(7))])].sort(
+        (a, b) => a - b
+      );
+      const oldIndex = new Map(checkTimesNow.map((t2, i) => [t2, i]));
+      origNow = merged.map(
+        (t2) => oldIndex.has(t2) ? origNow[oldIndex.get(t2)] : samplePose(sk0, name, t2)
+      );
+      candPoses = merged.map(
+        (t2) => oldIndex.has(t2) ? candPoses[oldIndex.get(t2)] : samplePose(sk, name, t2)
+      );
+      checkTimesNow = merged;
+      dirty = [Infinity, -Infinity];
+      continue;
+    }
+    let si = check.worst;
+    if (check.max <= limits.maxError) {
+      let best = -1;
+      check.diffs.forEach((d2, i) => {
+        const r = d2.count ? d2.sumSq / d2.count : 0;
+        if (r > best) [best, si] = [r, i];
+      });
+    }
+    const d = check.diffs[si];
+    const t = checkTimesNow[si];
+    const slot = d.stateMismatches.length ? d.stateMismatches[0] : d.slot;
+    const affects = (w) => {
+      if (w.status === "skipped" || w.status === "locked" || w.status === "restored") return false;
+      if (slot < 0) return true;
+      const bones = inf.slotBones[slot];
+      if (w.tl.kind === "bone") return bones.has(boneIndex.get(w.tl.owner) ?? -1);
+      if (w.tl.kind === "deform") return slotIndex.get(w.tl.owner) === slot;
+      if (w.tl.kind === "slot")
+        return slotIndex.get(w.tl.owner) === slot && d.stateMismatches.includes(slot);
+      const c = inf.constraints.get(w.tl.owner);
+      return !!c && c.bones.some((b) => bones.has(b));
+    };
+    const pick = work.filter((w) => affects(w) && w.keys.length >= 2 && w.keys.length < w.tl.times.length + 64).map((w) => {
+      const played = timelineValue(
+        w.keys.map((k) => k.time),
+        w.keys.map((k) => k.values),
+        w.keys.slice(0, -1).map((k) => k.curve ?? []),
+        w.tl.shared,
+        t
+      );
+      const target = valueAt(w.tl, t);
+      const err = w.tl.shared ? Math.sqrt(played.reduce((s2, v, j) => s2 + (v - target[j]) ** 2, 0)) : Math.max(...played.map((v, j) => Math.abs(v - target[j])));
+      const seg = Math.max(
+        0,
+        w.keys.findIndex((k, i) => i < w.keys.length - 1 && w.keys[i + 1].time > t)
+      );
+      return { w, err: err * (w.lever || 1), seg };
+    }).filter((x) => x.err > 1e-6 && !exhausted.has(`${x.w.tl.id}@${x.seg}`)).sort((a, b) => b.err - a.err);
+    let placed = false;
+    if (insertions.length < maxInsertions)
+      for (const { w, seg } of pick) {
+        const at2 = insertionTime(w, seg, fps, mode === "posable", t);
+        if (at2 === void 0) {
+          exhausted.add(`${w.tl.id}@${seg}`);
+          continue;
+        }
+        const a = w.keys[seg], b = w.keys[seg + 1];
+        w.keys.splice(seg + 1, 0, keyAt(w.tl, at2));
+        refit(w);
+        w.inserted++;
+        insertions.push({ timeline: w.tl.id, time: +at2.toFixed(4), slot: inf.slots[slot] ?? "" });
+        dirty = [a.time, b.time];
+        placed = true;
+        break;
+      }
+    if (placed) continue;
+    const back = work.filter(
+      (w) => affects(w) && (w.status === "reduced" || w.status === "constant" || w.inserted)
+    );
+    if (back.length) {
+      for (const w of back) {
+        w.keys = w.tl.times.map((_, i) => ({ ...keyFromOriginal(w.tl, i), verbatim: true }));
+        w.status = "restored";
+        w.reason = `restored: ${inf.slots[slot] ?? "a part"} was off by ${d.max.toFixed(3)} px at ${t.toFixed(4)} s`;
+      }
+      fallbacks.push(
+        `${back.length} timeline(s) behind ${inf.slots[slot] ?? "the worst part"} restored to the original keys (${d.max.toFixed(3)} px at ${t.toFixed(4)} s)`
+      );
+      dirty = [-Infinity, Infinity];
+      continue;
+    }
+    for (const w of work) {
+      w.keys = w.tl.times.map((_, i) => ({ ...keyFromOriginal(w.tl, i), verbatim: true }));
+      if (w.status !== "skipped" && w.status !== "locked") w.status = "restored";
+    }
+    fallbacks.push(
+      `whole animation restored: ${d.max.toFixed(3)} px at ${t.toFixed(4)} s could not be closed`
+    );
+    dirty = [-Infinity, Infinity];
+  }
+  const anim = out.animations[name];
+  for (const w of work)
+    if (w.status === "reduced" || w.status === "constant")
+      setTimelineKeys(anim, w.tl, writeKeys(original, w.tl, w.keys));
+  keepDuration(original, anim, work, duration);
+  const reducedFrames = frameIndex.map(
+    (i) => candPoses[checkTimesNow.indexOf(times[i])] ?? candPoses[i]
+  );
+  const worst = check.diffs[check.worst];
+  const byKind = {};
+  for (const w of work) {
+    const k = byKind[w.tl.kind] ??= { before: 0, after: 0 };
+    k.before += w.tl.times.length;
+    k.after += w.keys.length;
+  }
+  const follow = groups.filter((g) => g.role === "follow").map((g) => {
+    const b = g.root, p = anchorOf.get(b);
+    const so = unwrap(worldRot(framePoses, b)), sr = unwrap(worldRot(reducedFrames, b));
+    const prom = limits.maxError / leverOf(b) * (180 / Math.PI);
+    const po = peaks(so, 1, prom), pr = peaks(sr, 1, prom);
+    const maxShift = po.length === pr.length ? po.reduce((m, x, i) => Math.max(m, Math.abs(x - pr[i])), 0) : null;
+    return {
+      bone: inf.bones[b],
+      peaksOriginal: po.map((x) => +x.toFixed(2)),
+      peaksReduced: pr.map((x) => +x.toFixed(2)),
+      maxShift: maxShift === null ? null : +maxShift.toFixed(3),
+      lagOriginal: +lagStrength(unwrap(worldRot(framePoses, p)), so, loop).lag.toFixed(3),
+      lagReduced: +lagStrength(unwrap(worldRot(reducedFrames, p)), sr, loop).lag.toFixed(3)
+    };
+  });
+  const contactChecks = contacts.map((c) => {
+    let slide = 0, slideOriginal = 0;
+    for (const [si, k] of c.vertices) {
+      const o0 = framePoses[c.from].verts[si], r0 = reducedFrames[c.from].verts[si];
+      for (let f = c.from; f <= c.to; f++) {
+        const o = framePoses[f].verts[si], r = reducedFrames[f].verts[si];
+        if (!o || !r || !o0 || !r0) continue;
+        slideOriginal = Math.max(slideOriginal, Math.hypot(o[k] - o0[k], o[k + 1] - o0[k + 1]));
+        slide = Math.max(slide, Math.hypot(r[k] - r0[k], r[k + 1] - r0[k + 1]));
+      }
+    }
+    return {
+      slots: [...new Set(c.vertices.map(([si]) => inf.slots[si]))],
+      from: c.from,
+      to: c.to,
+      slide: +slide.toFixed(3),
+      slideOriginal: +slideOriginal.toFixed(3)
+    };
+  });
+  let seam = null;
+  if (loop && checkTimesNow.length > 2) {
+    const h = 1 / (fps * substeps);
+    const at2 = (t, sk) => samplePose(sk, name, t);
+    const skR = loadSkeleton(candidate());
+    const velJump = (sk) => {
+      const s0 = at2(0, sk), s1 = at2(h, sk), e0 = at2(Math.max(0, duration - h - 1e-5), sk), e1 = at2(Math.max(0, duration - 1e-5), sk);
+      let worst2 = 0;
+      s0.verts.forEach((v, si) => {
+        const a = s1.verts[si], b = e0.verts[si], c = e1.verts[si];
+        if (!v || !a || !b || !c) return;
+        for (let k = 0; k + 1 < v.length; k += 2) {
+          const vs = [(a[k] - v[k]) / h, (a[k + 1] - v[k + 1]) / h], ve = [(c[k] - b[k]) / h, (c[k + 1] - b[k + 1]) / h];
+          worst2 = Math.max(worst2, Math.hypot(vs[0] - ve[0], vs[1] - ve[1]) / fps);
+        }
+      });
+      return worst2;
+    };
+    seam = {
+      poseOriginal: +poseDifference(origPoses[0], origPoses.at(-1)).max.toFixed(4),
+      poseReduced: +poseDifference(candPoses[0], candPoses.at(-1)).max.toFixed(4),
+      velocityJumpOriginal: +velJump(sk0).toFixed(4),
+      velocityJumpReduced: +velJump(skR).toFixed(4)
+    };
+  }
+  const durationAfter = readTimelines(out, name).duration;
+  const nodeErrors = nodes.map((n) => ({
+    ...n,
+    time: +(n.frame / fps).toFixed(4),
+    error: +(check.diffs[checkTimesNow.indexOf(times[frameIndex[n.frame] ?? 0])]?.max ?? 0).toFixed(4)
+  }));
+  const pass = check.max <= limits.maxError && check.rms <= limits.rmsError && check.diffs.every((x) => !x.stateMismatches.length && !x.orderMismatch) && Math.abs(durationAfter - duration) < 1e-6;
+  if (mode === "posable" && !mainRoot)
+    notes.push("no group of bones turns together: every bone keyed on its own turning frames");
+  return {
+    name,
+    mode,
+    fps,
+    duration: { before: duration, after: durationAfter },
+    loop,
+    keys: {
+      before: work.reduce((s2, w) => s2 + w.tl.times.length, 0),
+      after: work.reduce((s2, w) => s2 + w.keys.length, 0),
+      byKind,
+      removedConstant: work.filter((w) => w.status === "constant").reduce((s2, w) => s2 + w.tl.times.length - w.keys.length, 0),
+      removedMotion: work.filter((w) => w.status === "reduced").reduce((s2, w) => s2 + w.tl.times.length - w.keys.length, 0)
+    },
+    timelines: work.map((w) => ({
+      id: w.tl.id,
+      kind: w.tl.kind,
+      before: w.tl.times.length,
+      after: w.keys.length,
+      status: w.status,
+      tolerance: +Math.min(...w.tol).toPrecision(4),
+      unit: unitOf(w.tl),
+      inserted: w.inserted,
+      channelError: +w.channelError.toPrecision(4),
+      ...w.reason ? { reason: w.reason } : {}
+    })),
+    limits: { maxError: limits.maxError, rmsError: limits.rmsError, unit: "px" },
+    world: {
+      max: +check.max.toFixed(4),
+      rms: +check.rms.toFixed(4),
+      worstTime: +checkTimesNow[check.worst].toFixed(4),
+      worstFrame: +(checkTimesNow[check.worst] * fps).toFixed(2),
+      worstSlot: worst.slot >= 0 ? inf.slots[worst.slot] : null,
+      worstAttachment: worst.slot >= 0 ? origNow[check.worst].atts[worst.slot] ?? null : null,
+      worstSampleRms: +Math.max(
+        ...check.diffs.map((x) => x.count ? Math.sqrt(x.sumSq / x.count) : 0)
+      ).toFixed(4),
+      samples: checkTimesNow.length,
+      adaptiveSamples: checkTimesNow.length - times.length
+    },
+    pass,
+    discrete: {
+      stateMismatches: check.diffs.filter((x) => x.stateMismatches.length).length,
+      orderMismatches: check.diffs.filter((x) => x.orderMismatch).length,
+      events: "unchanged",
+      attachmentKeys: "unchanged"
+    },
+    poses: nodeErrors,
+    groups: groups.map(({ bones, role, frames, lagFrames }) => ({
+      bones,
+      role,
+      frames,
+      ...lagFrames !== void 0 ? { lagFrames } : {}
+    })),
+    follow,
+    contacts: contactChecks,
+    seam,
+    insertions,
+    fallbacks,
+    notes
+  };
+}
+function depth(inf, b) {
+  let d = 0;
+  for (let p = inf.parent[b]; p >= 0; p = inf.parent[p]) d++;
+  return d;
+}
+function snap(tl, t, fps, mode) {
+  const near = tl.times.reduce(
+    (best, x) => best === void 0 || Math.abs(x - t) < Math.abs(best - t) ? x : best,
+    void 0
+  );
+  if (near !== void 0 && Math.abs(near - t) <= 1 / fps + EPS2) return near;
+  return mode === "fidelity" ? void 0 : Math.round(t * fps) / fps;
+}
+function worldY(poses, b) {
+  return poses.map((p) => p.bones[b * 4 + 1]);
+}
+function findContacts(poses, size) {
+  if (poses.length < 3) return [];
+  let ground = Infinity;
+  for (const p of poses)
+    p.verts.forEach((v, si) => {
+      if (!v || p.alpha[si] <= 2e-3) return;
+      for (let k = 1; k < v.length; k += 2) ground = Math.min(ground, v[k]);
+    });
+  const band = size * 0.01, still = size * 2e-3;
+  const touching = (f) => {
+    const out = [];
+    const p = poses[f], q = poses[Math.min(poses.length - 1, f + 1)];
+    p.verts.forEach((v, si) => {
+      const w = q.verts[si];
+      if (!v || !w || p.alpha[si] <= 2e-3) return;
+      for (let k = 0; k + 1 < v.length; k += 2)
+        if (v[k + 1] - ground <= band && Math.hypot(w[k] - v[k], w[k + 1] - v[k + 1]) <= still)
+          out.push([si, k]);
+    });
+    return out;
+  };
+  const runs = [];
+  let cur = null;
+  for (let f = 0; f < poses.length; f++) {
+    const t = touching(f);
+    if (t.length) {
+      if (!cur) cur = { from: f, to: f, vertices: t };
+      else cur.to = f;
+    } else if (cur) {
+      if (cur.to > cur.from) runs.push(cur);
+      cur = null;
+    }
+  }
+  if (cur && cur.to > cur.from) runs.push(cur);
+  return runs;
+}
+function poseNodes(y, contacts, frames, loop, prominence) {
+  const out = [];
+  if (!y.length) return out;
+  const turns = peaks(y, 1, prominence).map((f) => Math.round(f));
+  const airborne = (f) => contacts.length > 0 && !contacts.some((c) => f >= c.from && f <= c.to);
+  const add = (label, frame2) => {
+    if (frame2 < 0 || frame2 > frames || out.some((n) => n.frame === frame2)) return;
+    out.push({ label, frame: frame2, time: 0 });
+  };
+  if (!loop) add("start", 0);
+  turns.forEach((f, i) => {
+    const high = y[f] >= y[Math.max(0, f - 1)] && y[f] >= y[Math.min(y.length - 1, f + 1)];
+    if (loop) return add(high ? airborne(f) ? "airborne high" : "high" : "low", f);
+    const rising = turns.some((g) => g > f && y[g] > y[f]);
+    add(
+      high ? airborne(f) ? "apex" : "high" : i === 0 && rising ? "anticipation / compression" : rising ? "low" : "cushion",
+      f
+    );
+  });
+  const v = (j) => j >= 1 && j < y.length - 1 ? (y[j + 1] - y[j - 1]) / 2 : 0;
+  for (let i = 1; i < y.length - 1; i++)
+    if (v(i) > prominence && v(i) >= v(i - 1) && v(i) > v(i + 1)) add("launch", i);
+  for (const c of contacts) {
+    if (c.from > 0) add(loop ? "contact (support)" : "landing", c.from);
+    if (c.to < frames) add(loop ? "passing / exchange" : "takeoff", c.to);
+  }
+  if (!loop) add("end / recovery", frames);
+  return out.sort((a, b) => a.frame - b.frame);
+}
+function keepDuration(doc, anim, work, duration) {
+  const last = Math.max(0, ...work.map((w2) => w2.keys.at(-1).time));
+  if (last >= duration - 1e-6) return;
+  const w = work.find((x) => x.tl.times.at(-1) >= duration - 1e-6);
+  if (!w) return;
+  const end = keyFromOriginal(w.tl, w.tl.times.length - 1);
+  if (w.keys.length === 1) w.keys[0].curve = w.tl.values[0].map(() => "linear");
+  w.keys.push(end);
+  setTimelineKeys(anim, w.tl, writeKeys(doc, w.tl, w.keys));
+}
+function comparePlayback(a, b, options = {}) {
+  const fps = options.fps ?? (typeof a.skeleton?.fps === "number" ? a.skeleton.fps : 30);
+  const skA = loadSkeleton(a), skB = loadSkeleton(b);
+  const inf = influence(a);
+  return Object.keys(a.animations ?? {}).filter((n) => !options.animations || options.animations.includes(n)).map((n) => {
+    const ta = readTimelines(a, n);
+    const db = b.animations[n] ? readTimelines(b, n).duration : NaN;
+    if (Number.isNaN(db))
+      return {
+        animation: n,
+        max: Infinity,
+        rms: Infinity,
+        worstTime: 0,
+        worstSlot: null,
+        stateMismatches: 0,
+        orderMismatches: 0,
+        duration: [ta.duration, NaN],
+        samples: 0
+      };
+    const tb = readTimelines(b, n);
+    const times = checkTimes(
+      { curves: [...ta.curves, ...tb.curves], discrete: [...ta.discrete, ...tb.discrete] },
+      Math.max(ta.duration, db),
+      fps,
+      options.substeps ?? 4
+    );
+    const c = summarize(
+      times.map((t) => poseDifference(samplePose(skA, n, t), samplePose(skB, n, t)))
+    );
+    const w = c.diffs[c.worst];
+    return {
+      animation: n,
+      max: +c.max.toFixed(4),
+      rms: +c.rms.toFixed(4),
+      worstTime: +times[c.worst].toFixed(4),
+      worstSlot: w.slot >= 0 ? inf.slots[w.slot] : null,
+      stateMismatches: c.diffs.filter((x) => x.stateMismatches.length).length,
+      orderMismatches: c.diffs.filter((x) => x.orderMismatch).length,
+      duration: [ta.duration, db],
+      samples: times.length
+    };
+  });
+}
+
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash3("sha256").update(data).digest("hex");
 var json = (v) => `${JSON.stringify(v, null, 1)}
@@ -39012,7 +40870,12 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
     if (w < worst)
       [bend, document2, worst] = [flipped, doc, w];
   }
+  const reduction = plan.motion.keyReduction ? reduceSpineKeys(document2, plan.motion.keyReduction) : void 0;
+  if (reduction)
+    document2 = reduction.document;
   await newDirectory(outDir);
+  if (reduction)
+    await writeFile2(join2(outDir, "key-reduction.json"), json(reduction.report));
   const name = `${plan.id}.json`;
   await writeFile2(join2(outDir, name), `${JSON.stringify(document2, null, 1)}
 `);
@@ -39048,6 +40911,13 @@ async function buildCharacterFiles(planPath, outDir, paramsPath) {
     bones: built.rigging.rigged.rig.bones.length,
     slots: built.rigging.slots.length,
     setupDeviationPx: record.setupDeviationPx,
+    ...reduction ? {
+      keyReduction: {
+        mode: reduction.report.mode,
+        keys: reduction.report.keys,
+        pass: reduction.report.pass
+      }
+    } : {},
     seams: built.seams.length,
     bend: record.bend
   };
@@ -39410,6 +41280,36 @@ async function reviewVideoFiles(planPath, buildDir, artistPath, outPath, opts = 
   };
 }
 var safeFileName = (name) => [...name].map((c) => /[\\/:*?"<>|]/.test(c) || c.charCodeAt(0) < 32 ? "_" : c).join("").trim() || "character";
+function spineExecutable(explicit) {
+  if (explicit) {
+    if (!existsSync2(explicit))
+      throw new Error(`CLI_SPINE: ${explicit} not found`);
+    return explicit;
+  }
+  const candidates = [
+    process.env.AUTOSPINE_SPINE,
+    process.platform === "win32" ? "C:\\Program Files\\Spine\\Spine.com" : void 0,
+    process.platform === "darwin" ? "/Applications/Spine.app/Contents/MacOS/Spine" : void 0
+  ];
+  return candidates.find((c) => !!c && existsSync2(c));
+}
+function runSpine(exe, args) {
+  return new Promise((ok) => {
+    let output = "";
+    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"] });
+    const timer = setTimeout(() => child.kill(), 10 * 6e4);
+    child.stdout.on("data", (d) => output += d.toString());
+    child.stderr.on("data", (d) => output += d.toString());
+    child.on("error", (e) => {
+      clearTimeout(timer);
+      ok({ code: -1, output: e.message });
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      ok({ code: code ?? -1, output });
+    });
+  });
+}
 async function videoSize(path) {
   if (!existsSync2(path))
     throw new Error(`CLI_VIDEO: ${path} not found`);
@@ -39696,9 +41596,9 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
       pose(sk, animation, frameTime(f, N, D, fps));
       const canvas = render(sk, texture, view, owner);
       const build = f === 0 ? build0 : { width: W, height: H, rgb: flatten2(canvas, W, H, bgUnit) };
-      const rm2 = foregroundMask(ref, bg), bm = alphaMask(canvas);
-      ious.push(iou(rm2, bm));
-      const a = maskStats(rm2, W, H), b = maskStats(bm, W, H);
+      const rm3 = foregroundMask(ref, bg), bm = alphaMask(canvas);
+      ious.push(iou(rm3, bm));
+      const a = maskStats(rm3, W, H), b = maskStats(bm, W, H);
       refC.push([a.cx, a.cy]);
       buildC.push([b.cx, b.cy]);
       const gr = f === 0 ? gRef0 : halfGray(ref), gb = f === 0 ? gBuild0 : halfGray(build);
@@ -40320,10 +42220,10 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   for (let k = 1; k <= rounds; k++) {
     const began = Date.now(), dir = join2(out, `round-${k}`);
     await mkdir2(dir);
-    let refit = 0, accepted = 0;
+    let refit2 = 0, accepted = 0;
     const waveChanges = [], freed = [];
     if (k === 1) {
-      refit = fitted.size;
+      refit2 = fitted.size;
       accepted = [...fitted.values()].filter((x) => x.accepted).length;
       skip = new Set(unfitted().keys());
     } else {
@@ -40369,13 +42269,13 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
         if (f === 0 && zero)
           continue;
         const fit = await fitFrame(roundDoc, f, options, zeroPlacements);
-        refit++;
+        refit2++;
         if (fit.accepted) {
           accepted++;
           record(f, fit, at2);
         }
       }
-      if (!refit && !waveChanges.length) {
+      if (!refit2 && !waveChanges.length) {
         log(`round ${k}: nothing left to refit`);
         await rm(dir, { recursive: true, force: true });
         break;
@@ -40412,7 +42312,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       rows: c.rows,
       ...c.wholeRows ? { wholeRows: c.wholeRows } : {},
       hints: c.hints,
-      fitted: refit,
+      fitted: refit2,
       accepted,
       keys: shaped.keys,
       waves: waveChanges,
@@ -40550,20 +42450,544 @@ function videoHints(rows, ious, figure, parts, count, fps, mirrored = []) {
   return hints;
 }
 
+// packages/cli/dist/keys.js
+import { spawn as spawn2 } from "node:child_process";
+import { existsSync as existsSync3, readFileSync as readFileSync3 } from "node:fs";
+import { copyFile as copyFile2, mkdir as mkdir3, readFile as readFile4, readdir as readdir3, rm as rm2, writeFile as writeFile3 } from "node:fs/promises";
+import { basename as basename4, dirname as dirname4, extname as extname2, join as join3, resolve as resolve4 } from "node:path";
+var MODE_NAMES = {
+  fidelity: "\u4FDD\u771F\u7CBE\u7C21",
+  posable: "\u53EF\u7DE8\u4FEE\u59FF\u52E2"
+};
+var EXPORT_SETTINGS = {
+  class: "export-json",
+  extension: ".json",
+  format: "JSON",
+  prettyPrint: true,
+  nonessential: true,
+  cleanUp: false,
+  packAtlas: null,
+  warnings: true
+};
+async function exportProject(exe, version, project2, outDir) {
+  await mkdir3(outDir, { recursive: true });
+  const settings = join3(outDir, ".autospine-export.json");
+  await writeFile3(settings, JSON.stringify(EXPORT_SETTINGS));
+  try {
+    const run = await runSpine(exe, ["-u", version, "-i", project2, "-o", outDir, "-e", settings]);
+    const files = (await readdir3(outDir)).filter((f) => f.endsWith(".json") && !f.startsWith("."));
+    if (run.code !== 0 || files.length !== 1)
+      throw new Error(`CLI_SPINE: export of ${project2} failed (${run.code}): ${run.output.trim().slice(-600)}`);
+    return { json: join3(outDir, files[0]), log: run.output.trim() };
+  } finally {
+    await rm2(settings, { force: true });
+  }
+}
+async function importProject(exe, version, jsonPath, project2, name) {
+  const run = await runSpine(exe, ["-u", version, "-i", jsonPath, "-o", project2, "-r", name]);
+  if (run.code !== 0 || !existsSync3(project2))
+    throw new Error(`CLI_SPINE: import of ${jsonPath} failed (${run.code}): ${run.output.trim().slice(-600)}`);
+  return run.output.trim();
+}
+function documentFeatures(doc) {
+  const anims = doc.animations ?? {};
+  const kinds = /* @__PURE__ */ new Map();
+  const add = (k, n) => kinds.set(k, (kinds.get(k) ?? 0) + n);
+  let stepped = 0, bezier2 = 0, linear = 0, subFrame = 0, multiTurn = 0;
+  const fps = typeof doc.skeleton?.fps === "number" ? doc.skeleton.fps : 30;
+  const walk = (keys) => {
+    for (const k of keys) {
+      if (k.curve === "stepped")
+        stepped++;
+      else if (Array.isArray(k.curve))
+        bezier2++;
+      else
+        linear++;
+      const f = (k.time ?? 0) * fps;
+      if (Math.abs(f - Math.round(f)) > 0.02)
+        subFrame++;
+    }
+  };
+  for (const a of Object.values(anims)) {
+    for (const b of Object.values(a.bones ?? {}))
+      for (const [p, keys] of Object.entries(b)) {
+        add(`bone ${p}`, keys.length);
+        walk(keys);
+        if (p === "rotate") {
+          const v = keys.map((k) => k.value ?? 0);
+          if (Math.max(...v) - Math.min(...v) > 360)
+            multiTurn++;
+        }
+      }
+    for (const s2 of Object.values(a.slots ?? {}))
+      for (const [p, keys] of Object.entries(s2)) {
+        add(`slot ${p}`, keys.length);
+        if (p !== "attachment")
+          walk(keys);
+      }
+    for (const [k, label] of [
+      ["ik", "ik"],
+      ["transform", "transform"]
+    ])
+      for (const keys of Object.values(a[k] ?? {})) {
+        add(label, keys.length);
+        walk(keys);
+      }
+    for (const p of Object.values(a.path ?? {}))
+      for (const [q, keys] of Object.entries(p)) {
+        add(`path ${q}`, keys.length);
+        walk(keys);
+      }
+    for (const sk of Object.values(a.deform ?? {}))
+      for (const sl of Object.values(sk))
+        for (const keys of Object.values(sl)) {
+          add("deform", keys.length);
+          walk(keys);
+        }
+    if (a.drawOrder)
+      add("drawOrder", a.drawOrder.length);
+    if (a.events)
+      add("events", a.events.length);
+  }
+  let regions = 0, meshes = 0, weighted = 0, linked = 0, clipping2 = 0, other = 0;
+  for (const skin of doc.skins ?? [])
+    for (const atts of Object.values(skin.attachments ?? {}))
+      for (const att of Object.values(atts)) {
+        const t = att.type ?? "region";
+        if (t === "region")
+          regions++;
+        else if (t === "mesh") {
+          meshes++;
+          if (att.vertices.length !== att.uvs.length)
+            weighted++;
+        } else if (t === "linkedmesh")
+          linked++;
+        else if (t === "clipping")
+          clipping2++;
+        else
+          other++;
+      }
+  return {
+    spine: String(doc.skeleton?.spine ?? "unknown"),
+    fps,
+    bones: doc.bones.length,
+    slots: doc.slots.length,
+    ik: (doc.ik ?? []).length,
+    transform: (doc.transform ?? []).length,
+    path: (doc.path ?? []).length,
+    attachments: { regions, meshes, weighted, linked, clipping: clipping2, other },
+    animations: Object.keys(anims).map((n) => ({
+      name: n,
+      duration: readTimelines(doc, n).duration
+    })),
+    keys: Object.fromEntries([...kinds.entries()].sort()),
+    curves: { stepped, bezier: bezier2, linear, subFrame, multiTurn }
+  };
+}
+async function reduceKeysFiles(inputPath, outDir, opts = {}) {
+  const input = resolve4(inputPath), out = resolve4(outDir);
+  const before = sha256(await readFile4(input));
+  await newDirectory(out);
+  const isProject = extname2(input).toLowerCase() === ".spine";
+  const exe = opts.spine === false ? void 0 : spineExecutable(opts.spine || void 0);
+  if (isProject && !exe)
+    throw new Error("CLI_SPINE: a .spine input needs the Spine editor (--spine=exe or AUTOSPINE_SPINE)");
+  const version = opts.spineVersion ?? "4.0.64";
+  const notes = [];
+  let sourceJson;
+  if (isProject) {
+    const exported = await exportProject(exe, version, input, join3(out, "source"));
+    sourceJson = exported.json;
+    const lines = exported.log.split(/\r?\n/);
+    for (const l of lines.filter((x) => /not exported/i.test(x)))
+      notes.push(`Spine \u532F\u51FA\u672A\u5305\u542B\uFF08\u539F\u5C08\u6848\u8A2D\u5B9A\uFF0C\u4EFB\u4F55 JSON \u8DEF\u5F91\u90FD\u7121\u6CD5\u4FDD\u7559\uFF09\uFF1A${l.trim()}`);
+    const missing = lines.filter((x) => /is not in skeleton/i.test(x)).length;
+    if (missing)
+      notes.push(`Spine \u532F\u51FA\u6642\u5217\u51FA ${missing} \u5247\u300CBone is not in skeleton\u300D\u8B66\u544A\uFF08\u539F\u5C08\u6848\u72C0\u614B\uFF0C\u8207 Key \u7CBE\u7C21\u7121\u95DC\uFF09\u3002`);
+  } else {
+    await mkdir3(join3(out, "source"), { recursive: true });
+    sourceJson = join3(out, "source", basename4(input));
+    await copyFile2(input, sourceJson);
+  }
+  const source = JSON.parse(await readFile4(sourceJson, "utf8"));
+  const name = basename4(sourceJson, ".json");
+  const spineVersion = String(source.skeleton?.spine ?? "");
+  if (!spineVersion.startsWith("4.0"))
+    throw new Error(`CLI_KEYS_VERSION: the source is Spine ${spineVersion || "unknown"}; key reduction reads Spine 4.0 data`);
+  let baseline;
+  if (opts.baseline) {
+    const b = resolve4(opts.baseline);
+    const path = extname2(b).toLowerCase() === ".spine" ? exe ? (await exportProject(exe, version, b, join3(out, "baseline"))).json : void 0 : b;
+    if (!path)
+      throw new Error("CLI_SPINE: a .spine baseline needs the Spine editor");
+    baseline = JSON.parse(await readFile4(path, "utf8"));
+  }
+  const features = documentFeatures(source);
+  const modes = opts.modes ?? ["fidelity", "posable"];
+  const runs = [];
+  const roundTrips = /* @__PURE__ */ new Map();
+  const { modes: _m, limits, baseline: _b, spine: _s, spineVersion: _v, images: _i, video: _vi, font: _f, height: _h, ...engine } = opts;
+  void [_m, _b, _s, _v, _i, _vi, _f, _h];
+  for (const mode of modes) {
+    const dir = join3(out, mode);
+    await mkdir3(dir, { recursive: true });
+    const t0 = Date.now();
+    const { document: document2, report: report3 } = reduceSpineKeys(source, {
+      ...engine,
+      mode,
+      ...limits?.[mode]?.maxError !== void 0 ? { maxError: limits[mode].maxError } : {},
+      ...limits?.[mode]?.rmsError !== void 0 ? { rmsError: limits[mode].rmsError } : {},
+      ...baseline ? { baseline } : {}
+    });
+    const seconds = (Date.now() - t0) / 1e3;
+    const jsonPath = join3(dir, `${name}.json`);
+    await writeFile3(jsonPath, json(document2));
+    let spine = null, formal = null;
+    if (exe) {
+      spine = join3(dir, `${name}.spine`);
+      await importProject(exe, version, jsonPath, spine, name);
+      const back = JSON.parse(await readFile4((await exportProject(exe, version, spine, join3(dir, "roundtrip"))).json, "utf8"));
+      formal = {
+        vsReduced: comparePlayback(document2, back, { fps: report3.fps }),
+        vsSource: comparePlayback(source, back, { fps: report3.fps })
+      };
+      roundTrips.set(mode, back);
+    }
+    const setup = { json: setupOf(document2) === setupOf(source), editor: null };
+    await writeFile3(join3(dir, "key-report.json"), json({ ...report3, formal, setup }));
+    runs.push({ mode, json: jsonPath, spine, report: report3, formal, setup, seconds });
+  }
+  let sourceRoundTrip = null;
+  if (exe) {
+    const dir = join3(out, "roundtrip-source");
+    await mkdir3(dir, { recursive: true });
+    const project2 = join3(dir, `${name}.spine`);
+    await importProject(exe, version, sourceJson, project2, name);
+    const back = JSON.parse(await readFile4((await exportProject(exe, version, project2, join3(dir, "export"))).json, "utf8"));
+    sourceRoundTrip = comparePlayback(source, back);
+    for (const r of runs)
+      r.setup.editor = setupOf(roundTrips.get(r.mode)) === setupOf(back);
+  } else
+    notes.push("Spine \u7DE8\u8F2F\u5668\u4E0D\u53EF\u7528\uFF1A\u672A\u505A\u6B63\u5F0F\u532F\u5165\uFF0F\u532F\u51FA\u9A57\u8B49\u3002");
+  let preview = null;
+  if (opts.video !== false) {
+    const images = resolve4(opts.images ?? resolve4(dirname4(input), String(source.skeleton?.images ?? "./images/")));
+    try {
+      preview = join3(out, "preview.mp4");
+      await previewVideo([
+        { label: "\u539F\u59CB", doc: source },
+        ...runs.map((r) => ({ label: MODE_NAMES[r.mode], doc: readJsonSync(r) }))
+      ], images, preview, opts);
+    } catch (e) {
+      notes.push(`\u672A\u7522\u751F\u9810\u89BD\u5F71\u7247\uFF1A${e instanceof Error ? e.message : String(e)}`);
+      preview = null;
+    }
+  }
+  const after = sha256(await readFile4(input));
+  if (after !== before)
+    throw new Error(`CLI_KEYS_SOURCE: ${input} changed during the run`);
+  const summary = {
+    input,
+    sha256: before,
+    sourceUnchanged: true,
+    spine: exe ? version : null,
+    features,
+    runs: runs.map((r) => ({
+      mode: r.mode,
+      json: r.json,
+      spine: r.spine,
+      seconds: r.seconds,
+      keys: r.report.keys,
+      pass: r.report.pass,
+      limits: r.report.limits,
+      formal: r.formal,
+      setup: r.setup
+    })),
+    sourceRoundTrip,
+    preview,
+    notes
+  };
+  await writeFile3(join3(out, "summary.json"), json(summary));
+  await writeFile3(join3(out, "key-reduction-report.html"), reportHtml(summary, runs, source, out));
+  await writeFile3(join3(out, "key-reduction-report.md"), reportMarkdown(summary, runs));
+  return summary;
+}
+var setupOf = (d) => JSON.stringify(Object.entries(d).filter(([k]) => k !== "animations").map(([k, v]) => k === "skeleton" ? [k, { ...v, hash: void 0 }] : [k, v]));
+function coverage(f) {
+  const has = (k) => Object.keys(f.keys).some((x) => x.startsWith(k));
+  return [
+    ["Bezier \u66F2\u7DDA", f.curves.bezier > 0, "fidelity: refitted Beziers; runtime parity"],
+    ["stepped\uFF08\u542B\u8DF3\u8B8A\u8207\u505C\u9813\uFF09", f.curves.stepped > 0, "protects steps, swaps\u2026"],
+    ["\u6B21\u5E40 Key", f.curves.subFrame > 0, "posable: sub-frame turns keep their time"],
+    ["\u8D85\u904E\u4E00\u5708\u7684\u65CB\u8F49", f.curves.multiTurn > 0, "multi-turn and \xB1180\xB0"],
+    ["\u9AA8\u9ABC rotate/translate/scale/shear", has("bone"), "fidelity / posable / constant channels"],
+    ["\u52A0\u6B0A\u7DB2\u683C Deform", f.attachments.weighted > 0 && has("deform"), "deform: offsets and weights"],
+    ["\u975E\u52A0\u6B0A\u7DB2\u683C Deform", has("deform"), "deform: fold-back keeps a key"],
+    ["\u63DB\u5716\uFF08attachment\uFF09", has("slot attachment"), "protects steps, swaps\u2026"],
+    [
+      "\u984F\u8272\uFF08rgba\uFF09",
+      has("slot rgba") || has("slot rgb") || has("slot alpha"),
+      "protects steps\u2026 (slot rgba)"
+    ],
+    ["Draw order", has("drawOrder"), "protects steps, swaps, draw order"],
+    ["Events", has("events"), "protects \u2026 events"],
+    ["IK timeline\uFF08\u542B bend \u5207\u63DB\uFF09", has("ik"), "protects \u2026 IK bend switch"],
+    ["Transform timeline", has("transform"), "protects \u2026 (transform:tc)"],
+    ["Path timeline", has("path"), "protects \u2026 (path:pc/position)"],
+    ["IK\uFF0FTransform \u7D04\u675F\uFF08setup\uFF09", f.ik + f.transform > 0, "world check plays every constraint"],
+    ["\u8DDF\u96A8\u90E8\u4EF6\u5EF6\u9072", true, "posable: follow parts keep their lag"],
+    ["\u5FAA\u74B0\u63A5\u7E2B", true, "fidelity: seam unchanged"],
+    ["\u8AA4\u5DEE\u56DE\u9000", true, "falls back past the budget"],
+    ["\u91CD\u8907\u57F7\u884C\u4E0D\u7D2F\u7A4D", true, "deterministic; baseline"]
+  ];
+}
+var docs = /* @__PURE__ */ new Map();
+function readJsonSync(r) {
+  let doc = docs.get(r.json);
+  if (!doc)
+    docs.set(r.json, doc = JSON.parse(readFileSync3(r.json, "utf8")));
+  return doc;
+}
+async function previewVideo(sides, images, outPath, opts) {
+  if (!existsSync3(images))
+    throw new Error(`\u627E\u4E0D\u5230\u5716\u7247\u8CC7\u6599\u593E ${images}`);
+  const tex = textures(images);
+  const loaded = sides.map((s2) => loadSkeleton(s2.doc));
+  const animations = Object.keys(sides[0].doc.animations ?? {});
+  const bounds = animations.map((a) => {
+    let lx = Infinity, ly = Infinity, hx = -Infinity, hy = -Infinity;
+    const d = readTimelines(sides[0].doc, a).duration;
+    for (let k = 0; k <= 12; k++) {
+      const p = samplePose(loaded[0], a, Math.min(d - 1e-5, d * k / 12));
+      p.verts.forEach((v, si) => {
+        if (!v || p.alpha[si] <= 2e-3)
+          return;
+        for (let i = 0; i + 1 < v.length; i += 2) {
+          [lx, hx] = [Math.min(lx, v[i]), Math.max(hx, v[i])];
+          [ly, hy] = [Math.min(ly, v[i + 1]), Math.max(hy, v[i + 1])];
+        }
+      });
+    }
+    const pad = Math.max(hx - lx, hy - ly) * 0.04;
+    return { lx: lx - pad, ly: ly - pad, hx: hx + pad, hy: hy + pad };
+  });
+  const tileHeight = Math.round((opts.height ?? 480) / 2) * 2;
+  const aspect = Math.min(1.6, Math.max(0.5, ...bounds.map((b) => (b.hx - b.lx) / Math.max(1e-6, b.hy - b.ly))));
+  const tileWidth = Math.round(tileHeight * aspect / 2) * 2;
+  const reviews = animations.map((a, k) => {
+    const b = bounds[k];
+    const scale = Math.min(tileWidth / (b.hx - b.lx), tileHeight / (b.hy - b.ly));
+    const view2 = {
+      x0: (b.lx + b.hx) / 2 - tileWidth / 2 / scale,
+      y0: (b.ly + b.hy) / 2 + tileHeight / 2 / scale,
+      scale,
+      width: tileWidth,
+      height: tileHeight
+    };
+    return reviewFrames(loaded, tex.texture, view2, a);
+  });
+  const view = { width: tileWidth, height: tileHeight };
+  const head = 52;
+  const width = reviews[0].width;
+  const font = opts.font ?? (process.platform === "win32" ? "C:/Windows/Fonts/msjh.ttc" : void 0);
+  const labels = [];
+  const segName = { wireframe: "\u7DB2\u683C", bones: "\u9AA8\u67B6", motion: "\u52D5\u614B" };
+  let t0 = 0;
+  animations.forEach((a, k) => {
+    const r = reviews[k];
+    for (const s2 of ["wireframe", "bones", "motion"]) {
+      const from = t0 + r.segmentStart(s2);
+      labels.push({
+        text: `${a}   ${segName[s2]}`,
+        x: "(w-text_w)/2",
+        y: 12,
+        size: 24,
+        from,
+        to: from + r.loops * r.frames / r.fps
+      });
+    }
+    t0 += 3 * r.loops * r.frames / r.fps;
+  });
+  sides.forEach((s2, i) => labels.push({ text: s2.label, x: String(i * (view.width + 4) + 12), y: head + 8, size: 20 }));
+  const filters = font && existsSync3(font) ? labels.map((l) => `drawtext=fontfile='${drawtextValue(font)}':text='${drawtextValue(l.text)}':x=${l.x}:y=${l.y}:fontsize=${l.size}:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=6` + (l.from !== void 0 ? `:enable='between(t,${l.from.toFixed(3)},${l.to.toFixed(3)})'` : "")).join(",") : "null";
+  const ffmpeg = spawn2("ffmpeg", [
+    "-y",
+    "-loglevel",
+    "error",
+    "-f",
+    "rawvideo",
+    "-pix_fmt",
+    "rgb24",
+    "-s",
+    `${width}x${view.height + head}`,
+    "-r",
+    "30",
+    "-i",
+    "-",
+    "-vf",
+    filters,
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "20",
+    "-pix_fmt",
+    "yuv420p",
+    "-movflags",
+    "+faststart",
+    outPath
+  ], { stdio: ["pipe", "ignore", "pipe"] });
+  let stderr = "";
+  ffmpeg.stderr.on("data", (d) => stderr += d.toString());
+  const done = new Promise((ok, fail5) => {
+    ffmpeg.on("error", (e) => fail5(new Error(`\u9700\u8981 ffmpeg\uFF08${e.message}\uFF09`)));
+    ffmpeg.on("close", (code2) => ok(code2 ?? 1));
+  });
+  const write = (b) => new Promise((ok) => ffmpeg.stdin.write(b) ? ok() : ffmpeg.stdin.once("drain", ok));
+  const band = new Uint8Array(width * head * 3);
+  for (let i = 0; i < band.length; i += 3)
+    band.set([24, 27, 34], i);
+  for (const r of reviews)
+    for (const { raster } of r.play()) {
+      await write(band);
+      await write(raster.rgb);
+    }
+  ffmpeg.stdin.end();
+  const code = await done;
+  if (code !== 0)
+    throw new Error(`ffmpeg \u5931\u6557 (${code}): ${stderr.slice(-400)}`);
+}
+var esc = (s2) => String(s2).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+var pct = (a, b) => b ? `${((b - a) / b * 100).toFixed(1)}%` : "\u2014";
+var yes = (ok) => ok ? `<b class="ok">\u901A\u904E</b>` : `<b class="bad">\u672A\u901A\u904E</b>`;
+function keyTimes(doc, anim) {
+  const t = readTimelines(doc, anim);
+  return new Map(t.curves.map((c) => [c.id, c.times]));
+}
+function dopeSheet(source, runs, anim, fps) {
+  const orig = keyTimes(source, anim);
+  const reduced = runs.map((r) => keyTimes(readJsonSync(r), anim));
+  const duration = readTimelines(source, anim).duration;
+  const ids = [...orig.keys()].filter((id) => {
+    const tl = readTimelines(source, anim).curves.find((c) => c.id === id);
+    return tl.values.some((v) => v.some((x2, j) => Math.abs(x2 - tl.values[0][j]) > 1e-6));
+  });
+  const W = 760, left = 210, rowH = 5 * (1 + runs.length) + 6;
+  const frames = Math.max(1, Math.round(duration * fps));
+  const x = (t) => left + t / Math.max(duration, 1e-6) * (W - left - 10);
+  const colors = ["#8a8f98", "#3b82f6", "#f59e0b"];
+  let svg = `<svg viewBox="0 0 ${W} ${ids.length * rowH + 24}" width="100%" role="img" aria-label="${esc(anim)} key \u5206\u4F48">`;
+  for (let f = 0; f <= frames; f += Math.max(1, Math.round(frames / 20)))
+    svg += `<line x1="${x(f / fps)}" x2="${x(f / fps)}" y1="0" y2="${ids.length * rowH + 6}" class="grid"/><text x="${x(f / fps)}" y="${ids.length * rowH + 20}" class="tick">${f}</text>`;
+  ids.forEach((id, r) => {
+    const y = r * rowH + 4;
+    svg += `<text x="4" y="${y + rowH / 2 + 2}" class="lab">${esc(id.replace(/^bone:|^deform:default\//, ""))}</text>`;
+    [orig.get(id), ...reduced.map((m) => m.get(id) ?? [])].forEach((ts, k) => {
+      for (const t of ts)
+        svg += `<rect x="${(x(t) - 1.5).toFixed(1)}" y="${y + k * 5}" width="3" height="4" fill="${colors[k]}"/>`;
+    });
+  });
+  return svg + "</svg>";
+}
+function reportHtml(summary, runs, source, out) {
+  const f = summary.features;
+  const anims = f.animations;
+  const rows = (r) => r.report.animations.map((a) => `<tr><td>${esc(a.name)}</td><td>${a.loop ? "\u5FAA\u74B0" : "\u55AE\u6B21"}</td><td>${a.keys.before}</td><td>${a.keys.after}</td><td>${pct(a.keys.after, a.keys.before)}</td><td>${a.keys.removedConstant}</td><td>${a.keys.removedMotion}</td><td>${a.world.max}</td><td>${a.world.rms}</td><td>${a.world.worstFrame}</td><td>${esc(a.world.worstSlot ?? "\u2014")}</td><td>${a.insertions.length}</td><td>${a.fallbacks.length}</td><td>${a.discrete.stateMismatches + a.discrete.orderMismatches}</td><td>${yes(a.pass)}</td></tr>`).join("");
+  const formalRows = (r) => r.formal ? r.formal.vsReduced.map((d, i) => {
+    const s2 = r.formal.vsSource[i];
+    return `<tr><td>${esc(d.animation)}</td><td>${d.max}</td><td>${d.rms}</td><td>${d.stateMismatches}</td><td>${s2.max}</td><td>${s2.rms}</td><td>${d.duration[0]} / ${d.duration[1]}</td></tr>`;
+  }).join("") : `<tr><td colspan="7">\u672A\u57F7\u884C\uFF08Spine \u7DE8\u8F2F\u5668\u4E0D\u53EF\u7528\uFF09</td></tr>`;
+  const follow = (r) => r.report.animations.flatMap((a) => a.follow.map((c) => `<tr><td>${esc(a.name)}</td><td>${esc(c.bone)}</td><td>${c.lagOriginal}</td><td>${c.lagReduced}</td><td>${c.maxShift ?? "\u8F49\u6298\u6578\u4E0D\u540C"}</td><td>${c.peaksOriginal.join(", ")}</td></tr>`)).join("") || `<tr><td colspan="6">\u6C92\u6709\u8FA8\u8B58\u51FA\u8DDF\u96A8\u90E8\u4EF6</td></tr>`;
+  const poses = (r) => r.report.animations.map((a) => `<tr><td>${esc(a.name)}</td><td>${a.poses.map((p) => `${esc(p.label)} f${p.frame}\uFF08${p.error} px\uFF09`).join("\u3001") || "\u2014"}</td><td>${a.contacts.map((c) => `f${c.from}\u2013${c.to} \u6ED1\u52D5 ${c.slide} px\uFF08\u539F ${c.slideOriginal}\uFF09`).join("\uFF1B") || "\u7121\u63A5\u5730"}</td><td>${a.seam ? `\u59FF\u52E2\u5DEE ${a.seam.poseOriginal}\u2192${a.seam.poseReduced} px\uFF1B\u901F\u5EA6\u8DF3\u52D5 ${a.seam.velocityJumpOriginal}\u2192${a.seam.velocityJumpReduced} px/\u5E40` : "\u55AE\u6B21\u52D5\u4F5C\uFF1A\u4FDD\u7559\u539F\u8D77\u8A16"}</td></tr>`).join("");
+  const groups = (r) => r.report.animations.map((a) => {
+    const main = a.groups.filter((g) => g.role === "main");
+    const fol = a.groups.filter((g) => g.role === "follow");
+    return `<tr><td>${esc(a.name)}</td><td>${main.map((g) => `${esc(g.bones.join("+"))} @ ${g.frames.join(",")}`).join("<br>") || "\u2014"}</td><td>${fol.map((g) => `${esc(g.bones.join("+"))}\uFF08\u665A ${g.lagFrames} \u5E40\uFF09`).join("<br>") || "\u2014"}</td></tr>`;
+  }).join("");
+  const timelineTable = (r) => r.report.animations.map((a) => `<details><summary>${esc(a.name)}\uFF1A${a.timelines.length} \u689D\u901A\u9053</summary><table><thead><tr><th>\u901A\u9053</th><th>\u524D</th><th>\u5F8C</th><th>\u8655\u7406</th><th>\u901A\u9053\u5BB9\u5DEE</th><th>\u55AE\u4F4D</th><th>\u88DC Key</th><th>\u901A\u9053\u8AA4\u5DEE</th><th>\u539F\u56E0</th></tr></thead><tbody>${a.timelines.map((t) => `<tr><td>${esc(t.id)}</td><td>${t.before}</td><td>${t.after}</td><td>${t.status}</td><td>${t.tolerance}</td><td>${esc(t.unit)}</td><td>${t.inserted}</td><td>${t.channelError}</td><td>${esc(t.reason ?? "")}</td></tr>`).join("")}</tbody></table></details>`).join("");
+  const notRun = [
+    ...summary.spine ? [] : ["\u6B63\u5F0F Spine \u532F\u5165\uFF0F\u532F\u51FA\u9A57\u8B49\uFF08\u7DE8\u8F2F\u5668\u4E0D\u53EF\u7528\uFF09"],
+    ...summary.preview ? [] : ["\u5C0D\u7167\u9810\u89BD\u5F71\u7247"],
+    "\u660E\u986F\u7A7F\u63D2\uFF1A\u6C92\u6709\u7368\u7ACB\u7684\u7A7F\u63D2\u5075\u6E2C\uFF1B\u5169\u90E8\u4EF6\u9593\u7684\u76F8\u5C0D\u4F4D\u79FB\u4E0D\u8D85\u904E\u5169\u8005\u6700\u5927\u9802\u9EDE\u8AA4\u5DEE\u4E4B\u548C\uFF08\u4EE5\u9802\u9EDE\u8AA4\u5DEE\u754C\u5B9A\uFF09",
+    "\u9023\u7E8C\u6642\u9593\u7684\u6578\u5B78\u4FDD\u8B49\uFF1A\u53EA\u4FDD\u8B49\u5DF2\u63A1\u6A23\u7684\u6642\u9593\u9EDE",
+    ...summary.notes
+  ];
+  return `<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Key \u7CBE\u7C21\u5831\u544A</title><style>
+:root{--bg:#f7f7f5;--fg:#1d1f23;--mut:#666b73;--card:#fff;--line:#e2e2de;--ok:#15803d;--bad:#b91c1c}
+@media (prefers-color-scheme:dark){:root{--bg:#16181c;--fg:#e8e8e6;--mut:#9aa0a8;--card:#1f2228;--line:#30343b;--ok:#4ade80;--bad:#f87171}}
+body{background:var(--bg);color:var(--fg);font:14px/1.55 "Microsoft JhengHei",system-ui,sans-serif;margin:0;padding:24px 16px}main{max-width:1200px;margin:auto}
+h1{font-size:24px}h2{font-size:18px;margin-top:32px;border-bottom:1px solid var(--line);padding-bottom:4px}table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:4px 6px;text-align:left;vertical-align:top}th{background:var(--line)}.ok{color:var(--ok)}.bad{color:var(--bad)}.mut{color:var(--mut)}
+.wrap{overflow-x:auto}details{margin:6px 0}svg .grid{stroke:var(--line)}svg .tick,svg .lab{fill:var(--mut);font-size:8px}code{font-size:12px}
+</style></head><body><main>
+<h1>Key \u7CBE\u7C21\u5831\u544A\uFF1A${esc(basename4(summary.input))}</h1>
+<p class="mut">\u4F86\u6E90 SHA-256 <code>${summary.sha256}</code>\uFF0C\u57F7\u884C\u524D\u5F8C\u76F8\u540C\uFF08\u4F86\u6E90\u672A\u88AB\u5BEB\u5165\uFF09\u3002\u8F38\u51FA\u8CC7\u6599\u593E\uFF1A<code>${esc(out)}</code></p>
+<h2>\u4F86\u6E90\u6A94</h2>
+<table><tr><th>Spine \u7248\u672C</th><td>${esc(f.spine)}</td><th>FPS</th><td>${f.fps}</td><th>\u9AA8\u9ABC</th><td>${f.bones}</td><th>Slot</th><td>${f.slots}</td></tr>
+<tr><th>IK\uFF0FTransform\uFF0FPath</th><td>${f.ik}\uFF0F${f.transform}\uFF0F${f.path}</td><th>\u9644\u4EF6</th><td colspan="5">region ${f.attachments.regions}\u3001mesh ${f.attachments.meshes}\uFF08\u52A0\u6B0A ${f.attachments.weighted}\uFF09\u3001linked ${f.attachments.linked}\u3001clipping ${f.attachments.clipping}</td></tr>
+<tr><th>\u52D5\u756B</th><td colspan="7">${anims.map((a) => `${esc(a.name)}\uFF08${a.duration} \u79D2\uFF09`).join("\u3001")}</td></tr>
+<tr><th>\u539F\u59CB Key</th><td colspan="7">${Object.entries(f.keys).map(([k, n]) => `${esc(k)} ${n}`).join("\u3001")}</td></tr>
+<tr><th>\u63D2\u503C</th><td colspan="7">stepped ${f.curves.stepped}\u3001bezier ${f.curves.bezier}\u3001linear ${f.curves.linear}\uFF1B\u6B21\u5E40 Key ${f.curves.subFrame}\uFF1B\u8D85\u904E\u4E00\u5708\u7684\u65CB\u8F49 ${f.curves.multiTurn}</td></tr></table>
+<h2>\u6E2C\u8A66\u8986\u84CB</h2>
+<p class="mut">\u672C\u6A94\u6C92\u6709\u7684\u529F\u80FD\u7531\u7368\u7ACB\u6E2C\u8A66\u8CC7\u6599\uFF08tests/key-reduction.test.ts \u7684\u5408\u6210\u9AA8\u67B6\uFF09\u8986\u84CB\u3002</p>
+<table><thead><tr><th>\u529F\u80FD</th><th>\u672C\u6A94</th><th>\u7368\u7ACB\u6E2C\u8A66</th></tr></thead><tbody>${coverage(f).map(([k, v, t]) => `<tr><td>${esc(k)}</td><td>${v ? "\u6709" : "\u7121"}</td><td>${esc(t)}</td></tr>`).join("")}</tbody></table>
+<h2>\u8A2D\u5B9A\u672A\u8B8A</h2>
+<p>${runs.map((r) => `${MODE_NAMES[r.mode]}\uFF1AJSON \u9664\u52D5\u756B\u5916\u8207\u539F\u6A94\u9010\u5B57\u76F8\u540C ${r.setup.json ? "\u662F" : "<b class=bad>\u5426</b>"}\uFF1B\u7D93 Spine \u532F\u5165\u532F\u51FA\u5F8C\u8207\u539F\u6A94\u7684\u532F\u5165\u532F\u51FA\u76F8\u540C ${r.setup.editor === null ? "\u672A\u57F7\u884C" : r.setup.editor ? "\u662F" : "<b class=bad>\u5426</b>"}`).join("<br>")}</p>
+<h2>\u5BB9\u5DEE\u8207\u63A1\u6A23</h2>
+${runs.map((r) => `<p><b>${MODE_NAMES[r.mode]}</b>\uFF1A\u4E16\u754C\u9802\u9EDE\u6700\u5927\u8AA4\u5DEE \u2264 ${r.report.limits.maxError} px\u3001RMS \u2264 ${r.report.limits.rmsError} px\uFF08\u9AA8\u67B6\u9AD8\u5EA6 ${r.report.size} px \u7684 ${(r.report.limits.maxError / r.report.size * 100).toFixed(2)}%\uFF0F${(r.report.limits.rmsError / r.report.size * 100).toFixed(2)}%\uFF09\uFF1B\u901A\u9053\u9810\u7BE9\u7528\u6700\u5927\u8AA4\u5DEE\u7684 ${r.report.limits.localShare * 100}%\uFF0C\u984F\u8272 ${r.report.limits.colorTolerance.toFixed(4)}\u3002</p>`).join("")}
+<p class="mut">\u55AE\u4F4D\uFF1A${esc(runs[0]?.report.units.world ?? "")}\u3002RMS\uFF1A${esc(runs[0]?.report.units.rms ?? "")}\u3002\u63A1\u6A23\uFF1A${esc(runs[0]?.report.sampling ?? "")}\u3002\u5BB9\u5DEE\u4E0D\u6703\u70BA\u4E86\u522A\u9664\u6BD4\u4F8B\u81EA\u52D5\u653E\u5BEC\u3002</p>
+${runs.map((r) => `<h2>${MODE_NAMES[r.mode]}\uFF08${r.mode}\uFF09\uFF1A${r.report.keys.before} \u2192 ${r.report.keys.after} Key\uFF08\u5C11 ${pct(r.report.keys.after, r.report.keys.before)}\uFF09${yes(r.report.pass)}</h2>
+<div class="wrap"><table><thead><tr><th>\u52D5\u756B</th><th>\u985E\u578B</th><th>\u524D</th><th>\u5F8C</th><th>\u6E1B\u5C11</th><th>\u5E38\u6578\u901A\u9053\u522A\u9664</th><th>\u52D5\u4F5C\u901A\u9053\u522A\u9664</th><th>\u6700\u5927\u8AA4\u5DEE px</th><th>RMS px</th><th>\u6700\u5DEE\u5E40</th><th>\u6700\u5DEE\u90E8\u4EF6</th><th>\u88DC Key</th><th>\u56DE\u9000</th><th>\u96E2\u6563\u4E0D\u7B26</th><th>\u7D50\u679C</th></tr></thead><tbody>${rows(r)}</tbody></table></div>
+<h3>\u6B63\u5F0F\u8F38\u51FA\uFF08Spine ${esc(summary.spine ?? "\u2014")} \u532F\u5165\u2192\u532F\u51FA\u5F8C\u518D\u64AD\u653E\uFF09</h3>
+<div class="wrap"><table><thead><tr><th>\u52D5\u756B</th><th>\u5C0D\u7CBE\u7C21 JSON \u6700\u5927 px</th><th>RMS</th><th>\u96E2\u6563\u4E0D\u7B26</th><th>\u5C0D\u539F\u59CB\u6700\u5927 px</th><th>RMS</th><th>\u9577\u5EA6 \u524D/\u5F8C</th></tr></thead><tbody>${formalRows(r)}</tbody></table></div>
+<h3>\u59FF\u52E2\u7BC0\u9EDE\u3001\u63A5\u5730\u8207\u5FAA\u74B0\u63A5\u7E2B</h3><div class="wrap"><table><thead><tr><th>\u52D5\u756B</th><th>\u59FF\u52E2\u7BC0\u9EDE\uFF08\u8A72\u6642\u523B\u8AA4\u5DEE\uFF09</th><th>\u63A5\u5730\uFF0F\u8173\u5E95\u6ED1\u52D5</th><th>\u5FAA\u74B0\u63A5\u7E2B</th></tr></thead><tbody>${poses(r)}</tbody></table></div>
+<h3>\u52D5\u4F5C\u5206\u7D44</h3><div class="wrap"><table><thead><tr><th>\u52D5\u756B</th><th>\u5171\u7528\u59FF\u52E2\u683C\uFF08\u4E3B\u8981\u9AA8\u9ABC\uFF09</th><th>\u8DDF\u96A8\u90E8\u4EF6\uFF08\u4FDD\u7559\u5EF6\u9072\uFF09</th></tr></thead><tbody>${groups(r)}</tbody></table></div>
+<h3>\u8DDF\u96A8\u76F8\u4F4D</h3><div class="wrap"><table><thead><tr><th>\u52D5\u756B</th><th>\u9AA8\u9ABC</th><th>\u539F\u5EF6\u9072\uFF08\u5E40\uFF09</th><th>\u7CBE\u7C21\u5F8C\u5EF6\u9072</th><th>\u8F49\u6298\u6700\u5927\u4F4D\u79FB\uFF08\u5E40\uFF09</th><th>\u539F\u8F49\u6298\uFF08\u5E40\uFF09</th></tr></thead><tbody>${follow(r)}</tbody></table></div>
+<h3>\u56DE\u9000\u8207\u8AAA\u660E</h3><ul>${r.report.animations.flatMap((a) => [...a.fallbacks, ...a.notes].map((x) => `<li>${esc(a.name)}\uFF1A${esc(x)}</li>`)).join("") || "<li>\u7121\u56DE\u9000</li>"}</ul>
+<h3>\u6BCF\u689D\u901A\u9053</h3>${timelineTable(r)}`).join("")}
+<h2>Spine \u7DE8\u8F2F\u5668\u5C0D\u539F\u59CB\u6A94\u7684\u5F80\u8FD4\uFF08\u53C3\u8003\uFF09</h2>
+<div class="wrap"><table><thead><tr><th>\u52D5\u756B</th><th>\u6700\u5927 px</th><th>RMS</th><th>\u96E2\u6563\u4E0D\u7B26</th></tr></thead><tbody>${summary.sourceRoundTrip?.map((d) => `<tr><td>${esc(d.animation)}</td><td>${d.max}</td><td>${d.rms}</td><td>${d.stateMismatches}</td></tr>`).join("") ?? `<tr><td colspan="4">\u672A\u57F7\u884C</td></tr>`}</tbody></table></div>
+<h2>Key \u5206\u4F48\uFF08\u7070\uFF1A\u539F\u59CB\uFF0C\u85CD\uFF1A${MODE_NAMES.fidelity}\uFF0C\u6A58\uFF1A${MODE_NAMES.posable}\uFF1B\u53EA\u5217\u6703\u52D5\u7684\u901A\u9053\uFF09</h2>
+${anims.map((a) => `<details><summary>${esc(a.name)}</summary>${dopeSheet(source, runs, a.name, f.fps)}</details>`).join("")}
+<h2>\u9810\u89BD</h2><p>${summary.preview ? `<a href="preview.mp4">preview.mp4</a>\uFF1A\u539F\u59CB\uFF5C${runs.map((r) => MODE_NAMES[r.mode]).join("\uFF5C")}\uFF0C\u6BCF\u6BB5\u52D5\u756B\u4F9D\u5E8F\u64AD\u653E\u7DB2\u683C\u3001\u9AA8\u67B6\u3001\u52D5\u614B\u3002` : "\u672A\u7522\u751F"}</p>
+<h2>\u672A\u57F7\u884C\u6216\u7121\u6CD5\u5BA3\u7A31\u901A\u904E\u7684\u6AA2\u67E5</h2><ul>${notRun.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+</main></body></html>
+`;
+}
+function reportMarkdown(summary, runs) {
+  const lines = [
+    `# Key \u7CBE\u7C21\u5831\u544A\uFF1A${basename4(summary.input)}`,
+    "",
+    `- \u4F86\u6E90 SHA-256 \`${summary.sha256}\`\uFF08\u57F7\u884C\u524D\u5F8C\u76F8\u540C\uFF09`,
+    `- Spine ${summary.features.spine}\uFF0C${summary.features.fps} FPS\uFF0C\u6B63\u5F0F\u532F\u5165\u532F\u51FA\uFF1A${summary.spine ?? "\u672A\u57F7\u884C"}`,
+    ""
+  ];
+  for (const r of runs) {
+    lines.push(`## ${MODE_NAMES[r.mode]}\uFF08${r.mode}\uFF09\uFF1A${r.report.keys.before} \u2192 ${r.report.keys.after}\uFF08${r.report.pass ? "\u901A\u904E" : "\u672A\u901A\u904E"}\uFF09`, "", `\u6700\u5927\u8AA4\u5DEE \u2264 ${r.report.limits.maxError} px\uFF0CRMS \u2264 ${r.report.limits.rmsError} px`, "", "| \u52D5\u756B | \u524D | \u5F8C | \u5E38\u6578\u901A\u9053\u522A\u9664 | \u52D5\u4F5C\u901A\u9053\u522A\u9664 | \u6700\u5927 px | RMS px | \u6700\u5DEE | \u88DC Key | \u56DE\u9000 | \u6B63\u5F0F\u8F38\u51FA\u5C0D\u7CBE\u7C21 max | \u7D50\u679C |", "|---|---|---|---|---|---|---|---|---|---|---|---|", ...r.report.animations.map((a, i) => {
+      const formal = r.formal?.vsReduced[i];
+      return `| ${a.name} | ${a.keys.before} | ${a.keys.after} | ${a.keys.removedConstant} | ${a.keys.removedMotion} | ${a.world.max} | ${a.world.rms} | f${a.world.worstFrame} ${a.world.worstSlot ?? ""} | ${a.insertions.length} | ${a.fallbacks.length} | ${formal ? formal.max : "\u2014"} | ${a.pass ? "\u901A\u904E" : "\u672A\u901A\u904E"} |`;
+    }), "");
+  }
+  if (summary.notes.length)
+    lines.push("## \u5099\u8A3B", "", ...summary.notes.map((n) => `- ${n}`), "");
+  return lines.join("\n");
+}
+
 // packages/mcp/dist/workspace.js
 import { homedir } from "node:os";
-import { join as join3, resolve as resolve4 } from "node:path";
+import { join as join4, resolve as resolve5 } from "node:path";
 function chooseWorkspace(env, argv, cwd, home = homedir()) {
   const fromEnv = env.AUTOSPINE_WORKSPACE?.trim();
   if (fromEnv)
-    return { path: resolve4(cwd, fromEnv), source: "env" };
+    return { path: resolve5(cwd, fromEnv), source: "env" };
   const flag = argv.find((a) => a.startsWith("--workspace="));
   const value = flag?.slice("--workspace=".length).trim();
   if (value) {
-    const expanded = value === "~" ? home : /^~[\\/]/.test(value) ? join3(home, value.slice(2)) : value;
-    return { path: resolve4(cwd, expanded), source: "argument" };
+    const expanded = value === "~" ? home : /^~[\\/]/.test(value) ? join4(home, value.slice(2)) : value;
+    return { path: resolve5(cwd, expanded), source: "argument" };
   }
-  return { path: resolve4(cwd), source: "cwd" };
+  return { path: resolve5(cwd), source: "cwd" };
 }
 
 // packages/mcp/dist/index.js
@@ -40589,6 +43013,10 @@ var Pose = Type.Object({
   scales: Type.Optional(Type.Record(IdSchema, Vector2Schema))
 }, strict5);
 var WorkspacePath = Type.String({ minLength: 1, maxLength: 4096 });
+var LimitSchema = Type.Object({
+  maxError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 })),
+  rmsError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 }))
+}, strict5);
 var toolSchemas = {
   autospine_compile_character: Type.Object({ input: CharacterSpineInputSchema }, strict5),
   autospine_build_keypose_animation: Type.Object({ rig: RigSpecSchema, spec: KeyposeSpecSchema }, strict5),
@@ -40727,9 +43155,36 @@ var toolSchemas = {
     zero: Type.Optional(Type.Boolean()),
     track: Type.Optional(Type.Boolean()),
     lag: Type.Optional(Type.Boolean())
+  }, strict5),
+  // Key reduction (ADR-044): the same file-level step as `autospine reduce-keys`.
+  autospine_reduce_keys: Type.Object({
+    inputPath: WorkspacePath,
+    outputDir: WorkspacePath,
+    modes: Type.Optional(Type.Array(Type.Union([Type.Literal("fidelity"), Type.Literal("posable")]), {
+      minItems: 1,
+      maxItems: 2
+    })),
+    limits: Type.Optional(Type.Object({
+      fidelity: Type.Optional(LimitSchema),
+      posable: Type.Optional(LimitSchema)
+    }, strict5)),
+    fps: Type.Optional(Type.Number({ minimum: 1, maximum: 240 })),
+    animations: Type.Optional(Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 256 })),
+    kinds: Type.Optional(Type.Array(Type.Union(["bone", "slot", "ik", "transform", "path", "deform"].map((k) => Type.Literal(k))), { maxItems: 6 })),
+    skip: Type.Optional(Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 4096 })),
+    lock: Type.Optional(Type.Array(Type.Object({
+      animation: Type.Optional(Type.String({ minLength: 1, maxLength: 256 })),
+      timeline: Type.Optional(Type.String({ minLength: 1, maxLength: 256 })),
+      time: Type.Optional(Type.Number({ minimum: 0, maximum: 3600 }))
+    }, strict5), { maxItems: 4096 })),
+    loops: Type.Optional(Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 256 })),
+    baselinePath: Type.Optional(WorkspacePath),
+    imagesDir: Type.Optional(WorkspacePath),
+    video: Type.Optional(Type.Boolean())
   }, strict5)
 };
 var descriptions = {
+  autospine_reduce_keys: "Reduce the keys of a workspace-local Spine 4.0 JSON (ADR-044) into a NEW workspace-local directory, in `fidelity` (fewest keys within the limit, refitted Spine Bezier curves) and/or `posable` (shared pose frames for main bones on whole frames, follow parts on their own turns) mode, each with its own world-vertex limit (px; default by mode from the skeleton size; never widened to reach a ratio). Every result is played on the official runtime against the untouched source (hierarchy, weights, IK/transform/path, deform): max and RMS vertex error, worst time and part, pose nodes, contact slide, follow lag, loop seam, discrete states; keys are added where it is off and timelines fall back to the original past the budget. Writes per mode <name>.json and key-report.json, plus summary.json and key-reduction-report.html/.md. The Spine editor import/export check runs only from the CLI (`autospine reduce-keys`); `video: true` renders original | modes with ffmpeg and the images. Not an artist approval.",
   autospine_compile_character: "Compile explicit multi-part engine IR, bone/attachment/rgba/deform timelines, convex clipping and native IK/Transform to Spine 4.0 JSON in memory; no automatic anatomy or artist approval.",
   autospine_build_keypose_animation: "Compile a pose table (beats) plus follow/saccade/settle/cycle timing rules into a sparse AnimationSpec with per-key curves (ADR-011); beat timing is the caller's input.",
   autospine_feature_mesh: "Mesh a part by its opaque silhouette with a locked vertex ring around every large enclosed hole (eye sockets, windows); returns MeshSpec in part-bounds space and ring indices (ADR-016).",
@@ -40765,7 +43220,8 @@ var writingTools = /* @__PURE__ */ new Set([
   "autospine_compare_video",
   "autospine_fit_pose",
   "autospine_fit_video",
-  "autospine_merge_plans"
+  "autospine_merge_plans",
+  "autospine_reduce_keys"
 ]);
 var mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
@@ -40787,19 +43243,19 @@ function policy(condition) {
     throw new Error("MCP_WORKSPACE_POLICY: job, source and new output must remain inside the configured workspace");
 }
 async function guardJob(rootPath, jobPath) {
-  const root = await realpath2(resolve5(rootPath)), file = resolve5(root, jobPath);
+  const root = await realpath2(resolve6(rootPath)), file = resolve6(root, jobPath);
   policy(contains(root, file));
   policy(contains(root, await realpath2(file)));
   const entry = await lstat2(file);
   policy(entry.isFile() && !entry.isSymbolicLink() && entry.size <= 64 * 1024);
-  const job = JSON.parse(await readFile4(file, "utf8"));
+  const job = JSON.parse(await readFile5(file, "utf8"));
   if (!value_exports2.Check(BuildJobSchema, job))
     throw new Error("MCP_JOB_SCHEMA: strict chain-wave job required");
-  const source = resolve5(dirname4(file), job.source), output = resolve5(dirname4(file), job.output);
+  const source = resolve6(dirname5(file), job.source), output = resolve6(dirname5(file), job.output);
   policy(contains(root, source) && contains(root, output));
   policy(contains(root, await realpath2(source)));
   policy((await lstat2(source)).isFile());
-  let parent = dirname4(output);
+  let parent = dirname5(output);
   for (; ; ) {
     try {
       policy(contains(root, await realpath2(parent)));
@@ -40807,7 +43263,7 @@ async function guardJob(rootPath, jobPath) {
     } catch (error) {
       if (error.code !== "ENOENT")
         throw error;
-      const next = dirname4(parent);
+      const next = dirname5(parent);
       policy(next !== parent && contains(root, next));
       parent = next;
     }
@@ -40815,7 +43271,7 @@ async function guardJob(rootPath, jobPath) {
   return file;
 }
 async function guardFile(root, path, maxBytes) {
-  const file = resolve5(root, path);
+  const file = resolve6(root, path);
   policy(contains(root, file));
   policy(contains(root, await realpath2(file)));
   const entry = await lstat2(file);
@@ -40823,14 +43279,14 @@ async function guardFile(root, path, maxBytes) {
   return file;
 }
 async function guardDirectory(root, path) {
-  const dir = resolve5(root, path);
+  const dir = resolve6(root, path);
   policy(contains(root, dir));
   policy(contains(root, await realpath2(dir)));
   policy((await lstat2(dir)).isDirectory());
   return dir;
 }
 async function guardOutput(root, path, mustBeNew) {
-  const output = resolve5(root, path);
+  const output = resolve6(root, path);
   policy(contains(root, output) && output !== root);
   let parent = output;
   for (; ; ) {
@@ -40845,7 +43301,7 @@ async function guardOutput(root, path, mustBeNew) {
     } catch (error) {
       if (error.code !== "ENOENT")
         throw error;
-      const next = dirname4(parent);
+      const next = dirname5(parent);
       policy(next !== parent && contains(root, next));
       parent = next;
     }
@@ -40853,13 +43309,13 @@ async function guardOutput(root, path, mustBeNew) {
   return output;
 }
 async function guardPlan(rootPath, planPath) {
-  const root = await realpath2(resolve5(rootPath));
+  const root = await realpath2(resolve6(rootPath));
   const plan = await guardFile(root, planPath, 4 * 1024 * 1024);
-  const parsed = JSON.parse(await readFile4(plan, "utf8"));
+  const parsed = JSON.parse(await readFile5(plan, "utf8"));
   if (!value_exports2.Check(CharacterPlanSchema, parsed))
     throw new Error("MCP_PLAN_SCHEMA: not a CharacterPlan-0.1; run autospine_lint_character_plan");
-  await guardFile(root, resolve5(dirname4(plan), parsed.source.imagesOnly), 64 * 1024 * 1024);
-  await guardDirectory(root, resolve5(dirname4(plan), parsed.source.images));
+  await guardFile(root, resolve6(dirname5(plan), parsed.source.imagesOnly), 64 * 1024 * 1024);
+  await guardDirectory(root, resolve6(dirname5(plan), parsed.source.images));
   return { root, plan };
 }
 function characterFailure(error) {
@@ -41006,7 +43462,7 @@ var AutoSpineMcpServer = class {
         case "autospine_get_status": {
           let status = { available: false };
           try {
-            status = JSON.parse(await readFile4(resolve5(this.workspace, "docs/reviews/GATE_5_17_STATUS.json"), "utf8"));
+            status = JSON.parse(await readFile5(resolve6(this.workspace, "docs/reviews/GATE_5_17_STATUS.json"), "utf8"));
           } catch {
           }
           return result({
@@ -41058,9 +43514,9 @@ var AutoSpineMcpServer = class {
           const file = await guardJob(this.workspace, args.jobPath), output = await buildJobFile(file);
           return result({
             output,
-            manifest: JSON.parse(await readFile4(resolve5(output, "manifest.json"), "utf8")),
-            diagnostics: JSON.parse(await readFile4(resolve5(output, "diagnostics.json"), "utf8")),
-            provenance: JSON.parse(await readFile4(resolve5(output, "provenance.json"), "utf8"))
+            manifest: JSON.parse(await readFile5(resolve6(output, "manifest.json"), "utf8")),
+            diagnostics: JSON.parse(await readFile5(resolve6(output, "diagnostics.json"), "utf8")),
+            provenance: JSON.parse(await readFile5(resolve6(output, "provenance.json"), "utf8"))
           });
         }
         case "autospine_review_metrics": {
@@ -41166,6 +43622,47 @@ var AutoSpineMcpServer = class {
               report: relative4(root, a.report)
             })),
             outputDir: relative4(root, output),
+            artistQualityAccepted: false
+          });
+        }
+        case "autospine_reduce_keys": {
+          if (!value_exports2.Check(toolSchemas.autospine_reduce_keys, args))
+            break;
+          const root = await realpath2(resolve6(this.workspace));
+          const input = await guardFile(root, args.inputPath, 256 * 1024 * 1024);
+          if (!/\.json$/i.test(input))
+            throw new Error("MCP_KEYS_INPUT: a Spine 4.0 JSON export is needed (.spine files go through the CLI)");
+          const baseline = args.baselinePath ? await guardFile(root, args.baselinePath, 256 * 1024 * 1024) : void 0;
+          const images = args.imagesDir ? await guardDirectory(root, args.imagesDir) : void 0;
+          const output = await guardOutput(root, args.outputDir, true);
+          const summary = await reduceKeysFiles(input, output, {
+            spine: false,
+            video: args.video ?? false,
+            ...args.modes ? { modes: args.modes } : {},
+            ...args.limits ? { limits: args.limits } : {},
+            ...args.fps === void 0 ? {} : { fps: args.fps },
+            ...args.animations ? { animations: args.animations } : {},
+            ...args.kinds ? {
+              kinds: args.kinds
+            } : {},
+            ...args.skip ? { skip: args.skip } : {},
+            ...args.lock ? { lock: args.lock } : {},
+            ...args.loops ? { loops: args.loops } : {},
+            ...baseline ? { baseline } : {},
+            ...images ? { images } : {}
+          }).catch((e) => {
+            const m = e.message ?? "";
+            if (/^CLI_KEYS_VERSION:/.test(m))
+              throw new Error(`MCP_KEYS_VERSION: ${m.slice(m.indexOf(": ") + 2)}`);
+            return characterFailure(e);
+          });
+          return result({
+            outputDir: relative4(root, output),
+            sha256: summary.sha256,
+            sourceUnchanged: summary.sourceUnchanged,
+            runs: summary.runs.map((r) => ({ ...r, json: relative4(root, r.json), spine: null })),
+            preview: summary.preview ? relative4(root, summary.preview) : null,
+            notes: summary.notes,
             artistQualityAccepted: false
           });
         }

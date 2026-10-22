@@ -14,6 +14,10 @@
     "./character": {
       "types": "./dist/character.d.ts",
       "import": "./dist/character.js"
+    },
+    "./keys": {
+      "types": "./dist/keys.d.ts",
+      "import": "./dist/keys.js"
     }
   },
   "scripts": {

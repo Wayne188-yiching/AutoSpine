@@ -1,0 +1,399 @@
+{
+  "input": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\Jackpot Game_猫木乃伊.spine",
+  "sha256": "f7c5fbaa76b0e6b7d9fa0520ccb86243b84f494135b77a8c3a6685914ce0fdd1",
+  "sourceUnchanged": true,
+  "spine": "4.0.64",
+  "features": {
+    "spine": "4.0.64",
+    "fps": 30,
+    "bones": 81,
+    "slots": 77,
+    "ik": 6,
+    "transform": 5,
+    "path": 0,
+    "attachments": {
+      "regions": 11,
+      "meshes": 95,
+      "weighted": 53,
+      "linked": 0,
+      "clipping": 1,
+      "other": 0
+    },
+    "animations": [
+      {
+        "name": "clap",
+        "duration": 2
+      },
+      {
+        "name": "idle",
+        "duration": 2
+      },
+      {
+        "name": "idle2",
+        "duration": 4
+      },
+      {
+        "name": "idle_clap",
+        "duration": 0.1333
+      },
+      {
+        "name": "in",
+        "duration": 1
+      }
+    ],
+    "keys": {
+      "bone rotate": 1297,
+      "bone scale": 999,
+      "bone shear": 982,
+      "bone translate": 1207,
+      "deform": 57,
+      "slot attachment": 316,
+      "slot rgba": 38
+    },
+    "curves": {
+      "stepped": 2282,
+      "bezier": 1134,
+      "linear": 1164,
+      "subFrame": 0,
+      "multiTurn": 0
+    }
+  },
+  "runs": [
+    {
+      "mode": "fidelity",
+      "json": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\KeyReduction-20261021\\run-04\\fidelity\\MummyMia_Jackpot Game_002.json",
+      "spine": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\KeyReduction-20261021\\run-04\\fidelity\\MummyMia_Jackpot Game_002.spine",
+      "seconds": 2.779,
+      "keys": {
+        "before": 4580,
+        "after": 2433
+      },
+      "pass": true,
+      "limits": {
+        "maxError": 1.083,
+        "rmsError": 0.325,
+        "colorTolerance": 0.00392156862745098,
+        "localShare": 0.5
+      },
+      "formal": {
+        "vsReduced": [
+          {
+            "animation": "clap",
+            "max": 0.0018,
+            "rms": 0.0003,
+            "worstTime": 1.2417,
+            "worstSlot": "shouzhi_l_5s",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 348
+          },
+          {
+            "animation": "idle",
+            "max": 0.0053,
+            "rms": 0.0005,
+            "worstTime": 1.3917,
+            "worstSlot": "shouzhi_r_5s",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 339
+          },
+          {
+            "animation": "idle2",
+            "max": 0.0355,
+            "rms": 0.0024,
+            "worstTime": 1.9417,
+            "worstSlot": "shouzhi_r_5s",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [4, 4],
+            "samples": 684
+          },
+          {
+            "animation": "idle_clap",
+            "max": 0.0023,
+            "rms": 0.0003,
+            "worstTime": 0.0667,
+            "worstSlot": "shouzhi_r_4",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [0.1333, 0.1333],
+            "samples": 27
+          },
+          {
+            "animation": "in",
+            "max": 0.0334,
+            "rms": 0.0015,
+            "worstTime": 0.2332,
+            "worstSlot": "shouzhi_l_2",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [1, 1],
+            "samples": 178
+          }
+        ],
+        "vsSource": [
+          {
+            "animation": "clap",
+            "max": 0.4757,
+            "rms": 0.0777,
+            "worstTime": 1.7083,
+            "worstSlot": "shouzhi_l_5s",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 348
+          },
+          {
+            "animation": "idle",
+            "max": 0.7892,
+            "rms": 0.0695,
+            "worstTime": 1.4583,
+            "worstSlot": "shouzhi_r_1",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 341
+          },
+          {
+            "animation": "idle2",
+            "max": 1.0184,
+            "rms": 0.1405,
+            "worstTime": 2.05,
+            "worstSlot": "shouzhi_l_5s",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [4, 4],
+            "samples": 691
+          },
+          {
+            "animation": "idle_clap",
+            "max": 0.4363,
+            "rms": 0.0479,
+            "worstTime": 0.075,
+            "worstSlot": "shouzhi_r_3",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [0.1333, 0.1333],
+            "samples": 27
+          },
+          {
+            "animation": "in",
+            "max": 0.6973,
+            "rms": 0.1017,
+            "worstTime": 0.0667,
+            "worstSlot": "shouzhi_l_2",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [1, 1],
+            "samples": 178
+          }
+        ]
+      },
+      "setup": {
+        "json": true,
+        "editor": true
+      }
+    },
+    {
+      "mode": "posable",
+      "json": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\KeyReduction-20261021\\run-04\\posable\\MummyMia_Jackpot Game_002.json",
+      "spine": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\KeyReduction-20261021\\run-04\\posable\\MummyMia_Jackpot Game_002.spine",
+      "seconds": 0.99,
+      "keys": {
+        "before": 4580,
+        "after": 2475
+      },
+      "pass": true,
+      "limits": {
+        "maxError": 3.249,
+        "rmsError": 1.083,
+        "colorTolerance": 0.00392156862745098,
+        "localShare": 0.5
+      },
+      "formal": {
+        "vsReduced": [
+          {
+            "animation": "clap",
+            "max": 0,
+            "rms": 0,
+            "worstTime": 0,
+            "worstSlot": null,
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 348
+          },
+          {
+            "animation": "idle",
+            "max": 0.0296,
+            "rms": 0.0022,
+            "worstTime": 0.8668,
+            "worstSlot": "shouzhi_l_1",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 341
+          },
+          {
+            "animation": "idle2",
+            "max": 0.0332,
+            "rms": 0.0029,
+            "worstTime": 1.9167,
+            "worstSlot": "shouzhi_l_5s",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [4, 4],
+            "samples": 690
+          },
+          {
+            "animation": "idle_clap",
+            "max": 0,
+            "rms": 0,
+            "worstTime": 0,
+            "worstSlot": null,
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [0.1333, 0.1333],
+            "samples": 27
+          },
+          {
+            "animation": "in",
+            "max": 0.0266,
+            "rms": 0.0017,
+            "worstTime": 0.2332,
+            "worstSlot": "shouzhi_l_2",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [1, 1],
+            "samples": 180
+          }
+        ],
+        "vsSource": [
+          {
+            "animation": "clap",
+            "max": 0.9053,
+            "rms": 0.1135,
+            "worstTime": 1,
+            "worstSlot": "shouzhi_r_5s",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 348
+          },
+          {
+            "animation": "idle",
+            "max": 1.8355,
+            "rms": 0.2521,
+            "worstTime": 1.675,
+            "worstSlot": "shouzhi_l_2",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [2, 2],
+            "samples": 343
+          },
+          {
+            "animation": "idle2",
+            "max": 1.8677,
+            "rms": 0.2454,
+            "worstTime": 1.675,
+            "worstSlot": "shouzhi_l_2",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [4, 4],
+            "samples": 696
+          },
+          {
+            "animation": "idle_clap",
+            "max": 0,
+            "rms": 0,
+            "worstTime": 0,
+            "worstSlot": null,
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [0.1333, 0.1333],
+            "samples": 27
+          },
+          {
+            "animation": "in",
+            "max": 1.6752,
+            "rms": 0.1582,
+            "worstTime": 0.1917,
+            "worstSlot": "yan_2",
+            "stateMismatches": 0,
+            "orderMismatches": 0,
+            "duration": [1, 1],
+            "samples": 180
+          }
+        ]
+      },
+      "setup": {
+        "json": true,
+        "editor": true
+      }
+    }
+  ],
+  "sourceRoundTrip": [
+    {
+      "animation": "clap",
+      "max": 0,
+      "rms": 0,
+      "worstTime": 0,
+      "worstSlot": null,
+      "stateMismatches": 0,
+      "orderMismatches": 0,
+      "duration": [2, 2],
+      "samples": 348
+    },
+    {
+      "animation": "idle",
+      "max": 0,
+      "rms": 0,
+      "worstTime": 0,
+      "worstSlot": null,
+      "stateMismatches": 0,
+      "orderMismatches": 0,
+      "duration": [2, 2],
+      "samples": 341
+    },
+    {
+      "animation": "idle2",
+      "max": 0,
+      "rms": 0,
+      "worstTime": 0,
+      "worstSlot": null,
+      "stateMismatches": 0,
+      "orderMismatches": 0,
+      "duration": [4, 4],
+      "samples": 691
+    },
+    {
+      "animation": "idle_clap",
+      "max": 0,
+      "rms": 0,
+      "worstTime": 0,
+      "worstSlot": null,
+      "stateMismatches": 0,
+      "orderMismatches": 0,
+      "duration": [0.1333, 0.1333],
+      "samples": 27
+    },
+    {
+      "animation": "in",
+      "max": 0,
+      "rms": 0,
+      "worstTime": 0,
+      "worstSlot": null,
+      "stateMismatches": 0,
+      "orderMismatches": 0,
+      "duration": [1, 1],
+      "samples": 178
+    }
+  ],
+  "preview": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\KeyReduction-20261021\\run-04\\preview.mp4",
+  "notes": [
+    "Spine 匯出未包含（原專案設定，任何 JSON 路徑都無法保留）：Attachment's keys not exported because it has \"Export\" unchecked: [region: 效果图/2, skeleton: MummyMia_Jackpot Game_002, slot: 效果图/3]",
+    "Spine 匯出時列出 98 則「Bone is not in skeleton」警告（原專案狀態，與 Key 精簡無關）。"
+  ]
+}
