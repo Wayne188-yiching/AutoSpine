@@ -45,6 +45,7 @@ import {
   makeObjective,
   patternSearch,
   placementDelta,
+  reduceSpineKeys,
   premultiply,
   prepareReference,
   stripToImagesOnly,
@@ -98,8 +99,9 @@ import {
 } from "@autospine/motion";
 import { AUTOSPINE_VERSION } from "./version.js";
 
-const sha256 = (data: string | Uint8Array) => createHash("sha256").update(data).digest("hex");
-const json = (v: unknown) => `${JSON.stringify(v, null, 1)}\n`;
+export const sha256 = (data: string | Uint8Array) =>
+  createHash("sha256").update(data).digest("hex");
+export const json = (v: unknown) => `${JSON.stringify(v, null, 1)}\n`;
 async function exists(path: string) {
   try {
     await stat(path);
@@ -109,7 +111,7 @@ async function exists(path: string) {
   }
 }
 /** Outputs never overwrite: a build or comparison goes into a new directory. */
-async function newDirectory(path: string) {
+export async function newDirectory(path: string) {
   if (await exists(path))
     throw new Error(`CLI_OUTPUT_EXISTS: ${path} already exists; choose a new output directory`);
   await mkdir(path, { recursive: true });
@@ -172,7 +174,7 @@ const planPaths = (planPath: string, plan: CharacterPlan) => ({
   imagesOnly: resolve(dirname(planPath), plan.source.imagesOnly),
   images: resolve(dirname(planPath), plan.source.images),
 });
-function textures(imagesDir: string) {
+export function textures(imagesDir: string) {
   const cache = new Map<string, { png: PNG; texture?: Texture }>();
   const get = (path: string) => {
     let e = cache.get(path);
@@ -306,7 +308,13 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
       w = deviation(doc);
     if (w < worst) [bend, document, worst] = [flipped, doc, w];
   }
+  // Key reduction (ADR-044) on the compiled file, against its exact motion.
+  const reduction = plan.motion.keyReduction
+    ? reduceSpineKeys(document, plan.motion.keyReduction)
+    : undefined;
+  if (reduction) document = reduction.document as typeof document;
   await newDirectory(outDir);
+  if (reduction) await writeFile(join(outDir, "key-reduction.json"), json(reduction.report));
   const name = `${plan.id}.json`;
   await writeFile(join(outDir, name), `${JSON.stringify(document, null, 1)}\n`);
   await writeFile(
@@ -357,6 +365,15 @@ export async function buildCharacterFiles(planPath: string, outDir: string, para
     bones: built.rigging.rigged.rig.bones.length,
     slots: built.rigging.slots.length,
     setupDeviationPx: record.setupDeviationPx,
+    ...(reduction
+      ? {
+          keyReduction: {
+            mode: reduction.report.mode,
+            keys: reduction.report.keys,
+            pass: reduction.report.pass,
+          },
+        }
+      : {}),
     seams: built.seams.length,
     bend: record.bend,
   };
@@ -730,7 +747,7 @@ export async function fitPoseFiles(
 }
 
 /** ffmpeg filter text: escape the characters drawtext treats specially. */
-const drawtextValue = (v: string) =>
+export const drawtextValue = (v: string) =>
   v.replace(/\\/g, "\\\\").replace(/:/g, "\\:").replace(/'/g, "\\'");
 /**
  * review-video <plan.json> <build-dir> [<artist.json>] <new-video.mp4>: one video per plan, every
@@ -946,7 +963,7 @@ export function spineExecutable(explicit?: string): string | undefined {
   ];
   return candidates.find((c): c is string => !!c && existsSync(c));
 }
-function runSpine(exe: string, args: string[]) {
+export function runSpine(exe: string, args: string[]) {
   return new Promise<{ code: number; output: string }>((ok) => {
     let output = "";
     const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"] });

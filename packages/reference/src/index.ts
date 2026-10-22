@@ -7,3 +7,7 @@ export * from "./optimize.js";
 export * from "./review.js";
 export * from "./pose-fit.js";
 export * from "./video.js";
+export * from "./keys-fit.js";
+export * from "./keys-timeline.js";
+export * from "./keys-world.js";
+export * from "./keys-reduce.js";

@@ -123,6 +123,7 @@
   - `nearest` 權重跨三根以上會交會的骨（褲襠的脊椎、大腿、小腿）時，`maxInfluences` 用 3：2 會讓排第三的骨在相鄰兩點間一步歸零（大野狼褲子 0.5.6 佈線，`maxInfluences` 3 拉伸 0.90，2 是 3.26）。
   - 會變形的部件（身體、臉）也用 `feature` 預設的人工佈線，骨數取自它的權重（chain、gradient、nearest、dome、transfer 的來源骨），挖空（眼窩）會保留成鎖定的環。需要更密時直接給 `hullVertices` / `interiorVertices`；`density: "fine"`（約 100 點，不看大小）只在 B1/B3 變形檢查不過時才用。
   - 關鍵幀：建置最後會把每條骨軌道清成最少的關鍵幀，誤差在 `motion.keyTolerance`（預設 0.25 度或 px）內；`0` 保留全部。
+  - 要交給美術繼續改的檔，改用 `motion.keyReduction`（ADR-044）：編譯保留全部 Key，再用官方 Runtime 比對世界座標頂點精簡。`fidelity` 留最少的原有 Key；`posable` 讓一起轉折的骨共用姿勢格、新 Key 在整數幀，跟隨部件保留自己的轉折與延遲。上限是世界頂點 px（預設骨架高度 0.1%／0.3%），超過就補 Key 或恢復原通道，不放寬。已有的 Spine 檔用 CLI `reduce-keys`（或 `autospine_reduce_keys`），兩種模式各出一份並附報告、預覽與 Spine 匯入匯出驗證。
 - **軟的長條部件**（瀏海、鬍子、耳朵、山羊鬍、流蘇）：3 骨鏈＋`feature` 人工密度網格＋骨鏈權重。idle 裡瀏海和鬍子小幅波動。不要用矩形格網 `surface`，佈線看起來像沒做完。
 - **跨關節的網格**掛在關節兩側的骨：頸部 `spine→head`、長袍 `base→spine`。掛在關節自己的骨上，藏在下面的那端會甩開。
 - **起始姿勢**：

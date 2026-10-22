@@ -284,7 +284,9 @@ export function animateCharacter(
   return {
     specs,
     // The rest pose and the key poses (ADR-024, ADR-033) are offsets over the compiled motion;
-    // the key cleanup (ADR-038) then keeps as few keys as play within the tolerance.
+    // the key cleanup (ADR-038) then keeps as few keys as play within the tolerance. A plan with
+    // `keyReduction` (ADR-044) keeps every compiled key here: the reduction runs on the compiled
+    // file, against this exact motion.
     animations: specs.map((s, i) =>
       simplifyAnimation(
         applyKeyposes(
@@ -294,7 +296,7 @@ export function animateCharacter(
           plan.animations[i]!.keyposeLag,
         ),
         s.fps,
-        plan.keyTolerance ?? KEY_TOLERANCE,
+        plan.keyReduction ? 0 : (plan.keyTolerance ?? KEY_TOLERANCE),
       ),
     ),
     // Shown transparent slots are judged over the whole plan, not per animation.

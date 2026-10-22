@@ -44,6 +44,7 @@ import {
   fitVideoFiles,
   mergePlanFiles,
 } from "@autospine/cli/character";
+import { reduceKeysFiles } from "@autospine/cli/keys";
 import { lintCharacterPlan } from "@autospine/character";
 import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
 import {
@@ -97,6 +98,14 @@ const Pose = Type.Object(
   strict,
 );
 const WorkspacePath = Type.String({ minLength: 1, maxLength: 4096 });
+/** World-vertex limits of one key reduction mode, skeleton px (ADR-044). */
+const LimitSchema = Type.Object(
+  {
+    maxError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 })),
+    rmsError: Type.Optional(Type.Number({ exclusiveMinimum: 0, maximum: 100 })),
+  },
+  strict,
+);
 const toolSchemas = {
   autospine_compile_character: Type.Object({ input: CharacterSpineInputSchema }, strict),
   autospine_build_keypose_animation: Type.Object(
@@ -327,8 +336,67 @@ const toolSchemas = {
     },
     strict,
   ),
+  // Key reduction (ADR-044): the same file-level step as `autospine reduce-keys`.
+  autospine_reduce_keys: Type.Object(
+    {
+      inputPath: WorkspacePath,
+      outputDir: WorkspacePath,
+      modes: Type.Optional(
+        Type.Array(Type.Union([Type.Literal("fidelity"), Type.Literal("posable")]), {
+          minItems: 1,
+          maxItems: 2,
+        }),
+      ),
+      limits: Type.Optional(
+        Type.Object(
+          {
+            fidelity: Type.Optional(LimitSchema),
+            posable: Type.Optional(LimitSchema),
+          },
+          strict,
+        ),
+      ),
+      fps: Type.Optional(Type.Number({ minimum: 1, maximum: 240 })),
+      animations: Type.Optional(
+        Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 256 }),
+      ),
+      kinds: Type.Optional(
+        Type.Array(
+          Type.Union(
+            ["bone", "slot", "ik", "transform", "path", "deform"].map((k) => Type.Literal(k)),
+          ),
+          { maxItems: 6 },
+        ),
+      ),
+      skip: Type.Optional(
+        Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 4096 }),
+      ),
+      lock: Type.Optional(
+        Type.Array(
+          Type.Object(
+            {
+              animation: Type.Optional(Type.String({ minLength: 1, maxLength: 256 })),
+              timeline: Type.Optional(Type.String({ minLength: 1, maxLength: 256 })),
+              time: Type.Optional(Type.Number({ minimum: 0, maximum: 3600 })),
+            },
+            strict,
+          ),
+          { maxItems: 4096 },
+        ),
+      ),
+      loops: Type.Optional(
+        Type.Array(Type.String({ minLength: 1, maxLength: 256 }), { maxItems: 256 }),
+      ),
+      baselinePath: Type.Optional(WorkspacePath),
+      imagesDir: Type.Optional(WorkspacePath),
+      video: Type.Optional(Type.Boolean()),
+    },
+    strict,
+  ),
 };
 const descriptions: Record<keyof typeof toolSchemas, string> = {
+  autospine_reduce_keys:
+    "Reduce the keys of a workspace-local Spine 4.0 JSON (ADR-044) into a NEW workspace-local directory, in `fidelity` (fewest keys within the limit, refitted Spine Bezier curves) and/or `posable` (shared pose frames for main bones on whole frames, follow parts on their own turns) mode, each with its own world-vertex limit (px; default by mode from the skeleton size; never widened to reach a ratio). Every result is played on the official runtime against the untouched source (hierarchy, weights, IK/transform/path, deform): max and RMS vertex error, worst time and part, pose nodes, contact slide, follow lag, loop seam, discrete states; keys are added where it is off and timelines fall back to the original past the budget. Writes per mode <name>.json and key-report.json, plus summary.json and key-reduction-report.html/.md. The Spine editor import/export check runs only from the CLI (`autospine reduce-keys`); `video: true` renders original | modes with ffmpeg and the images. Not an artist approval.",
   autospine_compile_character:
     "Compile explicit multi-part engine IR, bone/attachment/rgba/deform timelines, convex clipping and native IK/Transform to Spine 4.0 JSON in memory; no automatic anatomy or artist approval.",
   autospine_build_keypose_animation:
@@ -390,6 +458,7 @@ const writingTools = new Set<string>([
   "autospine_fit_pose",
   "autospine_fit_video",
   "autospine_merge_plans",
+  "autospine_reduce_keys",
 ]);
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
   name,
@@ -819,6 +888,52 @@ export class AutoSpineMcpServer {
               report: relative(root, a.report),
             })),
             outputDir: relative(root, output),
+            artistQualityAccepted: false,
+          });
+        }
+        case "autospine_reduce_keys": {
+          if (!Value.Check(toolSchemas.autospine_reduce_keys, args)) break;
+          const root = await realpath(resolve(this.workspace));
+          const input = await guardFile(root, args.inputPath, 256 * 1024 * 1024);
+          if (!/\.json$/i.test(input))
+            throw new Error(
+              "MCP_KEYS_INPUT: a Spine 4.0 JSON export is needed (.spine files go through the CLI)",
+            );
+          const baseline = args.baselinePath
+            ? await guardFile(root, args.baselinePath, 256 * 1024 * 1024)
+            : undefined;
+          const images = args.imagesDir ? await guardDirectory(root, args.imagesDir) : undefined;
+          const output = await guardOutput(root, args.outputDir, true);
+          const summary = await reduceKeysFiles(input, output, {
+            spine: false,
+            video: args.video ?? false,
+            ...(args.modes ? { modes: args.modes } : {}),
+            ...(args.limits ? { limits: args.limits } : {}),
+            ...(args.fps === undefined ? {} : { fps: args.fps }),
+            ...(args.animations ? { animations: args.animations } : {}),
+            ...(args.kinds
+              ? {
+                  kinds: args.kinds as ("bone" | "slot" | "ik" | "transform" | "path" | "deform")[],
+                }
+              : {}),
+            ...(args.skip ? { skip: args.skip } : {}),
+            ...(args.lock ? { lock: args.lock } : {}),
+            ...(args.loops ? { loops: args.loops } : {}),
+            ...(baseline ? { baseline } : {}),
+            ...(images ? { images } : {}),
+          }).catch((e: unknown) => {
+            const m = (e as Error).message ?? "";
+            if (/^CLI_KEYS_VERSION:/.test(m))
+              throw new Error(`MCP_KEYS_VERSION: ${m.slice(m.indexOf(": ") + 2)}`);
+            return characterFailure(e);
+          });
+          return result({
+            outputDir: relative(root, output),
+            sha256: summary.sha256,
+            sourceUnchanged: summary.sourceUnchanged,
+            runs: summary.runs.map((r) => ({ ...r, json: relative(root, r.json), spine: null })),
+            preview: summary.preview ? relative(root, summary.preview) : null,
+            notes: summary.notes,
             artistQualityAccepted: false,
           });
         }
