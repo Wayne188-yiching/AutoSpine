@@ -98,7 +98,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
-  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]
+  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference]
   autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
@@ -287,11 +287,21 @@ async function characterCommand(args: string[]): Promise<boolean> {
       return true;
     case "deliver": {
       if (p.length !== 4 && p.length !== 5) throw new Error(characterUsage);
-      known("name", "images", "spine", "replace", "force", "no-video", "no-reference");
+      known(
+        "name",
+        "images",
+        "spine",
+        "spine-version",
+        "replace",
+        "force",
+        "no-video",
+        "no-reference",
+      );
       const opts = {
         name: flags.get("name") || undefined,
         images: flags.get("images") || undefined,
         spine: flags.get("spine") || undefined,
+        spineVersion: flags.get("spine-version") || undefined,
         replace: flags.has("replace"),
         force: flags.has("force"),
         video: !flags.has("no-video"),
