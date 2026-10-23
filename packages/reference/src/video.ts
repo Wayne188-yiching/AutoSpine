@@ -716,6 +716,8 @@ export interface VideoMeasurements {
   parts: PartScore[];
   figure: { lag: number; amplitude: number; motion: number };
   seam: number | null;
+  /** The build's deformation QA (ADR-045): parts squashed to a line, or turned over through one. */
+  deformation?: { collapses: Record<string, unknown>; flips: Record<string, unknown> };
 }
 export function checkVideoAcceptance(m: VideoMeasurements): VideoCheckRow[] {
   const A = VIDEO_ACCEPTANCE;
@@ -762,13 +764,24 @@ export function checkVideoAcceptance(m: VideoMeasurements): VideoCheckRow[] {
       ok: m.seam <= A.seam,
       value: +m.seam.toFixed(4),
     });
+  if (m.deformation) {
+    // A reference drawing hides a part behind another; the build must hide it, not flatten it.
+    const parts = [
+      ...new Set([...Object.keys(m.deformation.collapses), ...Object.keys(m.deformation.flips)]),
+    ];
+    rows.push({
+      id: "V5 collapsed or squashed-through parts = 0",
+      ok: !parts.length,
+      value: parts,
+    });
+  }
   return rows;
 }
 
 /**
  * How far a comparison is from passing (ADR-036): over the rows, how far each value is past its
  * threshold, as a fraction of the threshold. 0 when every row passes; rounds of a fit are ranked by
- * it. A V2 row that tracked no part counts 1.
+ * it. A V2 row that tracked no part counts 1, and so does a failed V5 (ADR-045).
  */
 export function videoPenalty(rows: readonly VideoCheckRow[]): number {
   const A = VIDEO_ACCEPTANCE;
@@ -790,6 +803,7 @@ export function videoPenalty(rows: readonly VideoCheckRow[]): number {
         under(n(1), A.amplitudeLow) +
         over(n(1), A.amplitudeHigh);
     else if (id.startsWith("V4") && Number.isFinite(n(0))) penalty += over(n(0), A.seam);
+    else if (id.startsWith("V5") && v.length) penalty += 1;
   }
   return +penalty.toFixed(4);
 }

@@ -51,6 +51,8 @@ import {
   stripToImagesOnly,
   borderColor,
   checkVideoAcceptance,
+  deformationQA,
+  type DeformationSummary,
   drawList,
   flatten,
   foregroundMask,
@@ -1562,6 +1564,7 @@ export async function compareVideoFiles(
   const tex = textures(planPaths(planPath, plan).images);
   const font =
     opts.font ?? (process.platform === "win32" ? "C:/Windows/Fonts/msjh.ttc" : undefined);
+  const exclude = (plan.qa?.deformExclude ?? []).map((p) => new RegExp(p));
   const results: VideoComparison[] = [];
   for (const job of jobs) {
     const entry = animations.find((a) => a.name === job.name);
@@ -1575,6 +1578,7 @@ export async function compareVideoFiles(
         entry.name,
         entry.loop !== false,
         fps,
+        exclude,
         { ...job, ...(opts.window !== undefined ? { window: opts.window } : {}) },
         dir,
         font,
@@ -1656,6 +1660,7 @@ async function compareOneVideo(
   animation: string,
   loop: boolean,
   fps: number,
+  exclude: RegExp[],
   job: { video: string; start: number; window?: number },
   dir: string,
   font: string | undefined,
@@ -1820,6 +1825,9 @@ async function compareOneVideo(
       for (let i = 0; i < last.length; i++) sum += Math.abs(last[i]! - build0.rgb[i]!);
       seam = sum / last.length / 255;
     }
+    // ADR-045: a part the clip hides must be hidden in the build, not flattened to a line.
+    const { collapses, flips } = deformationQA(sk, animation, fps, undefined, exclude);
+    const deformation = { collapses, flips };
     // Whole-figure timing and size along the reference's busier axis, over the first n frames.
     const sd = (v: number[]) => {
       const m = v.reduce((x, y) => x + y, 0) / v.length;
@@ -1853,7 +1861,7 @@ async function compareOneVideo(
       return {
         figure,
         parts,
-        rows: checkVideoAcceptance({ iou: ious.slice(0, n), parts, figure, seam }),
+        rows: checkVideoAcceptance({ iou: ious.slice(0, n), parts, figure, seam, deformation }),
       };
     };
     // A loop fitted to a clip that drifts is judged on the cycles its fold used (ADR-036); the
@@ -1889,7 +1897,16 @@ async function compareOneVideo(
         ),
       }))
       .filter((m): m is { part: string; frames: [number, number] } => m.frames !== null);
-    const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored);
+    const hints = videoHints(
+      rows,
+      ious.slice(0, window),
+      figure,
+      parts,
+      count,
+      fps,
+      mirrored,
+      deformation,
+    );
     if (whole)
       hints.push(
         `judged on frames 0-${window - 1}, the cycles the fit folded; over all ${ious.length} frames ${
@@ -1912,6 +1929,7 @@ async function compareOneVideo(
         frames: { compared: ious.length, animation: count, ...(whole ? { judged: window } : {}) },
         registration: { iou: +reg.iou.toFixed(3), pixelsPerUnit: +view.scale.toFixed(4) },
         mirrored,
+        deformation,
         notJudged: parts
           .filter((p) => !judgedParts([p], ious.length).length)
           .map((p) => ({ part: p.part, frames: p.frames })),
@@ -2921,6 +2939,7 @@ function videoHints(
   count: number,
   fps: number,
   mirrored: { part: string; frames: [number, number] }[] = [],
+  deformation?: Pick<DeformationSummary, "collapses" | "flips">,
 ): string[] {
   const failed = (prefix: string) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);
   const hints: string[] = [];
@@ -2979,5 +2998,13 @@ function videoHints(
       hints.push(`${p.part}: ${notes.join(", ")}`);
     }
   if (failed("V4")) hints.push("the loop's last frame does not match its first: a visible jump");
+  for (const [part, c] of Object.entries(deformation?.collapses ?? {}))
+    hints.push(
+      `${part}: squashed to ${c.ratio.toFixed(2)} of its own width on frames ${c.frames[0]}-${c.frames[1]}, a line on screen; hide it there (attachment off) if the reference hides it`,
+    );
+  for (const [part, at] of Object.entries(deformation?.flips ?? {}))
+    hints.push(
+      `${part}: turns over through a line at frame ${at.join(", ")}; swap or mirror it in one step (ADR-035) instead`,
+    );
   return hints;
 }

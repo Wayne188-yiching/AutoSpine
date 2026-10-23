@@ -73,6 +73,15 @@ export function checkAcceptance(
       `${g} / ${+(ACCEPTANCE.stretchVsArtist * s).toFixed(3)}`,
     );
   }
+  for (const a of animations) {
+    // ADR-045: parts squashed to a line or turned over through one, where the artist's are not.
+    const g = r.deformation[a]!.generated,
+      s = r.deformation[a]!.artist;
+    const own = [...new Set([...Object.keys(g.collapses), ...Object.keys(g.flips)])].filter(
+      (slot) => !(slot in s.collapses) && !(slot in s.flips),
+    );
+    add(`B4 collapsed or squashed-through parts ${a} = 0 (beyond the artist's)`, !own.length, own);
+  }
   const images = (a: Record<string, number>) =>
     (a.region ?? 0) + (a.mesh ?? 0) + (a.linkedmesh ?? 0);
   const total = images(r.structure.generated.attachments),
