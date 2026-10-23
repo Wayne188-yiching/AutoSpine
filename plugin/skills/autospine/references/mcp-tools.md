@@ -36,7 +36,7 @@ The server reports the plugin and engine version in `serverInfo.version` and as 
 | `autospine_compare_reference`       | Artist-baseline comparison of the plan's animations and pre-registered acceptance into a **new** workspace directory                     |
 | `autospine_optimize_motion`         | Resumable motion-parameter search for at most `budgetSeconds` in a workspace state directory                                             |
 | `autospine_review_video`            | **New** MP4: artist \| build (or reference video \| build) with wireframe, then bones, then motion (needs ffmpeg)                        |
-| `autospine_compare_video`           | **New** directory: the build against a workspace reference video, V1–V4 rows, hints and reference \| build \| difference video (ADR-034) |
+| `autospine_compare_video`           | **New** directory: the build against a workspace reference video, V1–V5 rows, hints and reference \| build \| difference video (ADR-034) |
 | `autospine_fit_pose`                | **New** JSON: a rest pose fitted to a PNG of `qa.view` (ADR-024), or key poses fitted to pictures on frames (`references`, ADR-033)      |
 | `autospine_merge_plans`             | **New** plan: plans of one character merged, every animation keeping its motion (ADR-031)                                                |
 | `autospine_fit_video`               | **New** directory: one animation's motion fitted to a workspace reference video in rounds; `best/` holds the lowest penalty (ADR-036)    |

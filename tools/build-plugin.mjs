@@ -45,7 +45,8 @@ const CLI_IN_SKILL = "node <skill>/scripts/autospine.mjs";
 function rewrite(text, source, target) {
   const sourceDir = posix.dirname(source);
   const targetDir = posix.dirname(target);
-  const linked = text.replace(/\]\(([^)\s]+)\)/g, (whole, href) => {
+  // A Windows checkout (core.autocrlf) reads CRLF; the copies are compared byte for byte.
+  const linked = text.replace(/\r\n/g, "\n").replace(/\]\(([^)\s]+)\)/g, (whole, href) => {
     if (/^[a-z]+:/i.test(href) || href.startsWith("#")) return whole;
     const [path, anchor = ""] = href.split(/(?=#)/);
     const repoPath = posix.normalize(posix.join(sourceDir, path));

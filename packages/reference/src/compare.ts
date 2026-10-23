@@ -352,11 +352,74 @@ export interface DeformationSummary {
   visibleInversions: Record<string, number>;
   maxCharacterStretch: { slot: string; value: number } | null;
   topStretch: [string, number][];
+  /**
+   * Shown parts squashed toward a line (ADR-045): the narrowest minor/major axis ratio against the
+   * part's own setup shape, and the first and last frame (fractional) below COLLAPSE.ratio.
+   */
+  collapses: Record<string, { ratio: number; frames: [number, number] }>;
+  /** Shown parts turned over by squashing through a line (ADR-045): the frames it happens on. */
+  flips: Record<string, number[]>;
+}
+/** ADR-045: a part narrower than 1:5 of its own shape reads as a line; checked 4 times a frame. */
+export const COLLAPSE = Object.freeze({ ratio: 0.2, substeps: 4, alpha: 0.25 });
+/**
+ * How a part's shape changed from `rest` to `now` (interleaved vertices): the least-squares
+ * linear map's minor/major axis ratio and its determinant (negative = turned over). Null for a
+ * part with no area at rest.
+ */
+export function shapeChange(rest: number[], now: number[]): { ratio: number; det: number } | null {
+  const n = rest.length / 2;
+  let rx = 0,
+    ry = 0,
+    cx = 0,
+    cy = 0;
+  for (let i = 0; i < n; i++) {
+    rx += rest[2 * i]!;
+    ry += rest[2 * i + 1]!;
+    cx += now[2 * i]!;
+    cy += now[2 * i + 1]!;
+  }
+  rx /= n;
+  ry /= n;
+  cx /= n;
+  cy /= n;
+  let sxx = 0,
+    sxy = 0,
+    syy = 0,
+    pxx = 0,
+    pxy = 0,
+    pyx = 0,
+    pyy = 0;
+  for (let i = 0; i < n; i++) {
+    const x = rest[2 * i]! - rx,
+      y = rest[2 * i + 1]! - ry,
+      u = now[2 * i]! - cx,
+      v = now[2 * i + 1]! - cy;
+    sxx += x * x;
+    sxy += x * y;
+    syy += y * y;
+    pxx += u * x;
+    pxy += u * y;
+    pyx += v * x;
+    pyy += v * y;
+  }
+  const d = sxx * syy - sxy * sxy;
+  if (d <= 1e-9 * (sxx + syy) ** 2) return null;
+  // L = P * S^-1
+  const A = (pxx * syy - pxy * sxy) / d,
+    B = (pxy * sxx - pxx * sxy) / d,
+    C = (pyx * syy - pyy * sxy) / d,
+    D = (pyy * sxx - pyx * sxy) / d;
+  const s = Math.hypot(A - D, B + C) / 2,
+    t = Math.hypot(A + D, B - C) / 2;
+  return { ratio: t + s > 1e-12 ? Math.abs(t - s) / (t + s) : 0, det: A * D - B * C };
 }
 /**
  * Triangle inversions (and those over 25% alpha) and edge stretch against the setup pose. An
  * attachment the animation swaps in (a sequence image, an eyelid) is measured against its own
- * geometry on the setup bones, not against the slot's setup attachment.
+ * geometry on the setup bones, not against the slot's setup attachment. Shown parts outside
+ * `exclude` are also checked for collapse and turning over through a line (ADR-045), sampled
+ * between frames too: the runtime plays any time, not only whole frames.
  */
 export function deformationQA(
   sk: LoadedSkeleton,
@@ -390,12 +453,57 @@ export function deformationQA(
   };
   const inv: Record<string, number> = {},
     visible: Record<string, number> = {},
-    stretch: Record<string, number> = {};
-  for (let f = 0; f <= N; f++) {
-    pose(sk, animation, frameTime(f, N, D, fps));
+    stretch: Record<string, number> = {},
+    collapses: DeformationSummary["collapses"] = {},
+    flips: DeformationSummary["flips"] = {};
+  const S = COLLAPSE.substeps,
+    at = (s: number) =>
+      s % S ? Math.min(D - 1e-6, s / S / fps + 1e-6) : frameTime(s / S, N, D, fps);
+  const watched = (slot: string) => !exclude.some((re) => re.test(slot));
+  const shown = (d: DrawItem, rest: DrawItem) =>
+    d.color[3] > COLLAPSE.alpha ? shapeChange(rest.verts, d.verts) : null;
+  // Between two samples the part faces opposite ways: halve toward the turn and see how thin it
+  // gets. A reflection keyed stepped (ADR-035) turns over whole; this one squashes through a line.
+  const squashedTurn = (d: DrawItem, rest: DrawItem, t0: number, t1: number, det0: number) => {
+    let lo = t0,
+      hi = t1,
+      thinnest = Infinity,
+      when = t0;
+    for (let k = 0; k < 12; k++) {
+      const mid = (lo + hi) / 2;
+      pose(sk, animation, mid);
+      const now = drawList(sk).find((x) => x.slot === d.slot && x.attachment === d.attachment);
+      const shape = now && shown(now, rest);
+      if (!shape) return null;
+      if (shape.ratio < thinnest) [thinnest, when] = [shape.ratio, mid];
+      if (shape.det * det0 > 0) lo = mid;
+      else hi = mid;
+    }
+    return thinnest < COLLAPSE.ratio ? +(when * fps).toFixed(2) : null;
+  };
+  const last = new Map<string, { attachment: string; det: number; s: number }>();
+  for (let s = 0; s <= N * S; s++) {
+    pose(sk, animation, at(s));
     for (const d of drawList(sk)) {
       const s0 = restOf(d);
       if (!s0 || d.tris.length < 6 || s0.verts.length !== d.verts.length) continue;
+      const shape = watched(d.slot) ? shown(d, s0) : null;
+      if (shape) {
+        if (shape.ratio < COLLAPSE.ratio) {
+          const c = collapses[d.slot],
+            frame = +(s / S).toFixed(2);
+          if (!c) collapses[d.slot] = { ratio: shape.ratio, frames: [frame, frame] };
+          else [c.ratio, c.frames[1]] = [Math.min(c.ratio, shape.ratio), frame];
+        }
+        const p = last.get(d.slot);
+        if (p && p.s === s - 1 && p.attachment === d.attachment && p.det * shape.det < 0) {
+          const turn = squashedTurn(d, s0, at(s - 1), at(s), p.det);
+          if (turn !== null) (flips[d.slot] ??= []).push(turn);
+        }
+        last.set(d.slot, { attachment: d.attachment, det: shape.det, s });
+      }
+      // Inversions and stretch on whole frames, as before.
+      if (s % S) continue;
       const tex = alpha?.(d.path);
       let n = 0,
         nv = 0,
@@ -454,6 +562,13 @@ export function deformationQA(
       ? { slot: character[0][0], value: +character[0][1].toFixed(3) }
       : null,
     topStretch: character.slice(0, 6).map(([s, v]) => [s, +v.toFixed(3)]),
+    collapses: Object.fromEntries(
+      Object.entries(collapses).map(([s, c]) => [
+        s,
+        { ratio: +c.ratio.toFixed(3), frames: c.frames },
+      ]),
+    ),
+    flips,
   };
 }
 
