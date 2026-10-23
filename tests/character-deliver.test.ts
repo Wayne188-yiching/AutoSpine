@@ -15,8 +15,14 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
-import { buildCharacterFiles, deliverFiles, initProjectFolder } from "@autospine/cli/character";
+import {
+  buildCharacterFiles,
+  deliverFiles,
+  initProjectFolder,
+  spineVersionArg,
+} from "@autospine/cli/character";
 import { AUTOSPINE_VERSION } from "@autospine/cli/version";
+import { forEditorVersion } from "@autospine/spine";
 import { fixtureWorkspace } from "./character-fixture.js";
 
 const hasFfmpeg = spawnSync("ffmpeg", ["-version"]).status === 0;
@@ -156,6 +162,80 @@ describe("deliver: the project folder holds only the Spine project, its images a
       }),
     ).rejects.toThrow("CLI_SPINE");
   }, 120_000);
+
+  it("imports the project with a chosen editor version, 4.0 or newer", async () => {
+    expect(spineVersionArg(undefined)).toBe("4.0.64");
+    expect(spineVersionArg("4.2")).toBe("4.2");
+    expect(spineVersionArg("4.2.43")).toBe("4.2.43");
+    expect(() => spineVersionArg("latest")).toThrow("CLI_SPINE_VERSION");
+    expect(() => spineVersionArg("3.8.99")).toThrow(/cannot import 4.0 data/);
+    // Refused before the fit, the videos or any file is written.
+    const ws = await fixtureWorkspace();
+    const plan = join(ws, "plan.json");
+    await buildCharacterFiles(plan, join(ws, "build"));
+    const delivery = join(ws, "Character", "AutoSpine");
+    await expect(
+      deliverFiles(plan, join(ws, "build"), delivery, undefined, { spineVersion: "4.x" }),
+    ).rejects.toThrow("CLI_SPINE_VERSION");
+    await expect(readdir(delivery)).rejects.toThrow();
+  }, 120_000);
+
+  it("lays a 4.0 document out for a newer editor's import (ADR-046)", () => {
+    const keys = [{ vertices: [1, 2] }, { time: 0.5, offset: 2, vertices: [3] }];
+    const doc = {
+      skeleton: { spine: "4.0.64", images: "./images/" },
+      bones: [{ name: "root" }, { name: "head", parent: "root", transform: "noScaleOrReflection" }],
+      animations: {
+        idle: {
+          bones: { head: { rotate: [{ value: 5 }] } },
+          deform: { default: { Body: { body: keys }, Tail: { tail: keys } } },
+        },
+        still: {},
+      },
+    };
+    const before = JSON.stringify(doc);
+    expect(forEditorVersion(doc, "4.0.64")).toBe(doc);
+    const v42 = forEditorVersion(doc, "4.2") as unknown as {
+      skeleton: { spine: string; images: string };
+      bones: Record<string, unknown>[];
+      animations: Record<string, Record<string, unknown>>;
+    };
+    expect(v42.skeleton).toEqual({ spine: "4.2.0", images: "./images/" });
+    expect(v42.bones[1]).toEqual({ name: "head", parent: "root", inherit: "noScaleOrReflection" });
+    expect(v42.animations.idle).toEqual({
+      bones: { head: { rotate: [{ value: 5 }] } },
+      attachments: {
+        default: { Body: { body: { deform: keys } }, Tail: { tail: { deform: keys } } },
+      },
+    });
+    expect(v42.animations.still).toEqual({});
+    // 4.1 moves the deform keys but still reads `transform`.
+    const v41 = forEditorVersion(doc, "4.1.24") as unknown as typeof v42;
+    expect(v41.skeleton.spine).toBe("4.1.24");
+    expect(v41.bones[1]!.transform).toBe("noScaleOrReflection");
+    expect(v41.animations.idle!.deform).toBeUndefined();
+    expect(JSON.stringify(doc)).toBe(before);
+  });
+
+  it.skipIf(process.platform === "win32")(
+    "passes the chosen version to the editor's command line",
+    async () => {
+      const ws = await fixtureWorkspace();
+      const plan = join(ws, "plan.json");
+      await buildCharacterFiles(plan, join(ws, "build"));
+      const delivery = join(ws, "Character", "AutoSpine");
+      const result = await deliverFiles(plan, join(ws, "build"), delivery, undefined, {
+        name: "Fixture_Idle",
+        spine: await fakeSpine(ws),
+        spineVersion: "4.2.43",
+        video: false,
+      });
+      expect(result.spineVersion).toBe("4.2.43");
+      const project = JSON.parse(await readFile(result.spine!, "utf8")) as { args: string[] };
+      expect(project.args.slice(0, 2)).toEqual(["-u", "4.2.43"]);
+    },
+    120_000,
+  );
 
   it("delivers only the images the project draws, and tells an edited project by its hash", async () => {
     const ws = await fixtureWorkspace();

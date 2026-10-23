@@ -33260,6 +33260,36 @@ function readImagesOnlyLayout(document2) {
   return layout;
 }
 
+// packages/spine/src/editor-version.ts
+function forEditorVersion(document2, version) {
+  const [major = 4, minor = 0] = version.split(".").map(Number);
+  if (major === 4 && minor === 0) return document2;
+  const doc = structuredClone(document2);
+  doc.skeleton = {
+    ...doc.skeleton,
+    spine: version.split(".").length === 2 ? `${version}.0` : version
+  };
+  for (const animation of Object.values(doc.animations ?? {})) {
+    const deform = animation.deform;
+    if (!deform) continue;
+    const moved = {};
+    for (const [skin, slots] of Object.entries(deform))
+      for (const [slot, attachments] of Object.entries(slots))
+        for (const [name, keys] of Object.entries(attachments))
+          ((moved[skin] ??= {})[slot] ??= {})[name] = { deform: keys };
+    animation.attachments = moved;
+    delete animation.deform;
+  }
+  if (major > 4 || minor >= 2) {
+    for (const bone of doc.bones ?? [])
+      if (bone.transform !== void 0) {
+        bone.inherit = bone.transform;
+        delete bone.transform;
+      }
+  }
+  return doc;
+}
+
 // packages/cli/dist/preview.js
 function previewHtml(result, pngBase64, manifestId = "unbound") {
   const data = JSON.stringify({
@@ -41196,7 +41226,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.11";
+var AUTOSPINE_VERSION = "0.5.12";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");
@@ -41816,6 +41846,16 @@ function spineExecutable(explicit) {
   ];
   return candidates.find((c) => !!c && existsSync2(c));
 }
+function spineVersionArg(version) {
+  if (version === void 0)
+    return "4.0.64";
+  const m = /^(\d+)\.(\d+)(?:\.\d+)?$/.exec(version);
+  if (!m)
+    throw new Error(`CLI_SPINE_VERSION: ${version} is not a Spine version such as 4.2 or 4.2.43`);
+  if (+m[1] < 4)
+    throw new Error(`CLI_SPINE_VERSION: Spine ${version} cannot import 4.0 data; use 4.0 or newer`);
+  return version;
+}
 function runSpine(exe, args) {
   return new Promise((ok) => {
     let output = "";
@@ -41864,6 +41904,7 @@ async function readDeliveryRecord(dir) {
   return {};
 }
 async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = {}) {
+  const spineVersion = spineVersionArg(opts.spineVersion);
   const work = resolve3(buildDir);
   const fitted = [];
   let fitError;
@@ -41948,6 +41989,7 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
   document2.skeleton = { ...document2.skeleton, images: "./images/" };
   const result = {
     spine: null,
+    spineVersion,
     json: null,
     video: null,
     images: String(document2.skeleton.images),
@@ -41955,12 +41997,22 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
     strayImages: [],
     replaced: replaced ?? null
   };
+  const delivered = forEditorVersion(document2, spineVersion);
   const exe = spineExecutable(opts.spine);
   if (exe) {
     const temp = join2(out, `.${name}.autospine-import.json`);
-    await writeFile2(temp, JSON.stringify(document2));
+    await writeFile2(temp, JSON.stringify(delivered));
     try {
-      const run = await runSpine(exe, ["-u", "4.0.64", "-i", temp, "-o", target.spine, "-r", name]);
+      const run = await runSpine(exe, [
+        "-u",
+        spineVersion,
+        "-i",
+        temp,
+        "-o",
+        target.spine,
+        "-r",
+        name
+      ]);
       if (run.code === 0 && existsSync2(target.spine))
         result.spine = target.spine;
       else
@@ -41970,7 +42022,7 @@ async function deliverFiles(planPath, buildDir, deliveryDir, artistPath, opts = 
     }
   }
   if (!result.spine) {
-    await writeFile2(target.json, json(document2));
+    await writeFile2(target.json, json(delivered));
     result.json = target.json;
   }
   const record = await readDeliveryRecord(out);
@@ -43748,7 +43800,7 @@ var characterUsage = `Character commands (ADR-017):
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
-  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--replace] [--force] [--no-video] [--no-reference]
+  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference]
   autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
 async function characterCommand(args) {
   const flags = new Map(args.filter((a) => a.startsWith("--")).map((a) => [a.slice(2).split("=")[0], a.split("=").slice(1).join("=")]));
@@ -43919,11 +43971,12 @@ ${characterUsage}`);
     case "deliver": {
       if (p.length !== 4 && p.length !== 5)
         throw new Error(characterUsage);
-      known2("name", "images", "spine", "replace", "force", "no-video", "no-reference");
+      known2("name", "images", "spine", "spine-version", "replace", "force", "no-video", "no-reference");
       const opts = {
         name: flags.get("name") || void 0,
         images: flags.get("images") || void 0,
         spine: flags.get("spine") || void 0,
+        spineVersion: flags.get("spine-version") || void 0,
         replace: flags.has("replace"),
         force: flags.has("force"),
         video: !flags.has("no-video"),

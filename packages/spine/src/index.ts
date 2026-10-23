@@ -3,3 +3,4 @@ export * from "./minimal-compiler.js";
 export * from "./weighted-compiler.js";
 export * from "./character-compiler.js";
 export * from "./images-only.js";
+export * from "./editor-version.js";

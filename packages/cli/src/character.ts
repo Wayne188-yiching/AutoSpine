@@ -17,7 +17,7 @@ import { PNG } from "pngjs";
 import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
 import { CharacterPlanSchema, type CharacterPlan, type KeyposeEase } from "@autospine/schemas";
-import { readImagesOnlyLayout } from "@autospine/spine";
+import { forEditorVersion, readImagesOnlyLayout } from "@autospine/spine";
 import {
   buildCharacter,
   addKeyposes,
@@ -965,6 +965,20 @@ export function spineExecutable(explicit?: string): string | undefined {
   ];
   return candidates.find((c): c is string => !!c && existsSync(c));
 }
+/**
+ * The editor version for `-u`: major.minor or major.minor.patch, 4.0 or newer (an older editor
+ * cannot import 4.0 data). Default 4.0.64, the version the engine's data is written for.
+ */
+export function spineVersionArg(version: string | undefined): string {
+  if (version === undefined) return "4.0.64";
+  const m = /^(\d+)\.(\d+)(?:\.\d+)?$/.exec(version);
+  if (!m)
+    throw new Error(`CLI_SPINE_VERSION: ${version} is not a Spine version such as 4.2 or 4.2.43`);
+  if (+m[1]! < 4)
+    throw new Error(`CLI_SPINE_VERSION: Spine ${version} cannot import 4.0 data; use 4.0 or newer`);
+  return version;
+}
+
 export function runSpine(exe: string, args: string[]) {
   return new Promise<{ code: number; output: string }>((ok) => {
     let output = "";
@@ -1040,6 +1054,12 @@ export interface DeliverOptions {
   images?: string;
   /** Spine editor executable; default AUTOSPINE_SPINE or the standard install. */
   spine?: string;
+  /**
+   * Editor version the project is imported with, such as 4.2 or 4.2.43 (default 4.0.64). A newer
+   * editor reads the build's 4.0 JSON and saves its own project, which 4.0 cannot open again;
+   * reviews and comparisons still play the 4.0 JSON.
+   */
+  spineVersion?: string;
   /** Swap an earlier delivery for this build; the old files move into the build folder. */
   replace?: boolean;
   /** Replace even a project that was saved after it was delivered (edited in Spine). */
@@ -1065,6 +1085,8 @@ export async function deliverFiles(
   artistPath: string | undefined,
   opts: DeliverOptions = {},
 ) {
+  // Checked first: a wrong version would otherwise surface after the fit and the videos.
+  const spineVersion = spineVersionArg(opts.spineVersion);
   // An animation whose reference says "fit" (ADR-036) takes its motion from the video first, one
   // animation after another; the best round of the last fit is what is delivered. A fit that
   // cannot run is reported, and the build as given is delivered.
@@ -1187,6 +1209,8 @@ export async function deliverFiles(
   document.skeleton = { ...document.skeleton, images: "./images/" };
   const result: {
     spine: string | null;
+    /** The editor version the project was imported with. */
+    spineVersion: string;
     json: string | null;
     video: string | null;
     images: string;
@@ -1211,6 +1235,7 @@ export async function deliverFiles(
     stray?: string[];
   } = {
     spine: null,
+    spineVersion,
     json: null,
     video: null,
     images: String(document.skeleton.images),
@@ -1218,13 +1243,24 @@ export async function deliverFiles(
     strayImages: [],
     replaced: replaced ?? null,
   };
+  // Laid out for the chosen editor (ADR-046); reviews and comparisons keep the 4.0 document.
+  const delivered = forEditorVersion(document, spineVersion);
   const exe = spineExecutable(opts.spine);
   if (exe) {
     // Imported from beside the project, so "./images/" means the same to both.
     const temp = join(out, `.${name}.autospine-import.json`);
-    await writeFile(temp, JSON.stringify(document));
+    await writeFile(temp, JSON.stringify(delivered));
     try {
-      const run = await runSpine(exe, ["-u", "4.0.64", "-i", temp, "-o", target.spine, "-r", name]);
+      const run = await runSpine(exe, [
+        "-u",
+        spineVersion,
+        "-i",
+        temp,
+        "-o",
+        target.spine,
+        "-r",
+        name,
+      ]);
       if (run.code === 0 && existsSync(target.spine)) result.spine = target.spine;
       else result.spineError = `Spine exited ${run.code}: ${run.output.trim().slice(-600)}`;
     } finally {
@@ -1232,7 +1268,7 @@ export async function deliverFiles(
     }
   }
   if (!result.spine) {
-    await writeFile(target.json, json(document));
+    await writeFile(target.json, json(delivered));
     result.json = target.json;
   }
   // The delivered project's hash, so the next delivery can tell whether it was edited since.
