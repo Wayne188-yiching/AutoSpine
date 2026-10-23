@@ -35825,12 +35825,26 @@ var DRAFT_KINDS = [
   "press",
   "levelup",
   "look",
-  "transition"
+  "transition",
+  "wave",
+  "blink"
 ];
 var LOOPS = /* @__PURE__ */ new Set(["idle", "walk", "prop"]);
+var BLINK = Object.freeze({ closedSeconds: 4 / 30, everySeconds: 3, squash: 0.1 });
+var WAVE = Object.freeze({
+  raise: 0.2,
+  lower: 0.8,
+  swings: 3,
+  forearmDeg: 20,
+  handDeg: 10
+});
+var CLOSED = /clos|blink|shut|閉|眨/i;
+var LID = /lid|blink|clos|shut|閉|眨/i;
+var EYE = /eye|pupil|iris|white|highlight|眼|瞳/i;
 var UPPER_LIMB = /^(upper_?)?arm|^shoulder|^wing|^thigh/i;
 var side = (id) => /(_|^)(l|left)$|_l_|L$/.test(id) ? -1 : /(_|^)(r|right)$|_r_|R$/.test(id) ? 1 : 0;
 var r22 = (v) => +v.toFixed(2);
+var dedupeKeys = (keys) => [...new Map(keys.map((k) => [k.frame, k])).values()].sort((a, b) => a.frame - b.frame);
 function draftMotion(plan, figure, options) {
   const fail5 = (reason) => failStage("animation", "PLAN_DRAFT", reason);
   const { animation } = options;
@@ -35841,7 +35855,7 @@ function draftMotion(plan, figure, options) {
   const motion = out.motion;
   const fps = motion.fps ?? 30;
   const subject = options.subject ?? (plan.qa?.probes?.face ? "character" : "prop");
-  const named = subject === "prop" ? /idle|loop|breath/i.test(animation) ? "prop" : oneShotKind(animation) : /idle|breath/i.test(animation) ? "idle" : /walk/i.test(animation) ? "walk" : oneShotKind(animation);
+  const named = subject === "prop" ? /idle|loop|breath/i.test(animation) ? "prop" : oneShotKind(animation) : /blink|眨眼/i.test(animation) ? "blink" : /wave|hello|greet|揮手|打招呼/i.test(animation) ? "wave" : /idle|breath/i.test(animation) ? "idle" : /walk/i.test(animation) ? "walk" : oneShotKind(animation);
   const kind = options.kind ?? named;
   if (!DRAFT_KINDS.includes(kind)) fail5(`unknown kind ${kind}; use ${DRAFT_KINDS.join(", ")}`);
   const loop = LOOPS.has(kind);
@@ -35873,6 +35887,100 @@ function draftMotion(plan, figure, options) {
   };
   const bones = out.bones;
   const boneIds = new Set(bones.flatMap((b) => "id" in b ? [b.id] : []));
+  if (kind === "blink") {
+    if (!existing)
+      fail5(
+        `blinks go into an animation the plan has, and it has no ${animation}; add them to the idle (kind blink)`
+      );
+    const length = existing.frames;
+    if (options.frames !== void 0 && options.frames !== length)
+      notes.push(
+        `blinks follow ${animation}'s ${length} frames; frames ${options.frames} was not used`
+      );
+    const closed = Math.max(2, Math.round(BLINK.closedSeconds * fps));
+    const count = Math.max(1, Math.round(length / (BLINK.everySeconds * fps)));
+    const at2 = Array.from(
+      { length: count },
+      (_, k) => Math.round(length * (0.4 + k) / count)
+    ).filter((f) => f + closed < length);
+    if (!at2.length) fail5(`${animation} is too short to blink in (${length} frames)`);
+    const hidden2 = new Set(existing.hide ?? []);
+    const slots = (figure.slots ?? []).filter((s2) => !hidden2.has(s2.name));
+    let swaps = slots.flatMap((s2) => {
+      const on = s2.attachment && s2.attachments.find((a) => a !== s2.attachment && CLOSED.test(a));
+      return on ? [{ slot: s2.name, on, off: s2.attachment }] : [];
+    });
+    if (!swaps.length)
+      swaps = slots.flatMap((s2) => {
+        const on = s2.attachments.find((a) => LID.test(a)) ?? (LID.test(s2.name) ? s2.attachments[0] : void 0);
+        return !s2.attachment && on ? [{ slot: s2.name, on, off: null }] : [];
+      });
+    if (swaps.length) {
+      const list = motion.swaps ??= [];
+      for (const s2 of swaps) {
+        const keys = at2.flatMap((f) => [
+          { frame: f, attachment: s2.on },
+          { frame: f + closed, attachment: s2.off }
+        ]);
+        const entry = list.find((e) => e.slot === s2.slot);
+        if (entry?.keys[animation]) notes.push(`replaced ${animation}'s swaps of ${s2.slot}`);
+        if (entry) entry.keys[animation] = keys;
+        else list.push({ slot: s2.slot, keys: { [animation]: keys } });
+        controls.push(`swaps:${s2.slot}`);
+      }
+      notes.push(`blinks swap ${swaps.map((s2) => `${s2.slot} to ${s2.on}`).join(", ")}`);
+    } else {
+      const eyes = figure.eyes;
+      const face = plan.face;
+      const structural = [
+        figure.head,
+        motion.main.bone,
+        face?.base,
+        face?.control,
+        face?.counter,
+        "root",
+        "move"
+      ];
+      const others = eyes?.carries.filter((s2) => !EYE.test(s2)) ?? [];
+      const why = !eyes ? "no eyes probe (qa.probes.eyes)" : structural.includes(eyes.bone) ? `the eyes ride ${eyes.bone}, which carries more than the eyes` : others.length ? `squashing ${eyes.bone} would squash ${others.join(", ")} too` : "";
+      if (why)
+        fail5(
+          `nothing to blink with in ${animation}: no closed-eye image, no eyelid slot hidden in setup, and ${why}`
+        );
+      const a = eyes.angle * Math.PI / 180;
+      const shut = Math.abs(Math.cos(a)) >= Math.abs(Math.sin(a)) ? [1, BLINK.squash] : [BLINK.squash, 1];
+      const keyed = motion.keyed ??= [];
+      dropKeys(keyed, animation, (c) => c.bone === eyes.bone && c.channel === "scale", notes);
+      keyed.push({
+        id: id("blink"),
+        bone: eyes.bone,
+        channel: "scale",
+        rest: [1, 1],
+        keys: {
+          [animation]: at2.flatMap((f) => [
+            { frame: f, value: [1, 1] },
+            { frame: f + 1, value: shut, ease: "in" },
+            { frame: f + closed - 1, value: shut },
+            { frame: f + closed, value: [1, 1], ease: "out" }
+          ])
+        }
+      });
+      notes.push(`blinks squash ${eyes.bone} to ${BLINK.squash} across the eyes`);
+    }
+    notes.push(
+      `blinks at frames ${at2.join(", ")}, ${closed} frames shut: conventional timing (about every ${BLINK.everySeconds} s), not measured`
+    );
+    return {
+      plan: out,
+      animation,
+      kind,
+      subject,
+      frames: length,
+      loop: existing.loop !== false,
+      controls,
+      notes
+    };
+  }
   const head = figure.head && boneIds.has(figure.head) ? figure.head : void 0;
   if (!head && subject === "character")
     notes.push("no head bone found: no head follow or look turns");
@@ -35945,7 +36053,7 @@ function draftMotion(plan, figure, options) {
     peak: (Math.round(peak) % period + period) % period
   });
   let template;
-  if (!loop)
+  if (!loop && kind !== "wave")
     template = oneShotTemplate(animation, {
       frames,
       unit: figure.unit,
@@ -35986,6 +36094,63 @@ function draftMotion(plan, figure, options) {
   } else {
     cycle2 = frames;
     own.main = main2(0);
+    const keyed = motion.keyed ??= [];
+    const put = (bone, channel, rest, keys) => {
+      if (!keys.length) return;
+      dropKeys(keyed, animation, (c) => c.bone === bone && c.channel === channel, notes);
+      keyed.push({
+        id: id(`${bone}_${channel}`),
+        bone,
+        channel,
+        rest,
+        keys: { [animation]: dedupeKeys(keys) }
+      });
+    };
+    if (kind === "wave") wave(put);
+    else fromTemplate(put);
+    if (!keyed.length) delete motion.keyed;
+  }
+  function wave(put) {
+    const world = figure.bones ?? {};
+    const order = (b) => side(b) > 0 ? 0 : side(b) < 0 ? 1 : 2;
+    const upper = [...arms].sort((a, b) => order(a) - order(b)).find((b) => world[b]);
+    if (!upper) return fail5("no arm bone (arm*, shoulder*, wing*) to wave with");
+    const childOf = (p) => bones.find((b) => "id" in b && b.parent === p)?.id;
+    const fore = childOf(upper), hand = fore ? childOf(fore) : void 0;
+    const turn = (d) => ((d + 180) % 360 + 360) % 360 - 180;
+    const out2 = Math.sign(world[upper].origin[0] - pivot[0]) || 1;
+    const lift = turn((out2 > 0 ? -45 : -135) - world[upper].angle);
+    const R = Math.round(WAVE.raise * frames), L = Math.round(WAVE.lower * frames), n = 2 * WAVE.swings;
+    const swings = (base, deg, lag2) => Array.from({ length: n + 1 }, (_, k) => ({
+      frame: Math.min(frames, R + lag2 + Math.round(k * (L - R) / n)),
+      value: r22(base + (k === 0 || k === n ? 0 : (k % 2 ? 1 : -1) * deg * out2)),
+      ...k === 0 ? { ease: "out" } : {}
+    }));
+    put(upper, "rotate", 0, [
+      { frame: 0, value: 0 },
+      { frame: R, value: r22(lift), ease: "out" },
+      { frame: L, value: r22(lift) },
+      { frame: frames, value: 0, ease: "sine" }
+    ]);
+    if (fore && world[fore]) {
+      const bend = turn(-90 - (world[fore].angle + lift));
+      put(fore, "rotate", 0, [
+        { frame: 0, value: 0 },
+        ...swings(bend, WAVE.forearmDeg, 0),
+        { frame: frames, value: 0, ease: "sine" }
+      ]);
+      if (hand)
+        put(hand, "rotate", 0, [
+          { frame: 0, value: 0 },
+          ...swings(0, WAVE.handDeg, 2),
+          { frame: frames, value: 0, ease: "sine" }
+        ]);
+    } else notes.push(`no forearm under ${upper}: only the arm raises`);
+    notes.push(
+      `waves ${upper}${fore ? `, ${fore}` : ""}${hand ? `, ${hand}` : ""}: conventional timing (raise by ${R}, ${WAVE.swings} swings of \xB1${WAVE.forearmDeg}\xB0, lower from ${L}), not measured`
+    );
+  }
+  function fromTemplate(put) {
     const t = template;
     const s2 = t.swing;
     if (s2.limbDeg > 0)
@@ -35998,18 +36163,6 @@ function draftMotion(plan, figure, options) {
           (b, k) => swing(b, s2.strandDeg / 2 / ids.length, s2.period, s2.period / 4 + k * step)
         );
       }
-    const keyed = motion.keyed ??= [];
-    const put = (bone, channel, rest, keys) => {
-      if (!keys.length) return;
-      dropKeys(keyed, animation, (c) => c.bone === bone && c.channel === channel, notes);
-      keyed.push({
-        id: id(`${bone}_${channel}`),
-        bone,
-        channel,
-        rest,
-        keys: { [animation]: keys }
-      });
-    };
     put("move", "translate", [0, 0], t.translate);
     put("move", "scale", [1, 1], t.scale);
     put("move", "rotate", 0, t.rotate);
@@ -36020,7 +36173,6 @@ function draftMotion(plan, figure, options) {
       dropKeys(colors, animation, (c) => c.slots.some((x) => shownSlots.has(x)), notes);
       colors.push({ id: id("alpha"), slots: [...shownSlots], keys: { [animation]: t.alpha } });
     }
-    if (!keyed.length) delete motion.keyed;
   }
   if (subject === "character") {
     if (!Object.keys(figure.chains).length) notes.push("no strand chains to wave");
@@ -41837,7 +41989,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.14";
+var AUTOSPINE_VERSION = "0.5.15";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");
@@ -41976,7 +42128,32 @@ async function draftMotionFiles(planPath, outPath, opts) {
   for (let b = bones.get(rigging.slots.find((s2) => s2.name === probeSlot)?.boneId ?? ""); !head && b; b = b.parentId ? bones.get(b.parentId) : void 0)
     if (/head/i.test(b.id))
       head = b.id;
-  const draft = draftMotion(plan, { unit, parts, chains: rigging.rigged.chains, ...head ? { head } : {} }, { ...opts, subject });
+  const world = rigging.rigged.world;
+  const eyesSlot = plan.qa?.probes?.eyes?.split("#")[0];
+  const eyesBone = rigging.slots.find((s2) => s2.name === eyesSlot)?.boneId;
+  const draft = draftMotion(plan, {
+    unit,
+    parts,
+    chains: rigging.rigged.chains,
+    ...head ? { head } : {},
+    slots: readImagesOnlyLayout(document2).slots.map((s2) => ({
+      name: s2.name,
+      ...s2.attachment ? { attachment: s2.attachment } : {},
+      attachments: s2.attachments
+    })),
+    ...eyesSlot && eyesBone ? {
+      eyes: {
+        slot: eyesSlot,
+        bone: eyesBone,
+        angle: world.get(eyesBone)?.a ?? 0,
+        carries: rigging.slots.filter((s2) => s2.boneId === eyesBone).map((s2) => s2.name)
+      }
+    } : {},
+    bones: Object.fromEntries([...world].map(([b, w]) => [
+      b,
+      { origin: [w.o[0], w.o[1]], angle: w.a }
+    ]))
+  }, { ...opts, subject });
   const from = (p) => relative3(dirname3(resolve3(outPath)), p).split(sep).join("/");
   draft.plan.source = {
     ...draft.plan.source,

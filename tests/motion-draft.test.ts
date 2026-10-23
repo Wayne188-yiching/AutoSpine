@@ -197,3 +197,132 @@ describe("motion drafts from the measured priors (ADR-048)", () => {
     expect(() => draftMotion(plan, figure, { animation: "Bad name!" })).toThrow(/is not usable/);
   });
 });
+
+describe("blinks and a wave in motion drafts (ADR-049)", () => {
+  const figure = (extra: Partial<DraftFigure> = {}): DraftFigure => ({
+    unit: 100,
+    parts: [{ slot: "Body", box: [-20, -60, 20, 0] }],
+    chains: {},
+    head: "head",
+    ...extra,
+  });
+  const swapsOf = (p: Plan, slot: string) =>
+    p.motion.swaps!.find((s) => s.slot === slot)!.keys.IDLE;
+  const blink = { animation: "IDLE", kind: "blink" } as const;
+
+  it("blinks the idle with a closed-eye image, else with an eyelid hidden in setup", () => {
+    const plan = fixturePlan();
+    const closed = draftMotion(
+      plan,
+      figure({
+        slots: [
+          { name: "Body", attachment: "Body", attachments: ["Body"] },
+          { name: "Eyes", attachment: "Eyes", attachments: ["Eyes", "Eyes_closed"] },
+          { name: "Lids", attachments: ["lid"] },
+        ],
+      }),
+      blink,
+    );
+    // 80 frames at 30 fps: one blink, 4 frames shut, the idle's own motion untouched.
+    expect(closed).toMatchObject({ kind: "blink", frames: 80, loop: true });
+    expect(swapsOf(closed.plan, "Eyes")).toEqual([
+      { frame: 32, attachment: "Eyes_closed" },
+      { frame: 36, attachment: "Eyes" },
+    ]);
+    // The closed image wins: the lid is not keyed as well.
+    expect(closed.plan.motion.swaps!.map((s) => s.slot)).toEqual(["Eyes"]);
+    expect(anim(closed.plan, "IDLE")).toEqual(anim(plan, "IDLE"));
+    expect(closed.notes.some((n) => /conventional timing .* not measured/.test(n))).toBe(true);
+
+    const lid = draftMotion(
+      plan,
+      figure({
+        slots: [
+          { name: "Eyes", attachment: "Eyes", attachments: ["Eyes"] },
+          { name: "Lids", attachments: ["lid"] },
+        ],
+      }),
+      { ...blink, frames: 40 },
+    );
+    expect(swapsOf(lid.plan, "Lids")).toEqual([
+      { frame: 32, attachment: "lid" },
+      { frame: 36, attachment: null },
+    ]);
+    // Blinks keep the animation's length.
+    expect(lid.notes).toContain("blinks follow IDLE's 80 frames; frames 40 was not used");
+    // Again on the blinked plan: the swaps are replaced, not added.
+    const again = draftMotion(
+      lid.plan,
+      figure({ slots: [{ name: "Lids", attachments: ["lid"] }] }),
+      blink,
+    );
+    expect(again.plan.motion.swaps).toHaveLength(1);
+    expect(again.notes).toContain("replaced IDLE's swaps of Lids");
+  });
+
+  it("squashes the eyes' own bone when the art has no closed eyes, and builds", async () => {
+    const ws = await fixtureWorkspace();
+    const out = join(ws, "blink.json");
+    const r = await draftMotionFiles(join(ws, "plan.json"), out, blink);
+    expect(r.notes).toContain("blinks squash eyes to 0.1 across the eyes");
+    const plan = await read(out);
+    const squash = plan.motion.keyed!.find((c) => c.id === "IDLE_blink")!;
+    expect(squash).toMatchObject({ bone: "eyes", channel: "scale", rest: [1, 1] });
+    expect(squash.keys.IDLE!.map((k) => k.frame)).toEqual([32, 33, 35, 36]);
+    // The other controls on the eyes bone stay.
+    expect(plan.motion.keyed!.find((c) => c.id === "look")).toEqual(
+      fixturePlan().motion.keyed!.find((c) => c.id === "look"),
+    );
+    expect(() => buildCharacter(plan, fixtureLayout())).not.toThrow();
+  });
+
+  it("refuses blinks it cannot do without squashing more than the eyes", () => {
+    const plan = fixturePlan();
+    const eyes = (bone: string, carries: string[]) =>
+      figure({ eyes: { slot: "Eyes", bone, angle: -90, carries } });
+    expect(() => draftMotion(plan, eyes("eyes", ["Eyes", "Lashes"]), blink)).toThrow(
+      /squashing eyes would squash Lashes too/,
+    );
+    expect(() => draftMotion(plan, eyes("head", ["Eyes"]), blink)).toThrow(
+      /the eyes ride head, which carries more than the eyes/,
+    );
+    expect(() => draftMotion(plan, figure(), blink)).toThrow(/no eyes probe/);
+    // Named Blink but not in the plan: blinks go into an animation that exists.
+    expect(() => draftMotion(plan, eyes("eyes", ["Eyes"]), { animation: "Blink" })).toThrow(
+      /it has no Blink; add them to the idle/,
+    );
+  });
+
+  it("waves the right arm: raised up and out, the forearm swinging, then lowered", async () => {
+    const ws = await fixtureWorkspace();
+    const out = join(ws, "hello.json");
+    const r = await draftMotionFiles(join(ws, "plan.json"), out, {
+      animation: "Hello",
+      frames: 60,
+    });
+    expect(r).toMatchObject({ kind: "wave", loop: false, frames: 60 });
+    const plan = await read(out);
+    const keyed = plan.motion.keyed!.filter((c) => c.id.startsWith("Hello_"));
+    expect(keyed.map((c) => [c.bone, c.channel])).toEqual([
+      ["arm_r", "rotate"],
+      ["forearm_r", "rotate"],
+    ]);
+    const [arm, fore] = keyed.map((c) => c.keys.Hello!);
+    expect(arm!.map((k) => k.frame)).toEqual([0, 12, 48, 60]);
+    // The arm points up and out of the body (IR degrees, y down: -45 is up and right).
+    const world = rigCharacter(plan, fixtureLayout()).rigged.world;
+    const raised = world.get("arm_r")!.a + (arm![1]!.value as number);
+    expect([-45, -135]).toContain(Math.round(raised));
+    // Three swings each way between the raise and the lower, back to rest at the end.
+    expect(fore!.map((k) => k.frame)).toEqual([0, 12, 18, 24, 30, 36, 42, 48, 60]);
+    const v = fore!.map((k) => k.value as number);
+    expect(Math.abs(v[2]! - v[1]!)).toBeCloseTo(20, 1);
+    expect(v.at(-1)).toBe(0);
+    // No move bone: a wave keys the arm alone.
+    expect(plan.bones.some((b) => "id" in b && b.id === "move")).toBe(false);
+    expect(() => buildCharacter(plan, fixtureLayout())).not.toThrow();
+    expect(() => draftMotion(fixturePlan(), figure(), { animation: "Hello" })).toThrow(
+      /no arm bone .* to wave with/,
+    );
+  });
+});

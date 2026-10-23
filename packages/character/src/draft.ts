@@ -8,7 +8,10 @@ import {
   type OneShotKind,
 } from "@autospine/motion";
 
-/** The kinds a motion draft knows (ADR-048): three loops and the one-shot templates (ADR-032). */
+/**
+ * The kinds a motion draft knows (ADR-048): three loops, the one-shot templates (ADR-032), a wave,
+ * and blinks added to an animation that exists (ADR-049).
+ */
 export const DRAFT_KINDS = [
   "idle",
   "walk",
@@ -21,9 +24,27 @@ export const DRAFT_KINDS = [
   "levelup",
   "look",
   "transition",
+  "wave",
+  "blink",
 ] as const;
 export type DraftKind = (typeof DRAFT_KINDS)[number];
 const LOOPS = new Set<DraftKind>(["idle", "walk", "prop"]);
+/**
+ * ADR-049: conventional animation timing, not measured on artist files. A blink closes the eyes for
+ * 4 frames at 30 fps, about every 3 s; a wave raises the arm in a fifth of the animation, swings
+ * the forearm ±20° three times and lowers it over the last fifth.
+ */
+export const BLINK = Object.freeze({ closedSeconds: 4 / 30, everySeconds: 3, squash: 0.1 });
+export const WAVE = Object.freeze({
+  raise: 0.2,
+  lower: 0.8,
+  swings: 3,
+  forearmDeg: 20,
+  handDeg: 10,
+});
+const CLOSED = /clos|blink|shut|閉|眨/i;
+const LID = /lid|blink|clos|shut|閉|眨/i;
+const EYE = /eye|pupil|iris|white|highlight|眼|瞳/i;
 
 export interface DraftOptions {
   animation: string;
@@ -43,6 +64,15 @@ export interface DraftFigure {
   chains: Record<string, string[]>;
   /** The head bone (follows the breath in an idle, turns in a look); none: left out. */
   head?: string;
+  /** Every slot of the layout: its setup attachment and all its attachments (blinks). */
+  slots?: { name: string; attachment?: string; attachments: string[] }[];
+  /**
+   * The eyes probe's slot, the bone it rides, that bone's world angle and the slots it carries
+   * (a squash blink squashes them all).
+   */
+  eyes?: { slot: string; bone: string; angle: number; carries: string[] };
+  /** World origin (IR, y down) and angle (IR degrees, clockwise) of the rig's bones (a wave). */
+  bones?: Record<string, { origin: [number, number]; angle: number }>;
 }
 export interface MotionDraft {
   plan: CharacterPlan;
@@ -62,6 +92,15 @@ const UPPER_LIMB = /^(upper_?)?arm|^shoulder|^wing|^thigh/i;
 const side = (id: string) =>
   /(_|^)(l|left)$|_l_|L$/.test(id) ? -1 : /(_|^)(r|right)$|_r_|R$/.test(id) ? 1 : 0;
 const r2 = (v: number) => +v.toFixed(2);
+type Put = (
+  bone: string,
+  channel: "translate" | "scale" | "rotate",
+  rest: number | [number, number],
+  keys: { frame: number; value: number | [number, number]; ease?: KeyposeEase }[],
+) => void;
+/** Keys collide on short animations: the last key per frame wins, in frame order. */
+const dedupeKeys = <K extends { frame: number }>(keys: K[]) =>
+  [...new Map(keys.map((k) => [k.frame, k])).values()].sort((a, b) => a.frame - b.frame);
 
 /**
  * A motion draft for one animation from the measured priors (ADR-032, ADR-048): the animation's
@@ -90,11 +129,15 @@ export function draftMotion(
       ? /idle|loop|breath/i.test(animation)
         ? "prop"
         : oneShotKind(animation)
-      : /idle|breath/i.test(animation)
-        ? "idle"
-        : /walk/i.test(animation)
-          ? "walk"
-          : oneShotKind(animation);
+      : /blink|眨眼/i.test(animation)
+        ? "blink"
+        : /wave|hello|greet|揮手|打招呼/i.test(animation)
+          ? "wave"
+          : /idle|breath/i.test(animation)
+            ? "idle"
+            : /walk/i.test(animation)
+              ? "walk"
+              : oneShotKind(animation);
   const kind = options.kind ?? named;
   if (!DRAFT_KINDS.includes(kind)) fail(`unknown kind ${kind}; use ${DRAFT_KINDS.join(", ")}`);
   const loop = LOOPS.has(kind);
@@ -134,6 +177,115 @@ export function draftMotion(
 
   const bones = out.bones;
   const boneIds = new Set(bones.flatMap((b) => ("id" in b ? [b.id] : [])));
+
+  // Blinks go into an animation that exists, over its motion (ADR-049).
+  if (kind === "blink") {
+    if (!existing)
+      fail(
+        `blinks go into an animation the plan has, and it has no ${animation}; add them to the idle (kind blink)`,
+      );
+    // The animation's own length: blinks do not change it.
+    const length = existing!.frames;
+    if (options.frames !== undefined && options.frames !== length)
+      notes.push(
+        `blinks follow ${animation}'s ${length} frames; frames ${options.frames} was not used`,
+      );
+    const closed = Math.max(2, Math.round(BLINK.closedSeconds * fps));
+    const count = Math.max(1, Math.round(length / (BLINK.everySeconds * fps)));
+    const at = Array.from({ length: count }, (_, k) =>
+      Math.round((length * (0.4 + k)) / count),
+    ).filter((f) => f + closed < length);
+    if (!at.length) fail(`${animation} is too short to blink in (${length} frames)`);
+    const hidden = new Set(existing!.hide ?? []);
+    const slots = (figure.slots ?? []).filter((s) => !hidden.has(s.name));
+    // A closed-eye image of a shown slot, else eyelid slots hidden in setup, as artists do.
+    let swaps = slots.flatMap((s) => {
+      const on = s.attachment && s.attachments.find((a) => a !== s.attachment && CLOSED.test(a));
+      return on ? [{ slot: s.name, on, off: s.attachment! as string | null }] : [];
+    });
+    if (!swaps.length)
+      swaps = slots.flatMap((s) => {
+        const on =
+          s.attachments.find((a) => LID.test(a)) ??
+          (LID.test(s.name) ? s.attachments[0] : undefined);
+        return !s.attachment && on ? [{ slot: s.name, on, off: null }] : [];
+      });
+    if (swaps.length) {
+      const list = (motion.swaps ??= []);
+      for (const s of swaps) {
+        const keys = at.flatMap((f) => [
+          { frame: f, attachment: s.on },
+          { frame: f + closed, attachment: s.off },
+        ]);
+        const entry = list.find((e) => e.slot === s.slot);
+        if (entry?.keys[animation]) notes.push(`replaced ${animation}'s swaps of ${s.slot}`);
+        if (entry) entry.keys[animation] = keys;
+        else list.push({ slot: s.slot, keys: { [animation]: keys } });
+        controls.push(`swaps:${s.slot}`);
+      }
+      notes.push(`blinks swap ${swaps.map((s) => `${s.slot} to ${s.on}`).join(", ")}`);
+    } else {
+      // No closed image or lid: squash the eyes' own bone across the screen's vertical.
+      const eyes = figure.eyes;
+      const face = plan.face;
+      // Only a bone that carries eye images alone: a head, a face plate or lashes would squash too.
+      const structural = [
+        figure.head,
+        motion.main.bone,
+        face?.base,
+        face?.control,
+        face?.counter,
+        "root",
+        "move",
+      ];
+      const others = eyes?.carries.filter((s) => !EYE.test(s)) ?? [];
+      const why = !eyes
+        ? "no eyes probe (qa.probes.eyes)"
+        : structural.includes(eyes.bone)
+          ? `the eyes ride ${eyes.bone}, which carries more than the eyes`
+          : others.length
+            ? `squashing ${eyes.bone} would squash ${others.join(", ")} too`
+            : "";
+      if (why)
+        fail(
+          `nothing to blink with in ${animation}: no closed-eye image, no eyelid slot hidden in setup, and ${why}`,
+        );
+      const a = (eyes!.angle * Math.PI) / 180;
+      const shut: [number, number] =
+        Math.abs(Math.cos(a)) >= Math.abs(Math.sin(a)) ? [1, BLINK.squash] : [BLINK.squash, 1];
+      const keyed = (motion.keyed ??= []);
+      dropKeys(keyed, animation, (c) => c.bone === eyes!.bone && c.channel === "scale", notes);
+      keyed.push({
+        id: id("blink"),
+        bone: eyes!.bone,
+        channel: "scale",
+        rest: [1, 1],
+        keys: {
+          [animation]: at.flatMap((f) => [
+            { frame: f, value: [1, 1] as [number, number] },
+            { frame: f + 1, value: shut, ease: "in" as const },
+            { frame: f + closed - 1, value: shut },
+            { frame: f + closed, value: [1, 1] as [number, number], ease: "out" as const },
+          ]),
+        },
+      });
+      notes.push(`blinks squash ${eyes!.bone} to ${BLINK.squash} across the eyes`);
+    }
+    notes.push(
+      `blinks at frames ${at.join(", ")}, ${closed} frames shut: conventional timing (about every ${BLINK.everySeconds} s), not measured`,
+    );
+    return {
+      plan: out,
+      animation,
+      kind,
+      subject,
+      frames: length,
+      loop: existing!.loop !== false,
+      controls,
+      notes,
+    };
+  }
+
   const head = figure.head && boneIds.has(figure.head) ? figure.head : undefined;
   if (!head && subject === "character")
     notes.push("no head bone found: no head follow or look turns");
@@ -218,7 +370,7 @@ export function draftMotion(
 
   // A one-shot keys a `move` bone above everything; a prop loop tilts it.
   let template: ReturnType<typeof oneShotTemplate> | undefined;
-  if (!loop)
+  if (!loop && kind !== "wave")
     template = oneShotTemplate(animation, {
       frames,
       unit: figure.unit,
@@ -263,18 +415,6 @@ export function draftMotion(
   } else {
     cycle = frames;
     own.main = main(0);
-    const t = template!;
-    const s = t.swing;
-    if (s.limbDeg > 0)
-      for (const b of arms)
-        swing(b, s.limbDeg / 2, s.period, side(b) < 0 ? s.period / 4 : (3 * s.period) / 4);
-    if (s.strandDeg > 0)
-      for (const ids of Object.values(figure.chains)) {
-        const step = ids.length > 1 ? Math.round(s.tipLagFrames / (ids.length - 1)) : 0;
-        ids.forEach((b, k) =>
-          swing(b, s.strandDeg / 2 / ids.length, s.period, s.period / 4 + k * step),
-        );
-      }
     const keyed = (motion.keyed ??= []);
     const put = (
       bone: string,
@@ -289,9 +429,72 @@ export function draftMotion(
         bone,
         channel,
         rest,
-        keys: { [animation]: keys },
+        keys: { [animation]: dedupeKeys(keys) },
       });
     };
+    if (kind === "wave") wave(put);
+    else fromTemplate(put);
+    if (!keyed.length) delete motion.keyed;
+  }
+  function wave(put: Put) {
+    // ADR-049: the right arm (else the left), raised up and out of the body, the forearm upright.
+    const world = figure.bones ?? {};
+    const order = (b: string) => (side(b) > 0 ? 0 : side(b) < 0 ? 1 : 2);
+    const upper = [...arms].sort((a, b) => order(a) - order(b)).find((b) => world[b]);
+    if (!upper) return fail("no arm bone (arm*, shoulder*, wing*) to wave with");
+    const childOf = (p: string) =>
+      bones.find((b): b is Extract<Bone, { id: string }> => "id" in b && b.parent === p)?.id;
+    const fore = childOf(upper),
+      hand = fore ? childOf(fore) : undefined;
+    const turn = (d: number) => ((((d + 180) % 360) + 360) % 360) - 180;
+    const out = Math.sign(world[upper]!.origin[0] - pivot[0]) || 1;
+    const lift = turn((out > 0 ? -45 : -135) - world[upper]!.angle);
+    const R = Math.round(WAVE.raise * frames),
+      L = Math.round(WAVE.lower * frames),
+      n = 2 * WAVE.swings;
+    const swings = (base: number, deg: number, lag: number) =>
+      Array.from({ length: n + 1 }, (_, k) => ({
+        frame: Math.min(frames, R + lag + Math.round((k * (L - R)) / n)),
+        value: r2(base + (k === 0 || k === n ? 0 : (k % 2 ? 1 : -1) * deg * out)),
+        ...(k === 0 ? { ease: "out" as const } : {}),
+      }));
+    put(upper, "rotate", 0, [
+      { frame: 0, value: 0 },
+      { frame: R, value: r2(lift), ease: "out" },
+      { frame: L, value: r2(lift) },
+      { frame: frames, value: 0, ease: "sine" },
+    ]);
+    if (fore && world[fore]) {
+      const bend = turn(-90 - (world[fore]!.angle + lift));
+      put(fore, "rotate", 0, [
+        { frame: 0, value: 0 },
+        ...swings(bend, WAVE.forearmDeg, 0),
+        { frame: frames, value: 0, ease: "sine" },
+      ]);
+      if (hand)
+        put(hand, "rotate", 0, [
+          { frame: 0, value: 0 },
+          ...swings(0, WAVE.handDeg, 2),
+          { frame: frames, value: 0, ease: "sine" },
+        ]);
+    } else notes.push(`no forearm under ${upper}: only the arm raises`);
+    notes.push(
+      `waves ${upper}${fore ? `, ${fore}` : ""}${hand ? `, ${hand}` : ""}: conventional timing (raise by ${R}, ${WAVE.swings} swings of ±${WAVE.forearmDeg}°, lower from ${L}), not measured`,
+    );
+  }
+  function fromTemplate(put: Put) {
+    const t = template!;
+    const s = t.swing;
+    if (s.limbDeg > 0)
+      for (const b of arms)
+        swing(b, s.limbDeg / 2, s.period, side(b) < 0 ? s.period / 4 : (3 * s.period) / 4);
+    if (s.strandDeg > 0)
+      for (const ids of Object.values(figure.chains)) {
+        const step = ids.length > 1 ? Math.round(s.tipLagFrames / (ids.length - 1)) : 0;
+        ids.forEach((b, k) =>
+          swing(b, s.strandDeg / 2 / ids.length, s.period, s.period / 4 + k * step),
+        );
+      }
     put("move", "translate", [0, 0], t.translate);
     put("move", "scale", [1, 1], t.scale);
     put("move", "rotate", 0, t.rotate);
@@ -302,7 +505,6 @@ export function draftMotion(
       dropKeys(colors, animation, (c) => c.slots.some((x) => shownSlots.has(x)), notes);
       colors.push({ id: id("alpha"), slots: [...shownSlots], keys: { [animation]: t.alpha } });
     }
-    if (!keyed.length) delete motion.keyed;
   }
   if (subject === "character") {
     if (!Object.keys(figure.chains).length) notes.push("no strand chains to wave");

@@ -290,9 +290,39 @@ export async function draftMotionFiles(planPath: string, outPath: string, opts: 
     b = b.parentId ? bones.get(b.parentId) : undefined
   )
     if (/head/i.test(b.id)) head = b.id;
+  // Blinks read the slots' images and the eyes' bone; a wave reads the arm's world frame.
+  const world = rigging.rigged.world;
+  const eyesSlot = plan.qa?.probes?.eyes?.split("#")[0];
+  const eyesBone = rigging.slots.find((s) => s.name === eyesSlot)?.boneId;
   const draft = draftMotion(
     plan,
-    { unit, parts, chains: rigging.rigged.chains, ...(head ? { head } : {}) },
+    {
+      unit,
+      parts,
+      chains: rigging.rigged.chains,
+      ...(head ? { head } : {}),
+      slots: readImagesOnlyLayout(document).slots.map((s) => ({
+        name: s.name,
+        ...(s.attachment ? { attachment: s.attachment } : {}),
+        attachments: s.attachments,
+      })),
+      ...(eyesSlot && eyesBone
+        ? {
+            eyes: {
+              slot: eyesSlot,
+              bone: eyesBone,
+              angle: world.get(eyesBone)?.a ?? 0,
+              carries: rigging.slots.filter((s) => s.boneId === eyesBone).map((s) => s.name),
+            },
+          }
+        : {}),
+      bones: Object.fromEntries(
+        [...world].map(([b, w]) => [
+          b,
+          { origin: [w.o[0], w.o[1]] as [number, number], angle: w.a },
+        ]),
+      ),
+    },
     { ...opts, subject },
   );
   const from = (p: string) =>
