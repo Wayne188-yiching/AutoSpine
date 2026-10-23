@@ -7844,8 +7844,8 @@ var require_base64_js = __commonJS({
       }
       return arr;
     }
-    function tripletToBase64(num3) {
-      return lookup[num3 >> 18 & 63] + lookup[num3 >> 12 & 63] + lookup[num3 >> 6 & 63] + lookup[num3 & 63];
+    function tripletToBase64(num4) {
+      return lookup[num4 >> 18 & 63] + lookup[num4 >> 12 & 63] + lookup[num4 >> 6 & 63] + lookup[num4 & 63];
     }
     function encodeChunk(uint8, start, end) {
       var tmp;
@@ -9328,19 +9328,19 @@ var require_descriptor = __commonJS({
       for (let j = 0; j < keyList.length; j++) {
         const key = keyList[j];
         const { time: { denominator, numerator }, selected, animKey } = key;
-        const time = { numerator, denominator };
+        const time2 = { numerator, denominator };
         const interpolation = exports.animInterpStyleEnum.decode(key.animInterpStyle);
         switch (animKey.Type) {
           case "keyType.Opct":
-            keys.push({ interpolation, time, selected, type: "opacity", value: parsePercent(animKey.Opct) });
+            keys.push({ interpolation, time: time2, selected, type: "opacity", value: parsePercent(animKey.Opct) });
             break;
           case "keyType.Pstn":
-            keys.push({ interpolation, time, selected, type: "position", x: animKey.Hrzn, y: animKey.Vrtc });
+            keys.push({ interpolation, time: time2, selected, type: "position", x: animKey.Hrzn, y: animKey.Vrtc });
             break;
           case "keyType.Trnf":
             keys.push({
               interpolation,
-              time,
+              time: time2,
               selected,
               type: "transform",
               scale: horzVrtcToXY(animKey["Scl "]),
@@ -9350,7 +9350,7 @@ var require_descriptor = __commonJS({
             });
             break;
           case "keyType.sheetStyle": {
-            const key2 = { interpolation, time, selected, type: "style" };
+            const key2 = { interpolation, time: time2, selected, type: "style" };
             if (animKey.sheetStyle.Lefx)
               key2.style = parseEffects(animKey.sheetStyle.Lefx, logMissingFeatures);
             keys.push(key2);
@@ -9359,7 +9359,7 @@ var require_descriptor = __commonJS({
           case "keyType.globalLighting": {
             keys.push({
               interpolation,
-              time,
+              time: time2,
               selected,
               type: "globalLighting",
               globalAngle: animKey.gblA,
@@ -9377,7 +9377,7 @@ var require_descriptor = __commonJS({
       const keyList = [];
       for (let j = 0; j < keys.length; j++) {
         const key = keys[j];
-        const { time, selected = false, interpolation } = key;
+        const { time: time2, selected = false, interpolation } = key;
         const animInterpStyle = exports.animInterpStyleEnum.encode(interpolation);
         let animKey;
         switch (key.type) {
@@ -9402,7 +9402,7 @@ var require_descriptor = __commonJS({
           default:
             throw new Error(`Unsupported keyType value`);
         }
-        keyList.push({ Vrsn: 1, animInterpStyle, time, animKey, selected });
+        keyList.push({ Vrsn: 1, animInterpStyle, time: time2, animKey, selected });
       }
       return keyList;
     }
@@ -16932,13 +16932,13 @@ var require_additionalInfo = __commonJS({
               relPath: (_h = (_g = file.linkedFile) === null || _g === void 0 ? void 0 : _g.relativePath) !== null && _h !== void 0 ? _h : ""
             };
             (0, descriptor_1.writeVersionAndDescriptor)(writer, "", "ExternalFileLink", desc);
-            const time = file.time ? new Date(file.time) : /* @__PURE__ */ new Date();
-            (0, psdWriter_1.writeInt32)(writer, time.getUTCFullYear());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCMonth());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCDate());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCHours());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCMinutes());
-            (0, psdWriter_1.writeFloat64)(writer, time.getUTCSeconds() + time.getUTCMilliseconds() / 1e3);
+            const time2 = file.time ? new Date(file.time) : /* @__PURE__ */ new Date();
+            (0, psdWriter_1.writeInt32)(writer, time2.getUTCFullYear());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCMonth());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCDate());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCHours());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCMinutes());
+            (0, psdWriter_1.writeFloat64)(writer, time2.getUTCSeconds() + time2.getUTCMilliseconds() / 1e3);
           }
           if (file.data) {
             (0, psdWriter_1.writeBytes)(writer, file.data);
@@ -30930,20 +30930,20 @@ function checkKeys(keys, duration) {
 }
 
 // packages/motion/src/sampling.ts
-function segment(keys, time) {
+function segment(keys, time2) {
   let i = 1;
-  while (i < keys.length - 1 && keys[i].time < time) i++;
+  while (i < keys.length - 1 && keys[i].time < time2) i++;
   const a = keys[i - 1] ?? keys[0], b = keys[i] ?? a;
-  return [a, b, b.time === a.time ? 0 : keyFraction(a.curve, (time - a.time) / (b.time - a.time))];
+  return [a, b, b.time === a.time ? 0 : keyFraction(a.curve, (time2 - a.time) / (b.time - a.time))];
 }
-function sampleAnimation(animation, rig, time) {
+function sampleAnimation(animation, rig, time2) {
   validateAnimation(animation, rig);
-  if (!Number.isFinite(time) || time < 0 || time > animation.duration)
+  if (!Number.isFinite(time2) || time2 < 0 || time2 > animation.duration)
     failStage("animation", "ANIMATION_TIME", "Sample time must be within the duration");
   const rotations = /* @__PURE__ */ Object.create(null), translations = /* @__PURE__ */ Object.create(null), scales = /* @__PURE__ */ Object.create(null), deforms = /* @__PURE__ */ Object.create(null);
   const lerp2 = (a, b, t) => a * (1 - t) + b * t;
   for (const timeline of animation.rotationTimelines ?? []) {
-    const [a, b, t] = segment(timeline.keys, time);
+    const [a, b, t] = segment(timeline.keys, time2);
     rotations[timeline.boneId] = lerp2(a.degrees, b.degrees, t);
   }
   for (const [timelines, target] of [
@@ -30951,11 +30951,11 @@ function sampleAnimation(animation, rig, time) {
     [animation.scaleTimelines ?? [], scales]
   ])
     for (const timeline of timelines) {
-      const [a, b, t] = segment(timeline.keys, time);
+      const [a, b, t] = segment(timeline.keys, time2);
       target[timeline.boneId] = [lerp2(a.x, b.x, t), lerp2(a.y, b.y, t)];
     }
   for (const timeline of animation.deformTimelines ?? []) {
-    const [a, b, t] = segment(timeline.keys, time);
+    const [a, b, t] = segment(timeline.keys, time2);
     deforms[timeline.meshId] = a.offsets.map((p, i) => [
       lerp2(p[0], b.offsets[i][0], t),
       lerp2(p[1], b.offsets[i][1], t)
@@ -31399,12 +31399,12 @@ function buildKeyposeAnimation(rig, spec) {
     if (c.channel === "rotate")
       timelines.rotate.push({
         boneId: c.boneId,
-        keys: keys.map(({ time, v, ...rest }) => ({ time, degrees: v[0], ...rest }))
+        keys: keys.map(({ time: time2, v, ...rest }) => ({ time: time2, degrees: v[0], ...rest }))
       });
     else
       timelines[c.channel].push({
         boneId: c.boneId,
-        keys: keys.map(({ time, v, ...rest }) => ({ time, x: v[0], y: v[1], ...rest }))
+        keys: keys.map(({ time: time2, v, ...rest }) => ({ time: time2, x: v[0], y: v[1], ...rest }))
       });
   }
   const animation = {
@@ -32139,7 +32139,7 @@ function simplifyAnimation(animation, fps, tolerance) {
     t.keys = simplifyKeys(
       t.keys,
       (k) => [k.degrees],
-      (time, [degrees], curve) => ({ time, degrees, ...curve ? { curve } : {} }),
+      (time2, [degrees], curve) => ({ time: time2, degrees, ...curve ? { curve } : {} }),
       d,
       fps,
       tolerance
@@ -32152,7 +32152,7 @@ function simplifyAnimation(animation, fps, tolerance) {
       t.keys = simplifyKeys(
         t.keys,
         (k) => [k.x, k.y],
-        (time, [x, y], curve) => ({ time, x, y, ...curve ? { curve } : {} }),
+        (time2, [x, y], curve) => ({ time: time2, x, y, ...curve ? { curve } : {} }),
         d,
         fps,
         scale
@@ -32186,9 +32186,9 @@ function generateWave(rig, wave) {
     })
   };
 }
-function rotationsAt(animation, time) {
+function rotationsAt(animation, time2) {
   const result = {};
-  const t = Math.max(0, Math.min(animation.duration, time));
+  const t = Math.max(0, Math.min(animation.duration, time2));
   for (const timeline of animation.rotationTimelines ?? []) {
     const keys = timeline.keys;
     let i = 1;
@@ -33269,6 +33269,7 @@ function forEditorVersion(document2, version) {
     ...doc.skeleton,
     spine: version.split(".").length === 2 ? `${version}.0` : version
   };
+  if (major < 4) return for38(doc);
   for (const animation of Object.values(doc.animations ?? {})) {
     const deform = animation.deform;
     if (!deform) continue;
@@ -33287,6 +33288,173 @@ function forEditorVersion(document2, version) {
         delete bone.transform;
       }
   }
+  return doc;
+}
+function bezierAt(t0, v0, h, t1, v1, t) {
+  const [cx1, cy1, cx2, cy2] = h;
+  const at2 = (a, b, c, d, s2) => (1 - s2) ** 3 * a + 3 * (1 - s2) ** 2 * s2 * b + 3 * (1 - s2) * s2 ** 2 * c + s2 ** 3 * d;
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 40; i++) {
+    const mid = (lo + hi) / 2;
+    if (at2(t0, cx1, cx2, t1, mid) < t) lo = mid;
+    else hi = mid;
+  }
+  return at2(v0, cy1, cy2, v1, (lo + hi) / 2);
+}
+function keys38(keys, channels, write, slot = channels.map((_, i) => i)) {
+  const out = [];
+  keys.forEach((k, i) => {
+    const values = channels.map((c) => c(k));
+    const key = write(k, values);
+    const next = keys[i + 1];
+    out.push(key);
+    if (k.curve === "stepped") key.curve = "stepped";
+    if (!Array.isArray(k.curve) || !next) return;
+    const handles = k.curve;
+    const t0 = k.time ?? 0, t1 = next.time ?? 0, span = t1 - t0;
+    const shapes = [];
+    channels.forEach((c, ch) => {
+      const v0 = values[ch], v1 = c(next);
+      const [cx1, cy1, cx2, cy2] = handles.slice(4 * slot[ch], 4 * slot[ch] + 4);
+      if (Math.abs(v1 - v0) > 1e-9 && span > 0)
+        shapes.push([
+          (cx1 - t0) / span,
+          (cy1 - v0) / (v1 - v0),
+          (cx2 - t0) / span,
+          (cy2 - v0) / (v1 - v0)
+        ]);
+    });
+    if (!shapes.length) return;
+    if (shapes.every((s2) => s2.every((v, j) => Math.abs(v - shapes[0][j]) < 1e-4))) {
+      const [c1, c2, c3, c4] = shapes[0].map((v) => v + 0);
+      Object.assign(key, { curve: c1, c2, c3, c4 });
+      return;
+    }
+    const steps = Math.max(2, Math.ceil(span * 30));
+    for (let s2 = 1; s2 < steps; s2++) {
+      const t = t0 + span * s2 / steps;
+      const sampled = channels.map(
+        (c, ch) => bezierAt(t0, values[ch], handles.slice(4 * slot[ch], 4 * slot[ch] + 4), t1, c(next), t)
+      );
+      out.push({ ...write(k, sampled), time: +t.toFixed(6) });
+    }
+  });
+  return out;
+}
+var num = (k, field, base) => k[field] ?? base;
+var time = (k) => k.time === void 0 ? {} : { time: k.time };
+function for38(doc) {
+  const unsupported = /* @__PURE__ */ new Set();
+  const sameMix = (k, where) => {
+    const x = num(k, "mixX", 1), sx = num(k, "mixScaleX", 1);
+    if (num(k, "mixY", x) !== x || num(k, "mixScaleY", sx) !== sx)
+      unsupported.add(`${where}: separate x and y mixes`);
+  };
+  const transforms = doc.transform ?? [];
+  doc.transform = transforms.map((c) => {
+    sameMix(c, `transform constraint ${String(c.name)}`);
+    const out = {
+      ...c,
+      rotateMix: num(c, "mixRotate", 1),
+      translateMix: num(c, "mixX", 1),
+      scaleMix: num(c, "mixScaleX", 1),
+      shearMix: num(c, "mixShearY", 1)
+    };
+    for (const f of ["mixRotate", "mixX", "mixY", "mixScaleX", "mixScaleY", "mixShearY"])
+      delete out[f];
+    return out;
+  });
+  if (!transforms.length) delete doc.transform;
+  for (const field of ["path", "physics"]) if (doc[field]) unsupported.add(`${field} constraints`);
+  const hex3 = (s2, i) => parseInt(s2.slice(2 * i, 2 * i + 2), 16) / 255;
+  const toHex2 = (v) => v.map(
+    (c) => Math.round(Math.min(1, Math.max(0, c)) * 255).toString(16).padStart(2, "0")
+  ).join("");
+  const bone = {
+    translate: ["x", 0, 0],
+    scale: ["x", 1, 1],
+    shear: ["x", 0, 0]
+  };
+  for (const [name, animation] of Object.entries(doc.animations ?? {})) {
+    for (const timelines of Object.values(animation.bones ?? {}))
+      for (const [kind, keys] of Object.entries(timelines)) {
+        if (kind === "rotate")
+          timelines.rotate = keys38(keys, [(k) => num(k, "value", 0)], (k, [v]) => ({
+            ...time(k),
+            angle: v
+          }));
+        else if (bone[kind]) {
+          const base = bone[kind][1];
+          timelines[kind] = keys38(
+            keys,
+            [(k) => num(k, "x", base), (k) => num(k, "y", base)],
+            (k, [x, y]) => ({ ...time(k), x, y })
+          );
+        } else unsupported.add(`${name}: bone ${kind} timelines`);
+      }
+    for (const timelines of Object.values(animation.slots ?? {}))
+      for (const [kind, keys] of Object.entries(timelines)) {
+        if (kind === "attachment") continue;
+        if (kind !== "rgba") {
+          unsupported.add(`${name}: slot ${kind} timelines`);
+          continue;
+        }
+        timelines.color = keys38(
+          keys,
+          [0, 1, 2, 3].map((i) => (k) => hex3(k.color, i)),
+          (k, v) => ({ ...time(k), color: toHex2(v) })
+        );
+        delete timelines.rgba;
+      }
+    for (const slots of Object.values(animation.deform ?? {}))
+      for (const attachments of Object.values(slots))
+        for (const [att, keys] of Object.entries(attachments))
+          attachments[att] = keys.map((k, i, all) => {
+            if (!Array.isArray(k.curve)) return k;
+            const [cx1, cy1, cx2, cy2] = k.curve;
+            const t0 = num(k, "time", 0), span = num(all[i + 1] ?? {}, "time", 0) - t0;
+            return { ...k, curve: (cx1 - t0) / span, c2: cy1, c3: (cx2 - t0) / span, c4: cy2 };
+          });
+    for (const [c, keys] of Object.entries(animation.ik ?? {}))
+      animation.ik[c] = keys38(
+        keys,
+        [(k) => num(k, "mix", 1), (k) => num(k, "softness", 0)],
+        (k, [mix2, softness]) => {
+          const out = { ...k, mix: mix2, softness };
+          delete out.curve;
+          return out;
+        }
+      );
+    for (const [c, keys] of Object.entries(animation.transform ?? {})) {
+      keys.forEach((k) => sameMix(k, `${name}: transform ${c} keys`));
+      animation.transform[c] = keys38(
+        keys,
+        [
+          (k) => num(k, "mixRotate", 1),
+          (k) => num(k, "mixX", 1),
+          (k) => num(k, "mixScaleX", 1),
+          (k) => num(k, "mixShearY", 1)
+        ],
+        (k, [rotateMix, translateMix, scaleMix, shearMix]) => ({
+          ...time(k),
+          rotateMix,
+          translateMix,
+          scaleMix,
+          shearMix
+        }),
+        // 4.0 curves: mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY.
+        [0, 1, 3, 5]
+      );
+    }
+    for (const field of ["path", "attachments", "physics"])
+      if (animation[field]) unsupported.add(`${name}: ${field} timelines`);
+  }
+  if (unsupported.size)
+    failStage(
+      "spine",
+      "SPINE_38_UNSUPPORTED",
+      `Spine 3.8 cannot hold: ${[...unsupported].join("; ")}`
+    );
   return doc;
 }
 
@@ -33594,7 +33762,7 @@ function narrowest(pts, a, b, t0, t1) {
 }
 
 // packages/character/src/joints.ts
-function num(value, params, where) {
+function num2(value, params, where) {
   if (typeof value === "number") return value;
   const lookup = (name) => {
     const v = params[name];
@@ -33646,7 +33814,7 @@ function evaluateExpression(source, lookup, where) {
   return v;
 }
 function val(value, params, where) {
-  return Array.isArray(value) ? [num(value[0], params, where), num(value[1], params, where)] : num(value, params, where);
+  return Array.isArray(value) ? [num2(value[0], params, where), num2(value[1], params, where)] : num2(value, params, where);
 }
 var PartIndex = class {
   constructor(parts) {
@@ -34251,7 +34419,7 @@ var motionParams = (motion, overrides = {}) => ({
   ...overrides
 });
 function buildMotionSpecs(motion, ctx, params) {
-  const n = (v, where) => num(v, params, where);
+  const n = (v, where) => num2(v, params, where);
   const v2 = (v, where) => {
     const x = val(v, params, where);
     return Array.isArray(x) ? [r3(x[0]), r3(x[1])] : r3(x);
@@ -34603,7 +34771,7 @@ function buildColorTimelines(motion, rawSetupColors, params, plan = motion) {
   const swapped = (anim) => swappedIn(motion, anim);
   const setupColors = shownOpaque(plan, rawSetupColors);
   const transparent = (c) => parseInt(c.slice(6, 8), 16) <= 5;
-  const fps = motion.fps ?? 30, n = (v, where) => num(v, params, where);
+  const fps = motion.fps ?? 30, n = (v, where) => num2(v, params, where);
   const owner = /* @__PURE__ */ new Map();
   const claim = (slot, id) => {
     if (!setupColors.has(slot)) fail3("PLAN_MOTION_SLOT", `${id}: unknown slot ${slot}`);
@@ -34881,10 +35049,10 @@ function buildAttachmentTimelines(motion, slots, durations) {
       const timeline = [];
       if (keys[0].frame > 0) timeline.push({ time: 0, name: start });
       for (const k of keys) {
-        const time = Math.min(duration, k.frame / fps);
+        const time2 = Math.min(duration, k.frame / fps);
         const last = timeline.at(-1);
-        if (last && Math.abs(last.time - time) < 1e-9) last.name = k.attachment;
-        else timeline.push({ time, name: k.attachment });
+        if (last && Math.abs(last.time - time2) < 1e-9) last.name = k.attachment;
+        else timeline.push({ time: time2, name: k.attachment });
       }
       if (timeline.at(-1).time < duration - 1e-9)
         timeline.push({
@@ -35796,7 +35964,7 @@ function measureSeams(rigging, animations) {
   const out = [];
   for (const anim of animations) {
     const t = qa.at?.[anim.name] ?? anim.duration / 2;
-    const channels = (time) => sampleAnimation(anim, rigging.rigged.rig, time);
+    const channels = (time2) => sampleAnimation(anim, rigging.rigged.rig, time2);
     const rest = channels(0), now = channels(t);
     const seamBand = 0.04 * (rigging.motion.faceParallax?.unit ?? 500);
     for (const [a, b] of qa.seams) {
@@ -36243,7 +36411,7 @@ function lintOne(plan, partNames, knownAnimations) {
     let move;
     if (c.move !== void 0)
       try {
-        move = Math.round(num(c.move, m.params, `${where}.move`));
+        move = Math.round(num2(c.move, m.params, `${where}.move`));
         if (move < 1) errors.push(`${where}: move must be >= 1 frame`);
       } catch {
       }
@@ -36301,7 +36469,7 @@ function lintOne(plan, partNames, knownAnimations) {
     if (isParamString(v)) {
       for (const name of v.match(/\$[A-Za-z_][A-Za-z0-9_]*/g) ?? []) referenced.add(name.slice(1));
       try {
-        num(v, m.params, path);
+        num2(v, m.params, path);
       } catch (e) {
         errors.push(e.message.replace(/^[A-Z_]+: /, ""));
       }
@@ -36419,13 +36587,13 @@ function loadSkeleton(document2) {
 function frameTime(f, frames, duration, fps) {
   return f >= frames ? Math.max(0, duration - 1e-6) : Math.min(duration - 1e-6, f / fps + 1e-6);
 }
-function pose(sk, animation, time) {
+function pose(sk, animation, time2) {
   const spine = spineRuntime();
   sk.skeleton.setToSetupPose();
   if (animation) {
     const a = sk.data.findAnimation(animation);
     if (!a) throw new Error(`REFERENCE_ANIMATION: no animation ${animation}`);
-    a.apply(sk.skeleton, 0, time, true, [], 1, spine.MixBlend.setup, spine.MixDirection.mixIn);
+    a.apply(sk.skeleton, 0, time2, true, [], 1, spine.MixBlend.setup, spine.MixDirection.mixIn);
   }
   sk.skeleton.updateWorldTransform();
 }
@@ -38414,8 +38582,8 @@ var at = (item, s2) => {
 };
 function fitRestPose(document2, animation, reference, image, options) {
   const sk = loadSkeleton(document2);
-  const view = options.view, scale = reference.width / view.width, maxRotate = options.maxRotate ?? 30, window = options.window ?? 0.3 * Math.max(view.width, view.height), minScore = options.minScore ?? 0.35, time = options.time ?? 0;
-  pose(sk, animation, time);
+  const view = options.view, scale = reference.width / view.width, maxRotate = options.maxRotate ?? 30, window = options.window ?? 0.3 * Math.max(view.width, view.height), minScore = options.minScore ?? 0.35, time2 = options.time ?? 0;
+  pose(sk, animation, time2);
   const drawn = [];
   for (const slot of sk.skeleton.drawOrder) {
     const att = slot.getAttachment();
@@ -38717,7 +38885,7 @@ function fitRestPose(document2, animation, reference, image, options) {
       b.data.y = setup[i][1] + o[i][1];
       b.data.rotation = setup[i][2] + o[i][2];
     });
-    pose(sk, animation, time);
+    pose(sk, animation, time2);
     const now2 = worldVertices(sk, used);
     const r2 = [];
     for (const slot of used) {
@@ -39623,7 +39791,7 @@ var hex = (s2, n) => Array.from({ length: n }, (_, i) => parseInt(s2.slice(i * 2
 var toHex = (vs) => vs.map(
   (v) => Math.round(Math.min(1, Math.max(0, v)) * 255).toString(16).padStart(2, "0")
 ).join("");
-var num2 = (k, name, base) => typeof k[name] === "number" ? k[name] : base;
+var num3 = (k, name, base) => typeof k[name] === "number" ? k[name] : base;
 var keyTime = (k) => typeof k.time === "number" ? k.time : 0;
 var round2 = (v, digits = 4) => {
   const r = +v.toFixed(digits);
@@ -39636,7 +39804,7 @@ function boneCodec(prop) {
     channels: spec.names.length,
     shared: false,
     discrete: [],
-    read: (k) => spec.names.map((n) => num2(k, n, spec.base)),
+    read: (k) => spec.names.map((n) => num3(k, n, spec.base)),
     write: (values) => Object.fromEntries(spec.names.map((n, i) => [n, round2(values[i])]))
   };
 }
@@ -39646,7 +39814,7 @@ function colorCodec(prop) {
       channels: 1,
       shared: false,
       discrete: [],
-      read: (k) => [num2(k, "value", 1)],
+      read: (k) => [num3(k, "value", 1)],
       write: (values) => ({ value: round2(values[0]) })
     };
   const spec = COLOR_PROPS[prop];
@@ -39669,7 +39837,7 @@ var IK = {
   channels: 2,
   shared: false,
   discrete: ["bendPositive", "compress", "stretch"],
-  read: (k) => [num2(k, "mix", 1), num2(k, "softness", 0)],
+  read: (k) => [num3(k, "mix", 1), num3(k, "softness", 0)],
   write: (values) => ({ mix: round2(values[0], 5), softness: round2(values[1]) })
 };
 var TRANSFORM = {
@@ -39677,14 +39845,14 @@ var TRANSFORM = {
   shared: false,
   discrete: [],
   read: (k) => {
-    const x = num2(k, "mixX", 1), sx = num2(k, "mixScaleX", 1);
+    const x = num3(k, "mixX", 1), sx = num3(k, "mixScaleX", 1);
     return [
-      num2(k, "mixRotate", 1),
+      num3(k, "mixRotate", 1),
       x,
-      num2(k, "mixY", x),
+      num3(k, "mixY", x),
       sx,
-      num2(k, "mixScaleY", sx),
-      num2(k, "mixShearY", 1)
+      num3(k, "mixScaleY", sx),
+      num3(k, "mixShearY", 1)
     ];
   },
   write: (v) => ({
@@ -39701,8 +39869,8 @@ var PATH_MIX = {
   shared: false,
   discrete: [],
   read: (k) => {
-    const x = num2(k, "mixX", 1);
-    return [num2(k, "mixRotate", 1), x, num2(k, "mixY", x)];
+    const x = num3(k, "mixX", 1);
+    return [num3(k, "mixRotate", 1), x, num3(k, "mixY", x)];
   },
   write: (v) => ({ mixRotate: round2(v[0], 5), mixX: round2(v[1], 5), mixY: round2(v[2], 5) })
 };
@@ -39710,7 +39878,7 @@ var PATH_VALUE = {
   channels: 1,
   shared: false,
   discrete: [],
-  read: (k) => [num2(k, "value", 0)],
+  read: (k) => [num3(k, "value", 0)],
   write: (v) => ({ value: round2(v[0]) })
 };
 function deformCodec(length) {
@@ -39722,7 +39890,7 @@ function deformCodec(length) {
       const out = new Array(length).fill(0);
       const vs = k.vertices;
       if (vs) {
-        const start = num2(k, "offset", 0);
+        const start = num3(k, "offset", 0);
         for (let i = 0; i < vs.length && start + i < length; i++) out[start + i] = vs[i];
       }
       return out;
@@ -39915,8 +40083,8 @@ function writeKeys(doc, tl, keys) {
     }
     const template = tl.keys[k.source ?? k.state ?? 0] ?? {};
     const out = {};
-    const time = k.source !== void 0 ? keyTime(tl.keys[k.source]) : round2(k.time, 4);
-    if (time !== 0) out.time = time;
+    const time2 = k.source !== void 0 ? keyTime(tl.keys[k.source]) : round2(k.time, 4);
+    if (time2 !== 0) out.time = time2;
     Object.assign(out, codec.write(k.values, template));
     for (const d of codec.discrete) if (template[d] !== void 0) out[d] = template[d];
     if (!last && k.curve) {
@@ -39964,9 +40132,9 @@ function setTimelineKeys(anim, tl, keys) {
 }
 
 // packages/reference/src/keys-world.ts
-function samplePose(sk, animation, time) {
+function samplePose(sk, animation, time2) {
   const spine = spineRuntime();
-  pose(sk, animation, time);
+  pose(sk, animation, time2);
   const slots = sk.skeleton.slots;
   const atts = new Array(slots.length).fill(null);
   const verts = new Array(slots.length).fill(null);
@@ -41226,7 +41394,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.12";
+var AUTOSPINE_VERSION = "0.5.13";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");
@@ -41852,8 +42020,8 @@ function spineVersionArg(version) {
   const m = /^(\d+)\.(\d+)(?:\.\d+)?$/.exec(version);
   if (!m)
     throw new Error(`CLI_SPINE_VERSION: ${version} is not a Spine version such as 4.2 or 4.2.43`);
-  if (+m[1] < 4)
-    throw new Error(`CLI_SPINE_VERSION: Spine ${version} cannot import 4.0 data; use 4.0 or newer`);
+  if (+m[1] * 100 + +m[2] < 308)
+    throw new Error(`CLI_SPINE_VERSION: Spine ${version} is older than 3.8; use 3.8 or newer`);
   return version;
 }
 function runSpine(exe, args) {
@@ -42988,8 +43156,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   let roundBase = base, shaped, stalls = 0, skip = /* @__PURE__ */ new Set();
   const waves = (own.waves ?? []).map((w) => ({
     ...w,
-    amp: num(w.amp, own.params, `${w.chain}.amp`),
-    peak: num(w.peak, own.params, `${w.chain}.peak`)
+    amp: num2(w.amp, own.params, `${w.chain}.amp`),
+    peak: num2(w.peak, own.params, `${w.chain}.peak`)
   }));
   for (let k = 1; k <= rounds; k++) {
     const began = Date.now(), dir = join2(out, `round-${k}`);

@@ -966,16 +966,16 @@ export function spineExecutable(explicit?: string): string | undefined {
   return candidates.find((c): c is string => !!c && existsSync(c));
 }
 /**
- * The editor version for `-u`: major.minor or major.minor.patch, 4.0 or newer (an older editor
- * cannot import 4.0 data). Default 4.0.64, the version the engine's data is written for.
+ * The editor version for `-u`: major.minor or major.minor.patch, 3.8 or newer (3.8 gets its own
+ * layout, ADR-047; older editors read neither). Default 4.0.64, the version the engine writes for.
  */
 export function spineVersionArg(version: string | undefined): string {
   if (version === undefined) return "4.0.64";
   const m = /^(\d+)\.(\d+)(?:\.\d+)?$/.exec(version);
   if (!m)
     throw new Error(`CLI_SPINE_VERSION: ${version} is not a Spine version such as 4.2 or 4.2.43`);
-  if (+m[1]! < 4)
-    throw new Error(`CLI_SPINE_VERSION: Spine ${version} cannot import 4.0 data; use 4.0 or newer`);
+  if (+m[1]! * 100 + +m[2]! < 308)
+    throw new Error(`CLI_SPINE_VERSION: Spine ${version} is older than 3.8; use 3.8 or newer`);
   return version;
 }
 
@@ -1055,9 +1055,9 @@ export interface DeliverOptions {
   /** Spine editor executable; default AUTOSPINE_SPINE or the standard install. */
   spine?: string;
   /**
-   * Editor version the project is imported with, such as 4.2 or 4.2.43 (default 4.0.64). A newer
-   * editor reads the build's 4.0 JSON and saves its own project, which 4.0 cannot open again;
-   * reviews and comparisons still play the 4.0 JSON.
+   * Editor version the project is imported with, such as 4.2, 4.2.43 or 3.8 (default 4.0.64). The
+   * build's 4.0 data is laid out for that editor first (ADR-046, ADR-047); a 4.1+ project cannot
+   * be opened by 4.0 again. Reviews and comparisons still play the 4.0 JSON.
    */
   spineVersion?: string;
   /** Swap an earlier delivery for this build; the old files move into the build folder. */
