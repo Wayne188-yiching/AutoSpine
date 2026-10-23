@@ -42,10 +42,11 @@ import {
   reviewVideoFiles,
   fitPoseFiles,
   fitVideoFiles,
+  draftMotionFiles,
   mergePlanFiles,
 } from "@autospine/cli/character";
 import { reduceKeysFiles } from "@autospine/cli/keys";
-import { lintCharacterPlan } from "@autospine/character";
+import { DRAFT_KINDS, lintCharacterPlan } from "@autospine/character";
 import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
 import {
   PlannerProposalSchema,
@@ -269,6 +270,17 @@ const toolSchemas = {
     },
     strict,
   ),
+  autospine_motion_draft: Type.Object(
+    {
+      planPath: WorkspacePath,
+      outputPath: WorkspacePath,
+      animation: Type.String({ minLength: 1, maxLength: 64 }),
+      kind: Type.Optional(Type.Union(DRAFT_KINDS.map((k) => Type.Literal(k)))),
+      frames: Type.Optional(Type.Integer({ minimum: 4, maximum: 3600 })),
+      subject: Type.Optional(Type.Union([Type.Literal("character"), Type.Literal("prop")])),
+    },
+    strict,
+  ),
   autospine_merge_plans: Type.Object(
     {
       planPaths: Type.Array(WorkspacePath, { minItems: 2, maxItems: 64 }),
@@ -436,6 +448,8 @@ const descriptions: Record<keyof typeof toolSchemas, string> = {
     "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Compares the plan's animations the artist file also has (or only `animation`); a full artist export may hold more, which are listed as artistOnly. Numeric acceptance, not artist approval.",
   autospine_optimize_motion:
     "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
+  autospine_motion_draft:
+    "Draft one animation's motion from the measured priors (ADR-048, ADR-032) into a NEW workspace-local plan file. `kind` defaults from the name: idle, walk (character loops), prop (a prop's loop), or a one-shot: entry (In, Appear), exit (Out), jump (Win, Goal, Jump), charge, press, levelup, look, transition (anything else). A loop gets a breath main, head follow, strand waves and limb swings; a one-shot gets keys on a `move` bone (added at the feet when missing), a head look and alpha on the shown parts. Only that animation changes; a new animation shows the parts the idle shows. The plan is linted before it is written; notes say what was added, replaced or kept. A starting point to build, watch and adjust.",
   autospine_merge_plans:
     "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose:
@@ -458,6 +472,7 @@ const writingTools = new Set<string>([
   "autospine_fit_pose",
   "autospine_fit_video",
   "autospine_merge_plans",
+  "autospine_motion_draft",
   "autospine_reduce_keys",
 ]);
 export const mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
@@ -936,6 +951,18 @@ export class AutoSpineMcpServer {
             notes: summary.notes,
             artistQualityAccepted: false,
           });
+        }
+        case "autospine_motion_draft": {
+          if (!Value.Check(toolSchemas.autospine_motion_draft, args)) break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const output = await guardOutput(root, args.outputPath, true);
+          const drafted = await draftMotionFiles(plan, output, {
+            animation: args.animation,
+            ...(args.kind === undefined ? {} : { kind: args.kind }),
+            ...(args.frames === undefined ? {} : { frames: args.frames }),
+            ...(args.subject === undefined ? {} : { subject: args.subject }),
+          }).catch(characterFailure);
+          return result({ ...drafted, output: relative(root, output) });
         }
         case "autospine_merge_plans": {
           if (!Value.Check(toolSchemas.autospine_merge_plans, args)) break;

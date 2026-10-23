@@ -29092,12 +29092,12 @@ function minimumAngle(points, [a, b, c]) {
   ];
   return Math.min(
     ...sides.map(
-      (side, index) => Math.acos(
+      (side2, index) => Math.acos(
         Math.max(
           -1,
           Math.min(
             1,
-            (sides[(index + 1) % 3] ** 2 + sides[(index + 2) % 3] ** 2 - side ** 2) / (2 * sides[(index + 1) % 3] * sides[(index + 2) % 3])
+            (sides[(index + 1) % 3] ** 2 + sides[(index + 2) % 3] ** 2 - side2 ** 2) / (2 * sides[(index + 1) % 3] * sides[(index + 2) % 3])
           )
         )
       )
@@ -30399,7 +30399,7 @@ function fitSegment(sum, t0, t1, step, hints = []) {
     ...grid.flatMap((x1) => grid.map((x2) => [x1, x2]))
   ];
   for (const [x1, x2] of pairs) {
-    let a11 = 0, a12 = 0, a22 = 0, r1 = 0, r2 = 0;
+    let a11 = 0, a12 = 0, a22 = 0, r1 = 0, r23 = 0;
     us.forEach((u, k) => {
       const s2 = parameterAt({ x1, x2 }, u), b1 = 3 * (1 - s2) * (1 - s2) * s2, b2 = 3 * (1 - s2) * s2 * s2;
       for (const j of moving) {
@@ -30408,7 +30408,7 @@ function fitSegment(sum, t0, t1, step, hints = []) {
         a12 += w * b1 * b2;
         a22 += w * b2 * b2;
         r1 += w * b1 * g;
-        r2 += w * b2 * g;
+        r23 += w * b2 * g;
       }
     });
     const det = a11 * a22 - a12 * a12;
@@ -30416,9 +30416,9 @@ function fitSegment(sum, t0, t1, step, hints = []) {
     const clamp = (y) => Math.min(10, Math.max(-10, y));
     const curve = bezier(
       x1,
-      clamp((r1 * a22 - r2 * a12) / det),
+      clamp((r1 * a22 - r23 * a12) / det),
       x2,
-      clamp((a11 * r2 - a12 * r1) / det)
+      clamp((a11 * r23 - a12 * r1) / det)
     );
     const e = error((u) => keyFraction(curve, u));
     if (!best || e < best.error) best = { curve, error: e };
@@ -30864,6 +30864,181 @@ function oneShotKind(name) {
   if (/Look/i.test(n)) return "look";
   return "transition";
 }
+var r2 = (v) => +v.toFixed(2);
+function oneShotTemplate(name, options) {
+  const { frames: N, unit: u, subject } = options;
+  if (!Number.isInteger(N) || N < 2 || N > 3600)
+    failStage("animation", "PRIOR_FRAMES", "A one-shot template needs 2..3600 frames");
+  if (!(u > 0) || !Number.isFinite(u))
+    failStage("animation", "PRIOR_UNIT", "A one-shot template needs a positive unit (px)");
+  const kind = options.kind ?? oneShotKind(name);
+  const F = (x) => Math.max(0, Math.min(N, Math.round(x * N)));
+  const P = MOTION_PRIORS;
+  const out = {
+    kind,
+    subject,
+    translate: [],
+    scale: [],
+    rotate: [],
+    head: [],
+    alpha: [],
+    swing: { limbDeg: 0, strandDeg: 0, tipLagFrames: 0, period: N },
+    keyEvery: Math.round(P.characterOneShot.keyGapFrames.median)
+  };
+  const eased = (ease) => ease ? { ease } : {};
+  const T = (...keys) => {
+    for (const [x, dx, dy, ease] of keys)
+      out.translate.push({ frame: F(x), value: [r2(dx * u), r2(dy * u)], ...eased(ease) });
+  };
+  const S = (...keys) => {
+    for (const [x, k, ease] of keys)
+      out.scale.push({ frame: F(x), value: [r2(k), r2(k)], ...eased(ease) });
+  };
+  const R = (...keys) => {
+    for (const [x, deg, ease] of keys)
+      out.rotate.push({ frame: F(x), value: r2(deg), ...eased(ease) });
+  };
+  const A = (...keys) => {
+    for (const [x, alpha, ease] of keys)
+      out.alpha.push({ frame: F(x), alpha: r2(alpha), ...eased(ease) });
+  };
+  const swing = (limbDeg, strandDeg, sways = 1) => {
+    out.swing = {
+      limbDeg: r2(limbDeg),
+      strandDeg: r2(strandDeg),
+      tipLagFrames: P.characterOneShot.strandTipLagFrames.median,
+      period: Math.max(2, Math.round(N / sways))
+    };
+  };
+  if (subject === "prop") {
+    if (kind === "entry") A([0, 0], [0.4, 1, "sine"]);
+    else if (kind === "exit") {
+      const e = P.propExit;
+      A([0, 1], [0.13, 1], [e.visibleUntil.median, 0, "sine"]);
+      S([0, 1], [0.13, 1], [0.6, e.endScale.median, "out"]);
+    }
+    out.keyEvery = P.propLoop.keyGapFrames.median;
+    return dedupe(out);
+  }
+  switch (kind) {
+    case "entry": {
+      const e = P.entry;
+      T([0, 0, e.startBelowHw.median], [e.peakAt.median, 0, -e.aboveEndHw.median, "out"]);
+      T([0.75, 0, 0, "sine"]);
+      S([0, e.startScale.median], [e.peakAt.median, e.peakScale.median, "out"], [0.75, 1, "sine"]);
+      const tilt = Math.round(Math.sqrt(e.tiltPeakDeg.min * e.tiltPeakDeg.median));
+      R([0, 0], [e.peakAt.median, tilt, "out"], [0.75, 0, "sine"]);
+      A([0, e.alphaStart.median], [e.alphaFullAt.median, 1, "sine"]);
+      swing(e.limbDeg.median, P.characterOneShot.strandDeg.median);
+      break;
+    }
+    case "exit": {
+      const e = P.exit, tilt = e.tiltDeg.median / 2;
+      T([0, 0, 0], [0.3, 0, -e.liftHw.median, "out"], [1, 0, e.endDropHw.median, "in"]);
+      S([0, 1], [0.5, e.peakScale.median, "sine"], [1, e.endScale.median, "in"]);
+      R([0, 0], [0.3, tilt, "sine"], [0.6, -tilt, "sine"], [1, 0, "sine"]);
+      swing(e.limbDeg.median, P.characterOneShot.strandDeg.median, 2);
+      break;
+    }
+    case "jump": {
+      const j = P.jump, side2 = j.sideHw.median;
+      T([0, 0, 0], [j.dipAt.median, 0, j.dipHw.median, "sine"]);
+      T([j.liftAt.median, side2 / 2, -j.liftHw.median, "out"], [j.landAt.median, 0, 0, "in"]);
+      T([0.5, -side2 / 4, 0, "sine"], [0.75, 0, 0, "sine"]);
+      R([0, 0], [j.liftAt.median, -5, "out"], [0.5, 3, "sine"], [0.75, 0, "sine"]);
+      swing(j.limbDeg.median, j.strandDeg.median);
+      out.keyEvery = j.keyGapFrames.median;
+      break;
+    }
+    case "charge": {
+      const c = P.charge;
+      const t = c.tiltDeg.median / 2, x = c.sideHw.median / 2;
+      R([0, 0], [0.3, t, "sine"], [0.65, -t, "sine"], [0.95, 0, "sine"]);
+      T([0, 0, 0], [0.3, x, 0, "sine"], [0.65, -x, 0, "sine"], [0.95, 0, 0, "sine"]);
+      swing(c.limbDeg.median, c.strandDeg.median, 1.5);
+      break;
+    }
+    case "press":
+      T([0, 0, 0], [0.2, 0, 0.03, "sine"], [0.45, 0, 0, "sine"]);
+      swing(P.transition.limbDeg.median, P.transition.strandDeg.median);
+      break;
+    case "levelup": {
+      const l = P.levelup, end = l.endScale.median;
+      S([0, 1], [l.lowAt.median, l.lowScale.median, "sine"]);
+      S([l.peakAt.median, end * l.peakScale.median, "out"], [0.85, end, "sine"]);
+      break;
+    }
+    case "look": {
+      const h = P.look.tiltDeg.median / 2, at2 = (x, d = 0) => Math.min(N, F(x) + d);
+      out.head.push(
+        { frame: at2(0), value: 0 },
+        { frame: at2(0.2), value: 0 },
+        { frame: at2(0.2, 4), value: r2(h), ease: "out" },
+        { frame: at2(0.55), value: r2(h) },
+        { frame: at2(0.55, 4), value: r2(-h), ease: "out" },
+        { frame: at2(0.85), value: r2(-h) },
+        { frame: at2(0.85, 4), value: 0, ease: "out" }
+      );
+      swing(P.transition.limbDeg.median, P.transition.strandDeg.median, 2);
+      break;
+    }
+    case "transition": {
+      const t = P.transition, tilt = t.tiltDeg.median / 2;
+      T([0, 0, 0], [0.3, 0, 0.03, "sine"], [t.liftAt.median, 0, -t.liftHw.median, "sine"]);
+      T([0.9, 0, 0, "sine"]);
+      R([0, 0], [0.3, tilt, "sine"], [0.6, -tilt, "sine"], [0.9, 0, "sine"]);
+      swing(t.limbDeg.median, t.strandDeg.median);
+      out.keyEvery = t.keyGapFrames.median;
+      break;
+    }
+  }
+  return dedupe(out);
+}
+function dedupe(t) {
+  const last = (keys) => [...new Map(keys.map((k) => [k.frame, k])).values()].sort((a, b) => a.frame - b.frame);
+  return {
+    ...t,
+    translate: last(t.translate),
+    scale: last(t.scale),
+    rotate: last(t.rotate),
+    head: last(t.head),
+    alpha: last(t.alpha)
+  };
+}
+function loopRecipe(kind, unit) {
+  if (!(unit > 0) || !Number.isFinite(unit))
+    failStage("animation", "PRIOR_UNIT", "A loop recipe needs a positive unit (px)");
+  const P = MOTION_PRIORS, px = (hw) => +(hw * unit).toFixed(2);
+  if (kind === "walk")
+    return {
+      depth: px(P.walk.bobHw.median),
+      head: { gain: 0, lag: 0 },
+      strandAmplitude: r2(P.walk.strandDeg.median / 2),
+      strandStep: 2,
+      limbAmplitude: r2(P.walk.limbDeg.median / 2),
+      cycleSeconds: 4 / 3,
+      bobsPerCycle: P.walk.bobsPerStride.median
+    };
+  if (kind === "prop")
+    return {
+      depth: px(P.propLoop.baseHw.median),
+      head: { gain: 0, lag: 0 },
+      strandAmplitude: 0,
+      strandStep: 0,
+      limbAmplitude: 0,
+      cycleSeconds: 2,
+      bobsPerCycle: 1
+    };
+  return {
+    depth: px(+P.idle.pelvisHw.median.toFixed(2)),
+    head: { gain: 0.7, lag: 8 },
+    strandAmplitude: r2(P.idle.strandDeg.median / 2),
+    strandStep: Math.round(P.idle.strandTipLagFrames.median / 2),
+    limbAmplitude: 2,
+    cycleSeconds: 2,
+    bobsPerCycle: 1
+  };
+}
 
 // packages/motion/src/video-tracks.ts
 var known = (v) => v !== null && v !== void 0;
@@ -30920,20 +31095,20 @@ function sharedPeriod(channels, opts = {}) {
     (c) => Array.from({ length: maxLag + 2 }, (_, lag3) => lag3 ? autocorrelation(c, lag3) : 1)
   );
   const avg = Array.from({ length: maxLag + 2 }, (_, lag3) => {
-    const v = per.map((r2) => r2[lag3]).filter(known);
+    const v = per.map((r4) => r4[lag3]).filter(known);
     return v.length ? mean(v) : -1;
   });
   const peaks2 = [];
   let low = avg[1];
   for (let lag3 = 2; lag3 <= maxLag; lag3++) {
-    const r2 = avg[lag3], reach = Math.max(1, Math.round(0.1 * lag3));
+    const r4 = avg[lag3], reach = Math.max(1, Math.round(0.1 * lag3));
     low = Math.min(low, avg[lag3 - 1]);
     let top = true;
     for (let j = Math.max(1, lag3 - reach); j <= Math.min(maxLag + 1, lag3 + reach); j++)
-      if (avg[j] > r2) top = false;
-    if (!top || r2 < minCorrelation || low > r2 - 0.2) continue;
+      if (avg[j] > r4) top = false;
+    if (!top || r4 < minCorrelation || low > r4 - 0.2) continue;
     if (per.some((c) => (c[lag3] ?? 1) < 0.2)) continue;
-    peaks2.push({ lag: lag3, r: r2 });
+    peaks2.push({ lag: lag3, r: r4 });
   }
   if (!peaks2.length) return null;
   const highest = Math.max(...peaks2.map((p) => p.r));
@@ -31331,17 +31506,17 @@ function lagKeys(targets, tolerance, groups, opts) {
     while (p !== void 0 && !like(p).length) p = opts.parents?.[p];
     if (p === void 0) return { parent: void 0, lag: 0 };
     const refs = like(p);
-    const r2 = (d) => {
+    const r4 = (d) => {
       const x = advance(targets[c], d, loop);
       return Math.max(
         0,
         ...refs.map((q) => Math.abs(pearson(targets[q].map((v, g) => [v, x[g]])) ?? 0))
       );
     };
-    const r0 = r2(0);
+    const r0 = r4(0);
     let best = 0, bestR = r0;
     for (let d = -maxLag; d <= maxLag; d++) {
-      const v = r2(d);
+      const v = r4(d);
       if (v > bestR + 1e-9 || Math.abs(v - bestR) <= 1e-9 && Math.abs(d) < Math.abs(best))
         [best, bestR] = [d, v];
     }
@@ -31360,7 +31535,7 @@ function lagKeys(targets, tolerance, groups, opts) {
   if (fromParents.every((d) => d === 0)) return plain;
   let lags = fromParents, least = Infinity;
   for (let k = 0; loop && k <= 2 * maxLag; k++) {
-    const shift = k % 2 ? (k + 1) / 2 : -k / 2, shifted2 = fromParents.map((d) => d + shift), r2 = reduceKeys(moved(shifted2), tolerance, { ...opts, greedy: true }), m = fit(shifted2, r2).mean;
+    const shift = k % 2 ? (k + 1) / 2 : -k / 2, shifted2 = fromParents.map((d) => d + shift), r4 = reduceKeys(moved(shifted2), tolerance, { ...opts, greedy: true }), m = fit(shifted2, r4).mean;
     if (m < least - 1e-9) [lags, least] = [shifted2, m];
   }
   const aligned = moved(lags), r = reduceKeys(aligned, tolerance, opts), before = fit(plain.lags, base), after = fit(lags, r);
@@ -31578,13 +31753,13 @@ function solveChainWeights(mesh2, rig, boneIds, blendWidth) {
     vertices: mesh2.vertices.map((p, vertexIndex) => {
       let owner = 0;
       for (const [i, j] of joints.entries()) {
-        const side = (p[0] - j.at[0]) * j.normal[0] + (p[1] - j.at[1]) * j.normal[1];
-        if (side >= j.width) {
+        const side2 = (p[0] - j.at[0]) * j.normal[0] + (p[1] - j.at[1]) * j.normal[1];
+        if (side2 >= j.width) {
           owner = i + 1;
           continue;
         }
-        if (side > -j.width) {
-          const u = (side + j.width) / (2 * j.width), w = u * u * (3 - 2 * u);
+        if (side2 > -j.width) {
+          const u = (side2 + j.width) / (2 * j.width), w = u * u * (3 - 2 * u);
           return {
             vertexIndex,
             influences: [
@@ -32751,12 +32926,12 @@ function compileCharacterSpine40(input) {
         });
         if (crosses.some((v) => Math.abs(v) < 1e-8) || !(crosses.every((v) => v > 0) || crosses.every((v) => v < 0)))
           fail5("Clipping mask must be strictly convex and nondegenerate");
-        const side = (a2, b, c) => (b[0] - a2[0]) * (c[1] - a2[1]) - (b[1] - a2[1]) * (c[0] - a2[0]);
+        const side2 = (a2, b, c) => (b[0] - a2[0]) * (c[1] - a2[1]) - (b[1] - a2[1]) * (c[0] - a2[0]);
         for (let i = 0; i < points.length; i++)
           for (let j = i + 2; j < points.length; j++) {
             if (i === 0 && j === points.length - 1) continue;
             const p = points[i], q = points[(i + 1) % points.length], r = points[j], s2 = points[(j + 1) % points.length];
-            if (side(p, q, r) * side(p, q, s2) <= 0 && side(r, s2, p) * side(r, s2, q) <= 0)
+            if (side2(p, q, r) * side2(p, q, s2) <= 0 && side2(r, s2, p) * side2(r, s2, q) <= 0)
               fail5("Clipping mask must be simple, without crossing edges");
           }
         attachments[slot.name][a.name] = {
@@ -33140,7 +33315,7 @@ async function buildJobFile(jobPath) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.13";
+var AUTOSPINE_VERSION = "0.5.14";
 
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
@@ -34130,8 +34305,8 @@ function buildMotionSpecs(motion, ctx, params) {
         "PLAN_MOTION_FOLLOW",
         `${f.id}: ${f.to} sits on the origin of ${f.bone}`
       );
-    const side = b[0] - a[0] < -1e-6 ? -1 : 1;
-    return side * n(f.travel, `${f.id}.travel`) * 180 / Math.PI / reach;
+    const side2 = b[0] - a[0] < -1e-6 ? -1 : 1;
+    return side2 * n(f.travel, `${f.id}.travel`) * 180 / Math.PI / reach;
   };
   const looks = (k, raw, frames, loop) => {
     const move = Math.round(n(k.move, `${k.id}.move`)), restValue = v2(k.rest, `${k.id}.rest`), same3 = (a, b) => JSON.stringify(a) === JSON.stringify(b), out = [];
@@ -35218,6 +35393,274 @@ function mergePlans(plans, options = {}) {
     ...first.qa ? { qa: { ...first.qa, ...view ? { view } : {} } } : {}
   };
   return { plan, notes };
+}
+
+// packages/character/src/draft.ts
+var DRAFT_KINDS = [
+  "idle",
+  "walk",
+  "prop",
+  "entry",
+  "exit",
+  "jump",
+  "charge",
+  "press",
+  "levelup",
+  "look",
+  "transition"
+];
+var LOOPS = /* @__PURE__ */ new Set(["idle", "walk", "prop"]);
+var UPPER_LIMB = /^(upper_?)?arm|^shoulder|^wing|^thigh/i;
+var side = (id) => /(_|^)(l|left)$|_l_|L$/.test(id) ? -1 : /(_|^)(r|right)$|_r_|R$/.test(id) ? 1 : 0;
+var r22 = (v) => +v.toFixed(2);
+function draftMotion(plan, figure, options) {
+  const fail5 = (reason) => failStage("animation", "PLAN_DRAFT", reason);
+  const { animation } = options;
+  if (!/^[A-Za-z0-9_@/ .-]{1,64}$/.test(animation))
+    fail5(`animation name ${animation} is not usable`);
+  if (!(figure.unit > 0)) fail5("the draft needs a positive unit (head or figure width)");
+  const out = structuredClone(plan);
+  const motion = out.motion;
+  const fps = motion.fps ?? 30;
+  const subject = options.subject ?? (plan.qa?.probes?.face ? "character" : "prop");
+  const named = subject === "prop" ? /idle|loop|breath/i.test(animation) ? "prop" : oneShotKind(animation) : /idle|breath/i.test(animation) ? "idle" : /walk/i.test(animation) ? "walk" : oneShotKind(animation);
+  const kind = options.kind ?? named;
+  if (!DRAFT_KINDS.includes(kind)) fail5(`unknown kind ${kind}; use ${DRAFT_KINDS.join(", ")}`);
+  const loop = LOOPS.has(kind);
+  const notes = [];
+  const controls = [];
+  const existing = motion.animations.find((a) => a.name === animation);
+  let pending2 = {};
+  const frames = options.frames ?? existing?.frames ?? Math.round(fps * (kind === "walk" ? 4 / 3 : loop ? 2 : 1.5));
+  if (!Number.isInteger(frames) || frames < 4 || frames > 3600) fail5("frames must be 4..3600");
+  if (!options.frames && !existing && !loop)
+    notes.push(`${frames} frames (1.5 s) by default for a new one-shot; pass frames to change it`);
+  const taken = /* @__PURE__ */ new Set();
+  const collect = (m) => {
+    for (const v of Object.values(m ?? {})) {
+      const items = Array.isArray(v) ? v : [v];
+      for (const c of items)
+        if (c && typeof c === "object" && "id" in c) taken.add(String(c.id));
+    }
+  };
+  collect(motion);
+  for (const a of motion.animations) collect(a.motion);
+  const slug = animation.replace(/[^A-Za-z0-9_]/g, "_");
+  const id = (what) => {
+    let k = `${slug}_${what}`;
+    for (let n = 2; taken.has(k); n++) k = `${slug}_${what}${n}`;
+    taken.add(k);
+    controls.push(k);
+    return k;
+  };
+  const bones = out.bones;
+  const boneIds = new Set(bones.flatMap((b) => "id" in b ? [b.id] : []));
+  const head = figure.head && boneIds.has(figure.head) ? figure.head : void 0;
+  if (!head && subject === "character")
+    notes.push("no head bone found: no head follow or look turns");
+  if (!existing) {
+    const like = motion.animations.find((a) => /idle/i.test(a.name) && (a.show || a.hide)) ?? motion.animations.find((a) => a.show || a.hide);
+    if (like)
+      notes.push(`${animation} shows the parts ${like.name} shows (its show and hide lists)`);
+    pending2 = like ? { show: like.show, hide: like.hide } : {};
+  }
+  const sets = existing ?? pending2;
+  const hidden = new Set(sets.hide ?? []);
+  const shownSlots = /* @__PURE__ */ new Set([
+    ...figure.parts.filter((p) => !hidden.has(p.slot)).map((p) => p.slot),
+    ...(sets.show ?? []).map((s2) => s2.split("#")[0])
+  ]);
+  const shown = figure.parts.filter((p) => shownSlots.has(p.slot));
+  const box = (shown.length ? shown : figure.parts).reduce(
+    ([a, b, c, d], p) => [
+      Math.min(a, p.box[0]),
+      Math.min(b, p.box[1]),
+      Math.max(c, p.box[2]),
+      Math.max(d, p.box[3])
+    ],
+    [Infinity, Infinity, -Infinity, -Infinity]
+  );
+  const pivot = [
+    (box[0] + box[2]) / 2,
+    subject === "character" ? box[3] : (box[1] + box[3]) / 2
+  ];
+  const limbs = [...boneIds].filter((b) => UPPER_LIMB.test(b));
+  const arms = limbs.filter((b) => !/thigh/i.test(b));
+  const thighs = limbs.filter((b) => /thigh/i.test(b));
+  const mainPlan = motion.main;
+  const cycleOf = (c) => {
+    const n = Math.max(1, Math.round(frames / c));
+    if (frames % n) notes.push(`${frames} frames do not split into ${n} equal cycles`);
+    return Math.max(4, Math.round(frames / n));
+  };
+  let cycle2 = frames;
+  const own = { beats: [], follow: [], waves: [], cycles: [] };
+  const main = (depth2) => ({
+    id: mainPlan.id,
+    bone: mainPlan.bone,
+    channel: mainPlan.channel,
+    ...mainPlan.space ? { space: mainPlan.space } : {},
+    shape: "breath",
+    down: Math.round(cycle2 / 2),
+    depth: r22(depth2)
+  });
+  const chainWaves = (rootDeg, depth2, step) => {
+    for (const [part, ids] of Object.entries(figure.chains)) {
+      if (!ids.length) continue;
+      own.waves.push({
+        chain: part,
+        amp: 3,
+        rootGain: depth2 > 0 ? r22(rootDeg / depth2) : 0,
+        peak: Math.round(cycle2 / 2) + step,
+        growth: 0.3,
+        step
+      });
+      controls.push(`waves:${part}`);
+    }
+  };
+  const swing = (bone, amplitude, period, peak) => own.cycles.push({
+    id: id(`swing_${bone}`),
+    bone,
+    channel: "rotate",
+    amplitude: r22(amplitude),
+    period,
+    peak: (Math.round(peak) % period + period) % period
+  });
+  let template;
+  if (!loop)
+    template = oneShotTemplate(animation, {
+      frames,
+      unit: figure.unit,
+      subject,
+      kind
+    });
+  const needsMove = kind === "prop" || !!template && template.translate.length + template.scale.length + template.rotate.length > 0;
+  if (needsMove && !boneIds.has("move")) addMove(bones, pivot, notes, fail5);
+  if (kind === "idle") {
+    const r = loopRecipe("idle", figure.unit);
+    cycle2 = cycleOf(fps * r.cycleSeconds);
+    own.main = main(r.depth);
+    if (head && head !== mainPlan.bone)
+      own.follow.push({
+        id: id("head"),
+        bone: head,
+        channel: "translate",
+        gain: r.head.gain,
+        lag: r.head.lag
+      });
+    chainWaves(r.strandAmplitude, r.depth, r.strandStep);
+    for (const b of arms) swing(b, r.limbAmplitude, cycle2, cycle2 / 2);
+  } else if (kind === "walk") {
+    const r = loopRecipe("walk", figure.unit);
+    const stride = frames;
+    cycle2 = cycleOf(stride / r.bobsPerCycle);
+    own.main = main(r.depth);
+    chainWaves(r.strandAmplitude, r.depth, r.strandStep);
+    for (const b of thighs) swing(b, r.limbAmplitude, stride, side(b) < 0 ? 0 : stride / 2);
+    for (const b of arms) swing(b, r.limbAmplitude / 2, stride, side(b) < 0 ? stride / 2 : 0);
+    notes.push(
+      "the walk prior comes from one art (6 animations); expect to tune the swings and the bob"
+    );
+  } else if (kind === "prop") {
+    cycle2 = frames;
+    own.main = main(0);
+    swing("move", MOTION_PRIORS.propLoop.tiltDeg.median / 2, frames, frames / 4);
+  } else {
+    cycle2 = frames;
+    own.main = main(0);
+    const t = template;
+    const s2 = t.swing;
+    if (s2.limbDeg > 0)
+      for (const b of arms)
+        swing(b, s2.limbDeg / 2, s2.period, side(b) < 0 ? s2.period / 4 : 3 * s2.period / 4);
+    if (s2.strandDeg > 0)
+      for (const ids of Object.values(figure.chains)) {
+        const step = ids.length > 1 ? Math.round(s2.tipLagFrames / (ids.length - 1)) : 0;
+        ids.forEach(
+          (b, k) => swing(b, s2.strandDeg / 2 / ids.length, s2.period, s2.period / 4 + k * step)
+        );
+      }
+    const keyed = motion.keyed ??= [];
+    const put = (bone, channel, rest, keys) => {
+      if (!keys.length) return;
+      dropKeys(keyed, animation, (c) => c.bone === bone && c.channel === channel, notes);
+      keyed.push({
+        id: id(`${bone}_${channel}`),
+        bone,
+        channel,
+        rest,
+        keys: { [animation]: keys }
+      });
+    };
+    put("move", "translate", [0, 0], t.translate);
+    put("move", "scale", [1, 1], t.scale);
+    put("move", "rotate", 0, t.rotate);
+    if (head) put(head, "rotate", 0, t.head);
+    else if (t.head.length) notes.push("no `head` bone: the look's head turns were left out");
+    if (t.alpha.length) {
+      const colors = motion.colors ??= [];
+      dropKeys(colors, animation, (c) => c.slots.some((x) => shownSlots.has(x)), notes);
+      colors.push({ id: id("alpha"), slots: [...shownSlots], keys: { [animation]: t.alpha } });
+    }
+    if (!keyed.length) delete motion.keyed;
+  }
+  if (subject === "character") {
+    if (!Object.keys(figure.chains).length) notes.push("no strand chains to wave");
+    if (!arms.length) notes.push("no arm bones (arm*, shoulder*, wing*) to swing");
+  }
+  own.cycle = cycle2;
+  if (!existing)
+    motion.animations.push({
+      name: animation,
+      frames,
+      ...pending2.show ? { show: pending2.show } : {},
+      ...pending2.hide ? { hide: pending2.hide } : {}
+    });
+  const target = motion.animations.find((a) => a.name === animation);
+  target.frames = frames;
+  if (loop) delete target.loop;
+  else target.loop = false;
+  if (target.motion) notes.push(`replaced ${animation}'s own motion`);
+  target.motion = own;
+  const kept = [
+    ...target.keyposes?.length ? [`${target.keyposes.length} key poses`] : [],
+    ...target.pose ? ["its rest pose"] : [],
+    ...target.mirror ? ["its mirror"] : []
+  ];
+  if (kept.length)
+    notes.push(
+      `kept ${animation}'s ${kept.join(", ")}: they play over the draft; remove them to see the draft alone`
+    );
+  if (target.cycleScale) {
+    delete target.cycleScale;
+    notes.push(`dropped ${animation}'s cycleScale`);
+  }
+  return { plan: out, animation, kind, subject, frames, loop, controls, notes };
+}
+function dropKeys(list, animation, which, notes) {
+  for (let i = list.length - 1; i >= 0; i--) {
+    const c = list[i];
+    if (!which(c) || !(animation in c.keys)) continue;
+    delete c.keys[animation];
+    notes.push(`took ${animation}'s keys out of ${c.id}`);
+    if (!Object.keys(c.keys).length) list.splice(i, 1);
+  }
+}
+function addMove(bones, pivot, notes, fail5) {
+  const root = bones.find((b) => "id" in b && !b.parent);
+  if (!root) return fail5("the plan has no root bone");
+  for (const b of bones)
+    if ("id" in b && b.parent === root.id) b.parent = "move";
+    else if ("chain" in b && b.chain.parent === root.id) b.chain.parent = "move";
+  bones.splice(bones.indexOf(root) + 1, 0, {
+    id: "move",
+    parent: root.id,
+    at: { rule: "point", at: [r22(pivot[0]), r22(pivot[1])] },
+    angle: 0
+  });
+  notes.push(
+    `added a move bone at (${r22(pivot[0])}, ${r22(pivot[1])}) under ${root.id}; other plans of this character need the same bone before merge-plans`
+  );
 }
 
 // packages/character/src/mirror.ts
@@ -38068,27 +38511,27 @@ function reviewFrames(sides, texture, view, animation, options = {}) {
   );
   const frames = Math.max(1, Math.round(duration * fps)), loops2 = options.loops ?? Math.max(2, Math.ceil(3 * fps / frames)), gap = 4, width = sides.length * view.width + (sides.length - 1) * gap, height = view.height;
   const cache = /* @__PURE__ */ new Map();
-  const base = (side, f) => {
-    const key = `${side}:${f}`;
+  const base = (side2, f) => {
+    const key = `${side2}:${f}`;
     let rgb = cache.get(key);
     if (!rgb) {
-      pose(sides[side], animation, Math.min(duration, f / fps));
-      rgb = flatten2(render(sides[side], texture, view), view.width, view.height, bg);
+      pose(sides[side2], animation, Math.min(duration, f / fps));
+      rgb = flatten2(render(sides[side2], texture, view), view.width, view.height, bg);
       cache.set(key, rgb);
     }
     return rgb;
   };
   const frame2 = (segment2, f) => {
     const out = { width, height, rgb: new Uint8Array(width * height * 3) };
-    sides.forEach((sk, side) => {
-      const tile = { width: view.width, height: view.height, rgb: base(side, f).slice() };
+    sides.forEach((sk, side2) => {
+      const tile = { width: view.width, height: view.height, rgb: base(side2, f).slice() };
       if (segment2 !== "motion") {
         dim(tile, 0.45);
         pose(sk, animation, Math.min(duration, f / fps));
         if (segment2 === "wireframe") drawWireframe(sk, view, tile);
         else drawBones(sk, view, tile, void 0, drivingBones(sk));
       }
-      const x0 = side * (view.width + gap);
+      const x0 = side2 * (view.width + gap);
       for (let y = 0; y < view.height; y++)
         out.rgb.set(
           tile.rgb.subarray(y * view.width * 3, (y + 1) * view.width * 3),
@@ -38327,11 +38770,11 @@ function fitRestPose(document2, animation, reference, image, options) {
     const search = (sub2, seeds, rotSpan, rotStep, span, step, keep) => {
       const out2 = [];
       for (const [, r0, x0, y0] of seeds)
-        for (let r2 = r0 - rotSpan; r2 <= r0 + rotSpan + 1e-9; r2 += rotStep) {
-          if (Math.abs(r2) > maxRotate + 1e-9) continue;
+        for (let r4 = r0 - rotSpan; r4 <= r0 + rotSpan + 1e-9; r4 += rotStep) {
+          if (Math.abs(r4) > maxRotate + 1e-9) continue;
           for (let dx2 = x0 - span; dx2 <= x0 + span + 1e-9; dx2 += step)
             for (let dy2 = y0 - span; dy2 <= y0 + span + 1e-9; dy2 += step)
-              out2.push([score(sub2, r2, dx2, dy2), r2, dx2, dy2]);
+              out2.push([score(sub2, r4, dx2, dy2), r4, dx2, dy2]);
         }
       out2.sort((a2, b2) => rank(b2) - rank(a2));
       return out2.slice(0, keep);
@@ -38447,22 +38890,22 @@ function fitRestPose(document2, animation, reference, image, options) {
     });
     pose(sk, animation, time);
     const now2 = worldVertices(sk, used);
-    const r2 = [];
+    const r4 = [];
     for (const slot of used) {
       const item = now2.get(slot), w = weight.get(slot);
       for (const t of targets.get(slot)) {
         const q = at(item, t.sample);
-        r2.push(w * (q[0] - t.to[0]), w * (q[1] - t.to[1]));
+        r4.push(w * (q[0] - t.to[0]), w * (q[1] - t.to[1]));
       }
     }
     params.forEach((q, j) => {
       const v = (q.ch === 2 ? degree : 1) * p2[j];
-      r2.push(reg * v / Math.sqrt(Math.abs(v) + 0.5));
-      if (q.ch === 2) r2.push(10 * Math.max(0, Math.abs(p2[j]) - maxRotate));
+      r4.push(reg * v / Math.sqrt(Math.abs(v) + 0.5));
+      if (q.ch === 2) r4.push(10 * Math.max(0, Math.abs(p2[j]) - maxRotate));
     });
-    return r2;
+    return r4;
   };
-  const cost = (r2) => r2.reduce((s2, v) => s2 + v * v, 0);
+  const cost = (r4) => r4.reduce((s2, v) => s2 + v * v, 0);
   let p = new Array(n).fill(0), r = residuals(p), mu = 1e-3, iterations = 0;
   if (used.length)
     for (; iterations < 40; iterations++) {
@@ -39211,7 +39654,7 @@ function parameters(x1, x2, us) {
 }
 function solveValues(x1, x2, us, vs, v0, v1, w) {
   const s2 = parameters(x1, x2, us);
-  let a11 = 0, a12 = 0, a22 = 0, r1 = 0, r2 = 0;
+  let a11 = 0, a12 = 0, a22 = 0, r1 = 0, r23 = 0;
   for (let k = 0; k < us.length; k++) {
     const t = s2[k], m = 1 - t, wk = w ? w[k] : 1;
     const b1 = 3 * m * m * t, b2 = 3 * m * t * t, r = vs[k] - (v0 * m * m * m + v1 * t * t * t);
@@ -39219,17 +39662,17 @@ function solveValues(x1, x2, us, vs, v0, v1, w) {
     a12 += wk * b1 * b2;
     a22 += wk * b2 * b2;
     r1 += wk * b1 * r;
-    r2 += wk * b2 * r;
+    r23 += wk * b2 * r;
   }
   const lambda = 1e-4 * (a11 + a22 + 1e-9);
   const l1 = v0 + (v1 - v0) * x1, l2 = v0 + (v1 - v0) * x2;
   a11 += lambda;
   a22 += lambda;
   r1 += lambda * l1;
-  r2 += lambda * l2;
+  r23 += lambda * l2;
   const det = a11 * a22 - a12 * a12;
   if (Math.abs(det) < 1e-18) return [l1, l2];
-  return [(r1 * a22 - r2 * a12) / det, (a11 * r2 - a12 * r1) / det];
+  return [(r1 * a22 - r23 * a12) / det, (a11 * r23 - a12 * r1) / det];
 }
 var GRID = [0, 0.15, 0.33, 0.5, 0.67, 0.85, 1];
 function fitChannel(ts, vs, t0, v0, t1, v1, tolerance) {
@@ -41060,6 +41503,57 @@ async function mergePlanFiles(outPath, planFiles, opts = {}) {
   assertLint(lintCharacterPlan(plan, layout.parts.keys()), outPath);
   await writeFile2(outPath, json(plan));
   return { output: outPath, animations: plan.motion.animations.map((a) => a.name), notes };
+}
+async function draftMotionFiles(planPath, outPath, opts) {
+  if (existsSync2(outPath))
+    throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  const plan = await readPlan(planPath);
+  const paths = planPaths(planPath, plan);
+  const { layout, document: document2 } = await loadLayout(paths.imagesOnly, paths.images);
+  const sk = loadSkeleton(document2);
+  pose(sk, null, 0);
+  const parts = drawList(sk).filter((d) => d.color[3] > 0.02).map((d) => {
+    const xs = d.verts.filter((_, i) => i % 2 === 0), ys = d.verts.filter((_, i) => i % 2 === 1).map((y) => -y);
+    return {
+      slot: d.slot,
+      box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]
+    };
+  });
+  if (!parts.length)
+    throw new Error("CLI_DRAFT: the images-only setup shows no part");
+  const subject = opts.subject ?? (plan.qa?.probes?.face ? "character" : "prop");
+  const face = plan.qa?.probes?.face;
+  if (subject === "character" && !face)
+    throw new Error("CLI_DRAFT: a character draft needs plan.qa.probes.face for the head width");
+  const unit = subject === "character" ? headUnit(sk, face) : Math.max(...parts.map((p) => p.box[2])) - Math.min(...parts.map((p) => p.box[0]));
+  const rigging = rigCharacter(plan, layout);
+  const bones = new Map(rigging.rigged.rig.bones.map((b) => [b.id, b]));
+  let head = bones.has("head") ? "head" : void 0;
+  const probeSlot = face?.split("#")[0];
+  for (let b = bones.get(rigging.slots.find((s2) => s2.name === probeSlot)?.boneId ?? ""); !head && b; b = b.parentId ? bones.get(b.parentId) : void 0)
+    if (/head/i.test(b.id))
+      head = b.id;
+  const draft = draftMotion(plan, { unit, parts, chains: rigging.rigged.chains, ...head ? { head } : {} }, { ...opts, subject });
+  const from = (p) => relative3(dirname3(resolve3(outPath)), p).split(sep).join("/");
+  draft.plan.source = {
+    ...draft.plan.source,
+    imagesOnly: from(paths.imagesOnly),
+    images: from(paths.images)
+  };
+  assertLint(lintCharacterPlan(draft.plan, layout.parts.keys()), outPath);
+  await mkdir2(dirname3(resolve3(outPath)), { recursive: true });
+  await writeFile2(outPath, json(draft.plan));
+  return {
+    output: outPath,
+    animation: draft.animation,
+    kind: draft.kind,
+    subject: draft.subject,
+    frames: draft.frames,
+    loop: draft.loop,
+    unit: +unit.toFixed(2),
+    controls: draft.controls,
+    notes: draft.notes
+  };
 }
 async function lintPlanFile(planPath) {
   const plan = await readPlan(planPath);
@@ -43387,6 +43881,14 @@ var toolSchemas = {
     animation: Type.Optional(Type.String({ minLength: 1, maxLength: 128 })),
     start: Type.Optional(Type.Number({ minimum: 0, maximum: 3600 }))
   }, strict5),
+  autospine_motion_draft: Type.Object({
+    planPath: WorkspacePath,
+    outputPath: WorkspacePath,
+    animation: Type.String({ minLength: 1, maxLength: 64 }),
+    kind: Type.Optional(Type.Union(DRAFT_KINDS.map((k) => Type.Literal(k)))),
+    frames: Type.Optional(Type.Integer({ minimum: 4, maximum: 3600 })),
+    subject: Type.Optional(Type.Union([Type.Literal("character"), Type.Literal("prop")]))
+  }, strict5),
   autospine_merge_plans: Type.Object({
     planPaths: Type.Array(WorkspacePath, { minItems: 2, maxItems: 64 }),
     outputPath: WorkspacePath,
@@ -43480,6 +43982,7 @@ var descriptions = {
   autospine_build_character: "Build a workspace-local character plan (images-only layout + images) into a NEW workspace-local directory: Spine 4.0 JSON, IR, keypose specs, build record and copied images. The plan is linted first; no artist approval.",
   autospine_compare_reference: "Compare a character build with an artist Spine 4.0 baseline on the official runtime and check the pre-registered acceptance criteria; writes results and contact sheets into a NEW workspace-local directory. Compares the plan's animations the artist file also has (or only `animation`); a full artist export may hold more, which are listed as artistOnly. Numeric acceptance, not artist approval.",
   autospine_optimize_motion: "Resumable pattern search of the plan's motion.search parameters against an artist baseline for at most budgetSeconds; state, best-params.json and a log live in a workspace-local state directory. Call again to continue while status is paused.",
+  autospine_motion_draft: "Draft one animation's motion from the measured priors (ADR-048, ADR-032) into a NEW workspace-local plan file. `kind` defaults from the name: idle, walk (character loops), prop (a prop's loop), or a one-shot: entry (In, Appear), exit (Out), jump (Win, Goal, Jump), charge, press, levelup, look, transition (anything else). A loop gets a breath main, head follow, strand waves and limb swings; a one-shot gets keys on a `move` bone (added at the feet when missing), a head look and alpha on the shown parts. Only that animation changes; a new animation shows the parts the idle shows. The plan is linted before it is written; notes say what was added, replaced or kept. A starting point to build, watch and adjust.",
   autospine_merge_plans: "Merge workspace-local character plans of one character (same images-only layout) into a NEW plan file (ADR-031): the rigs are united, and every animation keeps the motion it was planned with, so one build gives one Spine project with all animations. Conflicting joints, bones, meshes or regions are listed and nothing is written.",
   autospine_fit_pose: "Fit an animation's rest pose (ADR-024) to a PNG reference covering plan.qa.view: parts are matched per bone on their visible colours, then the plan's bones (face rig excluded) are solved on the official runtime. Writes a NEW workspace-local JSON whose `pose` goes into motion.animations[].pose. With `references` (pictures on frames: storyboard or video frames) it fits key poses instead (ADR-033), each over the build's pose on its frame; pictures below minCoverage (default 0.6) are left out, and the written `keyposes` replace motion.animations[].keyposes. `ignore` leaves out parts whose drawing changes (an expression's mouth, eyes, tongue); `zeroFrame` names a picture whose pose the build already shows (the rest pose fitted from it): it gives no key pose and its matching error is taken off the others. Expressions, scaling and mesh deforms are not fitted.",
   autospine_compare_video: "Compare a character build with a reference video of the motion (ADR-034; needs ffmpeg): the build is placed over the video's figure and compared frame by frame from `start` seconds \u2014 outline overlap (V1), each part's position against where it shows in the video (V2), whole-figure timing and size (V3) and the loop seam (V4). Writes a NEW workspace-local directory with <animation>/compare.mp4 (reference | build | difference), report.json and summary.json; `hints` say in words where it differs, including parts the video clearly draws mirrored (left-right) and on which frames (ADR-035 `mirror`; a part only redrawn, such as an expression, is not counted). The video needs a plain background and must start at the animation's frame 0. Reports only: it changes nothing.",
@@ -43496,6 +43999,7 @@ var writingTools = /* @__PURE__ */ new Set([
   "autospine_fit_pose",
   "autospine_fit_video",
   "autospine_merge_plans",
+  "autospine_motion_draft",
   "autospine_reduce_keys"
 ]);
 var mcpTools = Object.entries(toolSchemas).map(([name, inputSchema]) => ({
@@ -43946,6 +44450,19 @@ var AutoSpineMcpServer = class {
             notes: summary.notes,
             artistQualityAccepted: false
           });
+        }
+        case "autospine_motion_draft": {
+          if (!value_exports2.Check(toolSchemas.autospine_motion_draft, args))
+            break;
+          const { root, plan } = await guardPlan(this.workspace, args.planPath);
+          const output = await guardOutput(root, args.outputPath, true);
+          const drafted = await draftMotionFiles(plan, output, {
+            animation: args.animation,
+            ...args.kind === void 0 ? {} : { kind: args.kind },
+            ...args.frames === void 0 ? {} : { frames: args.frames },
+            ...args.subject === void 0 ? {} : { subject: args.subject }
+          }).catch(characterFailure);
+          return result({ ...drafted, output: relative4(root, output) });
         }
         case "autospine_merge_plans": {
           if (!value_exports2.Check(toolSchemas.autospine_merge_plans, args))

@@ -23,6 +23,7 @@ import {
   addKeyposes,
   animateCharacter,
   compileCharacter,
+  draftMotion,
   handoverNotes,
   lintCharacterPlan,
   mergePlans,
@@ -31,6 +32,7 @@ import {
   rigCharacter,
   type CharacterLayout,
   type CharacterPart,
+  type DraftOptions,
   type Params,
 } from "@autospine/character";
 import {
@@ -39,6 +41,7 @@ import {
   compareToReference,
   fitKeyPoses,
   fitRestPose,
+  headUnit,
   initialSearchState,
   loadSkeleton,
   reviewFrames,
@@ -235,6 +238,86 @@ export async function mergePlanFiles(
   assertLint(lintCharacterPlan(plan, layout.parts.keys()), outPath);
   await writeFile(outPath, json(plan));
   return { output: outPath, animations: plan.motion.animations.map((a) => a.name), notes };
+}
+
+/**
+ * motion-draft <plan.json> <new-plan.json> --animation=<name> (ADR-048): a NEW plan with a motion
+ * draft for one animation from the measured priors. The head width (or a prop's width), the feet
+ * and the shown parts are read on the images-only setup, the strand chains from the rig. The plan
+ * is linted before it is written; the source paths are rewritten for the new file's folder.
+ */
+export async function draftMotionFiles(planPath: string, outPath: string, opts: DraftOptions) {
+  if (existsSync(outPath))
+    throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists; choose a new file name`);
+  const plan = await readPlan(planPath);
+  const paths = planPaths(planPath, plan);
+  const { layout, document } = await loadLayout(paths.imagesOnly, paths.images);
+  const sk = loadSkeleton(document);
+  pose(sk, null, 0);
+  // Each shown part's box in plan coordinates (Spine world with y negated).
+  const parts = drawList(sk)
+    .filter((d) => d.color[3] > 0.02)
+    .map((d) => {
+      const xs = d.verts.filter((_, i) => i % 2 === 0),
+        ys = d.verts.filter((_, i) => i % 2 === 1).map((y) => -y);
+      return {
+        slot: d.slot,
+        box: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as [
+          number,
+          number,
+          number,
+          number,
+        ],
+      };
+    });
+  if (!parts.length) throw new Error("CLI_DRAFT: the images-only setup shows no part");
+  const subject = opts.subject ?? (plan.qa?.probes?.face ? "character" : "prop");
+  const face = plan.qa?.probes?.face;
+  if (subject === "character" && !face)
+    throw new Error("CLI_DRAFT: a character draft needs plan.qa.probes.face for the head width");
+  const unit =
+    subject === "character"
+      ? headUnit(sk, face!)
+      : Math.max(...parts.map((p) => p.box[2])) - Math.min(...parts.map((p) => p.box[0]));
+  const rigging = rigCharacter(plan, layout);
+  // The head bone: `head`, else the first bone named like a head above the face probe's bone.
+  const bones = new Map(rigging.rigged.rig.bones.map((b) => [b.id, b]));
+  let head = bones.has("head") ? "head" : undefined;
+  const probeSlot = face?.split("#")[0];
+  for (
+    let b = bones.get(rigging.slots.find((s) => s.name === probeSlot)?.boneId ?? "");
+    !head && b;
+    b = b.parentId ? bones.get(b.parentId) : undefined
+  )
+    if (/head/i.test(b.id)) head = b.id;
+  const draft = draftMotion(
+    plan,
+    { unit, parts, chains: rigging.rigged.chains, ...(head ? { head } : {}) },
+    { ...opts, subject },
+  );
+  const from = (p: string) =>
+    relative(dirname(resolve(outPath)), p)
+      .split(sep)
+      .join("/");
+  draft.plan.source = {
+    ...draft.plan.source,
+    imagesOnly: from(paths.imagesOnly),
+    images: from(paths.images),
+  };
+  assertLint(lintCharacterPlan(draft.plan, layout.parts.keys()), outPath);
+  await mkdir(dirname(resolve(outPath)), { recursive: true });
+  await writeFile(outPath, json(draft.plan));
+  return {
+    output: outPath,
+    animation: draft.animation,
+    kind: draft.kind,
+    subject: draft.subject,
+    frames: draft.frames,
+    loop: draft.loop,
+    unit: +unit.toFixed(2),
+    controls: draft.controls,
+    notes: draft.notes,
+  };
 }
 
 /**

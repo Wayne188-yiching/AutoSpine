@@ -174,6 +174,7 @@
 2026-10 批次 68 段人工動畫（19 個檔案、15 套美術）在官方 Runtime 上量出的中位數與範圍。這是先驗值，不是目標：同一項在不同角色可以差到 10 倍。簡述、參考或使用者指定的值優先。數值都在 `@autospine/motion` 的 `MOTION_PRIORS`：
 
 - `oneShotTemplate(動畫名稱, { frames, unit: 頭寬, subject: "character" | "prop" })`：依名稱選模板，回傳 `move` 骨的 translate、scale、rotate 關鍵幀、顯示部件的透明度、頭部張望，以及四肢與長條的擺幅和建議的關鍵幀間距。
+- 這兩個函式不用自己呼叫：`motion-draft`（`autospine_motion_draft`，ADR-048）會依動畫名稱或 `--kind` 直接把數值寫進新方案。
 - `loopRecipe("idle" | "walk" | "prop", 頭寬)`：循環的寫法，例如 idle 的臀部深度、頭部跟隨與長條擺幅。
 
 | 類別（動畫數／美術數）    | 人工                                                                                                    | 我們原本                         |

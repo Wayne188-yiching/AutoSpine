@@ -233,14 +233,15 @@ const r2 = (v: number) => +v.toFixed(2);
  */
 export function oneShotTemplate(
   name: string,
-  options: { frames: number; unit: number; subject: "character" | "prop" },
+  /** `kind` overrides the one the name asks for. */
+  options: { frames: number; unit: number; subject: "character" | "prop"; kind?: OneShotKind },
 ): OneShotTemplate {
   const { frames: N, unit: u, subject } = options;
   if (!Number.isInteger(N) || N < 2 || N > 3600)
     failStage("animation", "PRIOR_FRAMES", "A one-shot template needs 2..3600 frames");
   if (!(u > 0) || !Number.isFinite(u))
     failStage("animation", "PRIOR_UNIT", "A one-shot template needs a positive unit (px)");
-  const kind = oneShotKind(name);
+  const kind = options.kind ?? oneShotKind(name);
   const F = (x: number) => Math.max(0, Math.min(N, Math.round(x * N)));
   const P = MOTION_PRIORS;
   const out: OneShotTemplate = {

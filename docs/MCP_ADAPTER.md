@@ -37,6 +37,7 @@ The server reports the plugin and engine version in `serverInfo.version` and as 
 | `autospine_compare_video`           | **New** directory: the build against a workspace reference video, V1–V5 rows, hints and reference \| build \| difference video (ADR-034) |
 | `autospine_fit_pose`                | **New** JSON: a rest pose fitted to a PNG of `qa.view` (ADR-024), or key poses fitted to pictures on frames (`references`, ADR-033)      |
 | `autospine_merge_plans`             | **New** plan: plans of one character merged, every animation keeping its motion (ADR-031)                                                |
+| `autospine_motion_draft`            | **New** plan: one animation's motion drafted from the measured priors, a loop or a one-shot by kind or name (ADR-048)                    |
 | `autospine_fit_video`               | **New** directory: one animation's motion fitted to a workspace reference video in rounds; `best/` holds the lowest penalty (ADR-036)    |
 | `autospine_reduce_keys`             | **New** directory: keys of a workspace Spine 4.0 JSON reduced in `fidelity` and/or `posable` mode, checked on the runtime (ADR-044)      |
 

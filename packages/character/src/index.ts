@@ -21,5 +21,13 @@ export { buildAttachmentTimelines, type AttachmentTimeline } from "./visibility.
 export { addKeyposes, applyKeyposes, applyRestPose, type Keyposes, type RestPose } from "./pose.js";
 export { boneRoles, colorBones, handoverNotes, ROLE_COLORS, type BoneRole } from "./handover.js";
 export { mergePlans, type MergedPlan } from "./merge.js";
+export {
+  DRAFT_KINDS,
+  draftMotion,
+  type DraftFigure,
+  type DraftKind,
+  type DraftOptions,
+  type MotionDraft,
+} from "./draft.js";
 export * from "./build.js";
 export * from "./lint.js";

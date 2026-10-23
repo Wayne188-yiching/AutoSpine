@@ -8,6 +8,7 @@ import {
   compareVideoFiles,
   fitVideoFiles,
   deliverFiles,
+  draftMotionFiles,
   initProjectFolder,
   lintPlanFile,
   optimizeMotionFiles,
@@ -19,6 +20,7 @@ import {
 import { AUTOSPINE_VERSION } from "./version.js";
 import { reduceKeysFiles, type ReduceKeysFileOptions } from "./keys.js";
 import type { KeyLock, KeyReductionMode } from "@autospine/reference";
+import { DRAFT_KINDS, type DraftKind } from "@autospine/character";
 import {
   AssetParseError,
   decodeAlphaMask,
@@ -95,6 +97,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine fit-pose <plan.json> <build-dir> <reference.png> <new-pose.json> [--animation=name] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine fit-pose <plan.json> <build-dir> <frame>=<picture.png>... <new-keyposes.json> [--animation=name] [--zero=frame] [--ease=name] [--min-coverage=0..1] [--ignore=slot,...] [--window=units] [--max-rotate=deg]
   autospine merge-plans <new-plan.json> <plan.json> <plan.json>... [--id=id] [--name=name]
+  autospine motion-draft <plan.json> <new-plan.json> --animation=name [--kind=${DRAFT_KINDS.join("|")}] [--frames=n] [--subject=character|prop]
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
@@ -398,6 +401,30 @@ async function characterCommand(args: string[]): Promise<boolean> {
       const summary = await reduceKeysFiles(p[1]!, p[2]!, opts);
       console.log(JSON.stringify({ ...summary, features: undefined }, null, 1));
       if (summary.runs.some((r) => !r.pass)) process.exitCode = 2;
+      return true;
+    }
+    case "motion-draft": {
+      if (p.length !== 3) throw new Error(characterUsage);
+      known("animation", "kind", "frames", "subject");
+      const animation = flags.get("animation");
+      if (!animation) throw new Error("CLI_DRAFT: --animation=<name> is required");
+      const kind = flags.get("kind"),
+        frames = flags.get("frames"),
+        subject = flags.get("subject");
+      if (kind !== undefined && !(DRAFT_KINDS as readonly string[]).includes(kind))
+        throw new Error(`CLI_DRAFT: --kind must be one of ${DRAFT_KINDS.join(", ")}`);
+      if (subject !== undefined && subject !== "character" && subject !== "prop")
+        throw new Error("CLI_DRAFT: --subject must be character or prop");
+      console.log(
+        JSON.stringify(
+          await draftMotionFiles(p[1]!, p[2]!, {
+            animation,
+            ...(kind === undefined ? {} : { kind: kind as DraftKind }),
+            ...(frames === undefined ? {} : { frames: Number(frames) }),
+            ...(subject === undefined ? {} : { subject }),
+          }),
+        ),
+      );
       return true;
     }
     case "merge-plans": {
