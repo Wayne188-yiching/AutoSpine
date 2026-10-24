@@ -24,4 +24,6 @@ plugin/skills/autospine/assets/
 # Generated report data and pages, kept as written (5087ca8, 2026-10-17/18).
 docs/reports/blind-tests/*-reference-imitation/
 docs/reports/blind-tests/*-clean-ref-rebuild/
+# Mummy cat rebuild report shown by the blind report, kept as written (eed7ca3, 2026-10-22).
+docs/reports/blind-tests/2026-10-19-jackpot-mummycat-clean-rebuild/
 video-only-improvement-plan-20261018.html
