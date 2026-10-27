@@ -4,6 +4,7 @@
 
 Status: Accepted
 Date: 2026-10-19
+Renumbered: ADR-045 until 2026-10-27; main gave ADR-045 to collapsed parts.
 
 ## Context
 
