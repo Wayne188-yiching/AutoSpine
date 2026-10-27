@@ -198,7 +198,7 @@ describe("measured motion priors (ADR-032)", () => {
   });
 });
 
-describe("weak single-art priors from the mummy cat (ADR-045)", () => {
+describe("weak single-art priors from the mummy cat (ADR-050)", () => {
   it("marks one-art priors weak and leaves the batch priors as they were", () => {
     for (const kind of ["clap", "entryRise", "idleHands", "walk", "look"] as const)
       expect(isWeakPrior(kind), kind).toBe(true);

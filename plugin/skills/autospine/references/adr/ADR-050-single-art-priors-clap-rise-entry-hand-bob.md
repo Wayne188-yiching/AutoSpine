@@ -1,4 +1,6 @@
-# ADR-045 — single-art priors: clap, rise-and-squash entry, idle hand bob
+<!-- Generated from docs/adr/ADR-050-single-art-priors-clap-rise-entry-hand-bob.md by tools/build-plugin.mjs. Edit the source, then rebuild. -->
+
+# ADR-050 — single-art priors: clap, rise-and-squash entry, idle hand bob
 
 Status: Accepted
 Date: 2026-10-19
@@ -71,7 +73,7 @@ Measure what the mummy cat's motion does in proportion units, keep it as three p
 
 ## Evidence
 
-`tests/motion-priors.test.ts`, "weak single-art priors from the mummy cat (ADR-045)":
+`tests/motion-priors.test.ts`, "weak single-art priors from the mummy cat (ADR-050)":
 
 - Weak marking: the new priors and the earlier one-art ones are weak; the batch priors are not; the default entry is unchanged.
 - Clap:
