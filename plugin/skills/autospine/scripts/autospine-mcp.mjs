@@ -33217,7 +33217,7 @@ async function buildJobFile(jobPath) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.10";
+var AUTOSPINE_VERSION = "0.5.13";
 
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
@@ -37252,6 +37252,37 @@ var pearson2 = (x, y) => {
   }
   return b > 1e-9 && c > 1e-9 ? a / Math.sqrt(b * c) : null;
 };
+var COLLAPSE = Object.freeze({ ratio: 0.2, substeps: 4, alpha: 0.25 });
+function shapeChange(rest, now) {
+  const n = rest.length / 2;
+  let rx = 0, ry = 0, cx = 0, cy = 0;
+  for (let i = 0; i < n; i++) {
+    rx += rest[2 * i];
+    ry += rest[2 * i + 1];
+    cx += now[2 * i];
+    cy += now[2 * i + 1];
+  }
+  rx /= n;
+  ry /= n;
+  cx /= n;
+  cy /= n;
+  let sxx = 0, sxy = 0, syy = 0, pxx = 0, pxy = 0, pyx = 0, pyy = 0;
+  for (let i = 0; i < n; i++) {
+    const x = rest[2 * i] - rx, y = rest[2 * i + 1] - ry, u = now[2 * i] - cx, v = now[2 * i + 1] - cy;
+    sxx += x * x;
+    sxy += x * y;
+    syy += y * y;
+    pxx += u * x;
+    pxy += u * y;
+    pyx += v * x;
+    pyy += v * y;
+  }
+  const d = sxx * syy - sxy * sxy;
+  if (d <= 1e-9 * (sxx + syy) ** 2) return null;
+  const A = (pxx * syy - pxy * sxy) / d, B = (pxy * sxx - pxx * sxy) / d, C = (pyx * syy - pyy * sxy) / d, D = (pyy * sxx - pyx * sxy) / d;
+  const s2 = Math.hypot(A - D, B + C) / 2, t = Math.hypot(A + D, B - C) / 2;
+  return { ratio: t + s2 > 1e-12 ? Math.abs(t - s2) / (t + s2) : 0, det: A * D - B * C };
+}
 function deformationQA(sk, animation, fps, alpha, exclude) {
   pose(sk, null, 0);
   const setup = new Map(drawList(sk).map((d) => [d.slot, d]));
@@ -37272,12 +37303,45 @@ function deformationQA(sk, animation, fps, alpha, exclude) {
     }
     return rest.get(key);
   };
-  const inv = {}, visible = {}, stretch = {};
-  for (let f = 0; f <= N; f++) {
-    pose(sk, animation, frameTime(f, N, D, fps));
+  const inv = {}, visible = {}, stretch = {}, collapses = {}, flips = {};
+  const S = COLLAPSE.substeps, at2 = (s2) => s2 % S ? Math.min(D - 1e-6, s2 / S / fps + 1e-6) : frameTime(s2 / S, N, D, fps);
+  const watched = (slot) => !exclude.some((re) => re.test(slot));
+  const shown = (d, rest2) => d.color[3] > COLLAPSE.alpha ? shapeChange(rest2.verts, d.verts) : null;
+  const squashedTurn = (d, rest2, t0, t1, det0) => {
+    let lo = t0, hi = t1, thinnest = Infinity, when = t0;
+    for (let k = 0; k < 12; k++) {
+      const mid = (lo + hi) / 2;
+      pose(sk, animation, mid);
+      const now = drawList(sk).find((x) => x.slot === d.slot && x.attachment === d.attachment);
+      const shape = now && shown(now, rest2);
+      if (!shape) return null;
+      if (shape.ratio < thinnest) [thinnest, when] = [shape.ratio, mid];
+      if (shape.det * det0 > 0) lo = mid;
+      else hi = mid;
+    }
+    return thinnest < COLLAPSE.ratio ? +(when * fps).toFixed(2) : null;
+  };
+  const last = /* @__PURE__ */ new Map();
+  for (let s2 = 0; s2 <= N * S; s2++) {
+    pose(sk, animation, at2(s2));
     for (const d of drawList(sk)) {
       const s0 = restOf(d);
       if (!s0 || d.tris.length < 6 || s0.verts.length !== d.verts.length) continue;
+      const shape = watched(d.slot) ? shown(d, s0) : null;
+      if (shape) {
+        if (shape.ratio < COLLAPSE.ratio) {
+          const c = collapses[d.slot], frame2 = +(s2 / S).toFixed(2);
+          if (!c) collapses[d.slot] = { ratio: shape.ratio, frames: [frame2, frame2] };
+          else [c.ratio, c.frames[1]] = [Math.min(c.ratio, shape.ratio), frame2];
+        }
+        const p = last.get(d.slot);
+        if (p && p.s === s2 - 1 && p.attachment === d.attachment && p.det * shape.det < 0) {
+          const turn = squashedTurn(d, s0, at2(s2 - 1), at2(s2), p.det);
+          if (turn !== null) (flips[d.slot] ??= []).push(turn);
+        }
+        last.set(d.slot, { attachment: d.attachment, det: shape.det, s: s2 });
+      }
+      if (s2 % S) continue;
       const tex = alpha?.(d.path);
       let n = 0, nv = 0, st = 0;
       for (let k = 0; k < d.tris.length; k += 3) {
@@ -37327,7 +37391,14 @@ function deformationQA(sk, animation, fps, alpha, exclude) {
     inversions: inv,
     visibleInversions: visible,
     maxCharacterStretch: character[0] ? { slot: character[0][0], value: +character[0][1].toFixed(3) } : null,
-    topStretch: character.slice(0, 6).map(([s2, v]) => [s2, +v.toFixed(3)])
+    topStretch: character.slice(0, 6).map(([s2, v]) => [s2, +v.toFixed(3)]),
+    collapses: Object.fromEntries(
+      Object.entries(collapses).map(([s2, c]) => [
+        s2,
+        { ratio: +c.ratio.toFixed(3), frames: c.frames }
+      ])
+    ),
+    flips
   };
 }
 function performanceSample(t, probes, fps, unit) {
@@ -37661,6 +37732,13 @@ function checkAcceptance(r, seams, expectedAttachments) {
       g <= ACCEPTANCE.stretchVsArtist * s2,
       `${g} / ${+(ACCEPTANCE.stretchVsArtist * s2).toFixed(3)}`
     );
+  }
+  for (const a of animations) {
+    const g = r.deformation[a].generated, s2 = r.deformation[a].artist;
+    const own = [.../* @__PURE__ */ new Set([...Object.keys(g.collapses), ...Object.keys(g.flips)])].filter(
+      (slot) => !(slot in s2.collapses) && !(slot in s2.flips)
+    );
+    add(`B4 collapsed or squashed-through parts ${a} = 0 (beyond the artist's)`, !own.length, own);
   }
   const images = (a) => (a.region ?? 0) + (a.mesh ?? 0) + (a.linkedmesh ?? 0);
   const total = images(r.structure.generated.attachments), expected = expectedAttachments ?? images(r.structure.artist.attachments);
@@ -39100,6 +39178,16 @@ function checkVideoAcceptance(m) {
       ok: m.seam <= A.seam,
       value: +m.seam.toFixed(4)
     });
+  if (m.deformation) {
+    const parts = [
+      .../* @__PURE__ */ new Set([...Object.keys(m.deformation.collapses), ...Object.keys(m.deformation.flips)])
+    ];
+    rows.push({
+      id: "V5 collapsed or squashed-through parts = 0",
+      ok: !parts.length,
+      value: parts
+    });
+  }
   return rows;
 }
 function videoPenalty(rows) {
@@ -39116,6 +39204,7 @@ function videoPenalty(rows) {
     else if (id.startsWith("V3") && Number.isFinite(n(0)))
       penalty += over(Math.abs(n(0)), A.maxLagFrames) + under(n(1), A.amplitudeLow) + over(n(1), A.amplitudeHigh);
     else if (id.startsWith("V4") && Number.isFinite(n(0))) penalty += over(n(0), A.seam);
+    else if (id.startsWith("V5") && v.length) penalty += 1;
   }
   return +penalty.toFixed(4);
 }
@@ -41732,6 +41821,7 @@ async function compareVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const sk = loadSkeleton(JSON.parse(await readFile3(join2(buildDir, `${plan.id}.json`), "utf8")));
   const tex = textures(planPaths(planPath, plan).images);
   const font = opts.font ?? (process.platform === "win32" ? "C:/Windows/Fonts/msjh.ttc" : void 0);
+  const exclude = (plan.qa?.deformExclude ?? []).map((p) => new RegExp(p));
   const results = [];
   for (const job of jobs) {
     const entry = animations.find((a) => a.name === job.name);
@@ -41739,7 +41829,7 @@ async function compareVideoFiles(planPath, buildDir, outDir, opts = {}) {
       throw new Error(`CLI_VIDEO: no animation ${job.name} in the plan`);
     const dir = join2(outDir, safeFileName(job.name));
     await mkdir2(dir, { recursive: true });
-    results.push(await compareOneVideo(sk, tex.texture, entry.name, entry.loop !== false, fps, { ...job, ...opts.window !== void 0 ? { window: opts.window } : {} }, dir, font));
+    results.push(await compareOneVideo(sk, tex.texture, entry.name, entry.loop !== false, fps, exclude, { ...job, ...opts.window !== void 0 ? { window: opts.window } : {} }, dir, font));
   }
   const summary = { pass: results.every((r) => r.pass), animations: results };
   await writeFile2(join2(outDir, "summary.json"), json(summary));
@@ -41787,7 +41877,7 @@ function placeOnVideo(sk, texture, animation, ref0, video) {
   };
   return { bg, bgUnit, figureHeight, view, reg };
 }
-async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font) {
+async function compareOneVideo(sk, texture, animation, loop, fps, exclude, job, dir, font) {
   const { width: W, height: H } = await videoSize(job.video);
   const clip = sk.data.findAnimation(animation);
   if (!clip)
@@ -41866,16 +41956,16 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
           lastHit.set(name, hit);
         else
           lastHit.delete(name);
-        let flips = mirroredByPart.get(name);
-        if (!flips)
-          mirroredByPart.set(name, flips = Array(f).fill(null));
+        let flips2 = mirroredByPart.get(name);
+        if (!flips2)
+          mirroredByPart.set(name, flips2 = Array(f).fill(null));
         if (!mine || !tpl || !hit || hit.score < 0.6) {
           track.ref.push(null);
           track.build.push(null);
-          flips.push(null);
+          flips2.push(null);
           continue;
         }
-        flips.push(hit.mirrored && {
+        flips2.push(hit.mirrored && {
           flipped: hit.score,
           unflipped: Math.max(0, matchPart(gr, tpl, radius, { dx: hit.dx, dy: hit.dy, angle: hit.angle }).score)
         });
@@ -41916,6 +42006,8 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
         sum += Math.abs(last[i] - build0.rgb[i]);
       seam = sum / last.length / 255;
     }
+    const { collapses, flips } = deformationQA(sk, animation, fps, void 0, exclude);
+    const deformation = { collapses, flips };
     const sd = (v) => {
       const m = v.reduce((x, y) => x + y, 0) / v.length;
       return Math.sqrt(v.reduce((x, y) => x + (y - m) ** 2, 0) / v.length);
@@ -41938,7 +42030,7 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
       return {
         figure: figure2,
         parts: parts2,
-        rows: checkVideoAcceptance({ iou: ious.slice(0, n), parts: parts2, figure: figure2, seam })
+        rows: checkVideoAcceptance({ iou: ious.slice(0, n), parts: parts2, figure: figure2, seam, deformation })
       };
     };
     const window = job.window !== void 0 ? Math.min(ious.length, Math.max(8, job.window)) : ious.length;
@@ -41956,11 +42048,11 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
       return e.length ? +(e[e.length >> 1] * 100).toFixed(3) : null;
     });
     const median2 = (v) => [...v].sort((a, b) => a - b)[v.length >> 1] ?? 1;
-    const mirrored = [...mirroredByPart].map(([part, flips]) => ({ part, flips, symmetry: median2(symmetryByPart.get(part) ?? []) })).filter((p) => p.symmetry < 0.8).map(({ part, flips, symmetry }) => ({
+    const mirrored = [...mirroredByPart].map(([part, flips2]) => ({ part, flips: flips2, symmetry: median2(symmetryByPart.get(part) ?? []) })).filter((p) => p.symmetry < 0.8).map(({ part, flips: flips2, symmetry }) => ({
       part,
-      frames: mirroredRun(flips.map((m) => m && clearlyMirrored(m.flipped, m.unflipped, symmetry)), Math.max(4, Math.round(count / 10)))
+      frames: mirroredRun(flips2.map((m) => m && clearlyMirrored(m.flipped, m.unflipped, symmetry)), Math.max(4, Math.round(count / 10)))
     })).filter((m) => m.frames !== null);
-    const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored);
+    const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored, deformation);
     if (whole)
       hints.push(`judged on frames 0-${window - 1}, the cycles the fit folded; over all ${ious.length} frames ${whole.every((r) => r.ok) ? "it passes too" : `${whole.filter((r) => !r.ok).map((r) => r.id.split(" ")[0]).join(", ")} fail (the clip drifts)`}`);
     const report3 = join2(dir, "report.json");
@@ -41972,6 +42064,7 @@ async function compareOneVideo(sk, texture, animation, loop, fps, job, dir, font
       frames: { compared: ious.length, animation: count, ...whole ? { judged: window } : {} },
       registration: { iou: +reg.iou.toFixed(3), pixelsPerUnit: +view.scale.toFixed(4) },
       mirrored,
+      deformation,
       notJudged: parts.filter((p) => !judgedParts([p], ious.length).length).map((p) => ({ part: p.part, frames: p.frames })),
       ...process.env.AUTOSPINE_DEBUG_TRACKS ? { debugTracks: [...tracksByPart.values()] } : {},
       pass,
@@ -42659,7 +42752,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   await writeFile2(join2(out, "summary.json"), json(summary));
   return summary;
 }
-function videoHints(rows, ious, figure, parts, count, fps, mirrored = []) {
+function videoHints(rows, ious, figure, parts, count, fps, mirrored = [], deformation) {
   const failed = (prefix) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);
   const hints = [];
   const groups = [];
@@ -42701,6 +42794,10 @@ function videoHints(rows, ious, figure, parts, count, fps, mirrored = []) {
     }
   if (failed("V4"))
     hints.push("the loop's last frame does not match its first: a visible jump");
+  for (const [part, c] of Object.entries(deformation?.collapses ?? {}))
+    hints.push(`${part}: squashed to ${c.ratio.toFixed(2)} of its own width on frames ${c.frames[0]}-${c.frames[1]}, a line on screen; hide it there (attachment off) if the reference hides it`);
+  for (const [part, at2] of Object.entries(deformation?.flips ?? {}))
+    hints.push(`${part}: turns over through a line at frame ${at2.join(", ")}; swap or mirror it in one step (ADR-035) instead`);
   return hints;
 }
 

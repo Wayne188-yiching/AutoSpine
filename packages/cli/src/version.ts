@@ -4,4 +4,4 @@
  * autospine_get_status) and every build record report it, so a server left running from an
  * earlier plugin version can be told apart from the current command line.
  */
-export const AUTOSPINE_VERSION = "0.5.10";
+export const AUTOSPINE_VERSION = "0.5.13";

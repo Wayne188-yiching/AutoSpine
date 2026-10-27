@@ -17,7 +17,7 @@ import { PNG } from "pngjs";
 import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
 import { CharacterPlanSchema, type CharacterPlan, type KeyposeEase } from "@autospine/schemas";
-import { readImagesOnlyLayout } from "@autospine/spine";
+import { forEditorVersion, readImagesOnlyLayout } from "@autospine/spine";
 import {
   buildCharacter,
   addKeyposes,
@@ -51,6 +51,8 @@ import {
   stripToImagesOnly,
   borderColor,
   checkVideoAcceptance,
+  deformationQA,
+  type DeformationSummary,
   drawList,
   flatten,
   foregroundMask,
@@ -963,6 +965,20 @@ export function spineExecutable(explicit?: string): string | undefined {
   ];
   return candidates.find((c): c is string => !!c && existsSync(c));
 }
+/**
+ * The editor version for `-u`: major.minor or major.minor.patch, 3.8 or newer (3.8 gets its own
+ * layout, ADR-047; older editors read neither). Default 4.0.64, the version the engine writes for.
+ */
+export function spineVersionArg(version: string | undefined): string {
+  if (version === undefined) return "4.0.64";
+  const m = /^(\d+)\.(\d+)(?:\.\d+)?$/.exec(version);
+  if (!m)
+    throw new Error(`CLI_SPINE_VERSION: ${version} is not a Spine version such as 4.2 or 4.2.43`);
+  if (+m[1]! * 100 + +m[2]! < 308)
+    throw new Error(`CLI_SPINE_VERSION: Spine ${version} is older than 3.8; use 3.8 or newer`);
+  return version;
+}
+
 export function runSpine(exe: string, args: string[]) {
   return new Promise<{ code: number; output: string }>((ok) => {
     let output = "";
@@ -1038,6 +1054,12 @@ export interface DeliverOptions {
   images?: string;
   /** Spine editor executable; default AUTOSPINE_SPINE or the standard install. */
   spine?: string;
+  /**
+   * Editor version the project is imported with, such as 4.2, 4.2.43 or 3.8 (default 4.0.64). The
+   * build's 4.0 data is laid out for that editor first (ADR-046, ADR-047); a 4.1+ project cannot
+   * be opened by 4.0 again. Reviews and comparisons still play the 4.0 JSON.
+   */
+  spineVersion?: string;
   /** Swap an earlier delivery for this build; the old files move into the build folder. */
   replace?: boolean;
   /** Replace even a project that was saved after it was delivered (edited in Spine). */
@@ -1063,6 +1085,8 @@ export async function deliverFiles(
   artistPath: string | undefined,
   opts: DeliverOptions = {},
 ) {
+  // Checked first: a wrong version would otherwise surface after the fit and the videos.
+  const spineVersion = spineVersionArg(opts.spineVersion);
   // An animation whose reference says "fit" (ADR-036) takes its motion from the video first, one
   // animation after another; the best round of the last fit is what is delivered. A fit that
   // cannot run is reported, and the build as given is delivered.
@@ -1185,6 +1209,8 @@ export async function deliverFiles(
   document.skeleton = { ...document.skeleton, images: "./images/" };
   const result: {
     spine: string | null;
+    /** The editor version the project was imported with. */
+    spineVersion: string;
     json: string | null;
     video: string | null;
     images: string;
@@ -1209,6 +1235,7 @@ export async function deliverFiles(
     stray?: string[];
   } = {
     spine: null,
+    spineVersion,
     json: null,
     video: null,
     images: String(document.skeleton.images),
@@ -1216,13 +1243,24 @@ export async function deliverFiles(
     strayImages: [],
     replaced: replaced ?? null,
   };
+  // Laid out for the chosen editor (ADR-046); reviews and comparisons keep the 4.0 document.
+  const delivered = forEditorVersion(document, spineVersion);
   const exe = spineExecutable(opts.spine);
   if (exe) {
     // Imported from beside the project, so "./images/" means the same to both.
     const temp = join(out, `.${name}.autospine-import.json`);
-    await writeFile(temp, JSON.stringify(document));
+    await writeFile(temp, JSON.stringify(delivered));
     try {
-      const run = await runSpine(exe, ["-u", "4.0.64", "-i", temp, "-o", target.spine, "-r", name]);
+      const run = await runSpine(exe, [
+        "-u",
+        spineVersion,
+        "-i",
+        temp,
+        "-o",
+        target.spine,
+        "-r",
+        name,
+      ]);
       if (run.code === 0 && existsSync(target.spine)) result.spine = target.spine;
       else result.spineError = `Spine exited ${run.code}: ${run.output.trim().slice(-600)}`;
     } finally {
@@ -1230,7 +1268,7 @@ export async function deliverFiles(
     }
   }
   if (!result.spine) {
-    await writeFile(target.json, json(document));
+    await writeFile(target.json, json(delivered));
     result.json = target.json;
   }
   // The delivered project's hash, so the next delivery can tell whether it was edited since.
@@ -1562,6 +1600,7 @@ export async function compareVideoFiles(
   const tex = textures(planPaths(planPath, plan).images);
   const font =
     opts.font ?? (process.platform === "win32" ? "C:/Windows/Fonts/msjh.ttc" : undefined);
+  const exclude = (plan.qa?.deformExclude ?? []).map((p) => new RegExp(p));
   const results: VideoComparison[] = [];
   for (const job of jobs) {
     const entry = animations.find((a) => a.name === job.name);
@@ -1575,6 +1614,7 @@ export async function compareVideoFiles(
         entry.name,
         entry.loop !== false,
         fps,
+        exclude,
         { ...job, ...(opts.window !== undefined ? { window: opts.window } : {}) },
         dir,
         font,
@@ -1656,6 +1696,7 @@ async function compareOneVideo(
   animation: string,
   loop: boolean,
   fps: number,
+  exclude: RegExp[],
   job: { video: string; start: number; window?: number },
   dir: string,
   font: string | undefined,
@@ -1820,6 +1861,9 @@ async function compareOneVideo(
       for (let i = 0; i < last.length; i++) sum += Math.abs(last[i]! - build0.rgb[i]!);
       seam = sum / last.length / 255;
     }
+    // ADR-045: a part the clip hides must be hidden in the build, not flattened to a line.
+    const { collapses, flips } = deformationQA(sk, animation, fps, undefined, exclude);
+    const deformation = { collapses, flips };
     // Whole-figure timing and size along the reference's busier axis, over the first n frames.
     const sd = (v: number[]) => {
       const m = v.reduce((x, y) => x + y, 0) / v.length;
@@ -1853,7 +1897,7 @@ async function compareOneVideo(
       return {
         figure,
         parts,
-        rows: checkVideoAcceptance({ iou: ious.slice(0, n), parts, figure, seam }),
+        rows: checkVideoAcceptance({ iou: ious.slice(0, n), parts, figure, seam, deformation }),
       };
     };
     // A loop fitted to a clip that drifts is judged on the cycles its fold used (ADR-036); the
@@ -1889,7 +1933,16 @@ async function compareOneVideo(
         ),
       }))
       .filter((m): m is { part: string; frames: [number, number] } => m.frames !== null);
-    const hints = videoHints(rows, ious.slice(0, window), figure, parts, count, fps, mirrored);
+    const hints = videoHints(
+      rows,
+      ious.slice(0, window),
+      figure,
+      parts,
+      count,
+      fps,
+      mirrored,
+      deformation,
+    );
     if (whole)
       hints.push(
         `judged on frames 0-${window - 1}, the cycles the fit folded; over all ${ious.length} frames ${
@@ -1912,6 +1965,7 @@ async function compareOneVideo(
         frames: { compared: ious.length, animation: count, ...(whole ? { judged: window } : {}) },
         registration: { iou: +reg.iou.toFixed(3), pixelsPerUnit: +view.scale.toFixed(4) },
         mirrored,
+        deformation,
         notJudged: parts
           .filter((p) => !judgedParts([p], ious.length).length)
           .map((p) => ({ part: p.part, frames: p.frames })),
@@ -2921,6 +2975,7 @@ function videoHints(
   count: number,
   fps: number,
   mirrored: { part: string; frames: [number, number] }[] = [],
+  deformation?: Pick<DeformationSummary, "collapses" | "flips">,
 ): string[] {
   const failed = (prefix: string) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);
   const hints: string[] = [];
@@ -2979,5 +3034,13 @@ function videoHints(
       hints.push(`${p.part}: ${notes.join(", ")}`);
     }
   if (failed("V4")) hints.push("the loop's last frame does not match its first: a visible jump");
+  for (const [part, c] of Object.entries(deformation?.collapses ?? {}))
+    hints.push(
+      `${part}: squashed to ${c.ratio.toFixed(2)} of its own width on frames ${c.frames[0]}-${c.frames[1]}, a line on screen; hide it there (attachment off) if the reference hides it`,
+    );
+  for (const [part, at] of Object.entries(deformation?.flips ?? {}))
+    hints.push(
+      `${part}: turns over through a line at frame ${at.join(", ")}; swap or mirror it in one step (ADR-035) instead`,
+    );
   return hints;
 }
