@@ -31578,6 +31578,83 @@ var MOTION_PRIORS = {
     limbDeg: s(31, 0, 392.8),
     strandDeg: s(10.8, 0, 72.8),
     keyGapFrames: s(9, 2, 30)
+  },
+  /**
+   * Clap loops (1 animation, 1 art: Jackpot mummy cat, 2026-10-19) - a weak prior. Four 15-frame
+   * claps per body sway, the contact half way through each beat. The body leans one way for two
+   * claps and the other way for two, further at each contact, and dips as the hands meet. Open
+   * hands reach about the full arm just above the shoulders; they meet between the shoulders at
+   * shoulder height. `Reach`: a fraction of the shoulder-to-wrist length.
+   */
+  clap: {
+    animations: 1,
+    arts: 1,
+    beatFrames: s(15, 15, 15),
+    beatsPerSway: s(4, 4, 4),
+    contactAtBeat: s(0.53, 0.53, 0.53),
+    leanOpenDeg: s(11.4, 11.4, 11.4),
+    leanContactDeg: s(17, 15, 20.3),
+    headLeanDeg: s(8.5, 8.5, 8.5),
+    dipHw: s(0.047, 0.047, 0.047),
+    openReach: s(1.08, 0.975, 1.184),
+    openAboveShoulderDeg: s(7.2, 7.1, 7.3),
+    contactGapHw: s(0.209, 0.209, 0.209),
+    contactBelowShoulderHw: s(0.028, 0.028, 0.028),
+    palmTurnDeg: s(94.2, 78.2, 110.2)
+  },
+  /**
+   * Free hands in an idle (1 animation, 1 art: the mummy cat, also in the ADR-019 survey) - a weak
+   * prior beside ADR-019's 1.3-2.5x. The hands bob twice per breath as much as once, trail the
+   * body by 4-6 frames and travel about 3x the body.
+   */
+  idleHands: {
+    animations: 1,
+    arts: 1,
+    travelVsBody: s(2.9, 2.8, 3),
+    relTravelVsBody: s(2.6, 2.3, 2.9),
+    correlation: s(0.76, 0.61, 0.91),
+    lagFrames: s(5, 4, 6),
+    perBreathHw: s(0.04, 0.033, 0.047),
+    twicePerBreathHw: s(0.054, 0.052, 0.055),
+    palmDeg: s(33.2, 30.6, 35.7)
+  },
+  /**
+   * Rise-and-squash character entries (1 animation, 1 art: the mummy cat) - a weak prior, the
+   * second entry style beside the scale-in `entry`. No scale and no fade: the figure rises from far
+   * below, is in place by a third, barely overshoots, and the body lands - the chest stretches then
+   * squashes, the head 2 frames behind it, the face slides down, up, down - while the arms fling
+   * up past the shoulders and drop on the landing. Times are fractions of the frames.
+   */
+  entryRise: {
+    animations: 1,
+    arts: 1,
+    startBelowHw: s(1.33, 1.33, 1.33),
+    arriveAt: s(0.33, 0.33, 0.33),
+    overshootHw: s(0.019, 0.019, 0.019),
+    sinkHw: s(0.011, 0.011, 0.011),
+    sinkAt: s(0.6, 0.6, 0.6),
+    startTiltDeg: s(18, 18, 18),
+    counterTiltDeg: s(5.6, 5.6, 5.6),
+    counterTiltAt: s(0.4, 0.4, 0.4),
+    chestStretchHw: s(0.023, 0.023, 0.023),
+    chestStretchAt: s(0.37, 0.37, 0.37),
+    chestSquashHw: s(0.087, 0.087, 0.087),
+    chestSquashAt: s(0.67, 0.67, 0.67),
+    headLagFrames: s(2, 2, 2),
+    headStretchHw: s(0.027, 0.027, 0.027),
+    headSquashHw: s(0.147, 0.147, 0.147),
+    faceDownStartHw: s(0.283, 0.283, 0.283),
+    faceUpHw: s(0.131, 0.131, 0.131),
+    faceUpAt: s(0.47, 0.47, 0.47),
+    faceDownHw: s(0.154, 0.154, 0.154),
+    faceDownAt: s(0.73, 0.73, 0.73),
+    handStartOutReach: s(0.34, 0.1, 0.58),
+    handPeakAboveShoulderReach: s(0.59, 0.46, 0.72),
+    handPeakOutReach: s(1.02, 0.97, 1.06),
+    handPeakAt: s(0.3, 0.27, 0.33),
+    handLowBelowShoulderReach: s(0.28, 0.26, 0.3),
+    handLowOutReach: s(0.48, 0.44, 0.52),
+    handLowAt: s(0.65, 0.53, 0.77)
   }
 };
 function oneShotKind(name) {
@@ -41394,7 +41471,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.13";
+var AUTOSPINE_VERSION = "0.5.16";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");

@@ -176,7 +176,96 @@ export const MOTION_PRIORS = {
     strandDeg: s(10.8, 0, 72.8),
     keyGapFrames: s(9, 2, 30),
   },
+  /**
+   * Clap loops (1 animation, 1 art: Jackpot mummy cat, 2026-10-19) - a weak prior. Four 15-frame
+   * claps per body sway, the contact half way through each beat. The body leans one way for two
+   * claps and the other way for two, further at each contact, and dips as the hands meet. Open
+   * hands reach about the full arm just above the shoulders; they meet between the shoulders at
+   * shoulder height. `Reach`: a fraction of the shoulder-to-wrist length.
+   */
+  clap: {
+    animations: 1,
+    arts: 1,
+    beatFrames: s(15, 15, 15),
+    beatsPerSway: s(4, 4, 4),
+    contactAtBeat: s(0.53, 0.53, 0.53),
+    leanOpenDeg: s(11.4, 11.4, 11.4),
+    leanContactDeg: s(17, 15, 20.3),
+    headLeanDeg: s(8.5, 8.5, 8.5),
+    dipHw: s(0.047, 0.047, 0.047),
+    openReach: s(1.08, 0.975, 1.184),
+    openAboveShoulderDeg: s(7.2, 7.1, 7.3),
+    contactGapHw: s(0.209, 0.209, 0.209),
+    contactBelowShoulderHw: s(0.028, 0.028, 0.028),
+    palmTurnDeg: s(94.2, 78.2, 110.2),
+  },
+  /**
+   * Free hands in an idle (1 animation, 1 art: the mummy cat, also in the ADR-019 survey) - a weak
+   * prior beside ADR-019's 1.3-2.5x. The hands bob twice per breath as much as once, trail the
+   * body by 4-6 frames and travel about 3x the body.
+   */
+  idleHands: {
+    animations: 1,
+    arts: 1,
+    travelVsBody: s(2.9, 2.8, 3),
+    relTravelVsBody: s(2.6, 2.3, 2.9),
+    correlation: s(0.76, 0.61, 0.91),
+    lagFrames: s(5, 4, 6),
+    perBreathHw: s(0.04, 0.033, 0.047),
+    twicePerBreathHw: s(0.054, 0.052, 0.055),
+    palmDeg: s(33.2, 30.6, 35.7),
+  },
+  /**
+   * Rise-and-squash character entries (1 animation, 1 art: the mummy cat) - a weak prior, the
+   * second entry style beside the scale-in `entry`. No scale and no fade: the figure rises from far
+   * below, is in place by a third, barely overshoots, and the body lands - the chest stretches then
+   * squashes, the head 2 frames behind it, the face slides down, up, down - while the arms fling
+   * up past the shoulders and drop on the landing. Times are fractions of the frames.
+   */
+  entryRise: {
+    animations: 1,
+    arts: 1,
+    startBelowHw: s(1.33, 1.33, 1.33),
+    arriveAt: s(0.33, 0.33, 0.33),
+    overshootHw: s(0.019, 0.019, 0.019),
+    sinkHw: s(0.011, 0.011, 0.011),
+    sinkAt: s(0.6, 0.6, 0.6),
+    startTiltDeg: s(18, 18, 18),
+    counterTiltDeg: s(5.6, 5.6, 5.6),
+    counterTiltAt: s(0.4, 0.4, 0.4),
+    chestStretchHw: s(0.023, 0.023, 0.023),
+    chestStretchAt: s(0.37, 0.37, 0.37),
+    chestSquashHw: s(0.087, 0.087, 0.087),
+    chestSquashAt: s(0.67, 0.67, 0.67),
+    headLagFrames: s(2, 2, 2),
+    headStretchHw: s(0.027, 0.027, 0.027),
+    headSquashHw: s(0.147, 0.147, 0.147),
+    faceDownStartHw: s(0.283, 0.283, 0.283),
+    faceUpHw: s(0.131, 0.131, 0.131),
+    faceUpAt: s(0.47, 0.47, 0.47),
+    faceDownHw: s(0.154, 0.154, 0.154),
+    faceDownAt: s(0.73, 0.73, 0.73),
+    handStartOutReach: s(0.34, 0.1, 0.58),
+    handPeakAboveShoulderReach: s(0.59, 0.46, 0.72),
+    handPeakOutReach: s(1.02, 0.97, 1.06),
+    handPeakAt: s(0.3, 0.27, 0.33),
+    handLowBelowShoulderReach: s(0.28, 0.26, 0.3),
+    handLowOutReach: s(0.48, 0.44, 0.52),
+    handLowAt: s(0.65, 0.53, 0.77),
+  },
 } as const;
+
+/**
+ * A prior seen on fewer independent arts than this is weak (ADR-032): a starting value to check
+ * against the brief and the video, not a rule, until a second art agrees.
+ */
+export const WEAK_PRIOR_ARTS = 2;
+export type PriorKind = keyof typeof MOTION_PRIORS;
+export function isWeakPrior(kind: PriorKind): boolean {
+  return MOTION_PRIORS[kind].arts < WEAK_PRIOR_ARTS;
+}
+/** Wrist targets never go past this share of the arm, so the hand stays on the forearm. */
+const REACH_LIMIT = 0.98;
 
 /** One-shot templates (ADR-032), chosen from the animation name. */
 export type OneShotKind =
@@ -224,7 +313,28 @@ export interface OneShotTemplate {
   swing: { limbDeg: number; strandDeg: number; tipLagFrames: number; period: number };
   /** The artists' median key spacing for this kind (frames): key secondary parts this often. */
   keyEvery: number;
+  /** True when the template rests on a weak prior (fewer than two arts). */
+  weak: boolean;
+  /**
+   * Rise-style entries only: the torso lean (clockwise degrees), and the chest, head and face
+   * offsets from their settled pose (px, y down: up is negative), keyed on the chest, head and
+   * face-slide controls rather than on `move`.
+   */
+  body?: {
+    tilt: TemplateKey<number>[];
+    chest: TemplateKey<number>[];
+    head: TemplateKey<number>[];
+    face: TemplateKey<number>[];
+  };
+  /**
+   * Rise-style entries only: each wrist against its shoulder in arm reaches, [outward, down]
+   * (outward is away from the body's midline, up is negative), never past 0.98 of the arm. After
+   * the last key the arms ease back to the plan's rest by the last frame, handing over to the idle.
+   */
+  arms?: TemplateKey<[number, number]>[];
 }
+/** Entry styles: `pop` scales in from below (3 arts), `rise` rises and squashes (1 art, weak). */
+export type EntryStyle = "pop" | "rise";
 
 const r2 = (v: number) => +v.toFixed(2);
 /**
@@ -233,9 +343,9 @@ const r2 = (v: number) => +v.toFixed(2);
  */
 export function oneShotTemplate(
   name: string,
-  options: { frames: number; unit: number; subject: "character" | "prop" },
+  options: { frames: number; unit: number; subject: "character" | "prop"; entry?: EntryStyle },
 ): OneShotTemplate {
-  const { frames: N, unit: u, subject } = options;
+  const { frames: N, unit: u, subject, entry: entryStyle = "pop" } = options;
   if (!Number.isInteger(N) || N < 2 || N > 3600)
     failStage("animation", "PRIOR_FRAMES", "A one-shot template needs 2..3600 frames");
   if (!(u > 0) || !Number.isFinite(u))
@@ -253,6 +363,7 @@ export function oneShotTemplate(
     alpha: [],
     swing: { limbDeg: 0, strandDeg: 0, tipLagFrames: 0, period: N },
     keyEvery: Math.round(P.characterOneShot.keyGapFrames.median),
+    weak: false,
   };
   // Each helper takes keys as [fraction of the frames, value..., ease?].
   type E = KeyposeEase | undefined;
@@ -295,6 +406,10 @@ export function oneShotTemplate(
   }
   switch (kind) {
     case "entry": {
+      if (entryStyle === "rise") {
+        riseEntry(out, N, F, u, T);
+        break;
+      }
       // Rise from below with an overshoot, scale in from about half, fade from half alpha.
       const e = P.entry;
       T([0, 0, e.startBelowHw.median], [e.peakAt.median, 0, -e.aboveEndHw.median, "out"]);
@@ -383,6 +498,88 @@ export function oneShotTemplate(
   }
   return dedupe(out);
 }
+/**
+ * The rise-and-squash entry (weak prior, one art): the figure rises on `move` without scale or
+ * fade, and the landing plays out in the chest, head, face and arms.
+ */
+function riseEntry(
+  out: OneShotTemplate,
+  N: number,
+  F: (x: number) => number,
+  u: number,
+  T: (...keys: [number, number, number, KeyposeEase?][]) => void,
+): void {
+  const e = MOTION_PRIORS.entryRise,
+    m = (stat: PriorStat) => stat.median,
+    lag = m(e.headLagFrames);
+  const key = <V>(frame: number, value: V, ease?: KeyposeEase): TemplateKey<V> => ({
+    frame: Math.max(0, Math.min(N, frame)),
+    value,
+    ...(ease ? { ease } : {}),
+  });
+  const px = (hw: number) => r2(hw * u);
+  T(
+    [0, 0, m(e.startBelowHw)],
+    [m(e.arriveAt), 0, -m(e.overshootHw), "out"],
+    [m(e.sinkAt), 0, m(e.sinkHw), "sine"],
+    [1, 0, 0, "sine"],
+  );
+  out.body = {
+    tilt: [
+      key(0, -m(e.startTiltDeg)),
+      key(F(m(e.counterTiltAt)), m(e.counterTiltDeg), "out"),
+      key(F(0.75), 0, "sine"),
+    ],
+    chest: [
+      key(0, 0),
+      key(F(m(e.chestStretchAt)), -px(m(e.chestStretchHw)), "out"),
+      key(F(m(e.chestSquashAt)), px(m(e.chestSquashHw)), "sine"),
+      key(N, 0, "sine"),
+    ],
+    head: [
+      key(0, 0),
+      key(F(m(e.chestStretchAt)) + lag, -px(m(e.headStretchHw)), "out"),
+      key(F(m(e.chestSquashAt)) + lag, px(m(e.headSquashHw)), "sine"),
+      key(N, 0, "sine"),
+    ],
+    face: [
+      key(0, px(m(e.faceDownStartHw))),
+      key(F(0.13), px(m(e.faceDownStartHw))),
+      key(F(m(e.faceUpAt)), -px(m(e.faceUpHw)), "sine"),
+      key(F(m(e.faceDownAt)), px(m(e.faceDownHw)), "sine"),
+      key(N, 0, "sine"),
+    ],
+  };
+  // Wrists in arm reaches; a hanging start and a flung peak are held inside the arm.
+  const within = ([x, y]: [number, number]): [number, number] => {
+    const d = Math.hypot(x, y),
+      k = d > REACH_LIMIT ? REACH_LIMIT / d : 1,
+      inward = (v: number) => Math.trunc(v * k * 100) / 100;
+    return [inward(x), inward(y)];
+  };
+  const startOut = m(e.handStartOutReach);
+  out.arms = [
+    key<[number, number]>(0, within([startOut, Math.sqrt(REACH_LIMIT ** 2 - startOut ** 2)])),
+    key<[number, number]>(
+      F(m(e.handPeakAt)),
+      within([m(e.handPeakOutReach), -m(e.handPeakAboveShoulderReach)]),
+      "out",
+    ),
+    key<[number, number]>(
+      F(m(e.handLowAt)),
+      within([m(e.handLowOutReach), m(e.handLowBelowShoulderReach)]),
+      "sine",
+    ),
+  ];
+  // The arms are keyed above; strands keep the one-shot swing.
+  out.swing = {
+    limbDeg: 0,
+    strandDeg: r2(MOTION_PRIORS.characterOneShot.strandDeg.median),
+    tipLagFrames: MOTION_PRIORS.characterOneShot.strandTipLagFrames.median,
+    period: N,
+  };
+  out.weak = true;
+}
 /** Keys collide on short animations: keep the last key per frame, in frame order. */
 function dedupe(t: OneShotTemplate): OneShotTemplate {
   const last = <K extends { frame: number }>(keys: K[]) =>
@@ -394,6 +591,17 @@ function dedupe(t: OneShotTemplate): OneShotTemplate {
     rotate: last(t.rotate),
     head: last(t.head),
     alpha: last(t.alpha),
+    ...(t.body
+      ? {
+          body: {
+            tilt: last(t.body.tilt),
+            chest: last(t.body.chest),
+            head: last(t.body.head),
+            face: last(t.body.face),
+          },
+        }
+      : {}),
+    ...(t.arms ? { arms: last(t.arms) } : {}),
   };
 }
 
@@ -411,13 +619,26 @@ export interface LoopRecipe {
   /** Seconds per main cycle (idle breath, walk stride), and main cycles per stride for a walk. */
   cycleSeconds: number;
   bobsPerCycle: number;
+  /**
+   * Free hands (idle only): `travel` times the main's travel relative to the body (ADR-019
+   * `follow.travel`), `lag` frames behind, plus a bob of `twicePerBreath` px at twice the breath
+   * rate (0 unless asked for), and `palmDeg` peak-to-peak palm turn. `weak` when it comes from
+   * the one-art `idleHands` prior.
+   */
+  hand?: { travel: number; lag: number; twicePerBreath: number; palmDeg: number; weak: boolean };
 }
 /**
  * Idle: hips 0.06 hw; the head 0.7 x further, 8 frames later (1.6-2x the hips, about 3 frames
  * behind on a 2 s breath); strands ±8 degrees, tips 2 frames per bone; limbs ±2 degrees.
+ * Free hands follow at travel 1, 2 frames late (ADR-019); `handBob` asks for the weak `idleHands`
+ * prior instead: travel 2.6, 5 frames late, with a bob twice per breath.
  * Walk (one art): bob a third of a head width twice per stride. Prop: the base stays still.
  */
-export function loopRecipe(kind: "idle" | "walk" | "prop", unit: number): LoopRecipe {
+export function loopRecipe(
+  kind: "idle" | "walk" | "prop",
+  unit: number,
+  options: { handBob?: boolean } = {},
+): LoopRecipe {
   if (!(unit > 0) || !Number.isFinite(unit))
     failStage("animation", "PRIOR_UNIT", "A loop recipe needs a positive unit (px)");
   const P = MOTION_PRIORS,
@@ -450,5 +671,119 @@ export function loopRecipe(kind: "idle" | "walk" | "prop", unit: number): LoopRe
     limbAmplitude: 2,
     cycleSeconds: 2,
     bobsPerCycle: 1,
+    hand: options.handBob
+      ? {
+          travel: P.idleHands.relTravelVsBody.median,
+          lag: P.idleHands.lagFrames.median,
+          twicePerBreath: px(P.idleHands.twicePerBreathHw.median),
+          palmDeg: P.idleHands.palmDeg.median,
+          weak: isWeakPrior("idleHands"),
+        }
+      : { travel: 1, lag: 2, twicePerBreath: 0, palmDeg: 0, weak: false },
+  };
+}
+
+/** A clap loop (weak prior, one art) in plan terms, for a head width of `unit` px. */
+export interface ClapRecipe {
+  weak: boolean;
+  /** Frames per clap, claps per body sway (one sway is the loop), and the contact frame in a beat. */
+  beatFrames: number;
+  beatsPerSway: number;
+  contactFrame: number;
+  /** Body lean (degrees) with the hands open and at contact, the head's extra lean, the dip (px). */
+  leanOpenDeg: number;
+  leanContactDeg: number;
+  headLeanDeg: number;
+  dip: number;
+  /** Open hands: share of the arm's reach (at most 0.98) and degrees above the shoulder line. */
+  open: { reach: number; aboveShoulderDeg: number };
+  /** Contact: wrist to wrist (px) and how far below the shoulder line (px, positive is down). */
+  contact: { gap: number; belowShoulder: number };
+  palmTurnDeg: number;
+}
+export function clapRecipe(unit: number): ClapRecipe {
+  if (!(unit > 0) || !Number.isFinite(unit))
+    failStage("animation", "PRIOR_UNIT", "A clap recipe needs a positive unit (px)");
+  const c = MOTION_PRIORS.clap,
+    px = (hw: number) => +(hw * unit).toFixed(2),
+    beat = c.beatFrames.median;
+  return {
+    weak: isWeakPrior("clap"),
+    beatFrames: beat,
+    beatsPerSway: c.beatsPerSway.median,
+    contactFrame: Math.round(c.contactAtBeat.median * beat),
+    leanOpenDeg: c.leanOpenDeg.median,
+    leanContactDeg: c.leanContactDeg.median,
+    headLeanDeg: c.headLeanDeg.median,
+    dip: px(c.dipHw.median),
+    open: {
+      reach: Math.min(REACH_LIMIT, c.openReach.median),
+      aboveShoulderDeg: c.openAboveShoulderDeg.median,
+    },
+    contact: { gap: px(c.contactGapHw.median), belowShoulder: px(c.contactBelowShoulderHw.median) },
+    palmTurnDeg: c.palmTurnDeg.median,
+  };
+}
+/** One arm for `clapPose`: the shoulder (IR px, y down) and the shoulder-to-wrist length (px). */
+export interface ClapArm {
+  shoulder: [number, number];
+  reach: number;
+}
+export interface ClapPose {
+  /** Lean side in [-1, 1] (+1: the first two claps) and how closed the hands are, 0 open..1 met. */
+  sway: number;
+  contact: number;
+  /** Clockwise degrees: the body leans counter-clockwise first, as the artist's did. */
+  leanDeg: number;
+  headLeanDeg: number;
+  /** The body's dip (px, y down) and each palm's turn toward the other hand (degrees). */
+  dip: number;
+  palmTurnDeg: number;
+  /** Wrist targets (IR px, y down), from the shoulders given for this frame. */
+  wrist: { l: [number, number]; r: [number, number] };
+}
+/**
+ * The clap at `frame` of the loop. `l` is the arm on the image's left. Pass the shoulders as they
+ * stand in that frame (after the lean) to keep the contact between them.
+ */
+export function clapPose(
+  recipe: ClapRecipe,
+  frame: number,
+  arms: { l: ClapArm; r: ClapArm },
+): ClapPose {
+  const tau = 2 * Math.PI,
+    period = recipe.beatFrames * recipe.beatsPerSway;
+  const sway = Math.tanh(2.5 * Math.sin((tau * frame) / period)) / Math.tanh(2.5);
+  const contact =
+    (1 -
+      Math.cos((tau * (frame - recipe.contactFrame + recipe.beatFrames / 2)) / recipe.beatFrames)) /
+    2;
+  const lean = recipe.leanOpenDeg + (recipe.leanContactDeg - recipe.leanOpenDeg) * contact;
+  const [L, R] = [arms.l, arms.r];
+  const mid: [number, number] = [
+    (L.shoulder[0] + R.shoulder[0]) / 2,
+    (L.shoulder[1] + R.shoulder[1]) / 2 + recipe.contact.belowShoulder,
+  ];
+  const up = (recipe.open.aboveShoulderDeg * Math.PI) / 180;
+  const wrist = (arm: ClapArm, out: -1 | 1): [number, number] => {
+    const reach = recipe.open.reach * arm.reach;
+    const open: [number, number] = [
+      arm.shoulder[0] + out * reach * Math.cos(up),
+      arm.shoulder[1] - reach * Math.sin(up),
+    ];
+    const shut: [number, number] = [mid[0] + (out * recipe.contact.gap) / 2, mid[1]];
+    return [
+      r2(open[0] + (shut[0] - open[0]) * contact),
+      r2(open[1] + (shut[1] - open[1]) * contact),
+    ];
+  };
+  return {
+    sway: r2(sway),
+    contact: r2(contact),
+    leanDeg: r2(-sway * lean),
+    headLeanDeg: r2(-sway * recipe.headLeanDeg),
+    dip: r2(recipe.dip * contact),
+    palmTurnDeg: r2(recipe.palmTurnDeg * contact),
+    wrist: { l: wrist(L, -1), r: wrist(R, 1) },
   };
 }
