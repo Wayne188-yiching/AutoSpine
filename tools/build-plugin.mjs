@@ -32,8 +32,14 @@ const copies = new Map([
   ["docs/SPINE_TUTORIAL_ENGINEERING_NOTES.md", "references/spine-tutorial-notes.md"],
   ["skills/autospine/references/production-workflow.md", "references/production-workflow.md"],
   ["skills/autospine/references/engine-pipeline.md", "references/engine-pipeline.md"],
+  ["skills/autospine/references/existing-rig-motion.md", "references/existing-rig-motion.md"],
   ["skills/autospine/references/rig-deformation.md", "references/rig-deformation.md"],
   ["skills/autospine/references/controls-animation.md", "references/controls-animation.md"],
+  ["skills/autospine/references/pose-first-workflow.md", "references/pose-first-workflow.md"],
+  ["knowledge/animation/README.md", "references/animation-knowledge.md"],
+  ["knowledge/animation/CURATION.md", "references/animation-curation.md"],
+  ["knowledge/animation/catalog.json", "references/animation-catalog.json"],
+  ["knowledge/animation/index.html", "references/animation-index.html"],
 ]);
 for (const name of (await readdir(join(root, "docs", "adr"))).sort())
   if (name.endsWith(".md")) copies.set(`docs/adr/${name}`, `references/adr/${name}`);
@@ -146,7 +152,11 @@ async function generate(dest) {
   for (const [source, target] of copies) {
     const out = join(dest, target);
     await mkdir(dirname(out), { recursive: true });
-    await writeFile(out, rewrite(await readFile(join(root, source), "utf8"), source, target));
+    const contents = await readFile(join(root, source), "utf8");
+    await writeFile(
+      out,
+      source.endsWith(".md") ? rewrite(contents, source, target) : contents.replace(/\r\n/g, "\n"),
+    );
   }
 }
 

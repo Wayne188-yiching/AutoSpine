@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-28",
+  "pluginVersion": "0.5.17",
+  "checks": {
+    "buildAndBundle": "passed",
+    "typecheck": "passed",
+    "productionLint": {
+      "status": "passed",
+      "scope": ["packages", "schemas", "tests", "tools", "eslint.config.mjs", "vitest.config.ts"]
+    },
+    "changedFileFormatting": "passed",
+    "vitest": {
+      "status": "passed",
+      "filesPassed": 89,
+      "testsPassed": 670,
+      "testsSkipped": 4,
+      "totalTests": 674,
+      "durationSeconds": 586.41,
+      "newPoseFitTests": 13
+    },
+    "nodeDiagnostics": "passed",
+    "pluginGenerationConsistency": "passed",
+    "reportLinks": "passed",
+    "wholeDirectoryLint": {
+      "status": "failed_existing_private_diagnostics",
+      "errors": 175,
+      "scope": "private-gate32-candidates/**/_work/notes/*.mjs",
+      "action": "No private diagnostic files or lint configuration changed. Production sources were independently linted successfully."
+    }
+  },
+  "archive": {
+    "file": "AutoSpine-0.5.17.zip",
+    "files": 79,
+    "bytes": 1036633,
+    "sha256": "43ac9f906a3c8589f8d8002cce996fe569ca75742725818fe312326d95654d34"
+  },
+  "limits": [
+    "External projects were inspected statically; their complete applications were not executed.",
+    "Before/after probes compare synthetic inputs against the working-tree snapshot taken at the start of this task, not a pristine release.",
+    "No external source was copied, no new dependency was introduced, and no private artwork was uploaded.",
+    "Historical nine-clip results and pending artist approval remain unchanged.",
+    "The local plugin package was rebuilt; installed plugin caches were not replaced and no commit or push was made."
+  ]
+}

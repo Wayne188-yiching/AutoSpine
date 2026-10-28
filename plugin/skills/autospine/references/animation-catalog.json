@@ -1,0 +1,407 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-28T06:24:26.829Z",
+  "taxonomy": {
+    "regions": {
+      "us": "美國",
+      "europe": "歐洲",
+      "japan": "日本",
+      "international": "跨國",
+      "unknown": "來源地區未確認"
+    },
+    "mediums": {
+      "2d": "2D 動畫",
+      "3d": "3D 動畫",
+      "stop-motion": "停格動畫",
+      "production": "製作教材"
+    },
+    "stages": {
+      "layout": "Layout",
+      "blocking": "Blocking",
+      "final": "Final"
+    },
+    "techniques": {
+      "pose": "主要姿勢",
+      "silhouette": "剪影",
+      "line-of-action": "動勢線",
+      "staging": "構圖與視線",
+      "acting": "表演與情緒",
+      "timing": "節奏與停頓",
+      "spacing": "間距與加減速",
+      "anticipation": "預備動作",
+      "breakdown": "轉折姿勢",
+      "arcs": "運動弧線",
+      "contact": "接觸與重量",
+      "overlap": "重疊與延遲",
+      "follow-through": "跟隨與收勢",
+      "squash-stretch": "擠壓與伸展",
+      "smear": "拖影與變形",
+      "facial": "表情",
+      "fx": "特效",
+      "workflow": "製作流程"
+    },
+    "statuses": {
+      "metadata-only": "僅確認來源",
+      "text-reviewed": "已讀文字",
+      "visual-samples": "畫面抽查",
+      "clip-reviewed": "連續片段檢視",
+      "image-reviewed": "已看圖片"
+    },
+    "forms": {
+      "key-pose": "單張關鍵姿勢",
+      "pose-sequence": "連續姿勢圖",
+      "contact-sheet": "Pose 對照表",
+      "gesture": "速寫／動勢圖",
+      "expression-sheet": "表情圖",
+      "anatomy": "結構／解剖圖",
+      "storyboard": "分鏡圖",
+      "timing-chart": "節拍／間距圖"
+    },
+    "actions": {
+      "idle": "待機",
+      "walk": "走路",
+      "run": "跑步",
+      "jump": "跳躍",
+      "land": "落地",
+      "dodge": "閃避",
+      "tumble": "翻滾／翻身",
+      "kick": "踢擊",
+      "punch": "拳擊",
+      "turn": "轉身",
+      "acting": "角色表演",
+      "expression": "表情",
+      "creature": "生物動態",
+      "fx": "特效"
+    }
+  },
+  "entries": [
+    {
+      "id": "us-wb-superrabbit-acting",
+      "title": "Looney Tunes｜Bugs Bunny, the Superrabbit",
+      "work": "Looney Tunes",
+      "region": "us",
+      "medium": "2d",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "silhouette", "staging", "acting"],
+      "source": {
+        "url": "https://www.youtube.com/watch?v=oijlB8CvHR8",
+        "publisher": "WB Kids",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "實際開啟影片；頻道顯示 WB Kids 與驗證標記。",
+        "published": "2022-06-01",
+        "durationSeconds": 273,
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音暫停、跳至時間碼並檢視畫面。只抽查 Pose，未完整連續觀看。",
+        "locator": "影片 00:00、00:05、00:10",
+        "samples": [
+          {
+            "seconds": 0,
+            "note": "屋頂與城市建立畫面。"
+          },
+          {
+            "seconds": 5,
+            "note": "Daffy 在左、Bugs 在右的雙人對話構圖；Bugs 側背向鏡頭，手在腰側。"
+          },
+          {
+            "seconds": 10,
+            "note": "Bugs 較近景，笑臉與張開的手掌；手掌位於軀幹外側，視線朝畫面左方。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": ["雙人視線方向交代互動關係；近景的手勢離開軀幹輪廓，表情與手掌各自可讀。"],
+      "application": [
+        "Layout 先安排角色朝向、視線與主要手勢，縮小看剪影；Blocking 檢查手勢的起訖 Pose。這是本工具的適用推論。"
+      ],
+      "limits": ["5 秒與 10 秒跨鏡頭，不能據此量測手勢速度、弧線或跟隨延遲。尚無連續運動分析。"]
+    },
+    {
+      "id": "japan-toho-jjk-pv3-focus",
+      "title": "《咒術迴戰》澀谷事變 第2期 PV 第3彈",
+      "work": "Jujutsu Kaisen",
+      "region": "japan",
+      "medium": "2d",
+      "stages": ["layout", "final"],
+      "techniques": ["staging", "acting", "facial", "fx"],
+      "source": {
+        "url": "https://www.youtube.com/watch?v=PKHQuQF1S8k",
+        "publisher": "TOHO animation",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "實際影片頁面顯示 TOHO animation 驗證頻道；動畫製作署名 MAPPA。",
+        "published": "2023-08-24",
+        "durationSeconds": 85,
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器暫停並確認畫面及播放器時間碼。",
+        "locator": "影片 00:10、00:20、00:25",
+        "samples": [
+          {
+            "seconds": 10,
+            "note": "車站前雕像與建築的環境構圖。"
+          },
+          {
+            "seconds": 20,
+            "note": "臉與眼部的極近景，紅白高對比及亮色邊緣集中視線。"
+          },
+          {
+            "seconds": 25,
+            "note": "黑髮角色的俯斜近景、明確笑容；臉部由前景形狀框出。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "三個抽查鏡頭以取景大小、明暗對比與前景形狀改變注意焦點；25 秒畫面可清楚讀取眼睛與嘴角。"
+      ],
+      "application": [
+        "Layout 先決定臉與手的可讀範圍；Final 的光效不能蓋掉表情辨識。這是由構圖抽查推論的 Spine 應用。"
+      ],
+      "limits": [
+        "PV 有剪接，只作構圖／表情參考；不能由三張畫面聲稱已分析打鬥節奏、作畫曝光或速度。"
+      ]
+    },
+    {
+      "id": "europe-wolfwalkers-composition",
+      "title": "Wolfwalkers — Official Trailer",
+      "work": "Wolfwalkers",
+      "region": "europe",
+      "medium": "2d",
+      "stages": ["layout", "blocking"],
+      "techniques": ["silhouette", "staging", "pose", "acting"],
+      "source": {
+        "url": "https://www.youtube.com/watch?v=d_Z_tybgPgg",
+        "publisher": "Apple TV",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "Apple TV 驗證頻道的官方預告；另已閱讀製作方 Folivari 的作品頁，確認 Cartoon Saloon／Mélusine Productions 製作：https://folivari.com/en/production-en/wolfwalkers-production/",
+        "published": "2020-10-08",
+        "durationSeconds": 123,
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "review": {
+        "status": "visual-samples",
+        "method": "在背景瀏覽器暫停於 15、20 秒，檢視實際畫面與時間碼。",
+        "locator": "影片 00:15、00:20",
+        "samples": [
+          {
+            "seconds": 15,
+            "note": "女孩正面近景；深色三角兜帽框出亮臉，貓頭鷹在右肩側。"
+          },
+          {
+            "seconds": 20,
+            "note": "城鎮雙人互動，父親抱起女孩；兩旁人物形成側框，前後層次分明。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": ["15 秒以兜帽的深色外形襯托臉；20 秒用前後遮擋與側邊配角維持主角互動焦點。"],
+      "application": [
+        "Layout 將主體與裝飾的明暗、輪廓、遮擋一併檢查；Blocking 抱持 Pose 先確認支撐點，再處理衣物。"
+      ],
+      "limits": ["只看兩個獨立畫面，沒有量測抱起過程或衣物延遲；不將預告轉場當角色運動。"]
+    },
+    {
+      "id": "japan-toei-key-drawing-workflow",
+      "title": "東映動畫｜製作工程について",
+      "work": "Toei Animation production process",
+      "region": "japan",
+      "medium": "production",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["workflow", "pose", "breakdown"],
+      "source": {
+        "url": "https://corp.toei-anim.co.jp/ja/company/animation_production.html",
+        "publisher": "東映アニメーション",
+        "platform": "Official website",
+        "official": true,
+        "verification": "東映動畫企業網站，已開啟製作流程內文。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "review": {
+        "status": "text-reviewed",
+        "method": "閱讀官方製作工程的絵コンテ、原画、動画與後續工序段落。",
+        "locator": "02 製作：絵コンテ／原画／動画；特殊効果與撮影",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "官方流程說明先由分鏡傳達演出，再決定構圖與動作要點原畫，之後補原畫之間的動畫；特殊效果與合成在後續工序。"
+      ],
+      "application": [
+        "支持先完成主要 Pose 再補間與細節的工作順序；AutoSpine 將其落成 Layout → Blocking → Final 的專案規則。"
+      ],
+      "limits": [
+        "這是製作分工說明，並非本工具三階段名稱的逐字定義，也不提供每拍格數或品質驗收門檻。"
+      ]
+    },
+    {
+      "id": "us-wdfm-silhouette",
+      "title": "Walt Disney Family Museum｜Silhouette",
+      "work": "Tips & Techniques: Silhouette",
+      "region": "us",
+      "medium": "production",
+      "stages": ["layout", "blocking"],
+      "techniques": ["silhouette", "pose", "acting"],
+      "source": {
+        "url": "https://www.waltdisney.org/sites/default/files/2020-05/T%26T_Silhouette-final2.pdf",
+        "publisher": "The Walt Disney Family Museum",
+        "platform": "Official educational PDF",
+        "official": true,
+        "verification": "已讀博物館官方網站的三頁教材文字；博物館教材不代表 Disney 片廠內部手冊。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "review": {
+        "status": "text-reviewed",
+        "method": "閱讀 PDF 第 1–3 頁文字，重點是第 3 頁的姿勢與剪影檢查。未將其標成動畫連續觀看。",
+        "locator": "PDF 第 3 頁：姿勢／身體前方動作／3/4 側面",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "教材建議透過整體外形傳達性格／動作，避免手勢埋入身體輪廓；可將角色填黑檢查可讀性，並利用側轉角度區別身體兩側。"
+      ],
+      "application": [
+        "Layout 的主要 Pose 做黑色剪影／縮圖檢查；Blocking 新增轉折後重看手臂、道具與軀幹的輪廓分離。"
+      ],
+      "limits": [
+        "教材是造型與姿勢原則，不能單憑它設定運動曲線、固定幀數或證明本工具輸出已具 Disney 表演品質。"
+      ]
+    },
+    {
+      "id": "us-disney-frozen-snowman-queue",
+      "title": "“Snowman” Clip — The Story of Frozen: Making a Disney Animated Classic",
+      "work": "Frozen",
+      "region": "us",
+      "medium": "3d",
+      "stages": [],
+      "techniques": [],
+      "source": {
+        "url": "https://www.youtube.com/watch?v=RGqY56dAzsc",
+        "publisher": "Walt Disney Animation Studios",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "搜尋結果標示片廠驗證頻道與製作紀錄片標題；尚未實際播放。",
+        "published": "2014-08-29",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "review": {
+        "status": "metadata-only",
+        "method": "只查到公開影片標題、發布者與日期；留待下輪實際觀看。",
+        "locator": "搜尋結果中的影片標題與描述",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [],
+      "application": [],
+      "limits": ["尚未觀看，不作為具體技法或節奏的已學習證據。"]
+    },
+    {
+      "id": "image-pinterest-movement-sheet",
+      "title": "動作連續姿勢圖｜閃避、翻身與踢擊",
+      "work": "Movement sheet（原作者待查）",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "breakdown", "arcs", "contact", "line-of-action"],
+      "forms": ["pose-sequence"],
+      "actions": ["dodge", "tumble", "kick"],
+      "source": {
+        "kind": "image",
+        "url": "https://www.pinterest.com/pin/67342956916014542/",
+        "imageUrl": "https://i.pinimg.com/736x/1f/9e/a4/1f9ea485b1b43a03853f5e2f45d9b90a.jpg",
+        "imageAlt": "白底黑色人物線稿，分列連續閃避、騰空翻身與踢擊姿勢，以紅色箭頭標出運動方向。",
+        "publisher": "Pinterest｜Anthony Megan 收藏頁",
+        "platform": "Pinterest",
+        "official": false,
+        "creator": "原作者未確認；Pinterest 收藏者不是作者認證。",
+        "rights": "原作者與授權未確認。僅保留公開來源／圖片連結與原創觀察，不下載、打包或轉傳原圖。",
+        "verification": "已核對使用者提供的 Pin、公開頁面的主圖網址與實際 640×694 圖片；頁面未提供可確認的原作者出處。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T10:56:50+08:00",
+      "lastVerified": "2026-10-28T10:56:50+08:00",
+      "review": {
+        "status": "image-reviewed",
+        "method": "實際檢視使用者截圖，並在背景瀏覽器核對 Pin 主圖與公開圖片；沒有複製包含私人分頁資訊的原始截圖。",
+        "locator": "上排閃避姿勢、中排騰空翻身、下排伸腿與旋轉回收；不翻譯無法確認的手寫文字。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "每組以數個極端姿勢與轉折排列動作；紅色箭頭交代身體／腿的旋轉方向。下排可對照支撐腿、伸出的腿和回收方向。"
+      ],
+      "application": [
+        "Layout 先取起勢、主要極端與收勢 Pose；Blocking 再補騰空／支撐轉換，檢查重心與腿部弧線。圖形方向可供判斷，實際節拍另由任務參考設定。"
+      ],
+      "limits": [
+        "原作者、地區與授權尚未確認，不歸類為日本／歐美特定片廠畫風。",
+        "圖序與箭頭不是經查證的幀數、速度或受力量測；不能用靜態圖宣稱已學到連續節奏。"
+      ]
+    },
+    {
+      "id": "us-animationmentor-pose-design-2026",
+      "title": "Animation Mentor｜有吸引力的角色 Pose",
+      "work": "Building Appealing Character Poses for Animation",
+      "region": "us",
+      "medium": "production",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "silhouette", "line-of-action", "contact", "acting", "workflow"],
+      "forms": ["key-pose"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "document",
+        "url": "https://www.animationmentor.com/blog/tutorial-building-appealing-character-poses-for-animation/",
+        "publisher": "Animation Mentor",
+        "platform": "Official educational article",
+        "official": true,
+        "published": "2026-04-07",
+        "verification": "已讀 Animation Mentor 官方文章主文與 Anthony Wong 講師介紹；未觀看內嵌教學影片。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-28T06:24:26.829Z",
+      "lastVerified": "2026-10-28T06:24:26.829Z",
+      "review": {
+        "status": "text-reviewed",
+        "method": "閱讀文章主文中姿勢評判、負空間、重心、工作順序與控制器使用段落。",
+        "locator": "Four Elements to Judge Your Pose；Managing Complexity and Negative Space；Line of Action and Contrapposto；Using Bend Bow Controls Wisely",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "文章將姿勢的意圖、剪影、動勢線與肩胯對位分開檢查，並提醒把過度複雜的肢體交錯簡化。彎曲修飾控制器應留在主要 Pose 成立後。"
+      ],
+      "application": [
+        "Layout 先讓情緒與主要線條可讀；Blocking 檢查支撐與負空間；Final 才細修肢體弧度。這些判準可輔助 Spine Pose 自評，不能直接代填關節座標。"
+      ],
+      "limits": [
+        "本筆只讀文字，不把文中影片的動作描述當成親看畫面的分析，也不套用 3D Rig 的控制參數到 Spine。"
+      ]
+    }
+  ]
+}

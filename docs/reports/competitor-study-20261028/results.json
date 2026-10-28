@@ -1,0 +1,166 @@
+{
+  "date": "2026-10-28",
+  "scope": "Synthetic regression probes; baseline is the working tree at the start of this task, not a released plugin benchmark.",
+  "baselineSourceSha256": "3fd03b8e7ca979c7bcbd67f6a5cc445109c4f2d8fd9be70b77dd13d6d0404304",
+  "cases": [
+    {
+      "id": "independent-weighted-parts",
+      "before": {
+        "coverage": 0.5,
+        "vertexRmsPx": 3.5355,
+        "pose": {
+          "left": {
+            "x": 5
+          }
+        },
+        "parts": [
+          {
+            "slot": "left",
+            "samples": 1600,
+            "score": 0.882,
+            "dx": 5,
+            "dy": 0,
+            "rotate": 0,
+            "used": true,
+            "shift": 5,
+            "residual": 0
+          },
+          {
+            "slot": "right",
+            "samples": 1600,
+            "score": 0.001,
+            "dx": 5,
+            "dy": 0,
+            "rotate": 0,
+            "used": false,
+            "shift": 5
+          }
+        ],
+        "unobserved": []
+      },
+      "after": {
+        "coverage": 1,
+        "vertexRmsPx": 0,
+        "pose": {
+          "left": {
+            "x": 5
+          },
+          "right": {
+            "x": -5
+          }
+        },
+        "parts": [
+          {
+            "slot": "left",
+            "bone": "left",
+            "ownership": "weights",
+            "samples": 400,
+            "score": 0.882,
+            "dx": 5,
+            "dy": 0,
+            "rotate": 0,
+            "used": true,
+            "shift": 5,
+            "residual": 0
+          },
+          {
+            "slot": "right",
+            "bone": "right",
+            "ownership": "weights",
+            "samples": 400,
+            "score": 0.882,
+            "dx": -5,
+            "dy": 0,
+            "rotate": 0,
+            "used": true,
+            "shift": 5,
+            "residual": 0
+          }
+        ],
+        "unobserved": []
+      }
+    },
+    {
+      "id": "zero-rotation-translation",
+      "before": {
+        "coverage": 0,
+        "vertexRmsPx": 8,
+        "pose": {},
+        "parts": [
+          {
+            "slot": "part",
+            "samples": 1600,
+            "score": 0.43,
+            "dx": 0,
+            "dy": 0,
+            "rotate": 0,
+            "used": false,
+            "shift": 0
+          }
+        ],
+        "unobserved": []
+      },
+      "after": {
+        "coverage": 1,
+        "vertexRmsPx": 0,
+        "pose": {
+          "body": {
+            "x": 8
+          }
+        },
+        "parts": [
+          {
+            "slot": "part",
+            "bone": "body",
+            "ownership": "slot",
+            "samples": 1600,
+            "score": 1,
+            "dx": 8,
+            "dy": 0,
+            "rotate": 0,
+            "used": true,
+            "shift": 8,
+            "residual": 0
+          }
+        ],
+        "unobserved": []
+      }
+    },
+    {
+      "id": "tiny-visible-evidence",
+      "before": {
+        "coverage": 1,
+        "vertexRmsPx": 0,
+        "pose": {},
+        "parts": [
+          {
+            "slot": "part",
+            "samples": 1600,
+            "score": 0.789,
+            "dx": 0,
+            "dy": 0,
+            "rotate": 0,
+            "used": true,
+            "shift": 0,
+            "residual": 0
+          }
+        ],
+        "unobserved": []
+      },
+      "after": {
+        "coverage": 0,
+        "vertexRmsPx": 0,
+        "pose": {},
+        "parts": [],
+        "unobserved": [
+          {
+            "slot": "part",
+            "reason": "too-few-visible-samples",
+            "samples": 1600,
+            "visible": 36
+          }
+        ]
+      }
+    }
+  ]
+}

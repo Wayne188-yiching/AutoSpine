@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AutoSpine：競品程式拆解與改善 · 2026-10-28</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17243b;
+        --muted: #54647b;
+        --line: #dce4ee;
+        --accent: #2551be;
+        --paper: #fff;
+        --bg: #f2f5fa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.85 "Segoe UI",
+          "Microsoft JhengHei",
+          sans-serif;
+      }
+      main {
+        max-width: 1120px;
+        margin: auto;
+        padding: 44px 28px 80px;
+      }
+      header {
+        padding: 26px 0 32px;
+        border-bottom: 2px solid var(--ink);
+      }
+      .eyebrow {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+      }
+      h1 {
+        font-size: 36px;
+        line-height: 1.3;
+        margin: 14px 0;
+      }
+      h2 {
+        font-size: 25px;
+        margin: 0 0 15px;
+      }
+      h3 {
+        font-size: 19px;
+        margin: 20px 0 8px;
+      }
+      p {
+        margin: 10px 0;
+      }
+      .lead {
+        font-size: 19px;
+        max-width: 900px;
+      }
+      .muted,
+      small {
+        color: var(--muted);
+      }
+      a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+      section {
+        margin-top: 28px;
+        background: var(--paper);
+        border: 1px solid var(--line);
+        padding: 27px 30px;
+        border-radius: 12px;
+      }
+      .flow {
+        display: flex;
+        align-items: stretch;
+        gap: 12px;
+        margin: 24px 0;
+        flex-wrap: wrap;
+      }
+      .step {
+        flex: 1;
+        min-width: 160px;
+        border-top: 4px solid var(--accent);
+        padding: 14px;
+        background: #f2f6ff;
+      }
+      .step b {
+        display: block;
+      }
+      .step small {
+        display: block;
+      }
+      .tag {
+        display: inline-block;
+        font-size: 12px;
+        border-radius: 20px;
+        padding: 2px 11px;
+        background: #eaf0ff;
+        color: #244b9d;
+        margin-right: 7px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 15px;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        background: #f2f5fa;
+      }
+      .scroll {
+        overflow: auto;
+      }
+      code {
+        font:
+          13px/1.6 Consolas,
+          monospace;
+        background: #edf1f8;
+        padding: 2px 5px;
+        border-radius: 4px;
+        overflow-wrap: anywhere;
+      }
+      details {
+        margin-top: 18px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 18px;
+      }
+      summary {
+        font-size: 19px;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 15px 0;
+      }
+      details p,
+      details ul {
+        margin-top: 8px;
+      }
+      details .sources {
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+      ul,
+      ol {
+        padding-left: 24px;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .callout {
+        padding: 16px 20px;
+        border-left: 4px solid var(--accent);
+        background: #edf3ff;
+        margin: 18px 0;
+      }
+      .labels {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        text-align: center;
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 20px;
+      }
+      figure {
+        margin: 0;
+      }
+      figure img {
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--line);
+        display: block;
+      }
+      figcaption {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 10px 0;
+      }
+      .metric {
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+      }
+      .status {
+        color: #1a6647;
+      }
+      footer {
+        margin-top: 25px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      @media (max-width: 650px) {
+        main {
+          padding: 20px 14px 45px;
+        }
+        section {
+          padding: 20px 17px;
+        }
+        h1 {
+          font-size: 28px;
+        }
+        .step {
+          min-width: 40%;
+        }
+        th,
+        td {
+          padding: 8px;
+          font-size: 13px;
+        }
+      }
+      @media print {
+        body {
+          background: white;
+        }
+        main {
+          padding: 0;
+        }
+        section,
+        details {
+          break-inside: avoid;
+        }
+        a {
+          color: inherit;
+        }
+        details {
+          display: block;
+        }
+        summary {
+          list-style: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="eyebrow">AUTOSPINE · SOURCE CODE STUDY</div>
+        <h1>拆解競品，把有用的方法接回 AutoSpine</h1>
+        <p class="lead">
+          五個專案的核心，都是把角色與動作變成可計算的資料，再用程式執行。這輪已將改善集中到參考圖擬合：辨認真正的控制骨、計算獨立的畫面證據，以及守住搜尋範圍。
+        </p>
+        <p class="muted">
+          2026 年 10 月 28 日 · 專案內外掛 0.5.17 · GitHub 原始碼靜態分析＋AutoSpine 本機實測
+        </p>
+      </header>
+
+      <section>
+        <h2>先看這次真的改善了什麼</h2>
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>案例</th>
+                <th>修改前</th>
+                <th>修改後</th>
+                <th>意義</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>兩個加權部件，各往相反方向移動 5 px</td>
+                <td>只找到一個；頂點 RMS <span class="metric">3.5355 px</span></td>
+                <td>兩個分別對準；RMS <span class="metric">0 px</span></td>
+                <td>不再把掛在 root 插槽上的不同網格當成同一個物體。</td>
+              </tr>
+              <tr>
+                <td>禁止旋轉，只平移 8 px</td>
+                <td>沒有取得有效位移；誤差 <span class="metric">8 px</span></td>
+                <td>找到平移 8 px；誤差 <span class="metric">0 px</span></td>
+                <td>零旋轉不再造成評分除以零。</td>
+              </tr>
+              <tr>
+                <td>高解析貼圖，畫面只剩 36 個取樣像素</td>
+                <td>1,600 個貼圖樣本被當成足夠證據，回報已擬合。</td>
+                <td>回報畫面證據不足；不宣稱完成擬合。</td>
+                <td>避免圖片很大、實際顯示很小造成假信心。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          <a href="../reports/competitor-study-20261028/results.json">完整數據與基準來源 SHA-256</a>
+          · <a href="../adr/ADR-051-pose-fit-evidence.md">實作決策與驗證範圍</a>
+        </p>
+        <div class="callout">
+          比較基準是本次開始時的工作區，包含原先尚未提交的改善，並非乾淨的 0.5.16
+          發行版。三案皆為合成測試；既有真實素材九段未全項通過的成績不變。
+        </div>
+        <div class="labels">
+          <span>原始位置</span><span>目標位置</span><span>修改前結果</span><span>修改後結果</span>
+        </div>
+        <figure>
+          <img
+            src="../reports/competitor-study-20261028/before-after.png"
+            alt="三組合成案例的四欄比較：原始、目標、修改前、修改後"
+          />
+          <figcaption>
+            第一列：兩部件相向移動；第二列：只平移；第三列：小到證據不足的部件。第三列改進的是判定是否可信，並非改動圖片位置。每個方框放大兩倍方便查看。
+          </figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2>它們共同的開發邏輯</h2>
+        <div class="flow">
+          <div class="step">
+            <b>① 判讀需求與素材</b><small>人或 AI 指認部位、關節、動作。</small>
+          </div>
+          <div class="step"><b>② 寫成方案資料</b><small>骨架、網格、權重與動作規格。</small></div>
+          <div class="step">
+            <b>③ 確定的數學計算</b><small>座標變換、三角化、蒙皮與曲線。</small>
+          </div>
+          <div class="step">
+            <b>④ 渲染、量測、修正</b><small>看實際畫面，確認可匯入與可繼續編修。</small>
+          </div>
+        </div>
+        <p>
+          AI
+          通常負責理解與寫方案；骨架和動畫由確定的程式計算。這些專案沒有共同訓練一個能直接產生任意美術級動畫的模型。圖片分層、圖像換皮的生成模型，和骨架動畫的數學引擎是不同環節。
+        </p>
+        <p>
+          AutoSpine 已採用這個架構，也已有遮擋排除、網格／權重檢查、官方 Runtime
+          播放及影片比對。這次補強的是現有流程中能重現的缺口。
+        </p>
+      </section>
+
+      <section>
+        <h2>五個專案的組成、原理與取捨</h2>
+        <p class="muted">展開可看程式如何運作；每節連到本次核對版本的原始碼。</p>
+
+        <details open>
+          <summary>1. Spine Animation AI：視覺配準＋規則動畫＋圖像換皮</summary>
+          <p>
+            <span class="tag">Claude Skill</span><span class="tag">Python / OpenCV</span
+            ><span class="tag">獨立換皮應用</span>
+          </p>
+          <p>
+            <b>組成：</b>Skill 提示與四個主要 Python 腳本，處理部件定位、Spine JSON、圖集與 HTML
+            預覽。另有拆圖腳本，以及前後端分離的 Reskin Studio。
+          </p>
+          <ol>
+            <li>
+              <b>定位：</b>SIFT 尋找部件與合成圖的局部特徵，FLANN
+              尋找對應點，比例檢查排除可疑配對，再以 RANSAC 求平移、旋轉和統一縮放。RANSAC
+              的作用是讓少數錯配不拖走整個答案。
+            </li>
+            <li>
+              <b>備援：</b
+              >細小或缺少紋理的部件，改做帶透明遮罩的模板比對；搜尋尺度從可靠特徵配對的縮放中位數附近取得。
+            </li>
+            <li>
+              <b>前後順序：</b
+              >比較重疊像素更像哪一層，累積上下層票數。這份實作最後用深度分數排序，並非 README
+              概述中的完整拓撲排序。
+            </li>
+            <li>
+              <b>動畫：</b>JSON 建置器讀取已決定的骨架、插槽和附件，依骨名套用 idle、walk
+              等預設曲線，再合併自訂動畫。它沒有自行從圖片訓練出動作。
+            </li>
+            <li>
+              <b>換皮：</b
+              >把角色快照與圖集／展開部件拼成參考，交給圖像模型編輯，再依布局與遮罩重烘貼圖，沿用原來的骨架。
+            </li>
+          </ol>
+          <p>
+            <b>值得學：</b
+            >先找可靠位置，再做小範圍修正；不同階段使用不同演算法。<b>界線：</b>主範例的 16 骨與
+            region 附件，不能代表複雜加權網格表現。其非商用程式碼本輪僅分析，沒有搬入 AutoSpine。
+          </p>
+          <p class="sources">
+            <a
+              href="https://github.com/GenielabsOpenSource/spine-animation-ai/blob/702b71689cac826efee942ee4564fef9560d6ef8/scripts/position_parts.py"
+              target="_blank"
+              rel="noopener"
+              >定位與排序</a
+            >
+            ·
+            <a
+              href="https://github.com/GenielabsOpenSource/spine-animation-ai/blob/702b71689cac826efee942ee4564fef9560d6ef8/scripts/build_spine_json.py"
+              target="_blank"
+              rel="noopener"
+              >骨架與動畫</a
+            >
+            ·
+            <a
+              href="https://github.com/GenielabsOpenSource/spine-animation-ai/blob/702b71689cac826efee942ee4564fef9560d6ef8/reskin-app/app/backend/reskin/pipeline.py"
+              target="_blank"
+              rel="noopener"
+              >換皮流程</a
+            >
+            ·
+            <a
+              href="https://github.com/GenielabsOpenSource/spine-animation-ai/blob/702b71689cac826efee942ee4564fef9560d6ef8/LICENSE"
+              target="_blank"
+              rel="noopener"
+              >PolyForm Noncommercial 授權</a
+            >
+          </p>
+        </details>
+
+        <details>
+          <summary>2. rig-c/core：把 Rig 當成可驗證的編譯結果</summary>
+          <p>
+            <span class="tag">TypeScript / Bun</span><span class="tag">宣告式 Rig / Motion</span
+            ><span class="tag">Spine 4.3</span>
+          </p>
+          <p>
+            <b>組成：</b>規格編譯器、檢查規則與報告、渲染器、定位工具、官方 Runtime
+            和編輯器往返核對。AI 寫規格，編譯器負責產生格式正確的資料。
+          </p>
+          <ol>
+            <li>
+              <b>編譯與檢查：</b>先解析 Rig
+              與動作規格，再產生骨架、附件和時間軸。建立具名的檢查規則，讓錯誤能指出是哪個部件或規格條件出了問題。
+            </li>
+            <li>
+              <b>pose：</b>從鬆散 PNG
+              與圖片搜尋平移、角度、縮放。遮擋多時，獨立搜尋會把真實位置判差，或把相似肢體認錯。
+            </li>
+            <li>
+              <b>chainfit：</b>加入候選 Rig
+              的繪製順序與關節關係。先把被遮住的像素排除，固定這一組可見像素後再搜尋，避免候選物件靠躲到遮擋後面騙過分數。已定位父骨後，子骨主要搜尋關節角度，減少自由度。
+            </li>
+            <li>
+              <b>診斷：</b
+              >網格翻折、部件穿透與接縫能逐幀定位。這些讀數和阻止輸出的硬性格式檢查是不同層級；有讀數不等於已修復。
+            </li>
+          </ol>
+          <p>
+            <b>本輪吸收：</b
+            >把「看得到多少證據」「控制關係是否確定」明確帶進報告與拒絕條件。AutoSpine
+            原先就有固定遮擋取樣，本輪補上獨立畫面像素與未確定控制骨的處理。沒有複製它的搜尋器或引入
+            Spine 4.3。
+          </p>
+          <p class="sources">
+            <a
+              href="https://github.com/rig-c/core/blob/e8dfbd64dbf8e48c11052314668214c719973d17/src/chainfit.ts"
+              target="_blank"
+              rel="noopener"
+              >關節與可見證據搜尋</a
+            >
+            ·
+            <a
+              href="https://github.com/rig-c/core/blob/e8dfbd64dbf8e48c11052314668214c719973d17/src/seam.ts"
+              target="_blank"
+              rel="noopener"
+              >接縫診斷</a
+            >
+            ·
+            <a
+              href="https://github.com/rig-c/core/blob/e8dfbd64dbf8e48c11052314668214c719973d17/tools/editor_roundtrip.ts"
+              target="_blank"
+              rel="noopener"
+              >編輯器往返核對</a
+            >
+            ·
+            <a
+              href="https://github.com/rig-c/core/blob/e8dfbd64dbf8e48c11052314668214c719973d17/LICENSE"
+              target="_blank"
+              rel="noopener"
+              >MIT 與第三方素材條款</a
+            >
+          </p>
+        </details>
+
+        <details>
+          <summary>3. Rev2D：讓 AI 和人共同編輯參數化角色</summary>
+          <p>
+            <span class="tag">TypeScript</span><span class="tag">CPU 渲染＋WebGL 編輯器</span
+            ><span class="tag">CLI / MCP</span>
+          </p>
+          <p>
+            <b>組成：</b>自己的角色格式、參數與變形引擎、確定性渲染器、網頁編輯器、原子編輯操作及
+            Spine／Live2D 轉換器。
+          </p>
+          <ol>
+            <li>
+              <b>參數驅動：</b
+              >動畫或滑桿改變參數，參數經關鍵形狀綁定改變骨頭、網格或變形器，再渲染部件。眨眼、轉頭等動作可以透過相同參數反覆調整。
+            </li>
+            <li>
+              <b>原子修改：</b>每批操作先複製原始
+              JSON，在副本上執行。只要其中一個操作失敗，或最後的驗證出錯，就回傳原始資料，避免留下半改好的角色。
+            </li>
+            <li>
+              <b>分析：</b>密集取樣實際動畫，量 IK
+              伸展、物理極限、部件出界與循環接點；回報具體部件和時間。
+            </li>
+            <li>
+              <b>共同操作：</b>AI
+              可以讀編輯器狀態、調參數、播放和取得畫面。使用者在同一個視窗看到結果，減少反覆匯出影片的等待。
+            </li>
+          </ol>
+          <p>
+            <b>本輪吸收：</b
+            >診斷要對應到實際部件，資訊不足要列原因；保持輸入不變。<b>界線：</b>這輪沒有加入互動編輯器，也沒有改用
+            Rev2D 格式。轉換器有近似與不支援項目，不能視為 Spine 無損替代品。
+          </p>
+          <p class="sources">
+            <a
+              href="https://github.com/RevStudio/Rev2D/blob/f144581cdf1f12d781379c4df90d262b8c2dfa3d/src/ops/index.ts"
+              target="_blank"
+              rel="noopener"
+              >原子操作</a
+            >
+            ·
+            <a
+              href="https://github.com/RevStudio/Rev2D/blob/f144581cdf1f12d781379c4df90d262b8c2dfa3d/src/api/analyze.ts"
+              target="_blank"
+              rel="noopener"
+              >動畫分析</a
+            >
+            ·
+            <a
+              href="https://github.com/RevStudio/Rev2D/blob/f144581cdf1f12d781379c4df90d262b8c2dfa3d/docs/INTEROP.md"
+              target="_blank"
+              rel="noopener"
+              >轉換支援與限制</a
+            >
+            ·
+            <a
+              href="https://github.com/RevStudio/Rev2D/blob/f144581cdf1f12d781379c4df90d262b8c2dfa3d/LICENSE"
+              target="_blank"
+              rel="noopener"
+              >MIT 授權</a
+            >
+          </p>
+        </details>
+
+        <details>
+          <summary>4. OneClickSpine / OCS：分層模型＋輪廓內路徑＋幾何權重</summary>
+          <p>
+            <span class="tag">Python</span><span class="tag">see-through 分層</span
+            ><span class="tag">人工關節修正</span>
+          </p>
+          <p>
+            <b>組成：</b>本機網頁流程、圖片分層與清理、初始關節推定、網格／權重、Spine
+            匯出及預覽。圖片分層才是主要需要 GPU 的階段。
+          </p>
+          <ol>
+            <li>
+              <b>推定關節：</b
+              >從軀幹出發，在角色輪廓內計算測地距離，找局部最遠端，再依路徑離開軀幹的位置分辨手腳。肘、膝沿輪廓內的路徑取得；找不到時退回比例提示位置，供人拖曳修正。
+            </li>
+            <li>
+              <b>建網格：</b>輪廓點與內部點做 Delaunay
+              三角化，再排除中心落在外面的三角形。外框膨脹、洞的處理與簡化容差，用來避免切掉美術邊緣。
+            </li>
+            <li>
+              <b>權重：</b
+              >先依部位限制候選骨，避免裙子被旁邊的手吸走；算頂點到骨段的距離，取最近幾根，依距離倒數次方分配並正規化。靠骨段的頂點可以固定給那根骨。
+            </li>
+            <li>
+              <b>接縫：</b
+              >同一原圖切出的片段，鄰近接縫頂點共享平均權重。不同圖層只因為碰在一起，不能一起焊接，否則手可能被裙子拖走。
+            </li>
+          </ol>
+          <p>
+            <b>本輪吸收：</b
+            >控制關係應從真正的蒙皮骨與既有關節語意判斷，不能只讀插槽的父骨。AutoSpine
+            已有自己的輪廓網格、鏈式／漸層權重與接縫檢查，這輪沒有替換它們。
+          </p>
+          <p class="sources">
+            <a
+              href="https://github.com/sleeeppy/OCS/blob/141ae6280bc96351258c471837d5bf0fc519687f/ocs/pipeline.py"
+              target="_blank"
+              rel="noopener"
+              >流程編排</a
+            >
+            ·
+            <a
+              href="https://github.com/sleeeppy/OCS/blob/141ae6280bc96351258c471837d5bf0fc519687f/ocs/skeleton.py"
+              target="_blank"
+              rel="noopener"
+              >關節推定</a
+            >
+            ·
+            <a
+              href="https://github.com/sleeeppy/OCS/blob/141ae6280bc96351258c471837d5bf0fc519687f/ocs/rig.py"
+              target="_blank"
+              rel="noopener"
+              >網格、權重與接縫</a
+            >
+            ·
+            <a
+              href="https://github.com/sleeeppy/OCS/blob/141ae6280bc96351258c471837d5bf0fc519687f/LICENSE"
+              target="_blank"
+              rel="noopener"
+              >Apache-2.0 授權</a
+            >
+          </p>
+        </details>
+
+        <details>
+          <summary>5. spine-mcp-server：廣泛操作 API，核心自動綁骨較簡單</summary>
+          <p>
+            <span class="tag">TypeScript / Node</span><span class="tag">Spine 3.8.75</span
+            ><span class="tag">Cocos 面板</span>
+          </p>
+          <p>
+            <b>組成：</b>MCP 工具註冊、讀寫 Spine JSON 的服務、CLI 匯出／匯入、動畫範本、圖集工具及
+            Cocos 管理面板。
+          </p>
+          <ol>
+            <li>
+              <b>工具層：</b>把新增骨頭、改時間軸、改皮膚等工作包成許多小
+              API。工具數量反映可操作的表面範圍，不能直接代表自動判斷品質。
+            </li>
+            <li>
+              <b>實際自動綁骨：</b><code>buildSkeleton</code> 為 PNG 建立骨頭、插槽與 region
+              附件；位置從索引檔讀入，沒有資料就排成網格或直列。這條路徑沒有從圖片推定解剖關節或產生加權網格。
+            </li>
+            <li>
+              <b>動畫：</b>骨名對應角色部位，再套用正弦循環或姿勢插值。網格波動則寫入 FFD
+              正弦偏移，原始碼明示目前只接受非加權網格。
+            </li>
+          </ol>
+          <p>
+            <b>修正先前判斷：</b>它的操作覆蓋面較廣，但這份自動綁骨實作比 AutoSpine
+            的完整角色流程簡單。README 有 MIT 標示，核對版本的根目錄卻沒有
+            LICENSE，這輪只分析、不移植。
+          </p>
+          <p class="sources">
+            <a
+              href="https://github.com/zhoushengmin/spine-mcp-server/blob/c1189ba7811ec02b295a06762d1e5d04e872f625/src/spine/build-skeleton-service.ts"
+              target="_blank"
+              rel="noopener"
+              >自動建骨架的實際實作</a
+            >
+            ·
+            <a
+              href="https://github.com/zhoushengmin/spine-mcp-server/blob/c1189ba7811ec02b295a06762d1e5d04e872f625/src/spine/animation-generate-service.ts"
+              target="_blank"
+              rel="noopener"
+              >動畫範本</a
+            >
+            ·
+            <a
+              href="https://github.com/zhoushengmin/spine-mcp-server/blob/c1189ba7811ec02b295a06762d1e5d04e872f625/src/spine/mesh-wave-service.ts"
+              target="_blank"
+              rel="noopener"
+              >FFD 支援界線</a
+            >
+            ·
+            <a
+              href="https://github.com/zhoushengmin/spine-mcp-server/blob/c1189ba7811ec02b295a06762d1e5d04e872f625/src/spine/pipeline-service.ts"
+              target="_blank"
+              rel="noopener"
+              >流程服務</a
+            >
+          </p>
+        </details>
+      </section>
+
+      <section>
+        <h2>AutoSpine 這輪的具體改法</h2>
+        <ol>
+          <li>
+            <b>讀真正的網格控制骨。</b>依官方 Runtime
+            解出的非零權重，找到最近的可動祖先。若只有一個，直接使用；既有非 root
+            插槽的有效關節提示予以保留。多個獨立控制無法確定時，列出原因，讓
+            <code>owners</code> 明確指定。
+          </li>
+          <li>
+            <b>證據數量以畫面像素計算。</b
+            >保留固定遮擋遮罩，同一部件落在同一畫面像素的重複樣本，在最低證據數量、覆蓋率與位移統計中只算一次。50
+            個觀察值的既有門檻，現在需要不同的取樣畫面像素；配對與求解保留原本的貼圖取樣，以維持遮擋追蹤的精度。
+          </li>
+          <li>
+            <b>搜尋守住邊界。</b
+            >一般搜尋保留原有候選網格；細化遵守設定範圍，零範圍只評估起點，評分不再除以零。負數或非有限範圍回報
+            <code>POSE_OPTIONS</code>。
+          </li>
+          <li>
+            <b>讓後續追蹤使用同一個答案。</b>每個部件回報 <code>bone</code> 與
+            <code>ownership</code>；影片流程使用這個控制骨，避免再從插槽父骨推一次而得到另一個答案。
+          </li>
+        </ol>
+        <p>
+          無法確定控制骨的可見部件，會留在 coverage
+          分母內並標示未匹配。完全遮住、混合模式不適用或畫面證據太少的部件，則列在
+          <code>unobserved</code>，不宣稱已擬合。高 coverage
+          仍不等於整張圖、動作風格或美術品質都通過。
+        </p>
+        <p class="status" id="verification">
+          最終驗證：89 個測試檔全部通過，共 670 項通過、4 項略過，包含新增 13 項擬合案例。獨立 Node
+          診斷、型別、產品程式規範、修改檔案格式與外掛打包一致性也通過。
+        </p>
+        <p class="muted">
+          全資料夾的 lint 另有 175 項既有私人診斷腳本問題，位於 private-gate32-candidates
+          的工作筆記；本輪沒有改動或忽略這些檔案。產品程式（packages、schemas、tests、tools）的規範檢查獨立通過。
+          <a href="../reports/competitor-study-20261028/validation.json">完整驗證紀錄</a>
+        </p>
+      </section>
+
+      <section>
+        <h2>仍需要另外開發的能力</h2>
+        <p>
+          單張立繪拆圖與遮擋補圖、自然語言換皮、網頁互動編輯器，以及更可靠的複雜表情與網格變形，沒有在這輪加入。它們各自需要模型、介面或素材驗證，不能靠搬入幾個函式就宣稱完成。
+        </p>
+        <p>
+          目前最有價值的下一個品質驗證，是把同樣的檢查接回真實角色，記錄部件位置、穿幫和人工修正時間。這輪沒有修改既有成績、降低驗收標準或假稱已勝過其他工具。
+        </p>
+      </section>
+      <footer>
+        來源分析固定於上方 GitHub 連結的提交。程式改善為 AutoSpine
+        原生實作；沒有複製第三方程式碼、新增依賴、呼叫付費圖像模型或上傳私人美術素材。專案內外掛已打包，不代表電腦上既有的安裝快取已更新。
+      </footer>
+    </main>
+  </body>
+</html>

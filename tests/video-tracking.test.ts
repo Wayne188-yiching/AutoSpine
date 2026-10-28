@@ -3,6 +3,7 @@ import { buildCharacter } from "@autospine/character";
 import {
   agreePoses,
   fitRestPose,
+  trackTurnJump,
   loadSkeleton,
   pose,
   premultiply,
@@ -51,6 +52,21 @@ function straight(...layers: Float32Array[]): FitImage {
 }
 
 describe("fit-video tracking (ADR-039)", () => {
+  it("rejects a sudden angular identity switch and allows smooth turns in either direction", () => {
+    const p = (r: number) => ({ r, t: [0, 0] as [number, number] });
+    const forward = [
+      { frame: 0, placement: p(0) },
+      { frame: 4, placement: p(2) },
+    ];
+    expect(trackTurnJump(forward, 8, p(4), { turn: 8, maximum: 40 })).toBe(false);
+    expect(trackTurnJump(forward, 8, p(28), { turn: 8, maximum: 40 })).toBe(true);
+    const backward = [
+      { frame: 12, placement: p(6) },
+      { frame: 8, placement: p(4) },
+    ];
+    expect(trackTurnJump(backward, 4, p(2), { turn: 8, maximum: 40 })).toBe(false);
+    expect(trackTurnJump(backward, 4, p(28), { turn: 8, maximum: 40 })).toBe(true);
+  });
   const unposed = buildCharacter(fixturePlan(), fixtureLayout());
   const bones = unposed.rigging.rigged.rig.bones
     .map((b) => b.id)
@@ -96,5 +112,27 @@ describe("fit-video tracking (ADR-039)", () => {
     );
     expect(r.pose).toEqual({ spine: { rotate: 4.5 }, hips: { x: 1.2, y: 2 } });
     expect(r.disagree).toEqual(["arm_r"]);
+  });
+
+  it("keeps every refinement within the tracked turn limit, or marks the track lost", () => {
+    const before = fit(straight(picture(-24)));
+    const next = fitRestPose(
+      unposed.document,
+      "IDLE",
+      straight(picture(-30)),
+      (p) => images.get(p)!,
+      {
+        view: VIEW,
+        bones,
+        window: 40,
+        predict: before.placements,
+        track: { move: 8, turn: 2 },
+      },
+    );
+    for (const [bone, placement] of Object.entries(next.placements)) {
+      const previous = before.placements[bone];
+      if (previous && !next.lost.includes(bone))
+        expect(Math.abs(placement.r - previous.r)).toBeLessThanOrEqual(2.001);
+    }
   });
 });

@@ -33217,7 +33217,7 @@ async function buildJobFile(jobPath) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.16";
+var AUTOSPINE_VERSION = "0.5.20";
 
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
@@ -33702,6 +33702,15 @@ function planRig(plan, index) {
         c.near === void 0 ? void 0 : solver.get(c.near)
       );
       evidence[`${c.part}:strand`] = js.map((j) => j.map((v) => Math.round(v * 10) / 10));
+      const anchor = c.near === void 0 ? void 0 : solver.get(c.near), rootDistance = anchor ? dist(js[0], anchor) : void 0, tipDistance = anchor ? dist(js[n], anchor) : void 0;
+      evidence[`${c.part}:direction`] = {
+        root: js[0],
+        tip: js[n],
+        anchor: anchor ?? null,
+        rootDistance: rootDistance ?? null,
+        tipDistance: tipDistance ?? null,
+        status: rootDistance === void 0 || tipDistance === void 0 ? "unverified" : tipDistance - rootDistance <= Math.max(1, 0.05 * dist(js[0], js[n])) ? "ambiguous" : "anchored"
+      };
       const ids = [];
       for (let k = 0; k < n; k++) {
         const id = `${prefix}_${k + 1}`;
@@ -34934,6 +34943,15 @@ function handoverNotes(rigging, animations) {
   const head = rig.bones.find((b) => b.id === "head");
   if (head) add(`\u4E2D\u7DDA\uFF1A${pathTo("head")}\u3002`);
   add();
+  for (const entry of plan.bones) {
+    if (!("chain" in entry)) continue;
+    const d = rigging.evidence[`${entry.chain.part}:direction`];
+    if (d)
+      add(
+        `- \u9AA8\u93C8 \`${entry.chain.part}\`\uFF1A${d.status === "anchored" ? "\u6839\u90E8\u671D\u5411\u6307\u5B9A\u9644\u8457\u9EDE\uFF0C\u672B\u7AEF\u5411\u5916\uFF1B\u4ECD\u9700\u5728 Spine \u6AA2\u8996\u5F4E\u66F2\u3002" : "\u9644\u8457\u65B9\u5411\u5F85\u6AA2\u8996\uFF1B\u8ACB\u6307\u5B9A near \u4E26\u78BA\u8A8D\u6839\u90E8\u8207\u672B\u7AEF\u3002"}`
+      );
+  }
+  add();
   add("## \u7D04\u675F");
   add();
   const ik = plan.constraints?.ik ?? [];
@@ -35789,6 +35807,10 @@ function lintOne(plan, partNames, knownAnimations) {
       ids.forEach((id, k) => addBone(id, k ? ids[k - 1] : c.parent, where2));
       chains.set(c.part, ids);
       if (c.near !== void 0) visitRef(c.near, where2);
+      else
+        warnings.push(
+          `${where2}: attachment point is unverified; set near to the body attachment and review root-to-tip direction`
+        );
       return;
     }
     const where = `bones[${i}] ${entry.id}`;
@@ -38218,6 +38240,14 @@ var at = (item, s2) => {
   ];
 };
 function fitRestPose(document2, animation, reference, image, options) {
+  for (const [name, value] of Object.entries({
+    window: options.window,
+    maxRotate: options.maxRotate,
+    "track.move": options.track?.move,
+    "track.turn": options.track?.turn
+  }))
+    if (value !== void 0 && (!Number.isFinite(value) || value < 0))
+      throw new Error(`POSE_OPTIONS: ${name} must be finite and nonnegative`);
   const sk = loadSkeleton(document2);
   const view = options.view, scale = reference.width / view.width, maxRotate = options.maxRotate ?? 30, window = options.window ?? 0.3 * Math.max(view.width, view.height), minScore = options.minScore ?? 0.35, time = options.time ?? 0;
   pose(sk, animation, time);
@@ -38229,32 +38259,57 @@ function fitRestPose(document2, animation, reference, image, options) {
     if (options.ignore?.includes(slot.data.name)) continue;
     const uvs = att.regionUVs ? Array.from(att.regionUVs) : "offset" in att ? [0, 1, 0, 0, 1, 0, 1, 1] : void 0;
     if (!uvs) continue;
-    drawn.push({ slot: slot.data.name, path: att.path ?? att.name, uvs });
+    const color2 = att.color;
+    drawn.push({
+      slot: slot.data.name,
+      path: att.path ?? att.name,
+      uvs,
+      color: [slot.color.r * color2.r, slot.color.g * color2.g, slot.color.b * color2.b],
+      blend: slot.data.blendMode
+    });
   }
   const base = worldVertices(
     sk,
     drawn.map((d) => d.slot)
   );
-  const refAt = (x, y) => {
-    const px = Math.round((x - view.x) * scale), py = Math.round((view.y - y) * scale);
-    if (px < 0 || py < 0 || px >= reference.width || py >= reference.height) return -1;
-    return (py * reference.width + px) * 4;
-  };
   const hit = (s2, x, y) => {
-    const i = refAt(x, y);
-    if (i < 0 || reference.rgba[i + 3] < 128) return 0;
+    const px = (x - view.x) * scale - 0.5, py = (view.y - y) * scale - 0.5;
+    if (px < 0 || py < 0 || px >= reference.width - 1 || py >= reference.height - 1) return 0;
+    const ix = Math.floor(px), iy = Math.floor(py), ax = px - ix, ay = py - iy, i = (iy * reference.width + ix) * 4, j = i + reference.width * 4;
+    const channel = (k) => (reference.rgba[i + k] * (1 - ax) + reference.rgba[i + 4 + k] * ax) * (1 - ay) + (reference.rgba[j + k] * (1 - ax) + reference.rgba[j + 4 + k] * ax) * ay;
+    if (channel(3) < 128) return 0;
     const d = Math.max(
-      Math.abs(reference.rgba[i] - s2.rgb[0]),
-      Math.abs(reference.rgba[i + 1] - s2.rgb[1]),
-      Math.abs(reference.rgba[i + 2] - s2.rgb[2])
+      Math.abs(channel(0) - s2.rgb[0]),
+      Math.abs(channel(1) - s2.rgb[1]),
+      Math.abs(channel(2) - s2.rgb[2])
     );
     return Math.max(0, 1 - d / 64);
   };
-  const samples = /* @__PURE__ */ new Map();
+  const owner = new Int16Array(reference.width * reference.height), textures2 = /* @__PURE__ */ new Map();
+  render(
+    sk,
+    (path) => {
+      let t = textures2.get(path);
+      if (!t) {
+        const im = image(path);
+        textures2.set(path, t = premultiply(im.width, im.height, im.rgba));
+      }
+      return t;
+    },
+    { x0: view.x, y0: view.y, scale, width: reference.width, height: reference.height },
+    owner
+  );
+  const slotIds = new Map(sk.skeleton.slots.map((s2, i) => [s2.data.name, i]));
+  const unobserved = [];
+  const samples = /* @__PURE__ */ new Map(), samplePixels = /* @__PURE__ */ new Map();
   for (const d of drawn) {
     const item = base.get(d.slot);
     if (!item) continue;
     const tex = image(d.path);
+    if (d.blend !== BLEND.normal) {
+      unobserved.push({ slot: d.slot, reason: "blend", samples: 0, visible: 0 });
+      continue;
+    }
     let opaque = 0;
     for (let i = 3; i < tex.rgba.length; i += 4) if (tex.rgba[i] >= 200) opaque++;
     if (opaque < 50) continue;
@@ -38280,7 +38335,8 @@ function fitRestPose(document2, animation, reference, image, options) {
         }
       return [sum[0] / wsum, sum[1] / wsum, sum[2] / wsum];
     };
-    const list = [];
+    const list = [], visiblePixels = /* @__PURE__ */ new Set();
+    let candidateSamples = 0;
     for (let y = step >> 1; y < tex.height; y += step)
       for (let x = step >> 1; x < tex.width; x += step) {
         const k = (y * tex.width + x) * 4;
@@ -38304,40 +38360,101 @@ function fitRestPose(document2, animation, reference, image, options) {
             tri: t / 3,
             bary: [l0, l1, l2],
             w0: [0, 0],
-            rgb: mean2(x, y)
+            rgb: mean2(x, y).map((v2, k2) => v2 * d.color[k2])
           };
           s2.w0 = at(item, s2);
-          list.push(s2);
+          candidateSamples++;
+          const px = Math.floor((s2.w0[0] - view.x) * scale), py = Math.floor((view.y - s2.w0[1]) * scale);
+          if (px >= 0 && py >= 0 && px < reference.width && py < reference.height && owner[py * reference.width + px] === slotIds.get(d.slot)) {
+            visiblePixels.add(py * reference.width + px);
+            list.push(s2);
+          }
           break;
         }
       }
-    if (list.length >= 50) samples.set(d.slot, list);
+    if (visiblePixels.size >= 50) {
+      samples.set(d.slot, list);
+      samplePixels.set(d.slot, visiblePixels.size);
+    } else if (candidateSamples >= 50)
+      unobserved.push({
+        slot: d.slot,
+        reason: list.length ? "too-few-visible-samples" : "occluded",
+        samples: candidateSamples,
+        visible: visiblePixels.size
+      });
   }
   const move = (T, x) => {
     const a = T.r * Math.PI / 180, cos = Math.cos(a), sin = Math.sin(a);
     return [cos * x[0] - sin * x[1] + T.t[0], sin * x[0] + cos * x[1] + T.t[1]];
   };
-  const freeNames = options.bones ? new Set(options.bones) : void 0;
+  const freeNames = new Set(
+    options.bones ?? sk.skeleton.bones.filter((b) => b.data.name !== "root").map((b) => b.data.name)
+  );
   const byName = new Map(
     sk.skeleton.bones.map((b) => [b.data.name, b])
   );
   const freeOwner = (start) => {
     let b = start;
-    while (b && freeNames && !freeNames.has(b.data.name) && b.parent) b = b.parent;
-    return b.data.name;
+    while (b && !freeNames.has(b.data.name)) b = b.parent;
+    return b?.data.name;
   };
-  const slotBone = /* @__PURE__ */ new Map(), slotGroup = /* @__PURE__ */ new Map();
+  const slotBone = /* @__PURE__ */ new Map(), slotGroup = /* @__PURE__ */ new Map(), ownership = /* @__PURE__ */ new Map(), parts = [];
   for (const slot of samples.keys()) {
-    const owner = freeOwner(sk.skeleton.findSlot(slot).bone);
-    slotBone.set(slot, owner);
-    const g = options.groups?.[owner], gb = g === void 0 ? void 0 : byName.get(g);
-    if (gb) slotGroup.set(slot, freeOwner(gb));
+    const explicit = options.owners?.[slot];
+    if (explicit !== void 0 && !byName.has(explicit))
+      throw new Error(`POSE_OWNER: unknown bone ${explicit} for slot ${slot}`);
+    const runtimeSlot = sk.skeleton.findSlot(slot), attachment = runtimeSlot.getAttachment();
+    let owner2, reason;
+    if (explicit !== void 0) {
+      owner2 = freeOwner(byName.get(explicit));
+      ownership.set(slot, "explicit");
+    } else if (attachment.bones) {
+      const controls = /* @__PURE__ */ new Set();
+      for (let i = 0, v = 0; i < attachment.bones.length; ) {
+        const count = attachment.bones[i++];
+        for (let j = 0; j < count; j++, v += 3) {
+          const bone = sk.skeleton.bones[attachment.bones[i++]];
+          if (attachment.vertices[v + 2] > 0) controls.add(freeOwner(bone));
+        }
+      }
+      ownership.set(slot, "weights");
+      if (controls.size === 1) owner2 = [...controls][0];
+      else if (controls.size > 1) {
+        const declared = runtimeSlot.bone, hint = freeOwner(declared);
+        if (declared.parent && hint && controls.has(hint)) {
+          owner2 = hint;
+          ownership.set(slot, "slot");
+        } else reason = "ambiguous-weighted-owner";
+      }
+    } else {
+      owner2 = freeOwner(runtimeSlot.bone);
+      ownership.set(slot, "slot");
+    }
+    if (owner2 === void 0) {
+      parts.push({
+        slot,
+        ownership: ownership.get(slot),
+        reason: reason ?? "no-free-owner",
+        samples: samplePixels.get(slot),
+        score: 0,
+        dx: 0,
+        dy: 0,
+        rotate: 0,
+        shift: 0,
+        used: false
+      });
+      continue;
+    }
+    slotBone.set(slot, owner2);
+    const g = options.groups?.[owner2], gb = g === void 0 ? void 0 : byName.get(g);
+    const group = gb && freeOwner(gb);
+    if (group) slotGroup.set(slot, group);
   }
   const unmove = (T, x) => {
     const a = -T.r * Math.PI / 180, u = x[0] - T.t[0], v = x[1] - T.t[1];
     return [Math.cos(a) * u - Math.sin(a) * v, Math.sin(a) * u + Math.cos(a) * v];
   };
-  const fitted = /* @__PURE__ */ new Map(), anchored = /* @__PURE__ */ new Set(), placements = {}, lost = [], parts = [], targets = /* @__PURE__ */ new Map();
+  const fitted = /* @__PURE__ */ new Map(), anchored = /* @__PURE__ */ new Set(), placements = {}, lost = [], targets = /* @__PURE__ */ new Map();
   const childWindow = 0.5 * window;
   for (const b of sk.skeleton.bones) {
     const name = b.data.name, parent = b.parent?.data.name;
@@ -38351,7 +38468,9 @@ function fitRestPose(document2, animation, reference, image, options) {
       for (const slot of slots)
         parts.push({
           slot,
-          samples: samples.get(slot).length,
+          bone: name,
+          ownership: ownership.get(slot),
+          samples: samplePixels.get(slot),
           score: 0,
           dx: 0,
           dy: 0,
@@ -38399,17 +38518,30 @@ function fitRestPose(document2, animation, reference, image, options) {
     const coarse = Math.max(4, 6 / scale);
     const xs = set.map((x) => x.p[0]), ys = set.map((x) => x.p[1]), extent = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
     const moveSpan = near ? Math.min(childWindow, Math.max(4 * coarse, 0.5 * extent)) : window, turnSpan = near ? Math.min(maxRotate, 25) : maxRotate;
-    const from = (o, span, turn) => (c2) => c2[0] - 0.05 * (Math.hypot(c2[2] - o[2], c2[3] - o[3]) / span + Math.abs(c2[1] - o[1]) / turn);
+    const from = (o, span, turn, preference = 0.05) => (c2) => c2[0] - preference * (Math.hypot(c2[2] - o[2], c2[3] - o[3]) / (span || 1) + Math.abs(c2[1] - o[1]) / (turn || 1));
     let rank = from([0, 0, 0, 0], moveSpan, turnSpan);
+    const globalBounds = { seed: [0, 0, 0, 0], move: window, turn: maxRotate };
+    let bounds = globalBounds;
+    const axis = (centre, span, step) => {
+      if (span === 0) return [centre];
+      const values = [];
+      for (let v = centre - span; v <= centre + span + 1e-9; v += step) values.push(v);
+      return values;
+    };
     const search = (sub2, seeds, rotSpan, rotStep, span, step, keep) => {
       const out2 = [];
-      for (const [, r0, x0, y0] of seeds)
-        for (let r2 = r0 - rotSpan; r2 <= r0 + rotSpan + 1e-9; r2 += rotStep) {
+      for (const [, r0, x0, y0] of seeds) {
+        const turns = axis(r0, rotSpan, rotStep), xs2 = axis(x0, span, step), ys2 = axis(y0, span, step);
+        for (const r2 of turns) {
           if (Math.abs(r2) > maxRotate + 1e-9) continue;
-          for (let dx2 = x0 - span; dx2 <= x0 + span + 1e-9; dx2 += step)
-            for (let dy2 = y0 - span; dy2 <= y0 + span + 1e-9; dy2 += step)
+          for (const dx2 of xs2)
+            for (const dy2 of ys2) {
+              if (Math.abs(r2 - bounds.seed[1]) > bounds.turn + 1e-9 || Math.abs(dx2 - bounds.seed[2]) > bounds.move + 1e-9 || Math.abs(dy2 - bounds.seed[3]) > bounds.move + 1e-9)
+                continue;
               out2.push([score(sub2, r2, dx2, dy2), r2, dx2, dy2]);
+            }
         }
+      }
       out2.sort((a2, b2) => rank(b2) - rank(a2));
       return out2.slice(0, keep);
     };
@@ -38422,13 +38554,15 @@ function fitRestPose(document2, animation, reference, image, options) {
       ], [tx, ty] = turn(D0.t), [cx, cy] = turn(c);
       const seed = [0, r0, P.t[0] - tx - c[0] + cx, P.t[1] - ty - c[1] + cy];
       const span = options.track?.move ?? 0.25 * window, spin = Math.min(maxRotate, options.track?.turn ?? 15), step = Math.min(coarse, span / 2);
-      rank = from(seed, span, spin);
+      bounds = { seed, move: span, turn: spin };
+      rank = from(seed, span, spin, 0.04);
       let near2 = search(subset(200), [seed], spin, Math.min(5, spin / 2), span, step, 8);
       near2 = search(subset(600), near2, 5, 1, step, step / 4, 3);
       near2 = search(set, near2, 1, 0.25, step / 4, Math.max(0.5, step / 16), 1);
       if (near2[0] && near2[0][0] >= minScore) best = near2;
       else {
         lost.push(name);
+        bounds = globalBounds;
         rank = from([0, 0, 0, 0], moveSpan, turnSpan);
       }
     }
@@ -38474,7 +38608,9 @@ function fitRestPose(document2, animation, reference, image, options) {
       const used2 = boneScore >= minScore && partScore >= 0.6 * minScore;
       parts.push({
         slot,
-        samples: list.length,
+        bone: name,
+        ownership: ownership.get(slot),
+        samples: samplePixels.get(slot),
         score: +partScore.toFixed(3),
         dx: +(moved[0] - centre[0]).toFixed(2),
         dy: +(moved[1] - centre[1]).toFixed(2),
@@ -38607,6 +38743,7 @@ function fitRestPose(document2, animation, reference, image, options) {
     parts,
     placements,
     lost,
+    unobserved,
     coverage: +(sampled ? usedSamples / sampled : 0).toFixed(3),
     residual: {
       median: +(perPart[Math.floor((perPart.length - 1) / 2)] ?? 0).toFixed(2),
@@ -38637,6 +38774,12 @@ function agreePoses(a, b, bones, limits) {
     if (Object.keys(m).length) pose2[bone] = m;
   }
   return { pose: pose2, disagree };
+}
+function trackTurnJump(history, frame2, placement, limits) {
+  const a = history.at(-2), b = history.at(-1);
+  if (!a || !b || a.frame === b.frame) return false;
+  const speed = (b.placement.r - a.placement.r) / (b.frame - a.frame), travel = speed * (frame2 - b.frame), expected = b.placement.r + travel, tolerance = Math.min(limits.maximum, Math.max(limits.turn, 2 * Math.abs(travel)));
+  return Math.abs(placement.r - expected) > tolerance;
 }
 function fitKeyPoses(document2, animation, pictures, image, options) {
   const fps = options.fps ?? 30, minCoverage = options.minCoverage ?? 0.6;
@@ -41132,7 +41275,7 @@ async function mergePlanFiles(outPath, planFiles, opts = {}) {
       throw new Error(`CLI_MERGE_SOURCE: ${planFiles[i]} reads another images-only layout`);
   const from = (p) => relative3(dirname3(resolve3(outPath)), p).split(sep).join("/");
   const source = { imagesOnly: from(sources[0].imagesOnly), images: from(sources[0].images) };
-  const { plan, notes } = mergePlans(plans.map((p) => ({ ...p, source })), opts);
+  const { plan, notes } = mergePlans(plans.map((p, i) => ({ ...planAt(p, planFiles[i], outPath), source })), opts);
   const { layout } = await loadLayout(sources[0].imagesOnly, sources[0].images);
   assertLint(lintCharacterPlan(plan, layout.parts.keys()), outPath);
   await writeFile2(outPath, json(plan));
@@ -41357,16 +41500,17 @@ function fitBones(plan, planned, rigging, free = []) {
     fixed.delete(b);
   const bones = rigging.rigged.rig.bones.map((b) => b.id).filter((id) => !fixed.has(id));
   const groups = {};
+  const mainBone = motionFor(plan.motion, planned).main.bone;
+  for (const b of rigging.rigged.rig.bones)
+    if (b.parentId === mainBone && bones.includes(b.id))
+      groups[b.id] = mainBone;
   for (const entry of plan.bones)
     if ("chain" in entry) {
       for (const id of rigging.rigged.chains[entry.chain.part] ?? [])
         if (!free.includes(id))
           groups[id] = entry.chain.parent;
     }
-  const translate = [
-    motionFor(plan.motion, planned).main.bone,
-    ...(plan.constraints?.ik ?? []).map((c) => c.target)
-  ];
+  const translate = [mainBone, ...(plan.constraints?.ik ?? []).map((c) => c.target)];
   return { bones, groups, translate };
 }
 async function fitPoseFiles(planPath, buildDir, references, outPath, opts = {}) {
@@ -41622,7 +41766,7 @@ function spineExecutable(explicit) {
 function runSpine(exe, args) {
   return new Promise((ok) => {
     let output = "";
-    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"], windowsHide: true });
     const timer = setTimeout(() => child.kill(), 10 * 6e4);
     child.stdout.on("data", (d) => output += d.toString());
     child.stderr.on("data", (d) => output += d.toString());
@@ -42168,7 +42312,7 @@ function spans(frames, step) {
   }
   return runs.map(([a, b]) => a === b ? `${a}` : `${a}-${b}`).join(", ");
 }
-async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
+async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
   const log = opts.log ?? (() => void 0);
   const plan = await readPlan(planPath);
   const fps = plan.motion.fps ?? 30;
@@ -42214,7 +42358,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const pictureFile = (f) => join2(pictureDir, `frame-${String(f).padStart(4, "0")}.png`);
   const centroid = [];
   let placed;
-  const frames = videoFrames(video, start, fps, loop ? 3 * N : N + 1, W, H);
+  const frames = videoFrames(video, start, fps, opts.checkOnly ? 1 : loop ? 3 * N : N + 1, W, H);
   try {
     for await (const frame2 of frames) {
       placed ??= placeOnVideo(sk, tex.texture, name, frame2, video);
@@ -42230,7 +42374,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const count = centroid.length;
   if (!placed)
     throw new Error(`CLI_VIDEO: ${video} has no frames after ${start}s`);
-  if (!loop && count < N + 1)
+  if (!opts.checkOnly && !loop && count < N + 1)
     throw new Error(`CLI_FIT_VIDEO: the video has ${count} frames from ${start}s; the one-shot ${name} needs ${N + 1}`);
   const picture = async (f) => {
     const png = decodePng(await readFile3(pictureFile(f)), pictureFile(f));
@@ -42291,14 +42435,17 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     const moving = new Set(options2.bones), used = /* @__PURE__ */ new Set();
     for (const p of r.parts)
       if (p.used)
-        used.add(ownerOf(p.slot, moving) ?? "");
+        used.add(p.bone ?? ownerOf(p.slot, moving) ?? "");
     return {
       accepted: r.coverage >= 0.6,
       coverage: r.coverage,
       pose: r.pose,
       used,
       placements: r.placements,
-      lost: r.lost
+      lost: r.lost,
+      parts: r.parts,
+      unobserved: r.unobserved,
+      residual: r.residual
     };
   };
   let free = [];
@@ -42329,8 +42476,45 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     };
   }
   const first = zero ?? await fitFrame(baseDoc, 0, options);
+  const inputs = await inputsOf([
+    resolve3(planPath),
+    resolve3(paths.imagesOnly),
+    ...[...layout.parts.values()].map((p) => resolve3(paths.images, p.path + ".png")),
+    resolve3(buildDir, `${plan.id}.json`),
+    video
+  ]);
+  const usedParts = first.parts.filter((p) => p.used), usedSamples = usedParts.reduce((n, p) => n + p.samples, 0), unreachable = usedParts.filter((p) => (p.residual ?? 0) > VIDEO_ACCEPTANCE.partP90 * unit), unreachableShare = usedSamples ? unreachable.reduce((n, p) => n + p.samples, 0) / usedSamples : 0;
+  const firstFrame = {
+    animation: name,
+    label: "reference-fit-preflight",
+    inputs,
+    coverageBasis: "distinct visible sampled pixels; unresolved controls count as unmatched; unobserved layers are listed separately",
+    ready: first.coverage >= 0.6 && (!zero || zero.shifted <= ZERO_SHIFTED) && unreachableShare <= ZERO_SHIFTED,
+    coverage: first.coverage,
+    residual: first.residual,
+    shifted: zero?.shifted ?? null,
+    unreachableShare,
+    unreachable: unreachable.map((p) => p.slot),
+    limits: {
+      minCoverage: 0.6,
+      maxShiftedShare: ZERO_SHIFTED,
+      maxUnreachableShare: ZERO_SHIFTED,
+      partDistance: VIDEO_ACCEPTANCE.partP90 * unit
+    },
+    pose: first.pose,
+    parts: first.parts,
+    unobserved: first.unobserved
+  };
+  await writeFile2(join2(out, "first-frame.json"), json(firstFrame));
+  log(`preflight: coverage ${first.coverage}, shifted ${zero?.shifted ?? "not zeroed"}, unreachable ${+unreachableShare.toFixed(3)} (${firstFrame.ready ? "ready" : "fix rest pose or rig first"})`);
+  if (opts.checkOnly)
+    return { checkOnly: true, report: join2(out, "first-frame.json"), ...firstFrame };
   if (first.coverage < 0.6)
     throw new Error(`CLI_FIT_VIDEO: frame 0 covers ${first.coverage} of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted`);
+  if (zero && zero.shifted > ZERO_SHIFTED)
+    throw new Error("CLI_FIT_REST_POSE: frame 0 differs from the build's rest pose; fit-pose first, add its offsets to the existing pose and rebuild. See first-frame.json; no motion was fitted");
+  if (unreachableShare > ZERO_SHIFTED)
+    throw new Error("CLI_FIT_RIG: the matched parts cannot be reached by this rig; review joints, weights and part ownership before fitting motion. See first-frame.json; no motion was fitted");
   const channelsFor = (o) => o.bones.flatMap((bone) => [
     { bone, kind: "rotate" },
     ...o.translate.includes(bone) ? [
@@ -42371,12 +42555,20 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     pose: {},
     used: /* @__PURE__ */ new Set(),
     placements: zero.placements,
-    lost: []
+    lost: [],
+    parts: zero.parts,
+    unobserved: zero.unobserved,
+    residual: zero.residual
   } : first, baseAt);
   const zeroPlacements = zero?.placements;
   const t0 = Date.now();
   const dense = fitAll(every, reach - 1), trackOn = opts.track !== false;
-  const tracking = { disagree: /* @__PURE__ */ new Map(), single: [], lost: [0, 0] };
+  const tracking = {
+    disagree: /* @__PURE__ */ new Map(),
+    identityGaps: /* @__PURE__ */ new Map(),
+    single: [],
+    lost: [0, 0]
+  };
   if (!trackOn)
     for (const f of dense) {
       record(f, await fitFrame(baseDoc, f, options, zeroPlacements), baseAt);
@@ -42387,13 +42579,44 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     const passes = [/* @__PURE__ */ new Map(), /* @__PURE__ */ new Map()];
     for (const [k, order] of [dense, [...dense].reverse()].entries()) {
       let near = k === 0 ? zero?.placements ?? first.placements : void 0;
+      const history = /* @__PURE__ */ new Map();
+      for (const [bone, placement] of Object.entries(near ?? {}))
+        history.set(bone, [{ frame: 0, placement }]);
       for (const f of order) {
         const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near);
+        const unreliable = new Set(fit.lost);
+        for (const [bone, placement] of Object.entries(fit.placements))
+          if (trackTurnJump(history.get(bone) ?? [], f, placement, {
+            turn: agreement.turn,
+            maximum: trackSpan.turn
+          }))
+            unreliable.add(bone);
+        for (const bone of options.bones) {
+          let parent = parentOf2.get(bone);
+          while (parent) {
+            if (unreliable.has(parent)) {
+              unreliable.add(bone);
+              break;
+            }
+            parent = parentOf2.get(parent);
+          }
+        }
+        fit.drop = unreliable;
+        fit.used = new Set([...fit.used].filter((b) => !unreliable.has(b)));
+        for (const bone of unreliable) {
+          const frames2 = tracking.identityGaps.get(bone) ?? [];
+          if (!frames2.includes(f))
+            tracking.identityGaps.set(bone, [...frames2, f].sort((a, b) => a - b));
+        }
         passes[k].set(f, fit);
         if (fit.lost.length)
           tracking.lost[k]++;
-        if (fit.accepted)
-          near = { ...near, ...fit.placements };
+        if (fit.accepted) {
+          const reliable = Object.entries(fit.placements).filter(([bone]) => !unreliable.has(bone));
+          near = { ...near, ...Object.fromEntries(reliable) };
+          for (const [bone, placement] of reliable)
+            history.set(bone, [...(history.get(bone) ?? []).slice(-1), { frame: f, placement }]);
+        }
         if (f % 10 === 0)
           log(`fit: frame ${f} of ${reach - 1} (${k ? "backward" : "forward"})`);
       }
@@ -42414,7 +42637,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
         coverage: Math.min(a.coverage, b.coverage),
         pose: pose2,
         used: new Set([...a.used].filter((x) => b.used.has(x))),
-        drop: new Set(disagree)
+        drop: /* @__PURE__ */ new Set([...disagree, ...a.drop ?? [], ...b.drop ?? []])
       }, baseAt);
     }
   }
@@ -42613,7 +42836,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
         refit2++;
         if (fit.accepted) {
           accepted++;
-          record(f, fit, at2);
+          record(f, { ...fit, drop: /* @__PURE__ */ new Set([...fitted.get(f)?.drop ?? [], ...fit.drop ?? []]) }, at2);
         }
       }
       if (!refit2 && !waveChanges.length) {
@@ -42694,6 +42917,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     const share = frames2.length / dense.length;
     hints.push(`${bone}: the forward and backward tracks disagree on ${frames2.length} of ${dense.length} frames (${spans(frames2, every)}); left as gaps and filled from the frames around them${share > 0.3 ? ": its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)" : ""}`);
   }
+  for (const [bone, frames2] of tracking.identityGaps)
+    hints.push(`${bone}: track identity uncertain on frames ${spans(frames2, every)} (lost or abrupt angular jump); left as gaps rather than keying a look-alike`);
   const summary = {
     animation: name,
     video,
@@ -42701,13 +42926,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     fps,
     label: "reference-fitted",
     pass: best.pass,
-    inputs: await inputsOf([
-      resolve3(planPath),
-      resolve3(paths.imagesOnly),
-      ...[...layout.parts.values()].map((p) => resolve3(paths.images, p.path + ".png")),
-      resolve3(buildDir, `${plan.id}.json`),
-      video
-    ]),
+    inputs,
+    preflight: { ready: firstFrame.ready, report: join2(out, "first-frame.json") },
     best: {
       round: best.round,
       dir: bestDir,
@@ -42724,6 +42944,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       frame: 0,
       coverage: zero.coverage,
       residual: zero.residual,
+      unobserved: zero.unobserved,
       // Share of the matched parts (by texels) more than the V2 p90 limit from the build's
       // frame 0; above ZERO_SHIFTED the rest pose is off. The largest single offset is
       // usually the matching's own error.
@@ -42735,6 +42956,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       span: trackSpan,
       agreement,
       disagree: Object.fromEntries(tracking.disagree),
+      identityGaps: Object.fromEntries(tracking.identityGaps),
       singlePass: tracking.single,
       lost: { forward: tracking.lost[0], backward: tracking.lost[1] }
     } : null,
@@ -42751,6 +42973,12 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   };
   await writeFile2(join2(out, "summary.json"), json(summary));
   return summary;
+}
+async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
+  const result2 = await runVideoFitFiles(planPath, buildDir, outDir, opts);
+  if ("checkOnly" in result2)
+    throw new Error("CLI_FIT_STATE: expected motion fitting");
+  return result2;
 }
 function videoHints(rows, ious, figure, parts, count, fps, mirrored = [], deformation) {
   const failed = (prefix) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);

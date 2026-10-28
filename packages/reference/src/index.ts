@@ -1,5 +1,6 @@
 export * from "./runtime.js";
 export * from "./strip.js";
+export * from "./rig-animation.js";
 export * from "./render.js";
 export * from "./compare.js";
 export * from "./criteria.js";

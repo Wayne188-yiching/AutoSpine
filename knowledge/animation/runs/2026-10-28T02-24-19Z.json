@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "mode": "initial-seed-and-tooling",
+  "startedAt": "2026-10-28T02:09:18Z",
+  "completedAt": "2026-10-28T02:24:19Z",
+  "result": "updated",
+  "focus": [
+    "Pose-first Layout → Blocking → Final",
+    "美國／歐洲／日本官方公開來源",
+    "構圖、剪影、表演與製作流程"
+  ],
+  "addedIds": [
+    "us-wb-superrabbit-acting",
+    "japan-toho-jjk-pv3-focus",
+    "europe-wolfwalkers-composition",
+    "japan-toei-key-drawing-workflow",
+    "us-wdfm-silhouette",
+    "us-disney-frozen-snowman-queue"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "sources": 6,
+    "visualSamples": 3,
+    "textReviewed": 2,
+    "metadataOnly": 1,
+    "continuousClipsReviewed": 0
+  },
+  "unavailable": [
+    {
+      "url": "https://www.cartoonsaloon.ie/irish-animation-studio/feature-films/",
+      "reason": "網站回傳 403；改查官方 Apple TV 預告與製作方 Folivari 頁面。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed",
+    "nodeTests": {
+      "passed": 8
+    },
+    "browser": {
+      "result": "passed",
+      "checks": ["六筆來源及分類顯示", "剪影搜尋篩出三筆", "桌面版畫面可讀"]
+    }
+  },
+  "automation": {
+    "id": "autospine",
+    "kind": "heartbeat",
+    "status": "ACTIVE",
+    "intervalHours": 1,
+    "notificationPolicy": "failed_runs_only",
+    "createdWithProductTool": true,
+    "verifiedInSavedConfiguration": true,
+    "firstScheduledRunObserved": false
+  },
+  "nextFocus": "優先補一段可連續觀察的官方片段，研究重量／接觸或節奏；若無法觀看，就保留待觀看狀態。"
+}

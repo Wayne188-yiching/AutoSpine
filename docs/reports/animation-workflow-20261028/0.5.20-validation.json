@@ -1,0 +1,50 @@
+{
+  "version": "0.5.20",
+  "date": "2026-10-28",
+  "scope": "Classified image/video reference library, pose-first operator workflow and integrated tool safeguards",
+  "checks": {
+    "vitest": {
+      "filesPassed": 89,
+      "passed": 670,
+      "skipped": 4,
+      "total": 674,
+      "durationSeconds": 622.24
+    },
+    "nodeDiagnostics": {
+      "passed": 12,
+      "failed": 0
+    },
+    "typeScriptBuild": "passed",
+    "testsTypecheck": "passed",
+    "productionLint": "passed",
+    "changedSourceFormatting": "passed",
+    "imageSourceDeduplication": "passed",
+    "browserImageAndCategoryFilters": "passed"
+  },
+  "referenceEvidence": {
+    "sources": 8,
+    "linkedVideos": 4,
+    "linkedImages": 1,
+    "documents": 3,
+    "imageAttribution": "Unknown creator/region preserved explicitly; no raw image or browser screenshot packaged"
+  },
+  "publicationScope": {
+    "includes": [
+      "Reviewed tool source and tests",
+      "Operator workflow and classified reference catalogue",
+      "Generated plugin engine and reference snapshots",
+      "Synthetic competitor-study evidence"
+    ],
+    "excludes": [
+      "Private blind-test report edits",
+      "Private artwork and source projects",
+      "Local caches and installed environment",
+      "Full browser screenshot and linked original image binaries"
+    ]
+  },
+  "limits": [
+    "Complete artist-quality acceptance is separate from these tests.",
+    "Image order/arrows are not measured animation timing.",
+    "Installed-environment verification is recorded locally after the pushed release is installed."
+  ]
+}

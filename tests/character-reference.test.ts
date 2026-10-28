@@ -52,6 +52,22 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
     );
   });
 
+  it("keeps an empty skin without attachments while stripping the populated skin", () => {
+    const source = structuredClone(built.document) as unknown as {
+      skins: { name: string; attachments?: object }[];
+    };
+    source.skins.push({ name: "empty" });
+    const before = JSON.stringify(source);
+    const stripped = stripToImagesOnly(source, size);
+    expect(stripped.report.summary).toMatchObject({ skins: 2, attachments: 7, over2px: [] });
+    expect(stripped.document.skins).toEqual(
+      expect.arrayContaining([{ name: "empty", attachments: {} }]),
+    );
+    expect(stripped.document.bones).toEqual([{ name: "root" }]);
+    expect(stripped.document.animations).toEqual({});
+    expect(JSON.stringify(source)).toBe(before);
+  });
+
   it("keeps sheared placements as quads whose corners the layout reader recovers", () => {
     const artist = {
       skeleton: { spine: "4.0.64" },
@@ -91,6 +107,62 @@ describe("reference comparison on the official Spine 4.0 runtime (ADR-017)", () 
         0.01,
       );
     }
+  });
+
+  it("selects one skin with default mesh fallback and explicit attachment overrides", () => {
+    const artist = {
+      skeleton: { spine: "4.0.64" },
+      bones: [{ name: "root" }, { name: "body", parent: "root", x: 10, y: 20 }],
+      slots: [
+        { name: "base", bone: "body", attachment: "base" },
+        { name: "face", bone: "body", attachment: "face" },
+      ],
+      skins: [
+        {
+          name: "default",
+          attachments: {
+            base: {
+              base: {
+                type: "mesh",
+                width: 20,
+                height: 10,
+                uvs: [0, 0, 1, 0, 1, 1, 0, 1],
+                triangles: [0, 1, 2, 0, 2, 3],
+                vertices: [-10, 5, 10, 5, 10, -5, -10, -5],
+                hull: 4,
+              },
+            },
+            face: { face: { width: 20, height: 10 } },
+          },
+        },
+        {
+          name: "gold",
+          attachments: { face: { face: { path: "gold", x: 3, width: 20, height: 10 } } },
+        },
+        { name: "empty" },
+      ],
+    };
+    const before = JSON.stringify(artist);
+    const selected = stripToImagesOnly(artist, () => [20, 10], { skin: "gold" });
+    expect(selected.report.summary).toMatchObject({
+      skins: 1,
+      selectedSkin: "gold",
+      attachments: 2,
+      fromMesh: 1,
+    });
+    const layout = readImagesOnlyLayout(selected.document);
+    expect(layout.attachments.map((a) => a.path)).toEqual(["base", "gold"]);
+    expect(layout.attachments[1]!.affine[4]).toBe(3);
+    expect(selected.document.skins).toMatchObject([{ name: "default" }]);
+    const fallback = stripToImagesOnly(artist, () => [20, 10], { skin: "empty" });
+    expect(readImagesOnlyLayout(fallback.document).attachments.map((a) => a.path)).toEqual([
+      "base",
+      "face",
+    ]);
+    expect(() => stripToImagesOnly(artist, () => [20, 10], { skin: "missing" })).toThrow(
+      "REFERENCE_SKIN",
+    );
+    expect(JSON.stringify(artist)).toBe(before);
   });
 
   it("keeps every skin, drops non-image attachments and places missing images by stored size", () => {

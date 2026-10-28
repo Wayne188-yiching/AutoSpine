@@ -124,27 +124,27 @@ var require_chunkstream = __commonJS({
       this._buffers = null;
       this.emit("close");
     };
-    ChunkStream.prototype._processReadAllowingLess = function(read) {
+    ChunkStream.prototype._processReadAllowingLess = function(read2) {
       this._reads.shift();
       let smallerBuf = this._buffers[0];
-      if (smallerBuf.length > read.length) {
-        this._buffered -= read.length;
-        this._buffers[0] = smallerBuf.slice(read.length);
-        read.func.call(this, smallerBuf.slice(0, read.length));
+      if (smallerBuf.length > read2.length) {
+        this._buffered -= read2.length;
+        this._buffers[0] = smallerBuf.slice(read2.length);
+        read2.func.call(this, smallerBuf.slice(0, read2.length));
       } else {
         this._buffered -= smallerBuf.length;
         this._buffers.shift();
-        read.func.call(this, smallerBuf);
+        read2.func.call(this, smallerBuf);
       }
     };
-    ChunkStream.prototype._processRead = function(read) {
+    ChunkStream.prototype._processRead = function(read2) {
       this._reads.shift();
       let pos = 0;
       let count = 0;
-      let data = Buffer.alloc(read.length);
-      while (pos < read.length) {
+      let data = Buffer.alloc(read2.length);
+      while (pos < read2.length) {
         let buf = this._buffers[count++];
-        let len = Math.min(buf.length, read.length - pos);
+        let len = Math.min(buf.length, read2.length - pos);
         buf.copy(data, pos, 0, len);
         pos += len;
         if (len !== buf.length) {
@@ -154,17 +154,17 @@ var require_chunkstream = __commonJS({
       if (count > 0) {
         this._buffers.splice(0, count);
       }
-      this._buffered -= read.length;
-      read.func.call(this, data);
+      this._buffered -= read2.length;
+      read2.func.call(this, data);
     };
     ChunkStream.prototype._process = function() {
       try {
         while (this._buffered > 0 && this._reads && this._reads.length > 0) {
-          let read = this._reads[0];
-          if (read.allowLess) {
-            this._processReadAllowingLess(read);
-          } else if (this._buffered >= read.length) {
-            this._processRead(read);
+          let read2 = this._reads[0];
+          if (read2.allowLess) {
+            this._processReadAllowingLess(read2);
+          } else if (this._buffered >= read2.length) {
+            this._processRead(read2);
           } else {
             break;
           }
@@ -1793,12 +1793,12 @@ var require_sync_reader = __commonJS({
     };
     SyncReader.prototype.process = function() {
       while (this._reads.length > 0 && this._buffer.length) {
-        let read = this._reads[0];
-        if (this._buffer.length && (this._buffer.length >= read.length || read.allowLess)) {
+        let read2 = this._reads[0];
+        if (this._buffer.length && (this._buffer.length >= read2.length || read2.allowLess)) {
           this._reads.shift();
           let buf = this._buffer;
-          this._buffer = buf.slice(read.length);
-          read.func.call(this, buf.slice(0, read.length));
+          this._buffer = buf.slice(read2.length);
+          read2.func.call(this, buf.slice(0, read2.length));
         } else {
           break;
         }
@@ -10336,8 +10336,8 @@ var require_imageResources = __commonJS({
     var descriptor_1 = require_descriptor();
     exports.resourceHandlers = [];
     exports.resourceHandlersMap = {};
-    function addHandler(key, has, read, write) {
-      const handler = { key, has, read, write };
+    function addHandler(key, has, read2, write) {
+      const handler = { key, has, read: read2, write };
       exports.resourceHandlers.push(handler);
       exports.resourceHandlersMap[handler.key] = handler;
     }
@@ -12077,7 +12077,7 @@ var require_psdReader = __commonJS({
       LayerDataType2[LayerDataType2["Mask"] = 1] = "Mask";
       LayerDataType2[LayerDataType2["RealMask"] = 2] = "RealMask";
     })(LayerDataType || (LayerDataType = {}));
-    function getDataFromLayer(layer, read, throwForMissingFeatures, memoryLimit) {
+    function getDataFromLayer(layer, read2, throwForMissingFeatures, memoryLimit) {
       if (!layer.rawData)
         return void 0;
       const { colorMode, bitsPerChannel, channels, large } = layer.rawData;
@@ -12087,7 +12087,7 @@ var require_psdReader = __commonJS({
       let imageData;
       let maskData;
       let initializedAlpha = false;
-      if (layerWidth && layerHeight && read === LayerDataType.Layer) {
+      if (layerWidth && layerHeight && read2 === LayerDataType.Layer) {
         if (cmyk) {
           if (bitsPerChannel !== 8)
             throw new Error("bitsPerChannel Not supproted");
@@ -12105,9 +12105,9 @@ var require_psdReader = __commonJS({
           continue;
         const dataReader = createReader(data.buffer, data.byteOffset, data.byteLength);
         if (id === -2 || id === -3) {
-          if (id === -2 && read !== LayerDataType.Mask)
+          if (id === -2 && read2 !== LayerDataType.Mask)
             continue;
-          if (id === -3 && read !== LayerDataType.RealMask)
+          if (id === -3 && read2 !== LayerDataType.RealMask)
             continue;
           const mask = id === -2 ? layer.mask : layer.realMask;
           if (!mask)
@@ -12130,7 +12130,7 @@ var require_psdReader = __commonJS({
             resetAlpha(maskData, false);
           }
         } else {
-          if (read !== LayerDataType.Layer)
+          if (read2 !== LayerDataType.Layer)
             continue;
           const offset = (0, helpers_1.offsetForChannel)(id, cmyk);
           let targetData = imageData;
@@ -12162,7 +12162,7 @@ var require_psdReader = __commonJS({
           cmykToRgb(cmykData, imageData, false);
         }
       }
-      return read === LayerDataType.Layer ? imageData : maskData;
+      return read2 === LayerDataType.Layer ? imageData : maskData;
     }
     function readData(reader, length, pixels, compression, width, height, bitDepth, offset, large, step) {
       if (!length)
@@ -14466,8 +14466,8 @@ var require_additionalInfo = __commonJS({
     var fromAtoZ = "abcdefghijklmnopqrstuvwxyz";
     exports.infoHandlers = [];
     exports.infoHandlersMap = {};
-    function addHandler(key, has, read, write) {
-      const handler = { key, has, read, write };
+    function addHandler(key, has, read2, write) {
+      const handler = { key, has, read: read2, write };
       exports.infoHandlers.push(handler);
       exports.infoHandlersMap[handler.key] = handler;
     }
@@ -19334,7 +19334,7 @@ var require_dist = __commonJS({
 });
 
 // packages/cli/dist/index.js
-import { readFile as readFile5, writeFile as writeFile4 } from "node:fs/promises";
+import { readFile as readFile6, writeFile as writeFile5 } from "node:fs/promises";
 import { basename as basename5, dirname as dirname5, extname as extname3, resolve as resolve5 } from "node:path";
 
 // packages/cli/dist/build.js
@@ -32173,25 +32173,25 @@ function lagKeys(targets, tolerance, groups, opts) {
 }
 
 // packages/motion/src/simplify.ts
-function sampleKeys(keys, read, times) {
-  const channels = read(keys[0]).map(() => []);
+function sampleKeys(keys, read2, times) {
+  const channels = read2(keys[0]).map(() => []);
   let i = 0;
   for (const t of times) {
     while (i < keys.length - 2 && keys[i + 1].time <= t) i++;
     const a = keys[i], b = keys[Math.min(i + 1, keys.length - 1)];
     const u = b.time > a.time ? keyFraction(a.curve, (t - a.time) / (b.time - a.time)) : 0;
-    const va = read(a), vb = read(b);
-    const value = t <= keys[0].time ? read(keys[0]) : t >= keys.at(-1).time ? read(keys.at(-1)) : va.map((v, j) => v + (vb[j] - v) * u);
+    const va = read2(a), vb = read2(b);
+    const value = t <= keys[0].time ? read2(keys[0]) : t >= keys.at(-1).time ? read2(keys.at(-1)) : va.map((v, j) => v + (vb[j] - v) * u);
     value.forEach((v, j) => channels[j].push(v));
   }
   return channels;
 }
-function simplifyKeys(keys, read, write, duration, fps, tolerance) {
+function simplifyKeys(keys, read2, write, duration, fps, tolerance) {
   if (keys.length <= 2 || keys.some((k) => k.curve?.type === "stepped")) return [...keys];
   const frames = Math.round(duration * fps);
   if (frames < 2) return [...keys];
   const times = Array.from({ length: frames + 1 }, (_, g) => g === frames ? duration : g / fps);
-  const channels = sampleKeys(keys, read, times);
+  const channels = sampleKeys(keys, read2, times);
   const reduced = reduceKeys(
     channels,
     channels.map(() => tolerance),
@@ -34120,6 +34120,15 @@ function planRig(plan, index) {
         c.near === void 0 ? void 0 : solver.get(c.near)
       );
       evidence[`${c.part}:strand`] = js.map((j) => j.map((v) => Math.round(v * 10) / 10));
+      const anchor = c.near === void 0 ? void 0 : solver.get(c.near), rootDistance = anchor ? dist(js[0], anchor) : void 0, tipDistance = anchor ? dist(js[n], anchor) : void 0;
+      evidence[`${c.part}:direction`] = {
+        root: js[0],
+        tip: js[n],
+        anchor: anchor ?? null,
+        rootDistance: rootDistance ?? null,
+        tipDistance: tipDistance ?? null,
+        status: rootDistance === void 0 || tipDistance === void 0 ? "unverified" : tipDistance - rootDistance <= Math.max(1, 0.05 * dist(js[0], js[n])) ? "ambiguous" : "anchored"
+      };
       const ids = [];
       for (let k = 0; k < n; k++) {
         const id = `${prefix}_${k + 1}`;
@@ -35352,6 +35361,15 @@ function handoverNotes(rigging, animations) {
   const head = rig.bones.find((b) => b.id === "head");
   if (head) add(`\u4E2D\u7DDA\uFF1A${pathTo("head")}\u3002`);
   add();
+  for (const entry of plan.bones) {
+    if (!("chain" in entry)) continue;
+    const d = rigging.evidence[`${entry.chain.part}:direction`];
+    if (d)
+      add(
+        `- \u9AA8\u93C8 \`${entry.chain.part}\`\uFF1A${d.status === "anchored" ? "\u6839\u90E8\u671D\u5411\u6307\u5B9A\u9644\u8457\u9EDE\uFF0C\u672B\u7AEF\u5411\u5916\uFF1B\u4ECD\u9700\u5728 Spine \u6AA2\u8996\u5F4E\u66F2\u3002" : "\u9644\u8457\u65B9\u5411\u5F85\u6AA2\u8996\uFF1B\u8ACB\u6307\u5B9A near \u4E26\u78BA\u8A8D\u6839\u90E8\u8207\u672B\u7AEF\u3002"}`
+      );
+  }
+  add();
   add("## \u7D04\u675F");
   add();
   const ik = plan.constraints?.ik ?? [];
@@ -36207,6 +36225,10 @@ function lintOne(plan, partNames, knownAnimations) {
       ids.forEach((id, k) => addBone(id, k ? ids[k - 1] : c.parent, where2));
       chains.set(c.part, ids);
       if (c.near !== void 0) visitRef(c.near, where2);
+      else
+        warnings.push(
+          `${where2}: attachment point is unverified; set near to the body attachment and review root-to-tip direction`
+        );
       return;
     }
     const where = `bones[${i}] ${entry.id}`;
@@ -36750,7 +36772,7 @@ function fitAffine(src, dst) {
   const t = [nx - (A[0] * mx + A[1] * my), ny - (A[2] * mx + A[3] * my)];
   return { A, t };
 }
-function stripToImagesOnly(artist, imageSize) {
+function stripToImagesOnly(artist, imageSize, options = {}) {
   const sk = loadSkeleton(artist);
   const raw = sk.raw;
   const skeleton = raw.skeleton ?? {};
@@ -36777,17 +36799,35 @@ function stripToImagesOnly(artist, imageSize) {
       if (s2[k] !== void 0) slotOut[k] = s2[k];
     out.slots.push(slotOut);
   }
-  for (const skinRaw of raw.skins) {
+  const rawSkins = raw.skins;
+  let skins = rawSkins;
+  if (options.skin !== void 0) {
+    const selected = rawSkins.find((s2) => s2.name === options.skin);
+    if (!selected) throw new Error(`REFERENCE_SKIN: unknown skin ${options.skin}`);
+    const attachments = {};
+    for (const source of [rawSkins.find((s2) => s2.name === "default"), selected]) {
+      for (const [slot, entries] of Object.entries(
+        source?.attachments ?? {}
+      )) {
+        attachments[slot] = { ...attachments[slot], ...entries };
+      }
+    }
+    skins = [{ name: options.skin, attachments }];
+  }
+  for (const skinRaw of skins) {
     const skinName = skinRaw.name;
     const skin = sk.data.findSkin(skinName);
     if (!skin) throw new Error(`REFERENCE_SKIN: skin ${skinName} did not load`);
     sk.skeleton.setSkin(skin);
     sk.skeleton.setToSetupPose();
     sk.skeleton.updateWorldTransform();
-    const skinOut = { name: skinName, attachments: {} };
+    const skinOut = {
+      name: options.skin !== void 0 ? "default" : skinName,
+      attachments: {}
+    };
     out.skins.push(skinOut);
     for (const [slotName, atts] of Object.entries(
-      skinRaw.attachments
+      skinRaw.attachments ?? {}
     )) {
       const slot = sk.skeleton.findSlot(slotName);
       for (const [attName, a] of Object.entries(atts)) {
@@ -36832,10 +36872,8 @@ function stripToImagesOnly(artist, imageSize) {
             src.map((p) => world(local(p[0], p[1])))
           );
         } else if (type === "mesh" || type === "linkedmesh") {
-          const att = skin.getAttachment(
-            slot.data.index,
-            attName
-          );
+          const index = slot.data.index;
+          const att = skin.getAttachment(index, attName) ?? sk.data.defaultSkin?.getAttachment(index, attName);
           const n = att.worldVerticesLength / 2;
           const wv = new Array(att.worldVerticesLength).fill(0);
           att.computeWorldVertices(slot, 0, att.worldVerticesLength, wv, 0, 2);
@@ -36935,11 +36973,83 @@ function stripToImagesOnly(artist, imageSize) {
         quadMeshForShear: rows.filter((r) => r.outputType === "quad-mesh").map((r) => r.attachment),
         maxAbsShearCosine: Math.max(0, ...rows.map((r) => Math.abs(r.shearCosine))),
         skins: out.skins.length,
+        ...options.skin !== void 0 ? { selectedSkin: options.skin } : {},
         droppedNonImage: dropped,
         missingImages
       }
     }
   };
+}
+
+// packages/reference/src/rig-animation.ts
+var rigFields = ["bones", "slots", "ik", "transform", "path", "skins"];
+function prepareRig(source) {
+  const input = source;
+  const skeleton = input.skeleton;
+  if (typeof skeleton?.spine !== "string" || !skeleton.spine.startsWith("4.0."))
+    throw new Error("RIG_VERSION: only Spine 4.0 rig data is supported");
+  const output = {
+    skeleton: {
+      spine: skeleton.spine,
+      ...Object.fromEntries(
+        ["x", "y", "width", "height"].filter((k) => skeleton[k] !== void 0).map((k) => [k, skeleton[k]])
+      ),
+      images: "./images/"
+    },
+    animations: {}
+  };
+  for (const key of rigFields)
+    if (input[key] !== void 0) output[key] = structuredClone(input[key]);
+  loadSkeleton(output);
+  return output;
+}
+function applyRigMotion(rig, animations) {
+  const input = rig;
+  if (Object.keys(input.animations ?? {}).length)
+    throw new Error("RIG_ANIMATIONS: prepare the rig with no existing animations first");
+  if (!animations || Array.isArray(animations) || typeof animations !== "object" || !Object.keys(animations).length)
+    throw new Error("RIG_MOTION: provide at least one newly authored animation");
+  const output = prepareRig(input);
+  const boneNames = new Set(output.bones.map((b) => b.name));
+  const slotNames = new Set(output.slots.map((s2) => s2.name));
+  const named = (key) => new Set((output[key] ?? []).map((c) => c.name));
+  const owners = {
+    bones: boneNames,
+    slots: slotNames,
+    ik: named("ik"),
+    transform: named("transform"),
+    paths: named("path")
+  };
+  for (const [name, raw] of Object.entries(animations)) {
+    if (!name || !raw || typeof raw !== "object" || Array.isArray(raw))
+      throw new Error("RIG_MOTION: invalid animation");
+    const animation = raw;
+    for (const key of Object.keys(animation))
+      if (![...Object.keys(owners), "deform", "drawOrder"].includes(key))
+        throw new Error(`RIG_MOTION: unsupported timeline ${key}`);
+    for (const [kind, known2] of Object.entries(owners))
+      for (const owner of Object.keys(animation[kind] ?? {}))
+        if (!known2.has(owner)) throw new Error(`RIG_MOTION: unknown ${kind} owner ${owner}`);
+    const skins = output.skins ?? [];
+    for (const [slot, rawTracks] of Object.entries(animation.slots ?? {})) {
+      const tracks = rawTracks;
+      for (const key of tracks.attachment ?? []) {
+        if (key.name != null && !skins.some((skin) => Object.hasOwn(skin.attachments?.[slot] ?? {}, key.name)))
+          throw new Error(`RIG_MOTION: unknown attachment ${slot}/${key.name}`);
+      }
+    }
+    for (const [skinName, rawSlots] of Object.entries(animation.deform ?? {})) {
+      const skin = skins.find((s2) => s2.name === skinName);
+      if (!skin) throw new Error(`RIG_MOTION: unknown deform skin ${skinName}`);
+      for (const [slot, atts] of Object.entries(rawSlots))
+        for (const attachment of Object.keys(atts))
+          if (!Object.hasOwn(skin.attachments?.[slot] ?? {}, attachment))
+            throw new Error(`RIG_MOTION: unknown deform ${slot}/${attachment}`);
+    }
+  }
+  output.animations = structuredClone(animations);
+  loadSkeleton(output);
+  return output;
 }
 
 // packages/reference/src/render.ts
@@ -38658,6 +38768,14 @@ var at = (item, s2) => {
   ];
 };
 function fitRestPose(document2, animation, reference, image, options) {
+  for (const [name, value] of Object.entries({
+    window: options.window,
+    maxRotate: options.maxRotate,
+    "track.move": options.track?.move,
+    "track.turn": options.track?.turn
+  }))
+    if (value !== void 0 && (!Number.isFinite(value) || value < 0))
+      throw new Error(`POSE_OPTIONS: ${name} must be finite and nonnegative`);
   const sk = loadSkeleton(document2);
   const view = options.view, scale = reference.width / view.width, maxRotate = options.maxRotate ?? 30, window = options.window ?? 0.3 * Math.max(view.width, view.height), minScore = options.minScore ?? 0.35, time2 = options.time ?? 0;
   pose(sk, animation, time2);
@@ -38669,32 +38787,57 @@ function fitRestPose(document2, animation, reference, image, options) {
     if (options.ignore?.includes(slot.data.name)) continue;
     const uvs = att.regionUVs ? Array.from(att.regionUVs) : "offset" in att ? [0, 1, 0, 0, 1, 0, 1, 1] : void 0;
     if (!uvs) continue;
-    drawn.push({ slot: slot.data.name, path: att.path ?? att.name, uvs });
+    const color2 = att.color;
+    drawn.push({
+      slot: slot.data.name,
+      path: att.path ?? att.name,
+      uvs,
+      color: [slot.color.r * color2.r, slot.color.g * color2.g, slot.color.b * color2.b],
+      blend: slot.data.blendMode
+    });
   }
   const base = worldVertices(
     sk,
     drawn.map((d) => d.slot)
   );
-  const refAt = (x, y) => {
-    const px = Math.round((x - view.x) * scale), py = Math.round((view.y - y) * scale);
-    if (px < 0 || py < 0 || px >= reference.width || py >= reference.height) return -1;
-    return (py * reference.width + px) * 4;
-  };
   const hit = (s2, x, y) => {
-    const i = refAt(x, y);
-    if (i < 0 || reference.rgba[i + 3] < 128) return 0;
+    const px = (x - view.x) * scale - 0.5, py = (view.y - y) * scale - 0.5;
+    if (px < 0 || py < 0 || px >= reference.width - 1 || py >= reference.height - 1) return 0;
+    const ix = Math.floor(px), iy = Math.floor(py), ax = px - ix, ay = py - iy, i = (iy * reference.width + ix) * 4, j = i + reference.width * 4;
+    const channel = (k) => (reference.rgba[i + k] * (1 - ax) + reference.rgba[i + 4 + k] * ax) * (1 - ay) + (reference.rgba[j + k] * (1 - ax) + reference.rgba[j + 4 + k] * ax) * ay;
+    if (channel(3) < 128) return 0;
     const d = Math.max(
-      Math.abs(reference.rgba[i] - s2.rgb[0]),
-      Math.abs(reference.rgba[i + 1] - s2.rgb[1]),
-      Math.abs(reference.rgba[i + 2] - s2.rgb[2])
+      Math.abs(channel(0) - s2.rgb[0]),
+      Math.abs(channel(1) - s2.rgb[1]),
+      Math.abs(channel(2) - s2.rgb[2])
     );
     return Math.max(0, 1 - d / 64);
   };
-  const samples = /* @__PURE__ */ new Map();
+  const owner = new Int16Array(reference.width * reference.height), textures2 = /* @__PURE__ */ new Map();
+  render(
+    sk,
+    (path) => {
+      let t = textures2.get(path);
+      if (!t) {
+        const im = image(path);
+        textures2.set(path, t = premultiply(im.width, im.height, im.rgba));
+      }
+      return t;
+    },
+    { x0: view.x, y0: view.y, scale, width: reference.width, height: reference.height },
+    owner
+  );
+  const slotIds = new Map(sk.skeleton.slots.map((s2, i) => [s2.data.name, i]));
+  const unobserved = [];
+  const samples = /* @__PURE__ */ new Map(), samplePixels = /* @__PURE__ */ new Map();
   for (const d of drawn) {
     const item = base.get(d.slot);
     if (!item) continue;
     const tex = image(d.path);
+    if (d.blend !== BLEND.normal) {
+      unobserved.push({ slot: d.slot, reason: "blend", samples: 0, visible: 0 });
+      continue;
+    }
     let opaque = 0;
     for (let i = 3; i < tex.rgba.length; i += 4) if (tex.rgba[i] >= 200) opaque++;
     if (opaque < 50) continue;
@@ -38720,7 +38863,8 @@ function fitRestPose(document2, animation, reference, image, options) {
         }
       return [sum[0] / wsum, sum[1] / wsum, sum[2] / wsum];
     };
-    const list = [];
+    const list = [], visiblePixels = /* @__PURE__ */ new Set();
+    let candidateSamples = 0;
     for (let y = step >> 1; y < tex.height; y += step)
       for (let x = step >> 1; x < tex.width; x += step) {
         const k = (y * tex.width + x) * 4;
@@ -38744,40 +38888,101 @@ function fitRestPose(document2, animation, reference, image, options) {
             tri: t / 3,
             bary: [l0, l1, l2],
             w0: [0, 0],
-            rgb: mean2(x, y)
+            rgb: mean2(x, y).map((v2, k2) => v2 * d.color[k2])
           };
           s2.w0 = at(item, s2);
-          list.push(s2);
+          candidateSamples++;
+          const px = Math.floor((s2.w0[0] - view.x) * scale), py = Math.floor((view.y - s2.w0[1]) * scale);
+          if (px >= 0 && py >= 0 && px < reference.width && py < reference.height && owner[py * reference.width + px] === slotIds.get(d.slot)) {
+            visiblePixels.add(py * reference.width + px);
+            list.push(s2);
+          }
           break;
         }
       }
-    if (list.length >= 50) samples.set(d.slot, list);
+    if (visiblePixels.size >= 50) {
+      samples.set(d.slot, list);
+      samplePixels.set(d.slot, visiblePixels.size);
+    } else if (candidateSamples >= 50)
+      unobserved.push({
+        slot: d.slot,
+        reason: list.length ? "too-few-visible-samples" : "occluded",
+        samples: candidateSamples,
+        visible: visiblePixels.size
+      });
   }
   const move = (T, x) => {
     const a = T.r * Math.PI / 180, cos = Math.cos(a), sin = Math.sin(a);
     return [cos * x[0] - sin * x[1] + T.t[0], sin * x[0] + cos * x[1] + T.t[1]];
   };
-  const freeNames = options.bones ? new Set(options.bones) : void 0;
+  const freeNames = new Set(
+    options.bones ?? sk.skeleton.bones.filter((b) => b.data.name !== "root").map((b) => b.data.name)
+  );
   const byName = new Map(
     sk.skeleton.bones.map((b) => [b.data.name, b])
   );
   const freeOwner = (start) => {
     let b = start;
-    while (b && freeNames && !freeNames.has(b.data.name) && b.parent) b = b.parent;
-    return b.data.name;
+    while (b && !freeNames.has(b.data.name)) b = b.parent;
+    return b?.data.name;
   };
-  const slotBone = /* @__PURE__ */ new Map(), slotGroup = /* @__PURE__ */ new Map();
+  const slotBone = /* @__PURE__ */ new Map(), slotGroup = /* @__PURE__ */ new Map(), ownership = /* @__PURE__ */ new Map(), parts = [];
   for (const slot of samples.keys()) {
-    const owner = freeOwner(sk.skeleton.findSlot(slot).bone);
-    slotBone.set(slot, owner);
-    const g = options.groups?.[owner], gb = g === void 0 ? void 0 : byName.get(g);
-    if (gb) slotGroup.set(slot, freeOwner(gb));
+    const explicit = options.owners?.[slot];
+    if (explicit !== void 0 && !byName.has(explicit))
+      throw new Error(`POSE_OWNER: unknown bone ${explicit} for slot ${slot}`);
+    const runtimeSlot = sk.skeleton.findSlot(slot), attachment = runtimeSlot.getAttachment();
+    let owner2, reason;
+    if (explicit !== void 0) {
+      owner2 = freeOwner(byName.get(explicit));
+      ownership.set(slot, "explicit");
+    } else if (attachment.bones) {
+      const controls = /* @__PURE__ */ new Set();
+      for (let i = 0, v = 0; i < attachment.bones.length; ) {
+        const count = attachment.bones[i++];
+        for (let j = 0; j < count; j++, v += 3) {
+          const bone = sk.skeleton.bones[attachment.bones[i++]];
+          if (attachment.vertices[v + 2] > 0) controls.add(freeOwner(bone));
+        }
+      }
+      ownership.set(slot, "weights");
+      if (controls.size === 1) owner2 = [...controls][0];
+      else if (controls.size > 1) {
+        const declared = runtimeSlot.bone, hint = freeOwner(declared);
+        if (declared.parent && hint && controls.has(hint)) {
+          owner2 = hint;
+          ownership.set(slot, "slot");
+        } else reason = "ambiguous-weighted-owner";
+      }
+    } else {
+      owner2 = freeOwner(runtimeSlot.bone);
+      ownership.set(slot, "slot");
+    }
+    if (owner2 === void 0) {
+      parts.push({
+        slot,
+        ownership: ownership.get(slot),
+        reason: reason ?? "no-free-owner",
+        samples: samplePixels.get(slot),
+        score: 0,
+        dx: 0,
+        dy: 0,
+        rotate: 0,
+        shift: 0,
+        used: false
+      });
+      continue;
+    }
+    slotBone.set(slot, owner2);
+    const g = options.groups?.[owner2], gb = g === void 0 ? void 0 : byName.get(g);
+    const group = gb && freeOwner(gb);
+    if (group) slotGroup.set(slot, group);
   }
   const unmove = (T, x) => {
     const a = -T.r * Math.PI / 180, u = x[0] - T.t[0], v = x[1] - T.t[1];
     return [Math.cos(a) * u - Math.sin(a) * v, Math.sin(a) * u + Math.cos(a) * v];
   };
-  const fitted = /* @__PURE__ */ new Map(), anchored = /* @__PURE__ */ new Set(), placements = {}, lost = [], parts = [], targets = /* @__PURE__ */ new Map();
+  const fitted = /* @__PURE__ */ new Map(), anchored = /* @__PURE__ */ new Set(), placements = {}, lost = [], targets = /* @__PURE__ */ new Map();
   const childWindow = 0.5 * window;
   for (const b of sk.skeleton.bones) {
     const name = b.data.name, parent = b.parent?.data.name;
@@ -38791,7 +38996,9 @@ function fitRestPose(document2, animation, reference, image, options) {
       for (const slot of slots)
         parts.push({
           slot,
-          samples: samples.get(slot).length,
+          bone: name,
+          ownership: ownership.get(slot),
+          samples: samplePixels.get(slot),
           score: 0,
           dx: 0,
           dy: 0,
@@ -38839,17 +39046,30 @@ function fitRestPose(document2, animation, reference, image, options) {
     const coarse = Math.max(4, 6 / scale);
     const xs = set.map((x) => x.p[0]), ys = set.map((x) => x.p[1]), extent = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
     const moveSpan = near ? Math.min(childWindow, Math.max(4 * coarse, 0.5 * extent)) : window, turnSpan = near ? Math.min(maxRotate, 25) : maxRotate;
-    const from = (o, span, turn) => (c2) => c2[0] - 0.05 * (Math.hypot(c2[2] - o[2], c2[3] - o[3]) / span + Math.abs(c2[1] - o[1]) / turn);
+    const from = (o, span, turn, preference = 0.05) => (c2) => c2[0] - preference * (Math.hypot(c2[2] - o[2], c2[3] - o[3]) / (span || 1) + Math.abs(c2[1] - o[1]) / (turn || 1));
     let rank = from([0, 0, 0, 0], moveSpan, turnSpan);
+    const globalBounds = { seed: [0, 0, 0, 0], move: window, turn: maxRotate };
+    let bounds = globalBounds;
+    const axis = (centre, span, step) => {
+      if (span === 0) return [centre];
+      const values = [];
+      for (let v = centre - span; v <= centre + span + 1e-9; v += step) values.push(v);
+      return values;
+    };
     const search = (sub2, seeds, rotSpan, rotStep, span, step, keep) => {
       const out2 = [];
-      for (const [, r0, x0, y0] of seeds)
-        for (let r2 = r0 - rotSpan; r2 <= r0 + rotSpan + 1e-9; r2 += rotStep) {
+      for (const [, r0, x0, y0] of seeds) {
+        const turns = axis(r0, rotSpan, rotStep), xs2 = axis(x0, span, step), ys2 = axis(y0, span, step);
+        for (const r2 of turns) {
           if (Math.abs(r2) > maxRotate + 1e-9) continue;
-          for (let dx2 = x0 - span; dx2 <= x0 + span + 1e-9; dx2 += step)
-            for (let dy2 = y0 - span; dy2 <= y0 + span + 1e-9; dy2 += step)
+          for (const dx2 of xs2)
+            for (const dy2 of ys2) {
+              if (Math.abs(r2 - bounds.seed[1]) > bounds.turn + 1e-9 || Math.abs(dx2 - bounds.seed[2]) > bounds.move + 1e-9 || Math.abs(dy2 - bounds.seed[3]) > bounds.move + 1e-9)
+                continue;
               out2.push([score(sub2, r2, dx2, dy2), r2, dx2, dy2]);
+            }
         }
+      }
       out2.sort((a2, b2) => rank(b2) - rank(a2));
       return out2.slice(0, keep);
     };
@@ -38862,13 +39082,15 @@ function fitRestPose(document2, animation, reference, image, options) {
       ], [tx, ty] = turn(D0.t), [cx, cy] = turn(c);
       const seed = [0, r0, P.t[0] - tx - c[0] + cx, P.t[1] - ty - c[1] + cy];
       const span = options.track?.move ?? 0.25 * window, spin = Math.min(maxRotate, options.track?.turn ?? 15), step = Math.min(coarse, span / 2);
-      rank = from(seed, span, spin);
+      bounds = { seed, move: span, turn: spin };
+      rank = from(seed, span, spin, 0.04);
       let near2 = search(subset(200), [seed], spin, Math.min(5, spin / 2), span, step, 8);
       near2 = search(subset(600), near2, 5, 1, step, step / 4, 3);
       near2 = search(set, near2, 1, 0.25, step / 4, Math.max(0.5, step / 16), 1);
       if (near2[0] && near2[0][0] >= minScore) best = near2;
       else {
         lost.push(name);
+        bounds = globalBounds;
         rank = from([0, 0, 0, 0], moveSpan, turnSpan);
       }
     }
@@ -38914,7 +39136,9 @@ function fitRestPose(document2, animation, reference, image, options) {
       const used2 = boneScore >= minScore && partScore >= 0.6 * minScore;
       parts.push({
         slot,
-        samples: list.length,
+        bone: name,
+        ownership: ownership.get(slot),
+        samples: samplePixels.get(slot),
         score: +partScore.toFixed(3),
         dx: +(moved[0] - centre[0]).toFixed(2),
         dy: +(moved[1] - centre[1]).toFixed(2),
@@ -39047,6 +39271,7 @@ function fitRestPose(document2, animation, reference, image, options) {
     parts,
     placements,
     lost,
+    unobserved,
     coverage: +(sampled ? usedSamples / sampled : 0).toFixed(3),
     residual: {
       median: +(perPart[Math.floor((perPart.length - 1) / 2)] ?? 0).toFixed(2),
@@ -39077,6 +39302,12 @@ function agreePoses(a, b, bones, limits) {
     if (Object.keys(m).length) pose2[bone] = m;
   }
   return { pose: pose2, disagree };
+}
+function trackTurnJump(history, frame2, placement, limits) {
+  const a = history.at(-2), b = history.at(-1);
+  if (!a || !b || a.frame === b.frame) return false;
+  const speed = (b.placement.r - a.placement.r) / (b.frame - a.frame), travel = speed * (frame2 - b.frame), expected = b.placement.r + travel, tolerance = Math.min(limits.maximum, Math.max(limits.turn, 2 * Math.abs(travel)));
+  return Math.abs(placement.r - expected) > tolerance;
 }
 function fitKeyPoses(document2, animation, pictures, image, options) {
   const fps = options.fps ?? 30, minCoverage = options.minCoverage ?? 0.6;
@@ -41471,7 +41702,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.16";
+var AUTOSPINE_VERSION = "0.5.20";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");
@@ -41499,9 +41730,9 @@ function decodePng(bytes, file) {
 }
 async function loadLayout(imagesOnlyPath, imagesDir) {
   const document2 = JSON.parse(await readFile3(imagesOnlyPath, "utf8"));
-  const read = readImagesOnlyLayout(document2);
+  const read2 = readImagesOnlyLayout(document2);
   const parts = /* @__PURE__ */ new Map();
-  for (const a of read.attachments) {
+  for (const a of read2.attachments) {
     const file = resolve3(imagesDir, a.path + ".png");
     const png = decodePng(await readFile3(file), file);
     if (png.width !== a.width || png.height !== a.height)
@@ -41524,7 +41755,7 @@ async function loadLayout(imagesOnlyPath, imagesDir) {
       ...a.color ? { color: a.color } : {}
     });
   }
-  return { layout: { slots: read.slots, parts, skeleton: read.skeleton }, document: document2 };
+  return { layout: { slots: read2.slots, parts, skeleton: read2.skeleton }, document: document2 };
 }
 async function readPlan(planPath) {
   const plan = JSON.parse(await readFile3(planPath, "utf8"));
@@ -41575,7 +41806,7 @@ async function mergePlanFiles(outPath, planFiles, opts = {}) {
       throw new Error(`CLI_MERGE_SOURCE: ${planFiles[i]} reads another images-only layout`);
   const from = (p) => relative3(dirname3(resolve3(outPath)), p).split(sep).join("/");
   const source = { imagesOnly: from(sources[0].imagesOnly), images: from(sources[0].images) };
-  const { plan, notes } = mergePlans(plans.map((p) => ({ ...p, source })), opts);
+  const { plan, notes } = mergePlans(plans.map((p, i) => ({ ...planAt(p, planFiles[i], outPath), source })), opts);
   const { layout } = await loadLayout(sources[0].imagesOnly, sources[0].images);
   assertLint(lintCharacterPlan(plan, layout.parts.keys()), outPath);
   await writeFile2(outPath, json(plan));
@@ -41596,7 +41827,7 @@ function assertLint(lint, planPath) {
     throw new Error(`CLI_PLAN_LINT: ${planPath} has ${lint.errors.length} problem(s)
   ${lint.errors.slice(0, 20).join("\n  ")}`);
 }
-async function stripImages(artistPath, imagesDir, outPath) {
+async function stripImages(artistPath, imagesDir, outPath, options = {}) {
   if (await exists(outPath))
     throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists`);
   const artist = JSON.parse(await readFile3(artistPath, "utf8"));
@@ -41608,7 +41839,7 @@ async function stripImages(artistPath, imagesDir, outPath) {
     if (b.readUInt32BE(12) !== 1229472850)
       throw new Error(`CLI_PNG: ${path}.png is not a PNG`);
     return [b.readUInt32BE(16), b.readUInt32BE(20)];
-  });
+  }, options);
   await writeFile2(outPath, `${JSON.stringify(result.document, null, 2)}
 `, { flag: "wx" });
   await writeFile2(outPath.replace(/\.json$/, "") + ".strip-report.json", json(result.report), {
@@ -41820,16 +42051,17 @@ function fitBones(plan, planned, rigging, free = []) {
     fixed.delete(b);
   const bones = rigging.rigged.rig.bones.map((b) => b.id).filter((id) => !fixed.has(id));
   const groups = {};
+  const mainBone = motionFor(plan.motion, planned).main.bone;
+  for (const b of rigging.rigged.rig.bones)
+    if (b.parentId === mainBone && bones.includes(b.id))
+      groups[b.id] = mainBone;
   for (const entry of plan.bones)
     if ("chain" in entry) {
       for (const id of rigging.rigged.chains[entry.chain.part] ?? [])
         if (!free.includes(id))
           groups[id] = entry.chain.parent;
     }
-  const translate = [
-    motionFor(plan.motion, planned).main.bone,
-    ...(plan.constraints?.ik ?? []).map((c) => c.target)
-  ];
+  const translate = [mainBone, ...(plan.constraints?.ik ?? []).map((c) => c.target)];
   return { bones, groups, translate };
 }
 async function fitPoseFiles(planPath, buildDir, references, outPath, opts = {}) {
@@ -42104,7 +42336,7 @@ function spineVersionArg(version) {
 function runSpine(exe, args) {
   return new Promise((ok) => {
     let output = "";
-    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"], windowsHide: true });
     const timer = setTimeout(() => child.kill(), 10 * 6e4);
     child.stdout.on("data", (d) => output += d.toString());
     child.stderr.on("data", (d) => output += d.toString());
@@ -42826,13 +43058,13 @@ function framePicture(frame2, mask, view, area3) {
 }
 async function inputsOf(files) {
   return Promise.all([...new Set(files)].filter(existsSync2).map(async (path) => {
-    const hash = createHash2("sha256");
+    const hash2 = createHash2("sha256");
     let bytes = 0;
     for await (const chunk of createReadStream(path)) {
-      hash.update(chunk);
+      hash2.update(chunk);
       bytes += chunk.length;
     }
-    return { path, bytes, sha256: hash.digest("hex") };
+    return { path, bytes, sha256: hash2.digest("hex") };
   }));
 }
 function spans(frames, step) {
@@ -42846,7 +43078,7 @@ function spans(frames, step) {
   }
   return runs.map(([a, b]) => a === b ? `${a}` : `${a}-${b}`).join(", ");
 }
-async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
+async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
   const log = opts.log ?? (() => void 0);
   const plan = await readPlan(planPath);
   const fps = plan.motion.fps ?? 30;
@@ -42892,7 +43124,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const pictureFile = (f) => join2(pictureDir, `frame-${String(f).padStart(4, "0")}.png`);
   const centroid = [];
   let placed;
-  const frames = videoFrames(video, start, fps, loop ? 3 * N : N + 1, W, H);
+  const frames = videoFrames(video, start, fps, opts.checkOnly ? 1 : loop ? 3 * N : N + 1, W, H);
   try {
     for await (const frame2 of frames) {
       placed ??= placeOnVideo(sk, tex.texture, name, frame2, video);
@@ -42908,7 +43140,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   const count = centroid.length;
   if (!placed)
     throw new Error(`CLI_VIDEO: ${video} has no frames after ${start}s`);
-  if (!loop && count < N + 1)
+  if (!opts.checkOnly && !loop && count < N + 1)
     throw new Error(`CLI_FIT_VIDEO: the video has ${count} frames from ${start}s; the one-shot ${name} needs ${N + 1}`);
   const picture = async (f) => {
     const png = decodePng(await readFile3(pictureFile(f)), pictureFile(f));
@@ -42969,14 +43201,17 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     const moving = new Set(options2.bones), used = /* @__PURE__ */ new Set();
     for (const p of r.parts)
       if (p.used)
-        used.add(ownerOf(p.slot, moving) ?? "");
+        used.add(p.bone ?? ownerOf(p.slot, moving) ?? "");
     return {
       accepted: r.coverage >= 0.6,
       coverage: r.coverage,
       pose: r.pose,
       used,
       placements: r.placements,
-      lost: r.lost
+      lost: r.lost,
+      parts: r.parts,
+      unobserved: r.unobserved,
+      residual: r.residual
     };
   };
   let free = [];
@@ -43007,8 +43242,45 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     };
   }
   const first = zero ?? await fitFrame(baseDoc, 0, options);
+  const inputs = await inputsOf([
+    resolve3(planPath),
+    resolve3(paths.imagesOnly),
+    ...[...layout.parts.values()].map((p) => resolve3(paths.images, p.path + ".png")),
+    resolve3(buildDir, `${plan.id}.json`),
+    video
+  ]);
+  const usedParts = first.parts.filter((p) => p.used), usedSamples = usedParts.reduce((n, p) => n + p.samples, 0), unreachable = usedParts.filter((p) => (p.residual ?? 0) > VIDEO_ACCEPTANCE.partP90 * unit), unreachableShare = usedSamples ? unreachable.reduce((n, p) => n + p.samples, 0) / usedSamples : 0;
+  const firstFrame = {
+    animation: name,
+    label: "reference-fit-preflight",
+    inputs,
+    coverageBasis: "distinct visible sampled pixels; unresolved controls count as unmatched; unobserved layers are listed separately",
+    ready: first.coverage >= 0.6 && (!zero || zero.shifted <= ZERO_SHIFTED) && unreachableShare <= ZERO_SHIFTED,
+    coverage: first.coverage,
+    residual: first.residual,
+    shifted: zero?.shifted ?? null,
+    unreachableShare,
+    unreachable: unreachable.map((p) => p.slot),
+    limits: {
+      minCoverage: 0.6,
+      maxShiftedShare: ZERO_SHIFTED,
+      maxUnreachableShare: ZERO_SHIFTED,
+      partDistance: VIDEO_ACCEPTANCE.partP90 * unit
+    },
+    pose: first.pose,
+    parts: first.parts,
+    unobserved: first.unobserved
+  };
+  await writeFile2(join2(out, "first-frame.json"), json(firstFrame));
+  log(`preflight: coverage ${first.coverage}, shifted ${zero?.shifted ?? "not zeroed"}, unreachable ${+unreachableShare.toFixed(3)} (${firstFrame.ready ? "ready" : "fix rest pose or rig first"})`);
+  if (opts.checkOnly)
+    return { checkOnly: true, report: join2(out, "first-frame.json"), ...firstFrame };
   if (first.coverage < 0.6)
     throw new Error(`CLI_FIT_VIDEO: frame 0 covers ${first.coverage} of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted`);
+  if (zero && zero.shifted > ZERO_SHIFTED)
+    throw new Error("CLI_FIT_REST_POSE: frame 0 differs from the build's rest pose; fit-pose first, add its offsets to the existing pose and rebuild. See first-frame.json; no motion was fitted");
+  if (unreachableShare > ZERO_SHIFTED)
+    throw new Error("CLI_FIT_RIG: the matched parts cannot be reached by this rig; review joints, weights and part ownership before fitting motion. See first-frame.json; no motion was fitted");
   const channelsFor = (o) => o.bones.flatMap((bone) => [
     { bone, kind: "rotate" },
     ...o.translate.includes(bone) ? [
@@ -43049,12 +43321,20 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     pose: {},
     used: /* @__PURE__ */ new Set(),
     placements: zero.placements,
-    lost: []
+    lost: [],
+    parts: zero.parts,
+    unobserved: zero.unobserved,
+    residual: zero.residual
   } : first, baseAt);
   const zeroPlacements = zero?.placements;
   const t0 = Date.now();
   const dense = fitAll(every, reach - 1), trackOn = opts.track !== false;
-  const tracking = { disagree: /* @__PURE__ */ new Map(), single: [], lost: [0, 0] };
+  const tracking = {
+    disagree: /* @__PURE__ */ new Map(),
+    identityGaps: /* @__PURE__ */ new Map(),
+    single: [],
+    lost: [0, 0]
+  };
   if (!trackOn)
     for (const f of dense) {
       record(f, await fitFrame(baseDoc, f, options, zeroPlacements), baseAt);
@@ -43065,13 +43345,44 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     const passes = [/* @__PURE__ */ new Map(), /* @__PURE__ */ new Map()];
     for (const [k, order] of [dense, [...dense].reverse()].entries()) {
       let near = k === 0 ? zero?.placements ?? first.placements : void 0;
+      const history = /* @__PURE__ */ new Map();
+      for (const [bone, placement] of Object.entries(near ?? {}))
+        history.set(bone, [{ frame: 0, placement }]);
       for (const f of order) {
         const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near);
+        const unreliable = new Set(fit.lost);
+        for (const [bone, placement] of Object.entries(fit.placements))
+          if (trackTurnJump(history.get(bone) ?? [], f, placement, {
+            turn: agreement.turn,
+            maximum: trackSpan.turn
+          }))
+            unreliable.add(bone);
+        for (const bone of options.bones) {
+          let parent = parentOf2.get(bone);
+          while (parent) {
+            if (unreliable.has(parent)) {
+              unreliable.add(bone);
+              break;
+            }
+            parent = parentOf2.get(parent);
+          }
+        }
+        fit.drop = unreliable;
+        fit.used = new Set([...fit.used].filter((b) => !unreliable.has(b)));
+        for (const bone of unreliable) {
+          const frames2 = tracking.identityGaps.get(bone) ?? [];
+          if (!frames2.includes(f))
+            tracking.identityGaps.set(bone, [...frames2, f].sort((a, b) => a - b));
+        }
         passes[k].set(f, fit);
         if (fit.lost.length)
           tracking.lost[k]++;
-        if (fit.accepted)
-          near = { ...near, ...fit.placements };
+        if (fit.accepted) {
+          const reliable = Object.entries(fit.placements).filter(([bone]) => !unreliable.has(bone));
+          near = { ...near, ...Object.fromEntries(reliable) };
+          for (const [bone, placement] of reliable)
+            history.set(bone, [...(history.get(bone) ?? []).slice(-1), { frame: f, placement }]);
+        }
         if (f % 10 === 0)
           log(`fit: frame ${f} of ${reach - 1} (${k ? "backward" : "forward"})`);
       }
@@ -43092,7 +43403,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
         coverage: Math.min(a.coverage, b.coverage),
         pose: pose2,
         used: new Set([...a.used].filter((x) => b.used.has(x))),
-        drop: new Set(disagree)
+        drop: /* @__PURE__ */ new Set([...disagree, ...a.drop ?? [], ...b.drop ?? []])
       }, baseAt);
     }
   }
@@ -43291,7 +43602,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
         refit2++;
         if (fit.accepted) {
           accepted++;
-          record(f, fit, at2);
+          record(f, { ...fit, drop: /* @__PURE__ */ new Set([...fitted.get(f)?.drop ?? [], ...fit.drop ?? []]) }, at2);
         }
       }
       if (!refit2 && !waveChanges.length) {
@@ -43372,6 +43683,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     const share = frames2.length / dense.length;
     hints.push(`${bone}: the forward and backward tracks disagree on ${frames2.length} of ${dense.length} frames (${spans(frames2, every)}); left as gaps and filled from the frames around them${share > 0.3 ? ": its parts have a look-alike in the video or move faster than the track follows; look at best/compare, or fit every frame (--every=1)" : ""}`);
   }
+  for (const [bone, frames2] of tracking.identityGaps)
+    hints.push(`${bone}: track identity uncertain on frames ${spans(frames2, every)} (lost or abrupt angular jump); left as gaps rather than keying a look-alike`);
   const summary = {
     animation: name,
     video,
@@ -43379,13 +43692,8 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
     fps,
     label: "reference-fitted",
     pass: best.pass,
-    inputs: await inputsOf([
-      resolve3(planPath),
-      resolve3(paths.imagesOnly),
-      ...[...layout.parts.values()].map((p) => resolve3(paths.images, p.path + ".png")),
-      resolve3(buildDir, `${plan.id}.json`),
-      video
-    ]),
+    inputs,
+    preflight: { ready: firstFrame.ready, report: join2(out, "first-frame.json") },
     best: {
       round: best.round,
       dir: bestDir,
@@ -43402,6 +43710,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       frame: 0,
       coverage: zero.coverage,
       residual: zero.residual,
+      unobserved: zero.unobserved,
       // Share of the matched parts (by texels) more than the V2 p90 limit from the build's
       // frame 0; above ZERO_SHIFTED the rest pose is off. The largest single offset is
       // usually the matching's own error.
@@ -43413,6 +43722,7 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
       span: trackSpan,
       agreement,
       disagree: Object.fromEntries(tracking.disagree),
+      identityGaps: Object.fromEntries(tracking.identityGaps),
       singlePass: tracking.single,
       lost: { forward: tracking.lost[0], backward: tracking.lost[1] }
     } : null,
@@ -43429,6 +43739,18 @@ async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
   };
   await writeFile2(join2(out, "summary.json"), json(summary));
   return summary;
+}
+async function checkVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
+  const result = await runVideoFitFiles(planPath, buildDir, outDir, { ...opts, checkOnly: true });
+  if (!("checkOnly" in result))
+    throw new Error("CLI_FIT_STATE: expected a first-frame check");
+  return result;
+}
+async function fitVideoFiles(planPath, buildDir, outDir, opts = {}) {
+  const result = await runVideoFitFiles(planPath, buildDir, outDir, opts);
+  if ("checkOnly" in result)
+    throw new Error("CLI_FIT_STATE: expected motion fitting");
+  return result;
 }
 function videoHints(rows, ious, figure, parts, count, fps, mirrored = [], deformation) {
   const failed = (prefix) => rows.some((r) => r.id.startsWith(prefix) && !r.ok);
@@ -43479,10 +43801,37 @@ function videoHints(rows, ious, figure, parts, count, fps, mirrored = [], deform
   return hints;
 }
 
+// packages/cli/dist/rig.js
+import { readFile as readFile4, writeFile as writeFile3 } from "node:fs/promises";
+import { createHash as createHash3 } from "node:crypto";
+var read = async (path) => JSON.parse(await readFile4(path, "utf8"));
+var hash = (data) => createHash3("sha256").update(JSON.stringify(data)).digest("hex");
+async function prepareRigFile(input, output) {
+  const document2 = prepareRig(await read(input));
+  await writeFile3(output, JSON.stringify(document2, null, 2) + "\n", { flag: "wx" });
+  return {
+    output,
+    animations: 0,
+    bindingSha256: hash(document2),
+    note: "Static artist binding retained by explicit request; all animations and events removed."
+  };
+}
+async function applyRigMotionFile(rigPath, motionPath, output) {
+  const rig = await read(rigPath), motion = await read(motionPath);
+  const document2 = applyRigMotion(rig, motion);
+  await writeFile3(output, JSON.stringify(document2, null, 2) + "\n", { flag: "wx" });
+  return {
+    output,
+    animations: Object.keys(document2.animations),
+    bindingUnchanged: hash(prepareRig(rig)) === hash(prepareRig(document2)),
+    bindingSha256: hash(prepareRig(document2))
+  };
+}
+
 // packages/cli/dist/keys.js
 import { spawn as spawn2 } from "node:child_process";
 import { existsSync as existsSync3, readFileSync as readFileSync3 } from "node:fs";
-import { copyFile as copyFile2, mkdir as mkdir3, readFile as readFile4, readdir as readdir3, rm as rm2, writeFile as writeFile3 } from "node:fs/promises";
+import { copyFile as copyFile2, mkdir as mkdir3, readFile as readFile5, readdir as readdir3, rm as rm2, writeFile as writeFile4 } from "node:fs/promises";
 import { basename as basename4, dirname as dirname4, extname as extname2, join as join3, resolve as resolve4 } from "node:path";
 var MODE_NAMES = {
   fidelity: "\u4FDD\u771F\u7CBE\u7C21",
@@ -43501,7 +43850,7 @@ var EXPORT_SETTINGS = {
 async function exportProject(exe, version, project2, outDir) {
   await mkdir3(outDir, { recursive: true });
   const settings = join3(outDir, ".autospine-export.json");
-  await writeFile3(settings, JSON.stringify(EXPORT_SETTINGS));
+  await writeFile4(settings, JSON.stringify(EXPORT_SETTINGS));
   try {
     const run = await runSpine(exe, ["-u", version, "-i", project2, "-o", outDir, "-e", settings]);
     const files = (await readdir3(outDir)).filter((f) => f.endsWith(".json") && !f.startsWith("."));
@@ -43615,7 +43964,7 @@ function documentFeatures(doc) {
 }
 async function reduceKeysFiles(inputPath, outDir, opts = {}) {
   const input = resolve4(inputPath), out = resolve4(outDir);
-  const before = sha256(await readFile4(input));
+  const before = sha256(await readFile5(input));
   await newDirectory(out);
   const isProject = extname2(input).toLowerCase() === ".spine";
   const exe = opts.spine === false ? void 0 : spineExecutable(opts.spine || void 0);
@@ -43638,7 +43987,7 @@ async function reduceKeysFiles(inputPath, outDir, opts = {}) {
     sourceJson = join3(out, "source", basename4(input));
     await copyFile2(input, sourceJson);
   }
-  const source = JSON.parse(await readFile4(sourceJson, "utf8"));
+  const source = JSON.parse(await readFile5(sourceJson, "utf8"));
   const name = basename4(sourceJson, ".json");
   const spineVersion = String(source.skeleton?.spine ?? "");
   if (!spineVersion.startsWith("4.0"))
@@ -43649,7 +43998,7 @@ async function reduceKeysFiles(inputPath, outDir, opts = {}) {
     const path = extname2(b).toLowerCase() === ".spine" ? exe ? (await exportProject(exe, version, b, join3(out, "baseline"))).json : void 0 : b;
     if (!path)
       throw new Error("CLI_SPINE: a .spine baseline needs the Spine editor");
-    baseline = JSON.parse(await readFile4(path, "utf8"));
+    baseline = JSON.parse(await readFile5(path, "utf8"));
   }
   const features = documentFeatures(source);
   const modes = opts.modes ?? ["fidelity", "posable"];
@@ -43670,12 +44019,12 @@ async function reduceKeysFiles(inputPath, outDir, opts = {}) {
     });
     const seconds = (Date.now() - t0) / 1e3;
     const jsonPath = join3(dir, `${name}.json`);
-    await writeFile3(jsonPath, json(document2));
+    await writeFile4(jsonPath, json(document2));
     let spine = null, formal = null;
     if (exe) {
       spine = join3(dir, `${name}.spine`);
       await importProject(exe, version, jsonPath, spine, name);
-      const back = JSON.parse(await readFile4((await exportProject(exe, version, spine, join3(dir, "roundtrip"))).json, "utf8"));
+      const back = JSON.parse(await readFile5((await exportProject(exe, version, spine, join3(dir, "roundtrip"))).json, "utf8"));
       formal = {
         vsReduced: comparePlayback(document2, back, { fps: report4.fps }),
         vsSource: comparePlayback(source, back, { fps: report4.fps })
@@ -43683,7 +44032,7 @@ async function reduceKeysFiles(inputPath, outDir, opts = {}) {
       roundTrips.set(mode, back);
     }
     const setup = { json: setupOf(document2) === setupOf(source), editor: null };
-    await writeFile3(join3(dir, "key-report.json"), json({ ...report4, formal, setup }));
+    await writeFile4(join3(dir, "key-report.json"), json({ ...report4, formal, setup }));
     runs.push({ mode, json: jsonPath, spine, report: report4, formal, setup, seconds });
   }
   let sourceRoundTrip = null;
@@ -43692,7 +44041,7 @@ async function reduceKeysFiles(inputPath, outDir, opts = {}) {
     await mkdir3(dir, { recursive: true });
     const project2 = join3(dir, `${name}.spine`);
     await importProject(exe, version, sourceJson, project2, name);
-    const back = JSON.parse(await readFile4((await exportProject(exe, version, project2, join3(dir, "export"))).json, "utf8"));
+    const back = JSON.parse(await readFile5((await exportProject(exe, version, project2, join3(dir, "export"))).json, "utf8"));
     sourceRoundTrip = comparePlayback(source, back);
     for (const r of runs)
       r.setup.editor = setupOf(roundTrips.get(r.mode)) === setupOf(back);
@@ -43712,7 +44061,7 @@ async function reduceKeysFiles(inputPath, outDir, opts = {}) {
       preview = null;
     }
   }
-  const after = sha256(await readFile4(input));
+  const after = sha256(await readFile5(input));
   if (after !== before)
     throw new Error(`CLI_KEYS_SOURCE: ${input} changed during the run`);
   const summary = {
@@ -43736,9 +44085,9 @@ async function reduceKeysFiles(inputPath, outDir, opts = {}) {
     preview,
     notes
   };
-  await writeFile3(join3(out, "summary.json"), json(summary));
-  await writeFile3(join3(out, "key-reduction-report.html"), reportHtml(summary, runs, source, out));
-  await writeFile3(join3(out, "key-reduction-report.md"), reportMarkdown(summary, runs));
+  await writeFile4(join3(out, "summary.json"), json(summary));
+  await writeFile4(join3(out, "key-reduction-report.html"), reportHtml(summary, runs, source, out));
+  await writeFile4(join3(out, "key-reduction-report.md"), reportMarkdown(summary, runs));
   return summary;
 }
 var setupOf = (d) => JSON.stringify(Object.entries(d).filter(([k]) => k !== "animations").map(([k, v]) => k === "skeleton" ? [k, { ...v, hash: void 0 }] : [k, v]));
@@ -44014,7 +44363,7 @@ async function writeMesh(part, destination, cleanupArgument, options = {}) {
     throw new Error("Cleanup fraction must be a number between zero and one");
   const prepared = fraction === void 0 ? void 0 : prepareAlphaForMesh(decoded, part.alphaMask.width, part.alphaMask.height, fraction);
   const { mesh: mesh2, diagnostics } = generateMeshWithDiagnostics(part, prepared?.alpha ?? decoded, options);
-  await writeFile4(destination, `${JSON.stringify(mesh2, null, 2)}
+  await writeFile5(destination, `${JSON.stringify(mesh2, null, 2)}
 `, {
     encoding: "utf8",
     flag: "wx"
@@ -44033,7 +44382,9 @@ async function writeMesh(part, destination, cleanupArgument, options = {}) {
 }
 var characterUsage = `Character commands (ADR-017):
   autospine --version
-  autospine strip-images <artist.json> <images-dir> <images-only.json>
+  autospine prepare-rig <source.json> <new-rig.json>
+  autospine apply-rig-motion <rig.json> <new-motion.json> <new-output.json>
+  autospine strip-images <artist.json> <images-dir> <images-only.json> [--skin=name]
   autospine lint-plan <plan.json>
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
   autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir> [--animation=name]
@@ -44045,6 +44396,7 @@ var characterUsage = `Character commands (ADR-017):
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
+  autospine check-video-fit <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--ignore=slot,...]
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference]
   autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
 async function characterCommand(args) {
@@ -44066,11 +44418,23 @@ ${characterUsage}`);
 ${characterUsage}`);
   };
   switch (p[0]) {
-    case "strip-images":
+    case "prepare-rig":
+      if (p.length !== 3)
+        throw new Error(characterUsage);
+      known2();
+      console.log(JSON.stringify(await prepareRigFile(p[1], p[2])));
+      return true;
+    case "apply-rig-motion":
       if (p.length !== 4)
         throw new Error(characterUsage);
       known2();
-      console.log(JSON.stringify(await stripImages(p[1], p[2], p[3])));
+      console.log(JSON.stringify(await applyRigMotionFile(p[1], p[2], p[3])));
+      return true;
+    case "strip-images":
+      if (p.length !== 4)
+        throw new Error(characterUsage);
+      known2("skin");
+      console.log(JSON.stringify(await stripImages(p[1], p[2], p[3], { skin: flags.get("skin") })));
       return true;
     case "lint-plan": {
       if (p.length !== 2)
@@ -44187,7 +44551,7 @@ ${characterUsage}`);
           log: (line) => console.error(line)
         });
       } catch (e) {
-        if (e instanceof Error && e.message.startsWith("CLI_FIT_VIDEO")) {
+        if (e instanceof Error && /^CLI_FIT_(VIDEO|REST_POSE|RIG):/.test(e.message)) {
           console.error(e.message);
           process.exitCode = 2;
           return true;
@@ -44204,6 +44568,21 @@ ${characterUsage}`);
       console.log(`best: round ${fit.best.round} -> ${fit.best.dir}`);
       console.log(fit.pass ? "MATCHES THE REFERENCE VIDEO (reference-fitted)" : "NOT PASSED");
       if (!fit.pass)
+        process.exitCode = 2;
+      return true;
+    }
+    case "check-video-fit": {
+      if (p.length !== 4)
+        throw new Error(characterUsage);
+      known2("animation", "video", "start", "ignore");
+      const checked = await checkVideoFitFiles(p[1], p[2], p[3], {
+        ...flags.get("animation") ? { animation: flags.get("animation") } : {},
+        ...flags.get("video") ? { video: flags.get("video") } : {},
+        ...flags.has("start") ? { start: numberFlag("start") } : {},
+        ...flags.has("ignore") ? { ignore: flags.get("ignore").split(",").filter(Boolean) } : {}
+      });
+      console.log(JSON.stringify(checked));
+      if (!checked.ready)
         process.exitCode = 2;
       return true;
     }
@@ -44344,12 +44723,12 @@ async function main() {
     throw new Error(usage);
   const meshOptions = {
     intent,
-    referenceTopology: profilePath ? JSON.parse(await readFile5(profilePath, "utf8")) : void 0
+    referenceTopology: profilePath ? JSON.parse(await readFile6(profilePath, "utf8")) : void 0
   };
   if (command === "rig-chain" && !manifestPath && !extra) {
-    const input = JSON.parse(await readFile5(source, "utf8"));
+    const input = JSON.parse(await readFile6(source, "utf8"));
     const rig = generateChainRig(input);
-    await writeFile4(destination, `${JSON.stringify(rig, null, 2)}
+    await writeFile5(destination, `${JSON.stringify(rig, null, 2)}
 `, {
       encoding: "utf8",
       flag: "wx"
@@ -44357,22 +44736,22 @@ async function main() {
     return;
   }
   if (command === "compile-minimal" && !manifestPath) {
-    const input = JSON.parse(await readFile5(source, "utf8"));
+    const input = JSON.parse(await readFile6(source, "utf8"));
     const document2 = compileSpine40(input);
     const validation = validateSpine40(document2);
     if (validation.status !== "passed")
       throw new SpineCompileError(validation);
-    await writeFile4(destination, `${JSON.stringify(document2)}
+    await writeFile5(destination, `${JSON.stringify(document2)}
 `, "utf8");
     return;
   }
   if (command === "parse-png" && !extra) {
     if (manifestPath && resolve5(manifestPath) === resolve5(destination))
       throw new Error("Output path must not overwrite the input manifest");
-    const manifest = manifestPath ? JSON.parse(await readFile5(manifestPath, "utf8")) : void 0;
+    const manifest = manifestPath ? JSON.parse(await readFile6(manifestPath, "utf8")) : void 0;
     const name = basename5(resolve5(source));
     const asset = await parsePngParts(source, { id: name, name, manifest });
-    await writeFile4(destination, `${JSON.stringify(asset, null, 2)}
+    await writeFile5(destination, `${JSON.stringify(asset, null, 2)}
 `, {
       encoding: "utf8",
       flag: "wx"
@@ -44381,12 +44760,12 @@ async function main() {
   }
   if (command === "parse-psd" && !manifestPath && !extra) {
     const name = basename5(source, extname3(source));
-    const asset = parsePsd(await readFile5(source), {
+    const asset = parsePsd(await readFile6(source), {
       id: name,
       name,
       sourcePath: basename5(source)
     });
-    await writeFile4(destination, `${JSON.stringify(asset, null, 2)}
+    await writeFile5(destination, `${JSON.stringify(asset, null, 2)}
 `, {
       encoding: "utf8",
       flag: "wx"
@@ -44395,7 +44774,7 @@ async function main() {
   }
   if (command === "mesh-png" && !extra) {
     const name = basename5(source, extname3(source));
-    const header = await readFile5(source);
+    const header = await readFile6(source);
     if (header.length < 24)
       throw new Error("Input PNG header is incomplete");
     const asset = await parsePngParts(dirname5(source), {
@@ -44412,7 +44791,7 @@ async function main() {
     return;
   }
   if (command === "mesh-asset" && manifestPath) {
-    const asset = JSON.parse(await readFile5(source, "utf8"));
+    const asset = JSON.parse(await readFile6(source, "utf8"));
     const validation = validateAssetSpec(asset);
     if (validation.status === "error")
       throw new AssetParseError(validation);

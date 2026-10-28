@@ -73,6 +73,7 @@ import {
   mirrorSimilarity,
   mirroredRun,
   shiftedShare,
+  trackTurnJump,
   VIDEO_ACCEPTANCE,
   videoPenalty,
   type LoadedSkeleton,
@@ -228,7 +229,7 @@ export async function mergePlanFiles(
       .join("/");
   const source = { imagesOnly: from(sources[0]!.imagesOnly), images: from(sources[0]!.images) };
   const { plan, notes } = mergePlans(
-    plans.map((p) => ({ ...p, source })),
+    plans.map((p, i) => ({ ...planAt(p, planFiles[i]!, outPath), source })),
     opts,
   );
   const { layout } = await loadLayout(sources[0]!.imagesOnly, sources[0]!.images);
@@ -264,16 +265,25 @@ function assertLint(lint: { errors: string[] }, planPath: string) {
 }
 
 /** strip-images <artist.json> <images-dir> <out-images-only.json> */
-export async function stripImages(artistPath: string, imagesDir: string, outPath: string) {
+export async function stripImages(
+  artistPath: string,
+  imagesDir: string,
+  outPath: string,
+  options: { skin?: string } = {},
+) {
   if (await exists(outPath)) throw new Error(`CLI_OUTPUT_EXISTS: ${outPath} already exists`);
   const artist = JSON.parse(await readFile(artistPath, "utf8")) as unknown;
-  const result = stripToImagesOnly(artist, (path) => {
-    const file = resolve(imagesDir, path + ".png");
-    if (!existsSync(file)) return undefined;
-    const b = readFileSync(file);
-    if (b.readUInt32BE(12) !== 0x49484452) throw new Error(`CLI_PNG: ${path}.png is not a PNG`);
-    return [b.readUInt32BE(16), b.readUInt32BE(20)];
-  });
+  const result = stripToImagesOnly(
+    artist,
+    (path) => {
+      const file = resolve(imagesDir, path + ".png");
+      if (!existsSync(file)) return undefined;
+      const b = readFileSync(file);
+      if (b.readUInt32BE(12) !== 0x49484452) throw new Error(`CLI_PNG: ${path}.png is not a PNG`);
+      return [b.readUInt32BE(16), b.readUInt32BE(20)];
+    },
+    options,
+  );
   await writeFile(outPath, `${JSON.stringify(result.document, null, 2)}\n`, { flag: "wx" });
   await writeFile(outPath.replace(/\.json$/, "") + ".strip-report.json", json(result.report), {
     flag: "wx",
@@ -585,14 +595,17 @@ function fitBones(
   for (const b of free) fixed.delete(b);
   const bones = rigging.rigged.rig.bones.map((b) => b.id).filter((id) => !fixed.has(id));
   const groups: Record<string, string> = {};
+  const mainBone = motionFor(plan.motion, planned).main.bone;
+  // The whole-body control must not be placed from one exposed fur patch while its torso
+  // follows another look-alike. Its immediate movable children contribute to the coarse fit,
+  // then refine independently, just as strands contribute to their head below.
+  for (const b of rigging.rigged.rig.bones)
+    if (b.parentId === mainBone && bones.includes(b.id)) groups[b.id] = mainBone;
   for (const entry of plan.bones)
     if ("chain" in entry)
       for (const id of rigging.rigged.chains[entry.chain.part] ?? [])
         if (!free.includes(id)) groups[id] = entry.chain.parent;
-  const translate = [
-    motionFor(plan.motion, planned).main.bone,
-    ...(plan.constraints?.ik ?? []).map((c) => c.target),
-  ];
+  const translate = [mainBone, ...(plan.constraints?.ik ?? []).map((c) => c.target)];
   return { bones, groups, translate };
 }
 
@@ -982,7 +995,7 @@ export function spineVersionArg(version: string | undefined): string {
 export function runSpine(exe: string, args: string[]) {
   return new Promise<{ code: number; output: string }>((ok) => {
     let output = "";
-    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"] });
+    const child = spawn(exe, args, { stdio: ["ignore", "pipe", "pipe"], windowsHide: true });
     const timer = setTimeout(() => child.kill(), 10 * 60_000);
     child.stdout.on("data", (d: Buffer) => (output += d.toString()));
     child.stderr.on("data", (d: Buffer) => (output += d.toString()));
@@ -1320,7 +1333,7 @@ export async function deliverFiles(
 }
 
 /** A video's frame size, from ffmpeg's stream summary. */
-async function videoSize(path: string): Promise<{ width: number; height: number }> {
+export async function videoSize(path: string): Promise<{ width: number; height: number }> {
   if (!existsSync(path)) throw new Error(`CLI_VIDEO: ${path} not found`);
   const info = await new Promise<string>((ok, fail) => {
     const p = spawn("ffmpeg", ["-hide_banner", "-i", path], {
@@ -1338,7 +1351,7 @@ async function videoSize(path: string): Promise<{ width: number; height: number 
   return { width: Number(m[1]), height: Number(m[2]) };
 }
 /** Frames of a video from `start` seconds, resampled to `fps`, as 8-bit RGB. */
-async function* videoFrames(
+export async function* videoFrames(
   path: string,
   start: number,
   fps: number,
@@ -1631,7 +1644,7 @@ export async function compareVideoFiles(
  * frame-0 bounds on the figure's bounds, then the silhouette registration. The camera is taken as
  * still, so the same view serves every frame. Refuses a video without a plain background or figure.
  */
-function placeOnVideo(
+export function placeOnVideo(
   sk: LoadedSkeleton,
   texture: (path: string) => Texture,
   animation: string,
@@ -2040,7 +2053,7 @@ function planAt(plan: CharacterPlan, fromPath: string, toPath: string): Characte
  * A video frame as a picture over plan.qa.view (ADR-036): straight RGBA, opaque where the figure
  * is, at the video's own resolution up to 1024 px on the longer side (a larger video is averaged).
  */
-function framePicture(
+export function framePicture(
   frame: RgbFrame,
   mask: Uint8Array,
   view: View,
@@ -2185,11 +2198,11 @@ function spans(frames: readonly number[], step: number): string {
  * comparison. Every round stays in `round-k/`; the lowest penalty is copied to `best/`. The plan is
  * not changed; results are reference-fitted, never blind.
  */
-export async function fitVideoFiles(
+async function runVideoFitFiles(
   planPath: string,
   buildDir: string,
   outDir: string,
-  opts: FitVideoOptions = {},
+  opts: FitVideoOptions & { checkOnly?: boolean } = {},
 ) {
   const log = opts.log ?? (() => undefined);
   const plan = await readPlan(planPath);
@@ -2250,7 +2263,7 @@ export async function fitVideoFiles(
   const centroid: [number, number][] = [];
   let placed: ReturnType<typeof placeOnVideo> | undefined;
   // A loop needs cycles to fold: up to three times its length; a one-shot its own frames.
-  const frames = videoFrames(video, start, fps, loop ? 3 * N : N + 1, W, H);
+  const frames = videoFrames(video, start, fps, opts.checkOnly ? 1 : loop ? 3 * N : N + 1, W, H);
   try {
     for await (const frame of frames) {
       placed ??= placeOnVideo(sk, tex.texture, name, frame, video);
@@ -2268,7 +2281,7 @@ export async function fitVideoFiles(
   }
   const count = centroid.length;
   if (!placed) throw new Error(`CLI_VIDEO: ${video} has no frames after ${start}s`);
-  if (!loop && count < N + 1)
+  if (!opts.checkOnly && !loop && count < N + 1)
     throw new Error(
       `CLI_FIT_VIDEO: the video has ${count} frames from ${start}s; the one-shot ${name} needs ${N + 1}`,
     );
@@ -2345,6 +2358,9 @@ export async function fitVideoFiles(
     used: Set<string>;
     placements: Record<string, Placement>;
     lost: string[];
+    parts: PoseFitResult["parts"];
+    unobserved: PoseFitResult["unobserved"];
+    residual: PoseFitResult["residual"];
     /** Bones the forward and backward tracks disagree on: no value on this frame (ADR-039). */
     drop?: Set<string>;
   };
@@ -2372,7 +2388,7 @@ export async function fitVideoFiles(
     });
     const moving = new Set(options.bones),
       used = new Set<string>();
-    for (const p of r.parts) if (p.used) used.add(ownerOf(p.slot, moving) ?? "");
+    for (const p of r.parts) if (p.used) used.add(p.bone ?? ownerOf(p.slot, moving) ?? "");
     return {
       accepted: r.coverage >= 0.6,
       coverage: r.coverage,
@@ -2380,6 +2396,9 @@ export async function fitVideoFiles(
       used,
       placements: r.placements,
       lost: r.lost,
+      parts: r.parts,
+      unobserved: r.unobserved,
+      residual: r.residual,
     };
   };
   let free: string[] = [];
@@ -2412,9 +2431,61 @@ export async function fitVideoFiles(
     };
   }
   const first = zero ?? (await fitFrame(baseDoc, 0, options));
+  const inputs = await inputsOf([
+    resolve(planPath),
+    resolve(paths.imagesOnly),
+    ...[...layout.parts.values()].map((p) => resolve(paths.images, p.path + ".png")),
+    resolve(buildDir, `${plan.id}.json`),
+    video,
+  ]);
+  const usedParts = first.parts.filter((p) => p.used),
+    usedSamples = usedParts.reduce((n, p) => n + p.samples, 0),
+    unreachable = usedParts.filter((p) => (p.residual ?? 0) > VIDEO_ACCEPTANCE.partP90 * unit),
+    unreachableShare = usedSamples
+      ? unreachable.reduce((n, p) => n + p.samples, 0) / usedSamples
+      : 0;
+  const firstFrame = {
+    animation: name,
+    label: "reference-fit-preflight",
+    inputs,
+    coverageBasis:
+      "distinct visible sampled pixels; unresolved controls count as unmatched; unobserved layers are listed separately",
+    ready:
+      first.coverage >= 0.6 &&
+      (!zero || zero.shifted <= ZERO_SHIFTED) &&
+      unreachableShare <= ZERO_SHIFTED,
+    coverage: first.coverage,
+    residual: first.residual,
+    shifted: zero?.shifted ?? null,
+    unreachableShare,
+    unreachable: unreachable.map((p) => p.slot),
+    limits: {
+      minCoverage: 0.6,
+      maxShiftedShare: ZERO_SHIFTED,
+      maxUnreachableShare: ZERO_SHIFTED,
+      partDistance: VIDEO_ACCEPTANCE.partP90 * unit,
+    },
+    pose: first.pose,
+    parts: first.parts,
+    unobserved: first.unobserved,
+  };
+  await writeFile(join(out, "first-frame.json"), json(firstFrame));
+  log(
+    `preflight: coverage ${first.coverage}, shifted ${zero?.shifted ?? "not zeroed"}, unreachable ${+unreachableShare.toFixed(3)} (${firstFrame.ready ? "ready" : "fix rest pose or rig first"})`,
+  );
+  if (opts.checkOnly)
+    return { checkOnly: true as const, report: join(out, "first-frame.json"), ...firstFrame };
   if (first.coverage < 0.6)
     throw new Error(
       `CLI_FIT_VIDEO: frame 0 covers ${first.coverage} of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted`,
+    );
+  if (zero && zero.shifted > ZERO_SHIFTED)
+    throw new Error(
+      "CLI_FIT_REST_POSE: frame 0 differs from the build's rest pose; fit-pose first, add its offsets to the existing pose and rebuild. See first-frame.json; no motion was fitted",
+    );
+  if (unreachableShare > ZERO_SHIFTED)
+    throw new Error(
+      "CLI_FIT_RIG: the matched parts cannot be reached by this rig; review joints, weights and part ownership before fitting motion. See first-frame.json; no motion was fitted",
     );
   // Channels: each moving bone's rotation, and x, y for the bones that translate.
   type Channel = { bone: string; kind: "rotate" | "x" | "y" };
@@ -2468,6 +2539,9 @@ export async function fitVideoFiles(
           used: new Set(),
           placements: zero.placements,
           lost: [],
+          parts: zero.parts,
+          unobserved: zero.unobserved,
+          residual: zero.residual,
         }
       : (first as FrameFit),
     baseAt,
@@ -2477,7 +2551,12 @@ export async function fitVideoFiles(
   const dense = fitAll(every, reach - 1),
     trackOn = opts.track !== false;
   // Per bone, the frames on which the two tracks disagree; frames only one track accepted.
-  const tracking = { disagree: new Map<string, number[]>(), single: [] as number[], lost: [0, 0] };
+  const tracking = {
+    disagree: new Map<string, number[]>(),
+    identityGaps: new Map<string, number[]>(),
+    single: [] as number[],
+    lost: [0, 0],
+  };
   if (!trackOn)
     for (const f of dense) {
       record(f, await fitFrame(baseDoc, f, options, zeroPlacements), baseAt);
@@ -2489,11 +2568,48 @@ export async function fitVideoFiles(
     for (const [k, order] of [dense, [...dense].reverse()].entries()) {
       let near: Record<string, Placement> | undefined =
         k === 0 ? (zero?.placements ?? (first as FrameFit).placements) : undefined;
+      const history = new Map<string, { frame: number; placement: Placement }[]>();
+      for (const [bone, placement] of Object.entries(near ?? {}))
+        history.set(bone, [{ frame: 0, placement }]);
       for (const f of order) {
         const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near);
+        const unreliable = new Set(fit.lost);
+        for (const [bone, placement] of Object.entries(fit.placements))
+          if (
+            trackTurnJump(history.get(bone) ?? [], f, placement, {
+              turn: agreement.turn,
+              maximum: trackSpan.turn,
+            })
+          )
+            unreliable.add(bone);
+        for (const bone of options.bones) {
+          let parent = parentOf.get(bone);
+          while (parent) {
+            if (unreliable.has(parent)) {
+              unreliable.add(bone);
+              break;
+            }
+            parent = parentOf.get(parent);
+          }
+        }
+        fit.drop = unreliable;
+        fit.used = new Set([...fit.used].filter((b) => !unreliable.has(b)));
+        for (const bone of unreliable) {
+          const frames = tracking.identityGaps.get(bone) ?? [];
+          if (!frames.includes(f))
+            tracking.identityGaps.set(
+              bone,
+              [...frames, f].sort((a, b) => a - b),
+            );
+        }
         passes[k]!.set(f, fit);
         if (fit.lost.length) tracking.lost[k]!++;
-        if (fit.accepted) near = { ...near, ...fit.placements };
+        if (fit.accepted) {
+          const reliable = Object.entries(fit.placements).filter(([bone]) => !unreliable.has(bone));
+          near = { ...near, ...Object.fromEntries(reliable) };
+          for (const [bone, placement] of reliable)
+            history.set(bone, [...(history.get(bone) ?? []).slice(-1), { frame: f, placement }]);
+        }
         if (f % 10 === 0) log(`fit: frame ${f} of ${reach - 1} (${k ? "backward" : "forward"})`);
       }
     }
@@ -2515,7 +2631,7 @@ export async function fitVideoFiles(
           coverage: Math.min(a.coverage, b.coverage),
           pose,
           used: new Set([...a.used].filter((x) => b.used.has(x))),
-          drop: new Set(disagree),
+          drop: new Set([...disagree, ...(a.drop ?? []), ...(b.drop ?? [])]),
         },
         baseAt,
       );
@@ -2794,7 +2910,11 @@ export async function fitVideoFiles(
         refit++;
         if (fit.accepted) {
           accepted++;
-          record(f, fit, at);
+          record(
+            f,
+            { ...fit, drop: new Set([...(fitted.get(f)?.drop ?? []), ...(fit.drop ?? [])]) },
+            at,
+          );
         }
       }
       if (!refit && !waveChanges.length) {
@@ -2901,6 +3021,10 @@ export async function fitVideoFiles(
       }`,
     );
   }
+  for (const [bone, frames] of tracking.identityGaps)
+    hints.push(
+      `${bone}: track identity uncertain on frames ${spans(frames, every)} (lost or abrupt angular jump); left as gaps rather than keying a look-alike`,
+    );
   const summary = {
     animation: name,
     video,
@@ -2908,13 +3032,8 @@ export async function fitVideoFiles(
     fps,
     label: "reference-fitted",
     pass: best.pass,
-    inputs: await inputsOf([
-      resolve(planPath),
-      resolve(paths.imagesOnly),
-      ...[...layout.parts.values()].map((p) => resolve(paths.images, p.path + ".png")),
-      resolve(buildDir, `${plan.id}.json`),
-      video,
-    ]),
+    inputs,
+    preflight: { ready: firstFrame.ready, report: join(out, "first-frame.json") },
     best: {
       round: best.round,
       dir: bestDir,
@@ -2932,6 +3051,7 @@ export async function fitVideoFiles(
           frame: 0,
           coverage: zero.coverage,
           residual: zero.residual,
+          unobserved: zero.unobserved,
           // Share of the matched parts (by texels) more than the V2 p90 limit from the build's
           // frame 0; above ZERO_SHIFTED the rest pose is off. The largest single offset is
           // usually the matching's own error.
@@ -2947,6 +3067,7 @@ export async function fitVideoFiles(
           span: trackSpan,
           agreement,
           disagree: Object.fromEntries(tracking.disagree),
+          identityGaps: Object.fromEntries(tracking.identityGaps),
           singlePass: tracking.single,
           lost: { forward: tracking.lost[0], backward: tracking.lost[1] },
         }
@@ -2964,6 +3085,30 @@ export async function fitVideoFiles(
   };
   await writeFile(join(out, "summary.json"), json(summary));
   return summary;
+}
+
+/** Checks frame 0 only; writes evidence and never starts dense motion fitting. */
+export async function checkVideoFitFiles(
+  planPath: string,
+  buildDir: string,
+  outDir: string,
+  opts: Pick<FitVideoOptions, "animation" | "video" | "start" | "ignore" | "log"> = {},
+) {
+  const result = await runVideoFitFiles(planPath, buildDir, outDir, { ...opts, checkOnly: true });
+  if (!("checkOnly" in result)) throw new Error("CLI_FIT_STATE: expected a first-frame check");
+  return result;
+}
+
+/** Fits sparse motion only after frame 0 passes placement and rig reachability checks. */
+export async function fitVideoFiles(
+  planPath: string,
+  buildDir: string,
+  outDir: string,
+  opts: FitVideoOptions = {},
+) {
+  const result = await runVideoFitFiles(planPath, buildDir, outDir, opts);
+  if ("checkOnly" in result) throw new Error("CLI_FIT_STATE: expected motion fitting");
+  return result;
 }
 
 /** The failed rows in words: where the build differs from the reference, worst first. */

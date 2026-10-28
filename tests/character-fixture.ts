@@ -185,7 +185,7 @@ export function fixturePlan(): CharacterPlan {
       { id: "face_ctl", parent: "face_base", at: "faceAnchor", angle: "art", length: 12 },
       { id: "face_counter", parent: "face_base", at: "faceAnchor", angle: "art", length: 6 },
       { id: "eyes", parent: "head", at: "faceAnchor", angle: "art", length: 8 },
-      { chain: { part: "Hair", bones: 3, parent: "head", from: "top", prefix: "hair" } },
+      { chain: { part: "Hair", bones: 3, parent: "head", near: "headTop", prefix: "hair" } },
       { id: "arm_r", parent: "spine", at: "shoulderR", to: "elbowR" },
       { id: "forearm_r", parent: "arm_r", at: "elbowR", to: "handR" },
       { id: "thigh_l", parent: "hips", at: "hipL", to: "kneeL" },

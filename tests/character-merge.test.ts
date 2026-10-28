@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { readdir, readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, join, resolve } from "node:path";
 import type { CharacterPlan } from "@autospine/schemas";
 import { buildCharacter, lintCharacterPlan, mergePlans } from "@autospine/character";
 import { buildCharacterFiles, mergePlanFiles } from "@autospine/cli/character";
@@ -74,6 +74,33 @@ function entryPlan(): CharacterPlan {
 }
 
 describe("one project per character (ADR-031)", () => {
+  it("keeps reference videos attached when merging plans from different folders", async () => {
+    const ws = await fixtureWorkspace();
+    const idle = clone(fixturePlan()),
+      entry = entryPlan();
+    idle.source = { imagesOnly: "../imagesOnly.json", images: "../images" };
+    entry.source = { imagesOnly: "../../imagesOnly.json", images: "../../images" };
+    const idleVideo = join(ws, "clips", "idle.mov"),
+      entryVideo = join(ws, "clips", "entry.mov");
+    idle.motion.animations[0]!.reference = { video: "../clips/idle.mov", start: 0.25, use: "fit" };
+    entry.motion.animations[0]!.reference = { video: entryVideo, use: "check" };
+    const files = [join(ws, "idle", "plan.json"), join(ws, "entry", "nested", "plan.json")];
+    const out = join(ws, "merged", "plans", "all.json");
+    for (const file of [...files, out]) await mkdir(dirname(file), { recursive: true });
+    await writeFile(files[0]!, JSON.stringify(idle));
+    await writeFile(files[1]!, JSON.stringify(entry));
+    const before = await Promise.all(files.map((file) => readFile(file, "utf8")));
+    await mergePlanFiles(out, files);
+    const merged = JSON.parse(await readFile(out, "utf8")) as CharacterPlan;
+    expect(merged.motion.animations.map((a) => resolve(dirname(out), a.reference!.video))).toEqual([
+      idleVideo,
+      entryVideo,
+    ]);
+    expect(merged.motion.animations[0]!.reference).toMatchObject({ start: 0.25, use: "fit" });
+    expect(merged.motion.animations[1]!.reference).toMatchObject({ use: "check" });
+    expect(await Promise.all(files.map((file) => readFile(file, "utf8")))).toEqual(before);
+  });
+
   it("builds each animation of a merged plan as its own plan built it", () => {
     const idle = clone(fixturePlan());
     const entry = entryPlan();

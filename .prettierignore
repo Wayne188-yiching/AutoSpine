@@ -21,6 +21,8 @@ docs/reviews/gate-4-precision/independent-audit.json
 plugin/skills/autospine/scripts/
 plugin/skills/autospine/references/
 plugin/skills/autospine/assets/
+# Generated offline reference index; edit catalog.json or tools/animation-knowledge.mjs.
+knowledge/animation/index.html
 # Generated report data and pages, kept as written (5087ca8, 2026-10-17/18).
 docs/reports/blind-tests/*-reference-imitation/
 docs/reports/blind-tests/*-clean-ref-rebuild/

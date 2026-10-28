@@ -16,6 +16,8 @@ node_modules/
 dist/
 coverage/
 *.tsbuildinfo
+__pycache__/
+*.pyc
 
 # Local credentials and environment
 .env

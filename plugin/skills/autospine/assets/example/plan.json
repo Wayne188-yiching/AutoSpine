@@ -168,7 +168,7 @@
         "part": "Hair",
         "bones": 3,
         "parent": "head",
-        "from": "top",
+        "near": "headTop",
         "prefix": "hair"
       }
     },

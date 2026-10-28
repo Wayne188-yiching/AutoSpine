@@ -28,6 +28,8 @@ export interface StripResult {
       quadMeshForShear: string[];
       maxAbsShearCosine: number;
       skins: number;
+      /** Explicitly selected skin, combined with default attachments into one default skin. */
+      selectedSkin?: string;
       /** Clipping, bounding-box, point and path attachments: not images, so not kept. */
       droppedNonImage: string[];
       /** Image file not found: placed from the attachment's stored size; the path stays as authored. */
@@ -92,7 +94,9 @@ function fitAffine(src: V2[], dst: V2[]) {
  * colour, blend), with each attachment placed where its image sits in the setup pose. A mesh's
  * placement is the least-squares affine of its UVs onto its setup world vertices; a placement that
  * shears becomes a bare 4-corner quad mesh. Bones, meshes, weights, constraints and animations go.
- * Every skin is kept under its own name (placed with that skin active, so skin bones count); linked
+ * Every skin is kept under its own name unless `options.skin` explicitly selects one, combined with
+ * default-skin fallbacks into a single default output skin. Each is placed with its skin active, so
+ * skin bones count; linked
  * meshes are placed from their runtime vertices and UVs. Attachments that are not images (clipping,
  * bounding box, point, path) are dropped and listed in the report. When an image file is missing
  * (`imageSize` returns undefined), the attachment's own stored width/height places it and the report
@@ -101,6 +105,7 @@ function fitAffine(src: V2[], dst: V2[]) {
 export function stripToImagesOnly(
   artist: unknown,
   imageSize: (path: string) => V2 | undefined,
+  options: { skin?: string } = {},
 ): StripResult {
   const sk = loadSkeleton(artist);
   const raw = sk.raw as Json;
@@ -131,17 +136,35 @@ export function stripToImagesOnly(
       if (s[k] !== undefined) slotOut[k] = s[k];
     (out.slots as Json[]).push(slotOut);
   }
-  for (const skinRaw of raw.skins as Json[]) {
+  const rawSkins = raw.skins as Json[];
+  let skins = rawSkins;
+  if (options.skin !== undefined) {
+    const selected = rawSkins.find((s) => s.name === options.skin);
+    if (!selected) throw new Error(`REFERENCE_SKIN: unknown skin ${options.skin}`);
+    const attachments: Record<string, Record<string, Json>> = {};
+    for (const source of [rawSkins.find((s) => s.name === "default"), selected]) {
+      for (const [slot, entries] of Object.entries(
+        (source?.attachments ?? {}) as Record<string, Record<string, Json>>,
+      )) {
+        attachments[slot] = { ...attachments[slot], ...entries };
+      }
+    }
+    skins = [{ name: options.skin, attachments }];
+  }
+  for (const skinRaw of skins) {
     const skinName = skinRaw.name as string;
     const skin = sk.data.findSkin(skinName);
     if (!skin) throw new Error(`REFERENCE_SKIN: skin ${skinName} did not load`);
     sk.skeleton.setSkin(skin);
     sk.skeleton.setToSetupPose();
     sk.skeleton.updateWorldTransform();
-    const skinOut = { name: skinName, attachments: {} as Record<string, Record<string, Json>> };
+    const skinOut = {
+      name: options.skin !== undefined ? "default" : skinName,
+      attachments: {} as Record<string, Record<string, Json>>,
+    };
     out.skins.push(skinOut);
     for (const [slotName, atts] of Object.entries(
-      skinRaw.attachments as Record<string, Record<string, Json>>,
+      (skinRaw.attachments ?? {}) as Record<string, Record<string, Json>>,
     )) {
       const slot = sk.skeleton.findSlot(slotName)!;
       for (const [attName, a] of Object.entries(atts)) {
@@ -202,10 +225,9 @@ export function stripToImagesOnly(
             src.map((p) => world(local(p[0], p[1]))),
           );
         } else if (type === "mesh" || type === "linkedmesh") {
-          const att = skin.getAttachment(
-            (slot as unknown as { data: { index: number } }).data.index,
-            attName,
-          ) as unknown as {
+          const index = (slot as unknown as { data: { index: number } }).data.index;
+          const att = (skin.getAttachment(index, attName) ??
+            sk.data.defaultSkin?.getAttachment(index, attName)) as unknown as {
             worldVerticesLength: number;
             regionUVs: ArrayLike<number>;
             computeWorldVertices: (...args: unknown[]) => void;
@@ -317,6 +339,7 @@ export function stripToImagesOnly(
         quadMeshForShear: rows.filter((r) => r.outputType === "quad-mesh").map((r) => r.attachment),
         maxAbsShearCosine: Math.max(0, ...rows.map((r) => Math.abs(r.shearCosine))),
         skins: out.skins.length,
+        ...(options.skin !== undefined ? { selectedSkin: options.skin } : {}),
         droppedNonImage: dropped,
         missingImages,
       },

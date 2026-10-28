@@ -120,6 +120,15 @@ export function handoverNotes(rigging: CharacterRigging, animations: AnimationSp
   const head = rig.bones.find((b) => b.id === "head");
   if (head) add(`中線：${pathTo("head")}。`);
   add();
+  for (const entry of plan.bones) {
+    if (!("chain" in entry)) continue;
+    const d = rigging.evidence[`${entry.chain.part}:direction`] as { status: string } | undefined;
+    if (d)
+      add(
+        `- 骨鏈 \`${entry.chain.part}\`：${d.status === "anchored" ? "根部朝向指定附著點，末端向外；仍需在 Spine 檢視彎曲。" : "附著方向待檢視；請指定 near 並確認根部與末端。"}`,
+      );
+  }
+  add();
   add("## 約束");
   add();
   const ik = plan.constraints?.ik ?? [];

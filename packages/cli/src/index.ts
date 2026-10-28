@@ -6,6 +6,7 @@ import {
   buildCharacterFiles,
   compareReferenceFiles,
   compareVideoFiles,
+  checkVideoFitFiles,
   fitVideoFiles,
   deliverFiles,
   initProjectFolder,
@@ -17,6 +18,7 @@ import {
   stripImages,
 } from "./character.js";
 import { AUTOSPINE_VERSION } from "./version.js";
+import { prepareRigFile, applyRigMotionFile } from "./rig.js";
 import { reduceKeysFiles, type ReduceKeysFileOptions } from "./keys.js";
 import type { KeyLock, KeyReductionMode } from "@autospine/reference";
 import {
@@ -86,7 +88,9 @@ async function writeMesh(
 
 const characterUsage = `Character commands (ADR-017):
   autospine --version
-  autospine strip-images <artist.json> <images-dir> <images-only.json>
+  autospine prepare-rig <source.json> <new-rig.json>
+  autospine apply-rig-motion <rig.json> <new-motion.json> <new-output.json>
+  autospine strip-images <artist.json> <images-dir> <images-only.json> [--skin=name]
   autospine lint-plan <plan.json>
   autospine build-character <plan.json> <new-output-dir> [--params=params.json]
   autospine compare-reference <plan.json> <build-dir> <artist.json> <new-output-dir> [--animation=name]
@@ -98,6 +102,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine init-project <project-dir>
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
+  autospine check-video-fit <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--ignore=slot,...]
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference]
   autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
 async function characterCommand(args: string[]): Promise<boolean> {
@@ -118,10 +123,22 @@ async function characterCommand(args: string[]): Promise<boolean> {
       if (!k.includes(f)) throw new Error(`Unknown flag --${f}\n${characterUsage}`);
   };
   switch (p[0]) {
-    case "strip-images":
+    case "prepare-rig":
+      if (p.length !== 3) throw new Error(characterUsage);
+      known();
+      console.log(JSON.stringify(await prepareRigFile(p[1]!, p[2]!)));
+      return true;
+    case "apply-rig-motion":
       if (p.length !== 4) throw new Error(characterUsage);
       known();
-      console.log(JSON.stringify(await stripImages(p[1]!, p[2]!, p[3]!)));
+      console.log(JSON.stringify(await applyRigMotionFile(p[1]!, p[2]!, p[3]!)));
+      return true;
+    case "strip-images":
+      if (p.length !== 4) throw new Error(characterUsage);
+      known("skin");
+      console.log(
+        JSON.stringify(await stripImages(p[1]!, p[2]!, p[3]!, { skin: flags.get("skin") })),
+      );
       return true;
     case "lint-plan": {
       if (p.length !== 2) throw new Error(characterUsage);
@@ -260,7 +277,7 @@ async function characterCommand(args: string[]): Promise<boolean> {
         });
       } catch (e) {
         // Refused before fitting (ADR-036): the video cannot drive this build.
-        if (e instanceof Error && e.message.startsWith("CLI_FIT_VIDEO")) {
+        if (e instanceof Error && /^CLI_FIT_(VIDEO|REST_POSE|RIG):/.test(e.message)) {
           console.error(e.message);
           process.exitCode = 2;
           return true;
@@ -278,6 +295,19 @@ async function characterCommand(args: string[]): Promise<boolean> {
       console.log(`best: round ${fit.best.round} -> ${fit.best.dir}`);
       console.log(fit.pass ? "MATCHES THE REFERENCE VIDEO (reference-fitted)" : "NOT PASSED");
       if (!fit.pass) process.exitCode = 2;
+      return true;
+    }
+    case "check-video-fit": {
+      if (p.length !== 4) throw new Error(characterUsage);
+      known("animation", "video", "start", "ignore");
+      const checked = await checkVideoFitFiles(p[1]!, p[2]!, p[3]!, {
+        ...(flags.get("animation") ? { animation: flags.get("animation")! } : {}),
+        ...(flags.get("video") ? { video: flags.get("video")! } : {}),
+        ...(flags.has("start") ? { start: numberFlag("start")! } : {}),
+        ...(flags.has("ignore") ? { ignore: flags.get("ignore")!.split(",").filter(Boolean) } : {}),
+      });
+      console.log(JSON.stringify(checked));
+      if (!checked.ready) process.exitCode = 2;
       return true;
     }
     case "init-project":

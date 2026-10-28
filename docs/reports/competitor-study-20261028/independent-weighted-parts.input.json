@@ -1,0 +1,146 @@
+{
+  "document": {
+    "skeleton": {
+      "spine": "4.0.64"
+    },
+    "bones": [
+      {
+        "name": "root"
+      },
+      {
+        "name": "left",
+        "parent": "root",
+        "x": -25
+      },
+      {
+        "name": "right",
+        "parent": "root",
+        "x": 25
+      }
+    ],
+    "slots": [
+      {
+        "name": "left",
+        "bone": "root",
+        "attachment": "left"
+      },
+      {
+        "name": "right",
+        "bone": "root",
+        "attachment": "right"
+      }
+    ],
+    "skins": [
+      {
+        "name": "default",
+        "attachments": {
+          "left": {
+            "left": {
+              "type": "mesh",
+              "path": "part",
+              "width": 80,
+              "height": 80,
+              "uvs": [0, 0, 1, 0, 1, 1, 0, 1],
+              "triangles": [0, 1, 2, 0, 2, 3],
+              "hull": 4,
+              "vertices": [1, 1, -10, 10, 1, 1, 1, 10, 10, 1, 1, 1, 10, -10, 1, 1, 1, -10, -10, 1]
+            }
+          },
+          "right": {
+            "right": {
+              "type": "mesh",
+              "path": "part",
+              "width": 80,
+              "height": 80,
+              "uvs": [0, 0, 1, 0, 1, 1, 0, 1],
+              "triangles": [0, 1, 2, 0, 2, 3],
+              "hull": 4,
+              "vertices": [1, 2, -10, 10, 1, 1, 2, 10, 10, 1, 1, 2, 10, -10, 1, 1, 2, -10, -10, 1]
+            }
+          }
+        }
+      }
+    ],
+    "animations": {
+      "idle": {}
+    }
+  },
+  "target": {
+    "skeleton": {
+      "spine": "4.0.64"
+    },
+    "bones": [
+      {
+        "name": "root"
+      },
+      {
+        "name": "left",
+        "parent": "root",
+        "x": -20
+      },
+      {
+        "name": "right",
+        "parent": "root",
+        "x": 20
+      }
+    ],
+    "slots": [
+      {
+        "name": "left",
+        "bone": "root",
+        "attachment": "left"
+      },
+      {
+        "name": "right",
+        "bone": "root",
+        "attachment": "right"
+      }
+    ],
+    "skins": [
+      {
+        "name": "default",
+        "attachments": {
+          "left": {
+            "left": {
+              "type": "mesh",
+              "path": "part",
+              "width": 80,
+              "height": 80,
+              "uvs": [0, 0, 1, 0, 1, 1, 0, 1],
+              "triangles": [0, 1, 2, 0, 2, 3],
+              "hull": 4,
+              "vertices": [1, 1, -10, 10, 1, 1, 1, 10, 10, 1, 1, 1, 10, -10, 1, 1, 1, -10, -10, 1]
+            }
+          },
+          "right": {
+            "right": {
+              "type": "mesh",
+              "path": "part",
+              "width": 80,
+              "height": 80,
+              "uvs": [0, 0, 1, 0, 1, 1, 0, 1],
+              "triangles": [0, 1, 2, 0, 2, 3],
+              "hull": 4,
+              "vertices": [1, 2, -10, 10, 1, 1, 2, 10, 10, 1, 1, 2, 10, -10, 1, 1, 2, -10, -10, 1]
+            }
+          }
+        }
+      }
+    ],
+    "animations": {
+      "idle": {}
+    }
+  },
+  "options": {
+    "view": {
+      "x": -60,
+      "y": 60,
+      "width": 120,
+      "height": 120
+    },
+    "bones": ["left", "right"],
+    "translate": ["left", "right"],
+    "window": 10,
+    "maxRotate": 10
+  }
+}

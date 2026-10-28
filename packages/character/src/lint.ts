@@ -159,6 +159,10 @@ function lintOne(
       ids.forEach((id, k) => addBone(id, k ? ids[k - 1] : c.parent, where));
       chains.set(c.part, ids);
       if (c.near !== undefined) visitRef(c.near, where);
+      else
+        warnings.push(
+          `${where}: attachment point is unverified; set near to the body attachment and review root-to-tip direction`,
+        );
       return;
     }
     const where = `bones[${i}] ${entry.id}`;

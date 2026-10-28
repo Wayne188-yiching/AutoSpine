@@ -42,6 +42,31 @@ describe("branching props (ADR-023)", () => {
     expect(lintCharacterPlan(plan).errors.join("\n")).toMatch(/nowhere/);
   });
 
+  it("checks both mirrored horizontal chains against their attachment point", () => {
+    for (const side of [-1, 1]) {
+      const plan = fixturePlan(),
+        layout = fixtureLayout();
+      const hair = layout.parts.get("Hair")!;
+      hair.affine = [0, 1, side, 0, 0, -12];
+      plan.joints.hairAttach = { rule: "point", at: [0, 0] };
+      const chain = plan.bones.find((b) => "chain" in b && b.chain.part === "Hair")!;
+      if (!("chain" in chain)) throw Error("missing fixture chain");
+      chain.chain.near = "hairAttach";
+      const result = buildCharacter(plan, layout);
+      const evidence = result.rigging.evidence["Hair:direction"] as {
+        status: string;
+        rootDistance: number;
+        tipDistance: number;
+      };
+      expect(evidence.status).toBe("anchored");
+      expect(evidence.rootDistance).toBeLessThan(evidence.tipDistance);
+      expect(side * result.rigging.rigged.world.get("hair_1")!.o[0]).toBeGreaterThan(0);
+      expect(side * result.rigging.rigged.world.get("hair_3")!.o[0]).toBeGreaterThan(80);
+      delete chain.chain.near;
+      expect(lintCharacterPlan(plan).warnings.join("\n")).toMatch(/Hair.*attachment.*near/);
+    }
+  });
+
   it("weights a mesh to the nearest of listed bones only", () => {
     const plan = clone(fixturePlan());
     const arm = plan.meshes!.find((m) => m.part === "Arm_R")!;

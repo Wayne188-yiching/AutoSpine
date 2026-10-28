@@ -140,6 +140,22 @@ export function planRig(plan: CharacterPlan, index: PartIndex): PlannedRig {
         c.near === undefined ? undefined : solver.get(c.near),
       );
       evidence[`${c.part}:strand`] = js.map((j) => j.map((v) => Math.round(v * 10) / 10));
+      const anchor = c.near === undefined ? undefined : solver.get(c.near),
+        rootDistance = anchor ? dist(js[0]!, anchor) : undefined,
+        tipDistance = anchor ? dist(js[n]!, anchor) : undefined;
+      evidence[`${c.part}:direction`] = {
+        root: js[0],
+        tip: js[n],
+        anchor: anchor ?? null,
+        rootDistance: rootDistance ?? null,
+        tipDistance: tipDistance ?? null,
+        status:
+          rootDistance === undefined || tipDistance === undefined
+            ? "unverified"
+            : tipDistance - rootDistance <= Math.max(1, 0.05 * dist(js[0]!, js[n]!))
+              ? "ambiguous"
+              : "anchored",
+      };
       const ids: string[] = [];
       for (let k = 0; k < n; k++) {
         const id = `${prefix}_${k + 1}`;

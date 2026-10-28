@@ -1,4 +1,5 @@
-import { frameTime, loadSkeleton, pose, type LoadedSkeleton } from "./runtime.js";
+import { BLEND, frameTime, loadSkeleton, pose, type LoadedSkeleton } from "./runtime.js";
+import { premultiply, render, type Texture } from "./render.js";
 
 /** Straight (not premultiplied) 8-bit RGBA. */
 export interface FitImage {
@@ -26,6 +27,8 @@ export interface PoseFitOptions {
    * chain's parent: the head is placed with all its strands, then each chain refines near it.
    */
   groups?: Readonly<Record<string, string>>;
+  /** Override inferred controls; weighted meshes otherwise use their actual nonzero influences. */
+  owners?: Readonly<Record<string, string>>;
   /**
    * Bones that may translate (default: any bone not starting on its parent's origin or tip).
    * A logical rest pose turns joints; only the hips and IK targets move (ADR-025).
@@ -66,6 +69,12 @@ export interface Placement {
 }
 export interface PoseFitPart {
   slot: string;
+  /** The movable control used by the fit, and where that ownership came from. */
+  bone?: string;
+  ownership?: "slot" | "weights" | "explicit";
+  /** Visible evidence without one usable control is reported, retained in coverage, and not fitted. */
+  reason?: "ambiguous-weighted-owner" | "no-free-owner";
+  /** Distinct visible sampled picture pixels used as evidence (not the texture sample count). */
   samples: number;
   /** Fraction of the part's sampled texels found in the reference at the best placement. */
   score: number;
@@ -85,13 +94,22 @@ export interface PoseFitResult {
   parts: PoseFitPart[];
   residual: { median: number; max: number };
   iterations: number;
-  /** Share of the sampled texels on parts whose match was used: below about 0.6 the reference
+  /** Share of distinct sampled picture pixels on parts whose match was used: below about 0.6 the reference
    *  shows something a rest pose cannot (a scaled head, another expression); do not use the pose. */
   coverage: number;
   /** Placements of the bones whose own parts matched, for `zero` (ADR-033) and `predict`. */
   placements: Record<string, Placement>;
   /** Bones given a `predict` placement whose parts were not found near it (ADR-039). */
   lost: string[];
+  /** Parts without enough visible evidence in the posed build; never counted as fitted. */
+  unobserved: {
+    slot: string;
+    reason: "blend" | "occluded" | "too-few-visible-samples";
+    /** Candidate texture samples before visibility and distinct-picture-pixel checks. */
+    samples: number;
+    /** Distinct visible reference pixels, not repeated samples of the same pixel. */
+    visible: number;
+  }[];
 }
 
 interface Sample {
@@ -152,6 +170,14 @@ export function fitRestPose(
   image: (path: string) => FitImage,
   options: PoseFitOptions,
 ): PoseFitResult {
+  for (const [name, value] of Object.entries({
+    window: options.window,
+    maxRotate: options.maxRotate,
+    "track.move": options.track?.move,
+    "track.turn": options.track?.turn,
+  }))
+    if (value !== undefined && (!Number.isFinite(value) || value < 0))
+      throw new Error(`POSE_OPTIONS: ${name} must be finite and nonnegative`);
   const sk = loadSkeleton(document);
   const view = options.view,
     scale = reference.width / view.width,
@@ -161,7 +187,7 @@ export function fitRestPose(
     time = options.time ?? 0;
   pose(sk, animation, time);
   // Parts drawn on frame 0, with their texture paths.
-  const drawn: { slot: string; path: string; uvs: number[] }[] = [];
+  const drawn: { slot: string; path: string; uvs: number[]; color: number[]; blend: number }[] = [];
   for (const slot of sk.skeleton.drawOrder) {
     const att = slot.getAttachment() as
       | (Record<string, unknown> & { path?: string; name: string; regionUVs?: ArrayLike<number> })
@@ -175,36 +201,73 @@ export function fitRestPose(
         ? [0, 1, 0, 0, 1, 0, 1, 1]
         : undefined;
     if (!uvs) continue;
-    drawn.push({ slot: slot.data.name, path: att.path ?? att.name, uvs });
+    const color = att.color as { r: number; g: number; b: number };
+    drawn.push({
+      slot: slot.data.name,
+      path: att.path ?? att.name,
+      uvs,
+      color: [slot.color.r * color.r, slot.color.g * color.g, slot.color.b * color.b],
+      blend: slot.data.blendMode,
+    });
   }
   const base = worldVertices(
     sk,
     drawn.map((d) => d.slot),
   );
-  const refAt = (x: number, y: number) => {
-    const px = Math.round((x - view.x) * scale),
-      py = Math.round((view.y - y) * scale);
-    if (px < 0 || py < 0 || px >= reference.width || py >= reference.height) return -1;
-    return (py * reference.width + px) * 4;
-  };
   // 1 for the same colour, falling linearly to 0 at a channel difference of 64; 0 off the figure.
   const hit = (s: Sample, x: number, y: number) => {
-    const i = refAt(x, y);
-    if (i < 0 || reference.rgba[i + 3]! < 128) return 0;
+    const px = (x - view.x) * scale - 0.5,
+      py = (view.y - y) * scale - 0.5;
+    if (px < 0 || py < 0 || px >= reference.width - 1 || py >= reference.height - 1) return 0;
+    const ix = Math.floor(px),
+      iy = Math.floor(py),
+      ax = px - ix,
+      ay = py - iy,
+      i = (iy * reference.width + ix) * 4,
+      j = i + reference.width * 4;
+    const channel = (k: number) =>
+      (reference.rgba[i + k]! * (1 - ax) + reference.rgba[i + 4 + k]! * ax) * (1 - ay) +
+      (reference.rgba[j + k]! * (1 - ax) + reference.rgba[j + 4 + k]! * ax) * ay;
+    if (channel(3) < 128) return 0;
     const d = Math.max(
-      Math.abs(reference.rgba[i]! - s.rgb[0]),
-      Math.abs(reference.rgba[i + 1]! - s.rgb[1]),
-      Math.abs(reference.rgba[i + 2]! - s.rgb[2]),
+      Math.abs(channel(0) - s.rgb[0]),
+      Math.abs(channel(1) - s.rgb[1]),
+      Math.abs(channel(2) - s.rgb[2]),
     );
     return Math.max(0, 1 - d / 64);
   };
 
-  // ---- samples: opaque texels with their triangle, barycentrics and setup world position
-  const samples = new Map<string, Sample[]>();
+  // Match only evidence visible in this pose. Covered texels must not pull a limb toward another
+  // patch of their colour, and fully covered layers cannot establish a placement. Render every
+  // slot, including ignored ones: an ignored expression can still cover the head underneath it.
+  const owner = new Int16Array(reference.width * reference.height),
+    textures = new Map<string, Texture>();
+  render(
+    sk,
+    (path) => {
+      let t = textures.get(path);
+      if (!t) {
+        const im = image(path);
+        textures.set(path, (t = premultiply(im.width, im.height, im.rgba)));
+      }
+      return t;
+    },
+    { x0: view.x, y0: view.y, scale, width: reference.width, height: reference.height },
+    owner,
+  );
+  const slotIds = new Map(sk.skeleton.slots.map((s, i) => [s.data.name, i]));
+  const unobserved: PoseFitResult["unobserved"] = [];
+  // ---- samples: opaque visible texels with their triangle, barycentrics and setup world position
+  const samples = new Map<string, Sample[]>(),
+    samplePixels = new Map<string, number>();
   for (const d of drawn) {
     const item = base.get(d.slot);
     if (!item) continue;
     const tex = image(d.path);
+    if (d.blend !== BLEND.normal) {
+      unobserved.push({ slot: d.slot, reason: "blend", samples: 0, visible: 0 });
+      continue;
+    }
     let opaque = 0;
     for (let i = 3; i < tex.rgba.length; i += 4) if (tex.rgba[i]! >= 200) opaque++;
     if (opaque < 50) continue;
@@ -237,7 +300,9 @@ export function fitRestPose(
         }
       return [sum[0] / wsum, sum[1] / wsum, sum[2] / wsum];
     };
-    const list: Sample[] = [];
+    const list: Sample[] = [],
+      visiblePixels = new Set<number>();
+    let candidateSamples = 0;
     for (let y = step >> 1; y < tex.height; y += step)
       for (let x = step >> 1; x < tex.width; x += step) {
         const k = (y * tex.width + x) * 4;
@@ -264,14 +329,37 @@ export function fitRestPose(
             tri: t / 3,
             bary: [l0, l1, l2],
             w0: [0, 0],
-            rgb: mean(x, y),
+            rgb: mean(x, y).map((v, k) => v * d.color[k]!) as [number, number, number],
           };
           s.w0 = at(item, s);
-          list.push(s);
+          candidateSamples++;
+          const px = Math.floor((s.w0[0] - view.x) * scale),
+            py = Math.floor((view.y - s.w0[1]) * scale);
+          if (
+            px >= 0 &&
+            py >= 0 &&
+            px < reference.width &&
+            py < reference.height &&
+            owner[py * reference.width + px] === slotIds.get(d.slot)
+          ) {
+            visiblePixels.add(py * reference.width + px);
+            list.push(s);
+          }
           break;
         }
       }
-    if (list.length >= 50) samples.set(d.slot, list);
+    // Count independent evidence in picture space, but preserve the established texture-space
+    // objective and target distribution: deduplicating those changes occluded tracking minima.
+    if (visiblePixels.size >= 50) {
+      samples.set(d.slot, list);
+      samplePixels.set(d.slot, visiblePixels.size);
+    } else if (candidateSamples >= 50)
+      unobserved.push({
+        slot: d.slot,
+        reason: list.length ? "too-few-visible-samples" : "occluded",
+        samples: candidateSamples,
+        visible: visiblePixels.size,
+      });
   }
 
   // ---- rigid placement per bone, parents first: a bone's parts are matched together, around
@@ -285,23 +373,82 @@ export function fitRestPose(
   };
   type Bone = { data: { name: string }; parent: Bone | null };
   // A part counts toward the nearest bone free to move (a face plate and its eyes fit as the head).
-  const freeNames = options.bones ? new Set(options.bones) : undefined;
+  const freeNames = new Set(
+    options.bones ??
+      sk.skeleton.bones.filter((b) => b.data.name !== "root").map((b) => b.data.name),
+  );
   const byName = new Map(
     (sk.skeleton.bones as unknown as Bone[]).map((b) => [b.data.name, b] as const),
   );
   const freeOwner = (start: Bone) => {
     let b: Bone | null = start;
-    while (b && freeNames && !freeNames.has(b.data.name) && b.parent) b = b.parent;
-    return b!.data.name;
+    while (b && !freeNames.has(b.data.name)) b = b.parent;
+    return b?.data.name;
   };
   const slotBone = new Map<string, string>(),
-    slotGroup = new Map<string, string>();
+    slotGroup = new Map<string, string>(),
+    ownership = new Map<string, NonNullable<PoseFitPart["ownership"]>>(),
+    parts: PoseFitPart[] = [];
   for (const slot of samples.keys()) {
-    const owner = freeOwner(sk.skeleton.findSlot(slot)!.bone as unknown as Bone);
+    const explicit = options.owners?.[slot];
+    if (explicit !== undefined && !byName.has(explicit))
+      throw new Error(`POSE_OWNER: unknown bone ${explicit} for slot ${slot}`);
+    const runtimeSlot = sk.skeleton.findSlot(slot)!,
+      attachment = runtimeSlot.getAttachment() as unknown as {
+        bones?: number[] | null;
+        vertices: ArrayLike<number>;
+      };
+    let owner: string | undefined, reason: PoseFitPart["reason"];
+    if (explicit !== undefined) {
+      owner = freeOwner(byName.get(explicit)!);
+      ownership.set(slot, "explicit");
+    } else if (attachment.bones) {
+      // The slot bone is not the binding of a weighted mesh. Resolve each positive influence to
+      // its nearest movable ancestor; different controls need an explicit authoring decision.
+      const controls = new Set<string | undefined>();
+      for (let i = 0, v = 0; i < attachment.bones.length;) {
+        const count = attachment.bones[i++]!;
+        for (let j = 0; j < count; j++, v += 3) {
+          const bone = sk.skeleton.bones[attachment.bones[i++]!]!;
+          if (attachment.vertices[v + 2]! > 0) controls.add(freeOwner(bone as unknown as Bone));
+        }
+      }
+      ownership.set(slot, "weights");
+      if (controls.size === 1) owner = [...controls][0];
+      else if (controls.size > 1) {
+        const declared = runtimeSlot.bone as unknown as Bone,
+          hint = freeOwner(declared);
+        // A non-root slot on a contributing control is an existing authoring hint. Keep it for
+        // joint gradients; a root slot on unrelated controls carries no such decision.
+        if (declared.parent && hint && controls.has(hint)) {
+          owner = hint;
+          ownership.set(slot, "slot");
+        } else reason = "ambiguous-weighted-owner";
+      }
+    } else {
+      owner = freeOwner(runtimeSlot.bone as unknown as Bone);
+      ownership.set(slot, "slot");
+    }
+    if (owner === undefined) {
+      parts.push({
+        slot,
+        ownership: ownership.get(slot),
+        reason: reason ?? "no-free-owner",
+        samples: samplePixels.get(slot)!,
+        score: 0,
+        dx: 0,
+        dy: 0,
+        rotate: 0,
+        shift: 0,
+        used: false,
+      });
+      continue;
+    }
     slotBone.set(slot, owner);
     const g = options.groups?.[owner],
       gb = g === undefined ? undefined : byName.get(g);
-    if (gb) slotGroup.set(slot, freeOwner(gb));
+    const group = gb && freeOwner(gb);
+    if (group) slotGroup.set(slot, group);
   }
   // A zero placement's inverse: where the matching would put a part the build already shows.
   const unmove = (T: Rigid, x: [number, number]): [number, number] => {
@@ -314,7 +461,6 @@ export function fitRestPose(
     anchored = new Set<string>(),
     placements: Record<string, Rigid> = {},
     lost: string[] = [],
-    parts: PoseFitPart[] = [],
     targets = new Map<string, { sample: Sample; to: [number, number] }[]>();
   const childWindow = 0.5 * window;
   for (const b of sk.skeleton.bones as unknown as Bone[]) {
@@ -336,7 +482,9 @@ export function fitRestPose(
       for (const slot of slots)
         parts.push({
           slot,
-          samples: samples.get(slot)!.length,
+          bone: name,
+          ownership: ownership.get(slot),
+          samples: samplePixels.get(slot)!,
           score: 0,
           dx: 0,
           dy: 0,
@@ -396,10 +544,23 @@ export function fitRestPose(
     type Cand = [number, number, number, number];
     // A slight preference for the smaller move settles identical images (two legs) and plain areas.
     const from =
-      (o: Cand, span: number, turn: number) =>
+      (o: Cand, span: number, turn: number, preference = 0.05) =>
       (c: Cand): number =>
-        c[0] - 0.05 * (Math.hypot(c[2] - o[2], c[3] - o[3]) / span + Math.abs(c[1] - o[1]) / turn);
+        c[0] -
+        preference *
+          (Math.hypot(c[2] - o[2], c[3] - o[3]) / (span || 1) +
+            Math.abs(c[1] - o[1]) / (turn || 1));
     let rank = from([0, 0, 0, 0], moveSpan, turnSpan);
+    const globalBounds = { seed: [0, 0, 0, 0] as Cand, move: window, turn: maxRotate };
+    let bounds = globalBounds;
+    // Preserve the existing search grid. A locked axis is one evaluation at its seed, never a
+    // zero-step loop; adding extra seeds to ordinary grids can change a tracked part's identity.
+    const axis = (centre: number, span: number, step: number) => {
+      if (span === 0) return [centre];
+      const values: number[] = [];
+      for (let v = centre - span; v <= centre + span + 1e-9; v += step) values.push(v);
+      return values;
+    };
     const search = (
       sub: typeof set,
       seeds: Cand[],
@@ -410,13 +571,24 @@ export function fitRestPose(
       keep: number,
     ) => {
       const out: Cand[] = [];
-      for (const [, r0, x0, y0] of seeds)
-        for (let r = r0 - rotSpan; r <= r0 + rotSpan + 1e-9; r += rotStep) {
+      for (const [, r0, x0, y0] of seeds) {
+        const turns = axis(r0, rotSpan, rotStep),
+          xs = axis(x0, span, step),
+          ys = axis(y0, span, step);
+        for (const r of turns) {
           if (Math.abs(r) > maxRotate + 1e-9) continue;
-          for (let dx = x0 - span; dx <= x0 + span + 1e-9; dx += step)
-            for (let dy = y0 - span; dy <= y0 + span + 1e-9; dy += step)
+          for (const dx of xs)
+            for (const dy of ys) {
+              if (
+                Math.abs(r - bounds.seed[1]) > bounds.turn + 1e-9 ||
+                Math.abs(dx - bounds.seed[2]) > bounds.move + 1e-9 ||
+                Math.abs(dy - bounds.seed[3]) > bounds.move + 1e-9
+              )
+                continue;
               out.push([score(sub, r, dx, dy), r, dx, dy]);
+            }
         }
+      }
       out.sort((a, b) => rank(b) - rank(a));
       return out.slice(0, keep);
     };
@@ -436,13 +608,15 @@ export function fitRestPose(
       const span = options.track?.move ?? 0.25 * window,
         spin = Math.min(maxRotate, options.track?.turn ?? 15),
         step = Math.min(coarse, span / 2);
-      rank = from(seed, span, spin);
+      bounds = { seed, move: span, turn: spin };
+      rank = from(seed, span, spin, 0.04);
       let near = search(subset(200), [seed], spin, Math.min(5, spin / 2), span, step, 8);
       near = search(subset(600), near, 5, 1, step, step / 4, 3);
       near = search(set, near, 1, 0.25, step / 4, Math.max(0.5, step / 16), 1);
       if (near[0] && near[0][0] >= minScore) best = near;
       else {
         lost.push(name);
+        bounds = globalBounds;
         rank = from([0, 0, 0, 0], moveSpan, turnSpan);
       }
     }
@@ -496,7 +670,9 @@ export function fitRestPose(
       const used = boneScore >= minScore && partScore >= 0.6 * minScore;
       parts.push({
         slot,
-        samples: list.length,
+        bone: name,
+        ownership: ownership.get(slot),
+        samples: samplePixels.get(slot)!,
         score: +partScore.toFixed(3),
         dx: +(moved[0] - centre[0]).toFixed(2),
         dy: +(moved[1] - centre[1]).toFixed(2),
@@ -652,6 +828,7 @@ export function fitRestPose(
     parts,
     placements,
     lost,
+    unobserved,
     coverage: +(sampled ? usedSamples / sampled : 0).toFixed(3),
     residual: {
       median: +(perPart[Math.floor((perPart.length - 1) / 2)] ?? 0).toFixed(2),
@@ -662,7 +839,7 @@ export function fitRestPose(
 }
 
 /**
- * The share of a fit's matched parts, by texels, drawn more than `distance` world units from where
+ * The share of a fit's matched parts, by sampled picture pixels, drawn more than `distance` world units from where
  * the posed build draws them. On a picture of a pose the build already shows (a zero frame,
  * ADR-033) what moves is the matching's own error: a look-alike finger or a part drawn differently,
  * a few parts on their own. A pose that is off moves whole limbs.
@@ -705,6 +882,24 @@ export function agreePoses(
     if (Object.keys(m).length) pose[bone] = m;
   }
   return { pose, disagree };
+}
+
+/** A sudden switch to a look-alike, measured against the last two reliable angular placements.
+ * This is an uncertainty check, not a motion clamp: callers leave a gap instead of keying it. */
+export function trackTurnJump(
+  history: readonly { frame: number; placement: Placement }[],
+  frame: number,
+  placement: Placement,
+  limits: { turn: number; maximum: number },
+): boolean {
+  const a = history.at(-2),
+    b = history.at(-1);
+  if (!a || !b || a.frame === b.frame) return false;
+  const speed = (b.placement.r - a.placement.r) / (b.frame - a.frame),
+    travel = speed * (frame - b.frame),
+    expected = b.placement.r + travel,
+    tolerance = Math.min(limits.maximum, Math.max(limits.turn, 2 * Math.abs(travel)));
+  return Math.abs(placement.r - expected) > tolerance;
 }
 
 /** A reference picture of the pose on one frame (a storyboard frame or a frame of a video). */
