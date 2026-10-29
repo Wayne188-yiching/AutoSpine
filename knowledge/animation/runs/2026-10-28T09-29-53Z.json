@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T09:29:45.060Z",
+  "startedAt": "2026-10-28T09:29:53Z",
+  "completedAt": "2026-10-28T09:33:20.359Z",
+  "result": "updated",
+  "focus": ["補足日本官方製作參考", "Layout 圖中的構圖與表情，以及先表演後細節的工作順序"],
+  "addedIds": ["japan-kyoani-violet-layout-example"],
+  "updatedIds": [],
+  "evidence": {
+    "imageEntries": 1,
+    "textContextRead": true,
+    "continuousClipsReviewed": 0,
+    "metadataOnlyAdded": 0
+  },
+  "research": [
+    {
+      "url": "https://violet-evergarden.jp/special/making/",
+      "outcome": "實際閱讀官方 Making 第 2–5 節及頁尾署名。原畫先建立表演與時間安排、再補細節的描述獨立記為文字證據；沒有宣稱觀看片段。"
+    },
+    {
+      "url": "https://violet-evergarden.jp/img/special/makingImg03.jpg",
+      "outcome": "在背景瀏覽器直接看過 700×293 Layout 圖，記錄左側頭肩與表情、右側場景結構及註記；保留圖中區域定位。只收錄公開網址與原創觀察，沒有存原圖或瀏覽器截圖。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 11 sources",
+    "indexBuild": "passed — 11 sources",
+    "generatedSourceAndImageLink": "passed"
+  },
+  "limits": [
+    "未觀看連續影片，不從 Layout 插圖或官方流程說明推算幀數與動作節奏。",
+    "不猜測單張 Layout 的個別原畫師，不將片廠工種直接改稱工具的三個製作階段。",
+    "本輪只更新 knowledge/animation/；沒有引擎、角色素材、安裝快取、Git 提交／推送或外部模型操作。"
+  ],
+  "nextFocus": "日本官方短動作鏡頭或既有 PV 補看，優先跳躍、接觸與轉折 Pose；只有實際連續看過同一鏡頭才升級節奏證據。"
+}

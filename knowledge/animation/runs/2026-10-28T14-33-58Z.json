@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T14:33:49.657Z",
+  "startedAt": "2026-10-28T14:33:58Z",
+  "completedAt": "2026-10-28T14:38:07.892Z",
+  "result": "updated",
+  "focus": ["補足歐洲圖像參考", "低姿勢表演、手部接觸與可讀剪影"],
+  "addedIds": ["europe-wolfwalkers-low-pose-contact"],
+  "updatedIds": [],
+  "evidence": {
+    "imageEntries": 1,
+    "officialGalleryImagesActuallyViewed": 3,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://folivari.com/en/production-en/wolfwalkers-production/",
+      "outcome": "已讀 Folivari 官方製作名單、版權署名及公司地址；直接查看同頁的三張公開圖片後，選取低姿勢與手部接觸較有用的 WOLFWALKERS-2.webp 收錄。"
+    },
+    {
+      "url": "https://folivari.com/wp-content/uploads/2025/10/WOLFWALKERS-2.webp",
+      "outcome": "實際檢視 1920×1038 圖片，保留角色前後手、表情、低姿勢與髮形／背景分離的區域定位。未記錄任何連續節奏。"
+    }
+  ],
+  "comparedButNotAdded": [
+    {
+      "url": "https://folivari.com/wp-content/uploads/2025/10/WOLFWALKERS-4.webp",
+      "reason": "已看森林中持弩人物的單張圖；本輪優先收錄接觸與表演更明確的另一張，避免新增過多近似構圖條目。"
+    },
+    {
+      "url": "https://folivari.com/wp-content/uploads/2025/10/WOLFWALKERS-1-COVER-IMAGE.webp",
+      "reason": "已看樹枝上的雙人與鳥；保留為選材比較，未另增重複作品的通用構圖筆記。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://www.cartoonsaloon.ie/irish-animation-studio/feature-films/wolfwalkers/",
+      "reason": "文字抓取回應 HTTP 403；改以參與製作的 Folivari 官方公開相簿研究，未繞過存取限制。"
+    },
+    {
+      "url": "https://www.cartoonsaloon.ie/wp-content/uploads/2018/08/Key-Posing-artist.pdf",
+      "reason": "文字抓取回應 HTTP 403；沒有讀到文件內容，未依招聘標題編寫技法觀察或加入已研讀條目。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 14 sources",
+    "indexBuild": "passed — 14 sources",
+    "generatedEntryAndImageLink": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "只檢視靜態官方圖片，沒有以髮形方向或姿勢猜測速度、延遲、受力或動作順序。",
+    "單圖的個別作者與正片幀號尚未確認；保留已知製作團隊及權利人署名，不把發布者寫成個人原畫師。",
+    "沒有下載／重傳原圖或保存完整瀏覽器截圖；僅更新 knowledge/animation/，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "日本或歐洲的擠壓伸展、拖影及轉折 Pose 參考；優先有原始作者與清楚示例的公開教材。影片節奏仍需真實連續觀看證據。"
+}

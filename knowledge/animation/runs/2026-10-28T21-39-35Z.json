@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T21:39:26.591Z",
+  "startedAt": "2026-10-28T21:39:35Z",
+  "completedAt": "2026-10-28T21:48:11.058Z",
+  "result": "updated",
+  "focus": ["走路支撐姿勢圖及官方教學影片", "篩選可使用的原始來源並維持研讀證據範圍"],
+  "addedIds": ["us-animationmentor-walk-video-queue"],
+  "updatedIds": [],
+  "evidence": {
+    "metadataOnlyAdded": 1,
+    "newReviewedSources": 0,
+    "imageEntries": 0,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=Oda0Au-gj4c",
+      "outcome": "核對既有官方文章的內嵌影片 ID、YouTube 標題、Animation Mentor 發布者及 35:38 片長。視覺擷取未成功，僅加入待研讀入口，觀察與應用推論保持空白。"
+    }
+  ],
+  "declinedSources": [
+    {
+      "url": "https://www.animatorisland.com/secret-of-animation-walks-simplified/",
+      "reason": "已讀文章及原站授權說明；https://www.animatorisland.com/imprint/ 明列商業使用需作者許可，未把該原圖嵌入外掛知識庫。文章的受力敘述亦未採作物理驗證。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://animatorisland.b-cdn.net/wp-content/uploads/2011/12/walk_simplified_all.png",
+      "reason": "已由原站附件頁核對原始圖片連結與尺寸，畫面擷取逾時，未看見像素，未記姿勢觀察。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Oda0Au-gj4c",
+      "reason": "來源資訊與定位可讀，11:01 的兩次畫面擷取均逾時；章節由系統自動產生，只當定位線索，不當動畫觀察。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 22 sources",
+    "indexBuild": "passed — 22 sources",
+    "generatedMetadataAndEmptyObservations": "passed",
+    "defaultSearchExcludesQueue": "passed",
+    "allSearchFindsQueue": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "本輪沒有新研讀的動畫或姿勢圖，新增的僅是經核對的官方影片研究佇列，不為數量補造分析。",
+    "畫面擷取失敗及背景播放經過時間都沒有改寫成已觀看或已學會；既有文字教材的證據保持不變。",
+    "只更新 knowledge/animation/；沒有下載媒體或保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "重訪這筆官方走路影片佇列以取得真正可判讀的支撐 Pose；若仍無法擷取，改查明確允許使用且可實際檢視的圖像，不累加同題材待研讀入口。"
+}

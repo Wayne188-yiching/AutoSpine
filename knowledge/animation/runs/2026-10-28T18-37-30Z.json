@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T18:37:23.444Z",
+  "startedAt": "2026-10-28T18:37:30Z",
+  "completedAt": "2026-10-28T18:43:06.735Z",
+  "result": "updated",
+  "focus": ["補足美國原始教材與角色造型參考", "擠壓伸展的材質表達及主動跳躍意圖"],
+  "addedIds": ["us-pixar-khan-squash-acting"],
+  "updatedIds": [],
+  "evidence": {
+    "videoEntries": 1,
+    "visualSamplesAdded": 2,
+    "transcriptRead": true,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.khanacademy.org/computing/pixar/animate/ball/v/animate-4",
+      "outcome": "在正常公開原頁核對 Pixar in a Box 課程、YouTube ID、逐字稿及 CC BY-NC-SA 4.0 連結。未註冊或登入，也沒有把逐字稿閱讀當成連續看片。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=L_lCAaTKIRE",
+      "outcome": "核對 Khan Academy Labs 發布者，實際檢視 00:19 的曲線介面與 01:13 的小檯燈造型。只記單張畫面及可回查文字；未知的講師、片尾職務及影片發布日期保持未核對。"
+    }
+  ],
+  "comparedButNotRetained": [
+    {
+      "seconds": 59,
+      "reason": "已看過小檯燈畫面，但有明顯模糊，不將該單格當清楚的蓄勢或接觸 Pose；本輪選用較清楚的 01:13。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.khanacademy.org/computing/pixar/animate/ball/v/animate-4",
+      "issue": "文字工具開啟原頁未回傳可讀主文；正常背景瀏覽器可載入課程與逐字稿，未繞過存取限制。",
+      "resolved": true
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 18 sources",
+    "indexBuild": "passed — 18 sources",
+    "generatedVideoAndEvidence": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "本輪沒有連續觀看任何一段動作；背景播放經過時間不計入 clip-reviewed。",
+    "教材文字、單格造型與 Spine 適用推論分開記錄；不以動作意圖說明推算速度或精確變形時機。",
+    "沒有下載影片或保存瀏覽器截圖；只更新 knowledge/animation/，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "已知影片中的接觸／重量 Pose，或原作者公開連續姿勢圖；優先補有支撐點與動作轉折的可判讀畫面。"
+}

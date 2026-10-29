@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T00:35:30.080Z",
+  "startedAt": "2026-10-29T00:35:36Z",
+  "completedAt": "2026-10-29T00:39:13.793Z",
+  "result": "updated",
+  "focus": ["日本官方製作資料", "Layout 銜接與角色形體連續性的檢查依據"],
+  "addedIds": ["japan-bnp-layout-continuity-review"],
+  "updatedIds": [],
+  "evidence": {
+    "textReviewedAdded": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://bnpictures.hatenablog.com/entry/2022/07/01/170000",
+      "outcome": "讀取高橋晃訪談「作画監督の仕事」三組問答，整理 Layout 檢查、原畫形體連續性及修正先後。分類為 text-reviewed，沒有把文字當成看過動畫。"
+    },
+    {
+      "url": "https://recruit.bn-pictures.co.jp/index.html",
+      "outcome": "在背景瀏覽器核對頁尾 OFFICIAL SNS 的「公式ブログ」實際連到 bnpictures.hatenablog.com，確認訪談發布者。"
+    },
+    {
+      "url": "https://www.bn-pictures.co.jp/business/making.html",
+      "outcome": "讀到 Layout、原畫及中割的流程；本輪未看圖或片段，未另加一筆與既有流程重複的教材。"
+    },
+    {
+      "url": "https://www.bn-pictures.co.jp/contact/copyright.html",
+      "outcome": "核對來源未給開放授權，沒有複製、嵌入或下載其圖片／媒體；只保留原站連結與原創研讀筆記。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://www.youtube.com/watch?v=-uqfPNSMWrU",
+      "reason": "一般觀看頁可開啟並核對京アニチャンネル及 21 秒片長；暫停在 0:07 後畫面擷取仍逾時，沒有看見像素。維持既有 text-reviewed 條目及其查證日期，不把定位改寫成畫面證據。"
+    },
+    {
+      "url": "https://violet-evergarden.jp/img/special/makingImg02.jpg",
+      "reason": "由官方 Making 第 2 節連結核對 700×313 分鏡原圖網址；背景瀏覽器開啟正常，但畫面擷取逾時，沒有記錄內容觀察或新增圖片條目。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 24 sources",
+    "indexBuild": "passed — 24 sources",
+    "dedupAndEvidence": "passed",
+    "priorTsuruneEvidencePreserved": "passed",
+    "generatedTitle": "passed",
+    "defaultSearch": "passed — text-reviewed without samples/segments",
+    "preexistingNonKnowledgeEdits": "five modified tracked files unchanged by hash during library update",
+    "workspaceRead": "initial Node child-process git read denied; direct git and PowerShell read succeeded",
+    "adHocCheckRepair": "first URL-dedup assertion compared each source to itself; corrected the check variable and passed, with no catalogue change needed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "本輪沒有實際看見新圖片或影片，沒有填 Pose 細節、幀數、速度、節奏或已連續觀看的聲明。",
+    "訪談的檢查順序作為 Spine 應用推論，不改寫為引擎功能、通用業界標準或品質提升證明。",
+    "只更新 knowledge/animation/；未修改引擎、角色素材、安裝快取或其他既有修改，未下載媒體或保存瀏覽器截圖，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "優先尋找可實際檢視的日本／歐洲動作圖或片段；避免每輪反覆嘗試相同擷取失敗的播放器，不以更多同類流程文章填量。"
+}
