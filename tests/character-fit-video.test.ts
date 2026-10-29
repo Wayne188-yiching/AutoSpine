@@ -88,7 +88,8 @@ function moving(plan: CharacterPlan): CharacterPlan {
 }
 /**
  * Two loops of a build rendered on a plain background, off-centre, as an H.264 clip. `decoy` draws
- * another build's arm over the figure on some frames: a look-alike of the arm (ADR-039).
+ * another build's arm over the figure on some frames: a look-alike of the arm (ADR-039). `clip`
+ * renders one pass of a one-shot instead, on a taller canvas.
  */
 async function video(
   ws: string,
@@ -96,6 +97,7 @@ async function video(
   out: string,
   art = fixtureTextures(),
   decoy?: { document: unknown; frames: (f: number) => boolean },
+  clip = { name: "IDLE", N: 40, frames: 80, loop: true, height: 360 },
 ) {
   const sk = loadSkeleton(
     JSON.parse(await readFile(join(build, "fixture_character.json"), "utf8")),
@@ -110,9 +112,9 @@ async function video(
     return t;
   };
   const W = 300,
-    H = 360,
+    H = clip.height,
     fps = 30,
-    N = 40,
+    N = clip.N,
     D = N / fps;
   const view = { x0: -140, y0: 330, scale: 1, width: W, height: H };
   const p = spawn(
@@ -125,12 +127,13 @@ async function video(
     { stdio: ["pipe", "ignore", "inherit"] },
   );
   const done = new Promise<number>((ok) => p.on("close", (c) => ok(c ?? 1)));
-  for (let f = 0; f < 2 * N; f++) {
-    pose(sk, "IDLE", frameTime(f % N, N, D, fps));
+  for (let f = 0; f < clip.frames; f++) {
+    const g = clip.loop ? f % N : f;
+    pose(sk, clip.name, frameTime(g, N, D, fps));
     let canvas = render(sk, texture, view);
-    if (decoy?.frames(f % N)) {
+    if (decoy?.frames(g)) {
       const other = loadSkeleton(decoy.document);
-      pose(other, "IDLE", frameTime(f % N, N, D, fps));
+      pose(other, clip.name, frameTime(g, N, D, fps));
       for (const slot of other.skeleton.slots)
         if (slot.data.name !== "Arm_R") slot.setAttachment(null);
       const top = render(other, texture, view);
@@ -280,6 +283,80 @@ describe("fit-video: a reference video drives the motion (ADR-036)", () => {
       expect((await readdir(join(ws, "fit"))).filter((d) => d.startsWith("round"))).toEqual([]);
     },
     300_000,
+  );
+
+  it.skipIf(!hasFfmpeg)(
+    "fits a one-shot whose figure travels further than its own height (ADR-052)",
+    async () => {
+      const { ws, plan } = await workspace();
+      // An entry: the figure starts 380 units (1.3 figure heights) below its rest place and rises
+      // to it by frame 12, as the Pig's appear does.
+      const T = 380;
+      plan.qa = { ...plan.qa!, view: { x: -60, y: 320, width: 120, height: 720 } };
+      plan.motion.cycle = 20;
+      plan.motion.params = { ...plan.motion.params, up: 4, down: 8, hold: 4 };
+      delete plan.motion.keyed;
+      plan.motion.animations = [
+        { name: "ENTRY", frames: 20, loop: false, pose: { hips: { y: T } } },
+      ];
+      await writeFile(join(ws, "plan.json"), JSON.stringify(plan));
+      const target = structuredClone(plan),
+        a = target.motion.animations[0]!;
+      a.motion = { main: { ...plan.motion.main, depth: 0, rise: 0, holdDepth: 0 } };
+      a.keyposes = [
+        { frame: 12, ease: "sine", pose: { hips: { y: -T }, spine: { rotate: 4 } } },
+        { frame: 20, ease: "sine", pose: { hips: { y: -T }, spine: { rotate: -3 } } },
+      ];
+      await writeFile(join(ws, "target.json"), JSON.stringify(target));
+      await buildCharacterFiles(join(ws, "plan.json"), join(ws, "build"));
+      await buildCharacterFiles(join(ws, "target.json"), join(ws, "target"));
+      const clip = await video(
+        ws,
+        join(ws, "target"),
+        join(ws, "entry.mp4"),
+        undefined,
+        undefined,
+        {
+          name: "ENTRY",
+          N: 20,
+          frames: 21,
+          loop: false,
+          height: 760,
+        },
+      );
+      // Frame 0 is compared with the build's own frame 0: the clip's travel does not widen that
+      // search, so fit-video's preflight is the one check-video-fit reports.
+      const check = await checkVideoFitFiles(
+        join(ws, "plan.json"),
+        join(ws, "build"),
+        join(ws, "check"),
+        { video: clip },
+      );
+      const fit = await fitVideoFiles(join(ws, "plan.json"), join(ws, "build"), join(ws, "fit"), {
+        video: clip,
+        every: 2,
+        rounds: 1,
+      });
+      const preflight = JSON.parse(await readFile(join(ws, "fit", "first-frame.json"), "utf8"));
+      expect(check.ready).toBe(true);
+      expect(preflight.ready).toBe(true);
+      expect(preflight.limits.window).toBe(check.limits.window);
+      expect(fit.searchWindow).toBeGreaterThan(preflight.limits.window + 0.9 * T);
+      expect(preflight.coverage).toBe(check.coverage);
+      expect(preflight.unreachableShare).toBe(check.unreachableShare);
+      // The rise is followed: the hips stay within 3 % of the figure's height of the video's.
+      const best = JSON.parse(
+        await readFile(join(ws, "fit", "best", "plan.json"), "utf8"),
+      ) as CharacterPlan;
+      const want = irPose(target),
+        got = irPose(best);
+      for (let g = 0; g <= 20; g++)
+        expect(
+          Math.abs((got(g).translations.hips?.[1] ?? 0) - (want(g).translations.hips?.[1] ?? 0)),
+        ).toBeLessThan(9);
+      expect(fit.rounds[0]!.rows.find((r) => r.id.startsWith("V3"))!.ok).toBe(true);
+    },
+    600_000,
   );
 
   it.skipIf(!hasFfmpeg)(
