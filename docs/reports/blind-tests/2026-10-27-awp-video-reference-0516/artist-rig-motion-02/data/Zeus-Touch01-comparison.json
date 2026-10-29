@@ -1,0 +1,594 @@
+{
+ "animation": "Touch01",
+ "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\ZeusArtistRig\\_work\\input\\reference\\Touch01.mov",
+ "start": 0,
+ "fps": 30,
+ "frames": {
+  "compared": 61,
+  "animation": 61
+ },
+ "registration": {
+  "iou": 0.956,
+  "pixelsPerUnit": 0.3506
+ },
+ "mirrored": [],
+ "deformation": {
+  "collapses": {},
+  "flips": {}
+ },
+ "notJudged": [
+  {
+   "part": "R_HairLight_01",
+   "frames": 0
+  },
+  {
+   "part": "L_Eyebrow",
+   "frames": 0
+  },
+  {
+   "part": "R_Eyebrow",
+   "frames": 0
+  },
+  {
+   "part": "Eye02",
+   "frames": 0
+  },
+  {
+   "part": "Eye01",
+   "frames": 0
+  },
+  {
+   "part": "Eye_white_l",
+   "frames": 0
+  },
+  {
+   "part": "Eye_white_r",
+   "frames": 0
+  },
+  {
+   "part": "L_Arm_03_03",
+   "frames": 0
+  },
+  {
+   "part": "Mouth_In",
+   "frames": 0
+  }
+ ],
+ "pass": false,
+ "rows": [
+  {
+   "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+   "ok": false,
+   "value": [
+    0.875,
+    0.739
+   ]
+  },
+  {
+   "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+   "ok": false,
+   "value": [
+    0.61,
+    4.3,
+    "31 parts"
+   ]
+  },
+  {
+   "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+   "ok": false,
+   "value": [
+    1,
+    0.62
+   ]
+  },
+  {
+   "id": "V5 collapsed or squashed-through parts = 0",
+   "ok": true,
+   "value": []
+  }
+ ],
+ "hints": [
+  "outline differs most at frame 25 (0.83s, overlap 0.74): pose, placement or size",
+  "the whole figure moves 0.62x as far as the reference (too small)",
+  "Belt: off by 3.2% of the height, moving differently",
+  "ZEUS_MG_LightningFire: off by 2.5% of the height",
+  "L_Arm_03_01: off by 2.5% of the height",
+  "L_Arm_03_02: off by 2.4% of the height"
+ ],
+ "figure": {
+  "axis": "vertical",
+  "lag": 1,
+  "amplitude": 0.616,
+  "motion": 0.02611
+ },
+ "frameError": [
+  0.275,
+  0.301,
+  0.284,
+  0.43,
+  0.451,
+  0.352,
+  0.335,
+  0.391,
+  0.41,
+  0.261,
+  0.423,
+  0.313,
+  0.509,
+  0.522,
+  0.513,
+  0.59,
+  0.611,
+  0.655,
+  0.842,
+  0.951,
+  0.94,
+  1.728,
+  3.851,
+  1.936,
+  0.802,
+  2.292,
+  1.129,
+  0.847,
+  0.896,
+  0.925,
+  1.018,
+  1.018,
+  1.011,
+  1.144,
+  1.247,
+  1.072,
+  1.259,
+  1.299,
+  1.554,
+  1.477,
+  1.507,
+  1.388,
+  0.97,
+  0.962,
+  0.864,
+  0.678,
+  0.822,
+  0.649,
+  0.519,
+  0.36,
+  0.359,
+  0.299,
+  0.285,
+  0.295,
+  0.301,
+  0.278,
+  0.287,
+  0.297,
+  0.288,
+  0.272,
+  0.263
+ ],
+ "parts": [
+  {
+   "part": "Belt",
+   "frames": 60,
+   "median": 3.21,
+   "p90": 3.54,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "ZEUS_MG_LightningFire",
+   "frames": 34,
+   "median": 2.54,
+   "p90": 4.3,
+   "lag": 0,
+   "amplitude": 1.02,
+   "correlation": 0.98
+  },
+  {
+   "part": "L_Arm_03_01",
+   "frames": 48,
+   "median": 2.49,
+   "p90": 6.33,
+   "lag": 0,
+   "amplitude": 1.04,
+   "correlation": 0.99
+  },
+  {
+   "part": "L_Arm_03_02",
+   "frames": 55,
+   "median": 2.43,
+   "p90": 3.38,
+   "lag": 0,
+   "amplitude": 1.01,
+   "correlation": 1
+  },
+  {
+   "part": "L_Arm_02",
+   "frames": 55,
+   "median": 2.31,
+   "p90": 3.94,
+   "lag": 0,
+   "amplitude": 1,
+   "correlation": 1
+  },
+  {
+   "part": "L_Arm_03",
+   "frames": 46,
+   "median": 2.25,
+   "p90": 3.42,
+   "lag": 0,
+   "amplitude": 1.02,
+   "correlation": 0.98
+  },
+  {
+   "part": "R_Arm_02",
+   "frames": 58,
+   "median": 1.63,
+   "p90": 2.79,
+   "lag": 0,
+   "amplitude": 0.78,
+   "correlation": 0.96
+  },
+  {
+   "part": "L_Arm_01",
+   "frames": 56,
+   "median": 1.09,
+   "p90": 1.57,
+   "lag": 0,
+   "amplitude": 1.01,
+   "correlation": 0.97
+  },
+  {
+   "part": "R_Arm_01",
+   "frames": 58,
+   "median": 1.07,
+   "p90": 2.06,
+   "lag": 0,
+   "amplitude": 0.87,
+   "correlation": 0.95
+  },
+  {
+   "part": "Beard_02_1",
+   "frames": 59,
+   "median": 1.02,
+   "p90": 2.25,
+   "lag": 0,
+   "amplitude": 1.1,
+   "correlation": 0.86
+  },
+  {
+   "part": "Mouth_Out",
+   "frames": 47,
+   "median": 0.94,
+   "p90": 2.07,
+   "lag": 1,
+   "amplitude": 1.12,
+   "correlation": 0.92
+  },
+  {
+   "part": "R_Hair",
+   "frames": 46,
+   "median": 0.77,
+   "p90": 1.55,
+   "lag": 0,
+   "amplitude": 1,
+   "correlation": 0.97
+  },
+  {
+   "part": "Beard",
+   "frames": 59,
+   "median": 0.67,
+   "p90": 1.51,
+   "lag": 1,
+   "amplitude": 1.11,
+   "correlation": 0.96
+  },
+  {
+   "part": "Face",
+   "frames": 59,
+   "median": 0.65,
+   "p90": 1.37,
+   "lag": 1,
+   "amplitude": 1.07,
+   "correlation": 0.98
+  },
+  {
+   "part": "R_Arm_03",
+   "frames": 51,
+   "median": 0.65,
+   "p90": 4.95,
+   "lag": 0,
+   "amplitude": 0.85,
+   "correlation": 0.95
+  },
+  {
+   "part": "ShoulderStrap",
+   "frames": 59,
+   "median": 0.61,
+   "p90": 1.02,
+   "lag": 1,
+   "amplitude": 0.97,
+   "correlation": 0.97
+  },
+  {
+   "part": "Body",
+   "frames": 60,
+   "median": 0.52,
+   "p90": 0.91,
+   "lag": 1,
+   "amplitude": 0.75,
+   "correlation": 0.94
+  },
+  {
+   "part": "R_Hair_01",
+   "frames": 50,
+   "median": 0.49,
+   "p90": 0.61,
+   "lag": 0,
+   "amplitude": 1.03,
+   "correlation": 0.87
+  },
+  {
+   "part": "L_Beard",
+   "frames": 47,
+   "median": 0.41,
+   "p90": 7.22,
+   "lag": -1,
+   "amplitude": 0.33,
+   "correlation": 0.94
+  },
+  {
+   "part": "L_Hair",
+   "frames": 42,
+   "median": 0.4,
+   "p90": 0.64,
+   "lag": 0,
+   "amplitude": 0.92,
+   "correlation": 0.99
+  },
+  {
+   "part": "L_Hat",
+   "frames": 59,
+   "median": 0.39,
+   "p90": 0.9,
+   "lag": 1,
+   "amplitude": 1.02,
+   "correlation": 0.99
+  },
+  {
+   "part": "R_Beard",
+   "frames": 59,
+   "median": 0.37,
+   "p90": 0.92,
+   "lag": 1,
+   "amplitude": 1.07,
+   "correlation": 0.99
+  },
+  {
+   "part": "Breastplate",
+   "frames": 60,
+   "median": 0.34,
+   "p90": 0.51,
+   "lag": 1,
+   "amplitude": 0.99,
+   "correlation": 0.99
+  },
+  {
+   "part": "Clothing",
+   "frames": 61,
+   "median": 0.32,
+   "p90": 0.54,
+   "lag": 0,
+   "amplitude": 0.9,
+   "correlation": 0.92
+  },
+  {
+   "part": "R_Hat",
+   "frames": 58,
+   "median": 0.3,
+   "p90": 0.48,
+   "lag": 0,
+   "amplitude": 1.01,
+   "correlation": 0.99
+  },
+  {
+   "part": "L_Ear",
+   "frames": 46,
+   "median": 0.3,
+   "p90": 0.6,
+   "lag": 0,
+   "amplitude": 1.04,
+   "correlation": 1
+  },
+  {
+   "part": "qunzi3",
+   "frames": 60,
+   "median": 0.29,
+   "p90": 0.38,
+   "lag": 0,
+   "amplitude": 0.91,
+   "correlation": 0.94
+  },
+  {
+   "part": "L_Hair_01",
+   "frames": 48,
+   "median": 0.23,
+   "p90": 0.62,
+   "lag": 0,
+   "amplitude": 0.98,
+   "correlation": 0.99
+  },
+  {
+   "part": "R_Ear",
+   "frames": 36,
+   "median": 0.23,
+   "p90": 0.57,
+   "lag": 0,
+   "amplitude": 1,
+   "correlation": 0.97
+  },
+  {
+   "part": "Hair",
+   "frames": 59,
+   "median": 0.22,
+   "p90": 0.59,
+   "lag": 1,
+   "amplitude": 1,
+   "correlation": 0.99
+  },
+  {
+   "part": "qunzi2",
+   "frames": 61,
+   "median": 0.12,
+   "p90": 0.13,
+   "lag": 0,
+   "amplitude": 0.88,
+   "correlation": 0.77
+  },
+  {
+   "part": "R_HairLight_01",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "L_Eyebrow",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "R_Eyebrow",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "Eye02",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "Eye01",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "Eye_white_l",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "Eye_white_r",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "L_Arm_03_03",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  },
+  {
+   "part": "Mouth_In",
+   "frames": 0,
+   "median": null,
+   "p90": null,
+   "lag": null,
+   "amplitude": null,
+   "correlation": null
+  }
+ ],
+ "units": "part errors and frameError in % of figure height; lag in frames, positive = the build is late",
+ "silhouette": [
+  0.957,
+  0.937,
+  0.927,
+  0.92,
+  0.915,
+  0.909,
+  0.904,
+  0.9,
+  0.896,
+  0.895,
+  0.892,
+  0.901,
+  0.909,
+  0.909,
+  0.908,
+  0.907,
+  0.902,
+  0.889,
+  0.875,
+  0.817,
+  0.754,
+  0.777,
+  0.758,
+  0.747,
+  0.796,
+  0.739,
+  0.794,
+  0.795,
+  0.803,
+  0.807,
+  0.812,
+  0.819,
+  0.823,
+  0.832,
+  0.84,
+  0.848,
+  0.854,
+  0.868,
+  0.875,
+  0.871,
+  0.868,
+  0.897,
+  0.893,
+  0.881,
+  0.878,
+  0.883,
+  0.888,
+  0.896,
+  0.915,
+  0.907,
+  0.901,
+  0.905,
+  0.912,
+  0.916,
+  0.92,
+  0.925,
+  0.932,
+  0.944,
+  0.948,
+  0.951,
+  0.957
+ ],
+ "note": "Thresholds are proposals (ADR-034). Look at compare.mp4; the numbers do not replace it."
+}

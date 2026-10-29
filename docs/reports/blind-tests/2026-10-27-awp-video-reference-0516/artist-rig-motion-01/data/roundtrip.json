@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "maxVertexErrorPx": 0.17206655161080692,
+  "rmsVertexErrorPx": 0.041253547763693846,
+  "sampledVertices": 63689,
+  "topologyMismatchCount": 0,
+  "topologyMismatches": [],
+  "worst": {
+    "frame": 87,
+    "part": "Ear_R#Ear_R"
+  },
+  "limitPx": 0.5,
+  "sampleOffsetSeconds": 0.0001,
+  "spineVersion": "4.0.64",
+  "note": "Newly animated artist rig versus its delivered Spine export, not source animation. 100 microsecond sample offset accounts for editor time rounding; cyclic triangle order normalized without reversing winding."
+}

@@ -1,0 +1,63 @@
+{
+  "kind": "artist-rig-video-motion",
+  "engineVersion": "0.5.16-local-unreleased",
+  "bones": 135,
+  "slots": 109,
+  "staticBindingUnchanged": true,
+  "bindingSha256": "48edf1d9e82a9cf1348acf90460249b446caa08fa6cee04298104b6cf58941f7",
+  "sourceAnimationCount": 0,
+  "newAnimations": [
+    "Idel_02"
+  ],
+  "motionSha256": "bc684a0494f3975e09e91fc5e8d65bf17c12bf6221f92cbe65ae63565bc35078",
+  "sourcePolicy": "Artist bones, topology, weights and setup constraints explicitly authorized. Source animation and event timelines excluded before authoring. New motion from MOV only.",
+  "geometry": {
+    "inversions": {},
+    "visibleInversions": {},
+    "maxCharacterStretch": {
+      "slot": "Mouth_01",
+      "value": 3.117
+    },
+    "topStretch": [
+      [
+        "Mouth_01",
+        3.117
+      ],
+      [
+        "Mouth_03",
+        0.746
+      ],
+      [
+        "Tail_M",
+        0.5
+      ],
+      [
+        "Tail_L_04",
+        0.5
+      ],
+      [
+        "Tail_L_05",
+        0.5
+      ],
+      [
+        "Tail_L_03",
+        0.5
+      ]
+    ],
+    "collapses": {},
+    "flips": {}
+  },
+  "refinement": {
+    "source": "MOV visual review and visible inversion check",
+    "faceControlTranslationLimit": [
+      35,
+      20
+    ],
+    "earRotationGain": 0.7,
+    "note": "Case-specific limits, not generic engine defaults. Do not alter artist binding to hide a motion fault."
+  },
+  "phaseCorrection": {
+    "frames": -3,
+    "source": "Fresh compare-06 whole-figure timing; expression event times unchanged"
+  }
+}

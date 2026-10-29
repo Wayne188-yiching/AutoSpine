@@ -1,0 +1,94 @@
+{
+  "pass": true,
+  "localLinksChecked": 41,
+  "videosDecoded": [
+    {
+      "file": "PolarRoar-Idle_LV4-vs-reference.mp4",
+      "width": 648,
+      "height": 84,
+      "duration": "4.000000",
+      "nb_frames": "120"
+    },
+    {
+      "file": "PolarRoar-Idle_LV4.mp4",
+      "width": 2316,
+      "height": 596,
+      "duration": "24.000000",
+      "nb_frames": "720"
+    },
+    {
+      "file": "PolarRoar-Spine-native-bones.mp4",
+      "width": 460,
+      "height": 370,
+      "duration": "1.033333",
+      "nb_frames": "31"
+    },
+    {
+      "file": "PolarRoar-Trigger_Fail_Lv4-vs-reference.mp4",
+      "width": 648,
+      "height": 88,
+      "duration": "1.033333",
+      "nb_frames": "31"
+    },
+    {
+      "file": "PolarRoar-Trigger_Fail_Lv4.mp4",
+      "width": 2316,
+      "height": 596,
+      "duration": "9.000000",
+      "nb_frames": "270"
+    },
+    {
+      "file": "Zeus-Idle_02-vs-reference.mp4",
+      "width": 1376,
+      "height": 672,
+      "duration": "2.000000",
+      "nb_frames": "60"
+    },
+    {
+      "file": "Zeus-Idle_02.mp4",
+      "width": 760,
+      "height": 596,
+      "duration": "12.000000",
+      "nb_frames": "360"
+    },
+    {
+      "file": "Zeus-Spine-native-bones.mp4",
+      "width": 1018,
+      "height": 744,
+      "duration": "2.033333",
+      "nb_frames": "61"
+    },
+    {
+      "file": "Zeus-Touch01-vs-reference.mp4",
+      "width": 1394,
+      "height": 768,
+      "duration": "2.033333",
+      "nb_frames": "61"
+    },
+    {
+      "file": "Zeus-Touch01.mp4",
+      "width": 760,
+      "height": 596,
+      "duration": "12.000000",
+      "nb_frames": "360"
+    }
+  ],
+  "archives": [
+    {
+      "file": "AWP-Zeus-ArtistRig-VideoOnly.zip",
+      "imageFiles": 118,
+      "CRC": "pass",
+      "nativeSpineSHA256": "pass"
+    },
+    {
+      "file": "AWP-PolarRoar-ArtistRig-VideoOnly.zip",
+      "imageFiles": 170,
+      "CRC": "pass",
+      "nativeSpineSHA256": "pass"
+    }
+  ],
+  "binding": "Artist binding retained; zero source animations; source/movie integrity records match",
+  "result": "0/4 full clips; 11/17 judged checks; one unjudged, baseline nine clips unchanged",
+  "visualReview": "Both official Spine bones frames, MOV landmark frames, generated pose contact sheets and final review frames inspected. Version-07 mismatched arcs rejected. Browser rendering was not checked; prior file-URL security block was not bypassed.",
+  "editorUiVerified": false
+}

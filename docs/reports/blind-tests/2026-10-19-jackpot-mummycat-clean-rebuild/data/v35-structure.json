@@ -1,0 +1,77 @@
+{
+  "bones": 57,
+  "slots": 77,
+  "attachments": {
+    "mesh": 91,
+    "region": 15
+  },
+  "meshVertices": 1457,
+  "meshTriangles": 1568,
+  "weightedMeshes": 91,
+  "meanInfluences": 1.39,
+  "ik": 4,
+  "transform": 3,
+  "path": 0,
+  "animations": {
+    "clap": {
+      "duration": 2,
+      "boneTimelines": 24,
+      "boneKeys": 521,
+      "movingBoneTimelines": 13,
+      "slotTimelines": 69,
+      "deformTimelines": 0,
+      "drawOrder": false,
+      "events": false,
+      "keyDensity": 19.192,
+      "movingKeys": 499
+    },
+    "idle": {
+      "duration": 2,
+      "boneTimelines": 24,
+      "boneKeys": 433,
+      "movingBoneTimelines": 18,
+      "slotTimelines": 69,
+      "deformTimelines": 0,
+      "drawOrder": false,
+      "events": false,
+      "keyDensity": 11.694,
+      "movingKeys": 421
+    },
+    "idle2": {
+      "duration": 4,
+      "boneTimelines": 24,
+      "boneKeys": 820,
+      "movingBoneTimelines": 19,
+      "slotTimelines": 69,
+      "deformTimelines": 0,
+      "drawOrder": false,
+      "events": false,
+      "keyDensity": 10.658,
+      "movingKeys": 810
+    },
+    "idle_clap": {
+      "duration": 0.1333,
+      "boneTimelines": 24,
+      "boneKeys": 63,
+      "movingBoneTimelines": 9,
+      "slotTimelines": 69,
+      "deformTimelines": 0,
+      "drawOrder": false,
+      "events": false,
+      "keyDensity": 27.5,
+      "movingKeys": 33
+    },
+    "in": {
+      "duration": 1,
+      "boneTimelines": 24,
+      "boneKeys": 363,
+      "movingBoneTimelines": 18,
+      "slotTimelines": 69,
+      "deformTimelines": 0,
+      "drawOrder": false,
+      "events": false,
+      "keyDensity": 19.5,
+      "movingKeys": 351
+    }
+  }
+}

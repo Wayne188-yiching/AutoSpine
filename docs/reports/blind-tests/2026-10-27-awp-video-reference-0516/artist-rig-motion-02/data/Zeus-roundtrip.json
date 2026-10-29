@@ -1,0 +1,17 @@
+{
+  "pass": true,
+  "maxVertexErrorPx": 0.12704724979322124,
+  "rmsVertexErrorPx": 0.02030489865143987,
+  "sampledVertices": 76374,
+  "topologyMismatchCount": 0,
+  "topologyMismatches": [],
+  "worst": {
+    "animation": "Touch01",
+    "frame": 36,
+    "part": "ZEUS_MG_LightningFire_Light#ZEUS_MG_LightningFire_Light"
+  },
+  "limitPx": 0.5,
+  "sampleOffsetSeconds": 0.0001,
+  "spineVersion": "4.0.64",
+  "note": "Compared new motion against its own official native roundtrip, never against original timelines. Triangle cyclic order normalized, winding preserved."
+}

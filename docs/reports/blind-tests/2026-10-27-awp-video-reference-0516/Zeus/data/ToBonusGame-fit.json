@@ -1,0 +1,911 @@
+{
+  "animation": "ToBonusGame",
+  "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\ToBonusGame.mov",
+  "start": 0,
+  "fps": 30,
+  "label": "reference-fitted",
+  "pass": false,
+  "inputs": [
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\plans\\plan-24.json",
+      "bytes": 16992,
+      "sha256": "91d0de60dc914d38ed085d62562c7d0a0d2cd3fa7ff25ee54657991af8feecce"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\imagesOnly.json",
+      "bytes": 151424,
+      "sha256": "f7dad6838d5bd06f320a5c87c1cd92bb4e5e9d780d57b8e585be40e9e64245ed"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Black.png",
+      "bytes": 81,
+      "sha256": "fd5652040fe08327e0b8dfe192f6457c266aca0e3b3400c847b757b824e450f5"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi12.png",
+      "bytes": 90616,
+      "sha256": "64089569f523bb6eff86a5aff158be1c5ff7bb1b807d4b7d93e1577c1a07e06b"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi11.png",
+      "bytes": 24418,
+      "sha256": "d6c534a52df72edcfaf73d648505f77578f51b03c18cc0de1df0cec7c5016461"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair.png",
+      "bytes": 42314,
+      "sha256": "cb1fd8b8177c59290a9591843e320fae76a3d419443e73f6c4c04c957399c277"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair.png",
+      "bytes": 29265,
+      "sha256": "0e08ce38f639c3d286f76b16773e06ba1f3e65937596b6db5c232b1c1b94c363"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_HairLight.png",
+      "bytes": 24867,
+      "sha256": "bcab89ba79f3a189bfac40ebef5d087310aba7cff2f108fbbfdc3485956a635c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair_01.png",
+      "bytes": 13339,
+      "sha256": "4d680760b78aa1ed8f19c71767cdb4ba08d171ca47ab7934eeabe67f5ee534b8"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_01.png",
+      "bytes": 67678,
+      "sha256": "9859e6ffdba4478f9863415de5c78179c590fb10d83203b4067de7d1bbb65a42"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_Light_01.png",
+      "bytes": 47421,
+      "sha256": "4fb054b27db5cc21717fb84bb405469314d11c253c4bcdc807128da22e1478d5"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair_01.png",
+      "bytes": 20432,
+      "sha256": "db479b448f7d0eb10c280a232177855a1795dca3efc452f08346a4c659bd0c8f"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_HairLight_01.png",
+      "bytes": 5173,
+      "sha256": "b1f21f64b7874b3899f84cf055909c1c000375213d6104e937edeb4c323ff66f"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Body.png",
+      "bytes": 195551,
+      "sha256": "eb1b0974d67ce409f0148d0c9686f1145a474242ed794e213399534bc7cca84a"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ShoulderStrap.png",
+      "bytes": 40856,
+      "sha256": "87aa56c17ba7994208e56f587167fbaa2113221ad53f0ff7c63ee69068c96bcb"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye01.png",
+      "bytes": 4472,
+      "sha256": "d92912535e732194a3a166d988a681c109858c4df0c06f61dd967303f3eaa89f"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye02.png",
+      "bytes": 3034,
+      "sha256": "6fa33e4a69d8546150f771c5b5b2334ea1e97bcb58d42b23230206a2af33fb9f"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Face.png",
+      "bytes": 40035,
+      "sha256": "50c8f0b6b74f2fcc431af48f5223c1c29feb772d13bd7f3e2096c3bdc6798908"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Hair.png",
+      "bytes": 39139,
+      "sha256": "7f147a77c2022aa8540ac1e8f005772c43fb7e858792d76732d29b5acda5f907"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Ear.png",
+      "bytes": 6089,
+      "sha256": "3fe5a2b8b3d4e00464c92c0bdca1fee909d12323474d6ecf573fcaab7e0acab6"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Ear.png",
+      "bytes": 5732,
+      "sha256": "46d247787cb6adae19e5371f2e1cc87043e656796c776c29819f9064394638dd"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Beard.png",
+      "bytes": 8847,
+      "sha256": "6d44f53834ff80e154cde6c89b65d8eeb10ae892e843f2356babd8f7c6e31c17"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Beard.png",
+      "bytes": 9166,
+      "sha256": "b37812105a6788e6d65db454ed0e4f2b88ab022e413290b0128a7b160a3b1623"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_In.png",
+      "bytes": 2576,
+      "sha256": "99df8fbe40f9600e058ef8fcc648a3046cea33b6ac16c3bd2c9facaa5e6b8940"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_Out.png",
+      "bytes": 6055,
+      "sha256": "dc6f65aad6726800d37c8028d83c26a5745d146e5b8701766ed118e0addaf6d3"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard.png",
+      "bytes": 13495,
+      "sha256": "4f5f018f2809b625bc832aa5a496a158975fb479705b4d6a45e0d93a9e56757a"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hat.png",
+      "bytes": 8181,
+      "sha256": "df38b531f0716796e0f4e6d6d654abed3417a8b0191370f15d7efb621b2861db"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Clothing.png",
+      "bytes": 131559,
+      "sha256": "ac25210b733d86f489af9feeac4d01b3fa211002c044821ecb661e68df8b689c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard_02_1.png",
+      "bytes": 13932,
+      "sha256": "a477d8bf712bbf2771809b7e28c039b5c2906d51c545fe89d027489571657cab"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03.png",
+      "bytes": 19327,
+      "sha256": "3a11f41e5cab7ed4b493fa08d38a4f224eda0948f378686c97916bef0150fd70"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_02.png",
+      "bytes": 45755,
+      "sha256": "ef24328e227945e0399711d5dcf12614e22e6e5d1f32d6d2089f88ea49dbf145"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_01.png",
+      "bytes": 62437,
+      "sha256": "967b0266d80d87fe5bc23897cc9e94274701830eabbd77a0474bab7e5685b06c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_03.png",
+      "bytes": 2699,
+      "sha256": "a372869eec5ad9a15a72823cab18bd15173289eeb790dc19c3154ea197703680"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire.png",
+      "bytes": 253324,
+      "sha256": "fdf6e06f0f9a5520236d60bef721246e951dbd7136ca1dc6d546e8b81f26ba98"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire_Light.png",
+      "bytes": 28111,
+      "sha256": "b9d59248c7d81cb752ab049dc41d84e2fdd65e2debcd0f061a44aaf6cd293d0f"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_02.png",
+      "bytes": 15553,
+      "sha256": "1c62a60f6252456c991d76887cc1e840063f6dfe224646bfdb1900b7a785d123"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_01.png",
+      "bytes": 5154,
+      "sha256": "4079272fcb1669bad92e2f7586cfad3011251bd14b89d50f03bc9d61e40647cd"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hat.png",
+      "bytes": 8352,
+      "sha256": "95e3c30cf0f3085e081d1d438b57444dd3521111f77c30004f3ddb6d66a25c04"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Eyebrow.png",
+      "bytes": 4084,
+      "sha256": "a1ffa67655fb5965c0b64bd72af8021181300609784a96d61586560cd742d87f"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Eyebrow.png",
+      "bytes": 3927,
+      "sha256": "c9d53b68f6120ef96de35c8381b81e99a60f1fc10da4b24fd5e18b142b781ade"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_r.png",
+      "bytes": 2931,
+      "sha256": "816e71ea85a2c69804488fc2e36b571409cb302faa9369d73af39ac5ac74c4fb"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_l.png",
+      "bytes": 2946,
+      "sha256": "aed701294764c59f50e75c9b1b6aeb6bc38e30edc385c455dece4789cb5d2719"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_Glow.png",
+      "bytes": 5558,
+      "sha256": "dd96ff688c021cd39525f8f7010993d84d918e84d9059be8c092045c370598e3"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_l.png",
+      "bytes": 3054,
+      "sha256": "376bd00d1b2df9056026915f423013ea72695c5a23479c9078078df156caed7f"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_r.png",
+      "bytes": 3053,
+      "sha256": "8ee9f9f2e9e5e3d01a5f879e744fddb46c96e8f144f9124a064420a3bdc9ddfc"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\LightZEUS.png",
+      "bytes": 62095,
+      "sha256": "82eb7a2bcd23cb39c2912d452223c8f0d86f53cf30312cb41442200ea3ce7a6a"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_01.png",
+      "bytes": 9136,
+      "sha256": "9ae7b154d974b1cd92345a8e41e8fbc15fd98079dc6ab544e7004c61aceb36e9"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_02.png",
+      "bytes": 15339,
+      "sha256": "257f58613f07aa85d8684af067917ccf9c10c0738bc3d20151da53d10c9093fa"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_03.png",
+      "bytes": 15067,
+      "sha256": "f21a05acfcdfbc083e7ec314cb5ba16c2782f4244a7ca5eb83098fb382ddc22b"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_04.png",
+      "bytes": 18464,
+      "sha256": "2af84d6796ce65b951e48c3708c153c84d3b5460561ba194a911517dea783b4a"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_01.png",
+      "bytes": 51604,
+      "sha256": "8449b877835f547e3ecf5d5fd222e77ce1b135736fe5b118413fc87a0a0300ec"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_02.png",
+      "bytes": 65710,
+      "sha256": "fe978c299a38aad3c85c2e838a6c84b112e5c2cd45bd4834b4e10161e194c1e3"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_03.png",
+      "bytes": 77544,
+      "sha256": "91fb5711e2f31d6349379b63e6f3a863eb17d044cb2c53427af05d4b23cdb06e"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_04.png",
+      "bytes": 59016,
+      "sha256": "0c0007bcb974ce1794c5e88242ee147370d24c51ff6725cde8141de1833b8f91"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_04.png",
+      "bytes": 34940,
+      "sha256": "deaff8c72113afd116452dbc88189797eea4d4d4ed7efa37573537502f508345"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\kouqiang.png",
+      "bytes": 1431,
+      "sha256": "ecc82183d91434818feb645efff49dcfee2bb90d18a10edd5699900778a73363"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yingzi.png",
+      "bytes": 37048,
+      "sha256": "03f899e955532fa53f881526afecf98c6d3117607198ae4b39d910c207e5d16a"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa2.png",
+      "bytes": 100877,
+      "sha256": "cffa4684d4795b33840c2fb8d4c06ca70a7120f6a5a67214f9c2a008f346600c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa1.png",
+      "bytes": 157143,
+      "sha256": "6cc461b94be6758fbb946169dd70e9bfc393a6709a49fed5ab833b7f52a54737"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shenti.png",
+      "bytes": 271904,
+      "sha256": "d7b73e2844f9ee680d47e5501821e9a4ba4b6845f54e3029bf552b87a8623167"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\xiong_bozi.png",
+      "bytes": 339358,
+      "sha256": "3840e5ddc8419952260d7a09a74f2959c7886fb36b79078671560156235cfd04"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shoubi1.png",
+      "bytes": 335643,
+      "sha256": "c52a500c3366519e1003251048ef33e26d3d70b7dad1abedb18881dc6e567639"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_xiong1.png",
+      "bytes": 107458,
+      "sha256": "8a8d25dd58167a1a953e025cf76a2a9ebad79de3e9c901627bf9482189ca442a"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_quan1.png",
+      "bytes": 85512,
+      "sha256": "8e77b9875772c23434f6f95a409367151f5933869ba5077097a96eddf33b87a5"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Breastplate.png",
+      "bytes": 12012,
+      "sha256": "63e5310aab44a630c428a77f3f2d20a161b4547a3f7f9baed7e14eb8b8458028"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu2.png",
+      "bytes": 203025,
+      "sha256": "ffda782229072695fb99d307c12817b9a5167f83369d439a9730b3ee8b17be40"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu3.png",
+      "bytes": 437322,
+      "sha256": "5618af1475ebf0211f16f3057098d091509a6201c8833a6761b550d9c50064a1"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi1.png",
+      "bytes": 154485,
+      "sha256": "f853436343cfbae9352fea0d5524214c341eaf711bbc7fcb2b2898d65fcd28d7"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu1.png",
+      "bytes": 55884,
+      "sha256": "dac14ae53171c4b21e745b55722932f791d767718aebbbcb88fb07a70081793d"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai.png",
+      "bytes": 111644,
+      "sha256": "1cd15086ea1331a906c5ce5d3546177ca62c3f9b9345e2f62275fbbb4f6946a4"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi2.png",
+      "bytes": 154485,
+      "sha256": "d6bbd2a4c39e9b8bd56deab8e143f9f31617e022227dc7f29e12fe5c78917104"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\tou_1_3.png",
+      "bytes": 63114,
+      "sha256": "b55ec72ea66bd5aefbea6ac1b710cb83f83a7b5a0634aff21444a5f334fd1390"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\zuichun.png",
+      "bytes": 1074,
+      "sha256": "7232652a592747ddce3d8a72171ef2fa1b17313da38f705f87fc8a495380f9e4"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi2.png",
+      "bytes": 46864,
+      "sha256": "81bea8edaca7192a42a74be6306a96b70cc3a8e581adad2b2fad7693cefa4df6"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai1.png",
+      "bytes": 57070,
+      "sha256": "1f3da60613b205cd26271fff46f899cc2eabc588469e78b7d6218fcf6718f738"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_02.png",
+      "bytes": 71045,
+      "sha256": "b9aa130fc1b07ec402e390a03615c0b381900702f1bdf36ce2abc57ce7f014dd"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_03.png",
+      "bytes": 40002,
+      "sha256": "9549a681d5f8c992d362245b07be70d80bfa7d5cce9908f9efb7c0d6537e1776"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi3.png",
+      "bytes": 47403,
+      "sha256": "49521f767e95da375f90c020b5758224e89db211528758f605524b42b3d15c40"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan.png",
+      "bytes": 38765,
+      "sha256": "ce6dd369d861be60884e69d110b53b315881e26bb2b7ae02795a33029c7171cc"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan2.png",
+      "bytes": 38765,
+      "sha256": "a46a24072a1f3f5b5ce7a48cdfedca5250a6df47b313e712c1d3c17480f331a9"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiong.png",
+      "bytes": 132559,
+      "sha256": "6b437cd91b91d28615e88985fe1b7a5f814d2220fb2b5ac51fd9f9263b6ba4e3"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou2.png",
+      "bytes": 92008,
+      "sha256": "c8c70026dcc1c6ade0f1aab321e3e1729a66db1644c9dfede0d57b64d474913b"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_1.png",
+      "bytes": 85506,
+      "sha256": "610ec2692b57b875a20d65d0d0be7f74b46a65371fee5e4b50e988569210a113"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_2.png",
+      "bytes": 43510,
+      "sha256": "bec78ecf41e7f25e0634aab1e38da5d248d6c3e31a2411fd0e281ff9141e7807"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_3.png",
+      "bytes": 43326,
+      "sha256": "3391c181bd6c5c9f718c8db970e4c911c5b98b11f2a3b90c757e76b278635bd6"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_4.png",
+      "bytes": 44683,
+      "sha256": "cb82e08ec485da026baad4d86bbc15a5d89397651c534ad875244932bfbe9db9"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_5.png",
+      "bytes": 43324,
+      "sha256": "b194394ca21b565e65ceedc493e40c4385f889362a8de0376122767de69eecb2"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1.png",
+      "bytes": 179140,
+      "sha256": "1cb43593ce7e92eb135c440164d1f46540651539e8439f4618ae40d4482df8fe"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1_ying.png",
+      "bytes": 65201,
+      "sha256": "42e9e2b2dc813d0473c341261ea83efd8ccfcbd2d749afdda1c6d9d7b4e179ca"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi2.png",
+      "bytes": 186530,
+      "sha256": "b421968ce26f38845c18669f0c96ebb3c1a013c0da62a59af209b3938f61a687"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1.png",
+      "bytes": 101779,
+      "sha256": "ee4ec2e98aa936dc3be4ea5b8540870c64b5324b9ced64e112369a16c2abcaeb"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_2.png",
+      "bytes": 43474,
+      "sha256": "3056ab2ca018a6add56ef23970ca2c0c91b2037f1c72b967032f1735356265a6"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_3.png",
+      "bytes": 46504,
+      "sha256": "22d25223a2fb5b2864d8c5e6c16992d4b50c20e46b3e132cfebdee0325daaebc"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_4.png",
+      "bytes": 50269,
+      "sha256": "ff425570083a58486c5481ebb89e80e9cdd46ba32db8d2313a4a42cad4dd305e"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_5.png",
+      "bytes": 46705,
+      "sha256": "4c82c50f4d06e32ef37bc3fbf0a4d5519cb998d62b05333c3526297ec1d4992c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu01.png",
+      "bytes": 13569,
+      "sha256": "a46cadd67382687b462f0acbd68b68cdb5a7ea3693e805166ae1d694ce03ce2b"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu02.png",
+      "bytes": 15477,
+      "sha256": "dbed050a0e52606f31feba4868131bf0d0f052eb46ef59ea8fcb55733f8307f7"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu03.png",
+      "bytes": 15888,
+      "sha256": "79a2b4aa85c06fe510332ffe3ef63fdf91778608fbcc9bb01fe783384a751a37"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu04.png",
+      "bytes": 15902,
+      "sha256": "144e745ee3d267a76fd765d39eb5a1931a68b04af98ee651275cda88af379eea"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu05.png",
+      "bytes": 16056,
+      "sha256": "a80f82fe0fbdc30c456ea39c5584df78e6d1ae89a233239cb7ac92bf2196e66a"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu06.png",
+      "bytes": 16055,
+      "sha256": "55586829985e0c853c6987cd591d28c4b0e19389c479bfaf1a229e1614d3e635"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\circle0352.png",
+      "bytes": 7911,
+      "sha256": "49cc1c7e5c320209fa15569ccd490de7a8780e634661c68e53706588c5609700"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0023.png",
+      "bytes": 7699,
+      "sha256": "eb3c9b5a726562617df578603d2ca4e0125b55bb52916cb1bebacd37e80d6b5c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light0099.png",
+      "bytes": 22787,
+      "sha256": "7c34af48d6054f7c8d1943426a00bb8506d9f05198d9ca3ae373fe2afe992ae9"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yanguang.png",
+      "bytes": 2104,
+      "sha256": "1d8b5a9a6b8f39ea4fb1f469e0fc3f75b7862748f4d6edc93c79f70875001507"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0050.png",
+      "bytes": 16265,
+      "sha256": "b5ecadcea8025dbbb8deb5e47193f0c5f2ddf0cb4ae03e7d49814e6a9a7a575c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian2\\big_xd.png",
+      "bytes": 15035,
+      "sha256": "a388c5dc59fb3e1b637d18c8fba82941766fa1113276c1b66aadc70a8eeb0e30"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_0.png",
+      "bytes": 75175,
+      "sha256": "a4c826c3fa076a44b4da0c833daf2322aa49c24d080c70796ade8a3b269219f5"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_4.png",
+      "bytes": 71044,
+      "sha256": "f64f9b2f0d29676fb894ef850200fa07ae3fa59cea7be025838e44590aac77e7"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_6.png",
+      "bytes": 65905,
+      "sha256": "b1e3fb5b2aeeb95308a9f9cbfb63f3ae7527d27356761243d29aa2a6000afc1c"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_8.png",
+      "bytes": 79428,
+      "sha256": "b1aa8b0c54748956465f1e3bf32541016d6de31d71b1cce9342cea26df5a4542"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_10.png",
+      "bytes": 60526,
+      "sha256": "eb6738b8d93fd5a2ee1fcf889c306f18bbda8162ce7ca6494be4ba175e609d6d"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_11.png",
+      "bytes": 63439,
+      "sha256": "2a1a94787181535948e873054995712cfd7a0572d3c83c2e5f6ac767e69033fd"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_8.png",
+      "bytes": 55748,
+      "sha256": "d2037312633f5d1a0c44ff3f74f2917ae91da369703b14fc488c755990ca6567"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_9.png",
+      "bytes": 36046,
+      "sha256": "8b01e5cb8b6f68d68f61ebb3b31fbaeb66b9bb8578eb2be9044c4fd811562bf9"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_11.png",
+      "bytes": 41296,
+      "sha256": "7b23cee253ee1406997251fec8ee2663ddd8dcc51533ec3d00c9ea420d9f6566"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_12.png",
+      "bytes": 20876,
+      "sha256": "f87a8bc052d72c805b113d8e86d80b4deac6bf27fa326a776d7a604583f0c1a0"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_13.png",
+      "bytes": 25918,
+      "sha256": "2e2c201d8d65ecdcecc80267d5c5fb06bcb03e0f2ade46d7347aa2447fcbe7e2"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_17.png",
+      "bytes": 20985,
+      "sha256": "10cf5b3a579b130a61f9698649fd166fc8cc9bb963e47fb7025b55e1accd6cee"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_19.png",
+      "bytes": 13973,
+      "sha256": "4d9145bf3f88ed2825e3d7732abadcd17c805c8a106fd33a2e09d2b6b53415c1"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-15\\Zeus.json",
+      "bytes": 300077,
+      "sha256": "7cf1523cfaa10ffbf9266fdc3829c72c909109f4a33a824025610b421a6d98d4"
+    },
+    {
+      "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\ToBonusGame.mov",
+      "bytes": 6276058,
+      "sha256": "a7c5e22752e7e559a52b572b752dae57d30f3ea9b8690f3c7462cb1fdf4f52fc"
+    }
+  ],
+  "best": {
+    "round": 1,
+    "dir": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-3\\fit-01\\best",
+    "plan": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-3\\fit-01\\best\\plan.json",
+    "build": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-3\\fit-01\\best\\build"
+  },
+  "frames": {
+    "video": 41,
+    "fitted": 29,
+    "accepted": 17,
+    "rejected": [
+      16,
+      18,
+      22,
+      24,
+      26,
+      28,
+      30,
+      32,
+      34,
+      36,
+      38,
+      40
+    ]
+  },
+  "zero": {
+    "frame": 0,
+    "coverage": 0.828,
+    "residual": {
+      "median": 1.42,
+      "max": 535.32
+    },
+    "shifted": 0.004,
+    "largestOffset": {
+      "bone": "body",
+      "channel": "y",
+      "value": 6.45
+    }
+  },
+  "searchWindow": 507.58,
+  "tracking": {
+    "span": {
+      "move": 198.53,
+      "turn": 24
+    },
+    "agreement": {
+      "turn": 8,
+      "move": 23.82
+    },
+    "disagree": {},
+    "singlePass": [],
+    "lost": {
+      "forward": 18,
+      "backward": 5
+    }
+  },
+  "unfitted": [
+    {
+      "bone": "body",
+      "parts": [
+        "qunzi3",
+        "qunzi2",
+        "Belt"
+      ],
+      "share": 0.38
+    },
+    {
+      "bone": "arm_L",
+      "parts": [
+        "L_Arm_01"
+      ],
+      "share": 0.38
+    },
+    {
+      "bone": "lightning",
+      "parts": [
+        "ZEUS_MG_LightningFire",
+        "ZEUS_MG_LightningFire_Light",
+        "T_LightningAtk_center_01",
+        "Lightning_03",
+        "Lightning_04",
+        "Lightning_07",
+        "Lightning_05",
+        "Lightning_08",
+        "Lightning_06",
+        "Lightning_09"
+      ],
+      "share": 0.19
+    }
+  ],
+  "freed": [],
+  "rounds": [
+    {
+      "round": 1,
+      "dir": "round-1",
+      "pass": false,
+      "penalty": 19.8256,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.604,
+            0
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            4.59,
+            11.79,
+            "23 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": false,
+          "value": [
+            10,
+            0.01
+          ]
+        },
+        {
+          "id": "V5 collapsed or squashed-through parts = 0",
+          "ok": true,
+          "value": []
+        }
+      ],
+      "hints": [
+        "outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size",
+        "the whole figure moves 10 frames later than the reference",
+        "the whole figure moves 0.01x as far as the reference (too small)",
+        "L_Arm_03_01: off by 7.7% of the height, moves 0.34x (too small)",
+        "Face: off by 6.0% of the height, moving differently",
+        "Hair: off by 6.0% of the height, moving differently",
+        "R_Ear: off by 5.9% of the height, moving differently"
+      ],
+      "fitted": 21,
+      "accepted": 9,
+      "keys": {
+        "frames": 8,
+        "bones": 49,
+        "perSecond": 6,
+        "prior": {
+          "category": "transition",
+          "perSecond": 3.33
+        },
+        "error": 1.671,
+        "capped": false,
+        "lag": {}
+      },
+      "waves": [],
+      "freed": [],
+      "seconds": 7.2
+    },
+    {
+      "round": 2,
+      "dir": "round-2",
+      "pass": false,
+      "penalty": 23.0344,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.584,
+            0
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            5.47,
+            14.37,
+            "20 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": false,
+          "value": [
+            10,
+            0.01
+          ]
+        },
+        {
+          "id": "V5 collapsed or squashed-through parts = 0",
+          "ok": true,
+          "value": []
+        }
+      ],
+      "hints": [
+        "outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size",
+        "the whole figure moves 10 frames later than the reference",
+        "the whole figure moves 0.01x as far as the reference (too small)",
+        "Hair: off by 11.5% of the height, moving differently",
+        "R_Ear: off by 10.4% of the height, moving differently",
+        "R_Hair_01: off by 9.8% of the height, moving differently",
+        "Beard: off by 9.4% of the height, moving differently"
+      ],
+      "fitted": 36,
+      "accepted": 13,
+      "keys": {
+        "frames": 10,
+        "bones": 63,
+        "perSecond": 7.5,
+        "prior": {
+          "category": "transition",
+          "perSecond": 3.33
+        },
+        "error": 7.728,
+        "capped": false,
+        "lag": {}
+      },
+      "waves": [],
+      "freed": [],
+      "seconds": 216.2
+    },
+    {
+      "round": 3,
+      "dir": "round-3",
+      "pass": false,
+      "penalty": 23.6633,
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.57,
+            0
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            5.57,
+            15.04,
+            "21 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": false,
+          "value": [
+            10,
+            0.01
+          ]
+        },
+        {
+          "id": "V5 collapsed or squashed-through parts = 0",
+          "ok": true,
+          "value": []
+        }
+      ],
+      "hints": [
+        "outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size",
+        "the whole figure moves 10 frames later than the reference",
+        "the whole figure moves 0.01x as far as the reference (too small)",
+        "Hair: off by 13.4% of the height, moving differently",
+        "Face: off by 11.9% of the height, moving differently",
+        "R_Hair_01: off by 10.8% of the height, moving differently",
+        "R_Arm_02: off by 10.7% of the height"
+      ],
+      "fitted": 37,
+      "accepted": 13,
+      "keys": {
+        "frames": 10,
+        "bones": 63,
+        "perSecond": 7.5,
+        "prior": {
+          "category": "transition",
+          "perSecond": 3.33
+        },
+        "error": 10.533,
+        "capped": false,
+        "lag": {}
+      },
+      "waves": [],
+      "freed": [],
+      "seconds": 222.8
+    }
+  ],
+  "hints": [
+    "body (qunzi3, qunzi2, Belt): drawn differently in the video in 63% of the frames; not fitted, its plan motion stays",
+    "arm_L (L_Arm_01): drawn differently in the video in 63% of the frames; not fitted, its plan motion stays",
+    "lightning (ZEUS_MG_LightningFire, ZEUS_MG_LightningFire_Light, T_LightningAtk_center_01, Lightning_03, Lightning_04, Lightning_07, Lightning_05, Lightning_08, Lightning_06, Lightning_09): drawn differently in the video in 81% of the frames; not fitted, its plan motion stays"
+  ],
+  "note": "Reference-fitted, not a blind result. Look at best/compare; the numbers do not replace it."
+}

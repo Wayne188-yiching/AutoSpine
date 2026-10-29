@@ -10,6 +10,8 @@
 
 # Only videos the blind report shows are committed, one by one with git add -f.
 /docs/reports/**/*.mp4
+# Delivered projects (.spine and art) are production files, not report content.
+/docs/reports/**/*.zip
 
 # Dependencies and generated output
 node_modules/

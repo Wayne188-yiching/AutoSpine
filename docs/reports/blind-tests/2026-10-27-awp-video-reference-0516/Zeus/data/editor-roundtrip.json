@@ -1,0 +1,27 @@
+{
+  "engineVersion": "0.5.16",
+  "spineVersion": "4.0.64",
+  "pass": false,
+  "maxVertexErrorPx": 0.6804536877073329,
+  "rmsVertexErrorPx": 0.05197959238415066,
+  "sampledVertices": 96822,
+  "worst": {
+    "animation": "Touch01",
+    "frame": 21,
+    "time": 0.7001,
+    "part": "R_Arm_03#R_Arm_03"
+  },
+  "topologyMismatches": [],
+  "topologyMismatchCount": 0,
+  "bones": 36,
+  "meshes": 82,
+  "constraints": {
+    "ik": 0,
+    "transform": 0
+  },
+  "limitPx": 0.5,
+  "sampleOffsetSeconds": 0.0001,
+  "maxKeyTimeDeltaSeconds": 0.00003333333333338517,
+  "rawBoundaryMismatchCount": null,
+  "note": "Only generated build versus its delivered .spine re-export. Every animation sampled at 30 FPS, after the observed 100-microsecond decimal rounding bin of editor JSON export. Triangle order is normalized without changing winding. Exact frame-boundary discrepancies, where recorded, remain in the separate audit; this is editor interchange fidelity, not artist approval or validation against the original."
+}

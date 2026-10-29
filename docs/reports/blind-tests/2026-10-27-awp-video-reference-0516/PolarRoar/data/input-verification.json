@@ -1,0 +1,44 @@
+{
+  "id": "PolarRoar",
+  "originalUnchanged": true,
+  "imagesOnlyBones": 1,
+  "imagesOnlyAnimations": 0,
+  "imagesOnlyConstraints": [],
+  "forbiddenFittingInputs": [],
+  "inputCounts": [
+    {
+      "animation": "Idle_LV4",
+      "recordedInputs": null,
+      "engineSummary": false,
+      "refused": true,
+      "refinementStopped": false
+    },
+    {
+      "animation": "4Upgrade",
+      "recordedInputs": null,
+      "engineSummary": false,
+      "refused": false,
+      "refinementStopped": true
+    },
+    {
+      "animation": "Trigger_Fail_Lv4",
+      "recordedInputs": null,
+      "engineSummary": false,
+      "refused": true,
+      "refinementStopped": false
+    }
+  ],
+  "staticPlacement": {
+    "slots": 479,
+    "attachments": 543,
+    "fromMesh": 10,
+    "fromRegion": 533,
+    "maxResidualPx": 0.01,
+    "over2px": [],
+    "quadMeshForShear": [],
+    "maxAbsShearCosine": 0.00001,
+    "skins": 1,
+    "droppedNonImage": [],
+    "missingImages": []
+  }
+}

@@ -1,0 +1,925 @@
+{
+  "engineVersion": "0.5.16",
+  "projects": 3,
+  "animations": 9,
+  "allPassed": false,
+  "totals": [
+    1,
+    0,
+    0,
+    3,
+    9
+  ],
+  "judged": [
+    9,
+    9,
+    6,
+    3,
+    9
+  ],
+  "projectsData": [
+    {
+      "id": "TheCat",
+      "name": "AWP-TheCat-0516",
+      "project": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516.spine",
+      "activePlan": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\plans\\plan-44.json",
+      "activeBuild": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31",
+      "correction": "Whisker chain roots placed at mouth attachment, extending outward on both sides.",
+      "engineVersion": "0.5.16",
+      "events": [
+        {
+          "name": "Idel_02",
+          "restCoverage": 0.738,
+          "fitExit": 2
+        },
+        {
+          "name": "Touch_01",
+          "restCoverage": 0.738,
+          "fitExit": 2
+        },
+        {
+          "name": "MG_Bingo",
+          "restCoverage": 0.738,
+          "fitExit": 2
+        }
+      ],
+      "delivery": {
+        "spine": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516.spine",
+        "spineVersion": "4.0.64",
+        "json": null,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516.mp4",
+        "images": "./images/",
+        "imageFiles": 81,
+        "strayImages": [],
+        "replaced": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\replaced-2026-10-27T03-03-11",
+        "reference": {
+          "pass": false,
+          "animations": [
+            {
+              "animation": "Idel_02",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516-Idel_02-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\video-check-2026-10-27T03-02-48\\Idel_02\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.89,
+                    0.864
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    1.82,
+                    11.42,
+                    "38 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": false,
+                  "value": [
+                    -12,
+                    0
+                  ]
+                },
+                {
+                  "id": "V4 loop seam mean difference <= 0.002",
+                  "ok": true,
+                  "value": 0
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 77 (2.57s, overlap 0.86): pose, placement or size",
+                "the whole figure moves 12 frames earlier than the reference",
+                "the whole figure moves 0.00x as far as the reference (too small)",
+                "Eye_R_02: off by 10.0% of the height, 12 frames early, moves 0.00x (too small)",
+                "Tail_R_03: off by 8.6% of the height, moving differently",
+                "Tail_L_04: off by 7.6% of the height, 12 frames early, moves 0.00x (too small)",
+                "Ear_Hair_R: off by 7.6% of the height, 12 frames late, moves 0.00x (too small)"
+              ]
+            },
+            {
+              "animation": "Touch_01",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516-Touch_01-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\video-check-2026-10-27T03-02-48\\Touch_01\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.895,
+                    0.878
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    0.68,
+                    15.18,
+                    "38 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": true,
+                  "value": "reference figure barely moves; not judged"
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 32 (1.07s, overlap 0.88): pose, placement or size",
+                "Tail_L_05: off by 12.8% of the height, 12 frames early, moves 0.00x (too small)",
+                "Tail_R_04: off by 10.9% of the height, 12 frames early, moves 0.00x (too small)",
+                "Tail_R_03: off by 10.5% of the height, 12 frames early, moves 0.00x (too small)",
+                "Tail_R_06: off by 9.7% of the height, moves 0.00x (too small)"
+              ]
+            },
+            {
+              "animation": "MG_Bingo",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516-MG_Bingo-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\video-check-2026-10-27T03-02-48\\MG_Bingo\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.896,
+                    0.878
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    0.69,
+                    14.64,
+                    "39 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": true,
+                  "value": "reference figure barely moves; not judged"
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 33 (1.10s, overlap 0.88): pose, placement or size",
+                "Tail_L_05: off by 11.0% of the height, 12 frames early, moves 0.00x (too small)",
+                "Tail_R_04: off by 10.6% of the height, moves 0.00x (too small)",
+                "Tail_R_03: off by 10.2% of the height, moves 0.00x (too small)",
+                "Tail_R_06: off by 9.3% of the height, 12 frames late, moves 0.00x (too small)"
+              ]
+            }
+          ]
+        },
+        "stray": []
+      },
+      "native": {
+        "verified": true,
+        "image": "spine-native-bones.png",
+        "kind": "Official Spine CLI frame export; not an editor UI screenshot"
+      },
+      "editorUi": {
+        "verified": false,
+        "reason": "User requested background execution; existing Spine window was minimized with an unsaved project and was not activated."
+      },
+      "roundtrip": {
+        "engineVersion": "0.5.16",
+        "spineVersion": "4.0.64",
+        "pass": true,
+        "maxVertexErrorPx": 0.08845395322398783,
+        "rmsVertexErrorPx": 0.04523300494023267,
+        "sampledVertices": 190063,
+        "worst": {
+          "animation": "Idel_02",
+          "frame": 0,
+          "time": 0.0001,
+          "part": "Ear_B_R#Ear_B_R"
+        },
+        "topologyMismatches": [],
+        "topologyMismatchCount": 0,
+        "bones": 25,
+        "meshes": 52,
+        "constraints": {
+          "ik": 0,
+          "transform": 0
+        },
+        "limitPx": 0.5,
+        "sampleOffsetSeconds": 0.0001,
+        "maxKeyTimeDeltaSeconds": 0.00003333333333355171,
+        "rawBoundaryMismatchCount": null,
+        "note": "Only generated build versus its delivered .spine re-export. Every animation sampled at 30 FPS, after the observed 100-microsecond decimal rounding bin of editor JSON export. Triangle order is normalized without changing winding. Exact frame-boundary discrepancies, where recorded, remain in the separate audit; this is editor interchange fidelity, not artist approval or validation against the original."
+      },
+      "bones": 25,
+      "meshes": 52,
+      "inputVerification": {
+        "id": "TheCat",
+        "originalUnchanged": true,
+        "imagesOnlyBones": 1,
+        "imagesOnlyAnimations": 0,
+        "imagesOnlyConstraints": [],
+        "forbiddenFittingInputs": [],
+        "inputCounts": [
+          {
+            "animation": "Idel_02",
+            "recordedInputs": null,
+            "engineSummary": false,
+            "refused": true,
+            "refinementStopped": false
+          },
+          {
+            "animation": "Touch_01",
+            "recordedInputs": null,
+            "engineSummary": false,
+            "refused": true,
+            "refinementStopped": false
+          },
+          {
+            "animation": "MG_Bingo",
+            "recordedInputs": null,
+            "engineSummary": false,
+            "refused": true,
+            "refinementStopped": false
+          }
+        ],
+        "staticPlacement": {
+          "slots": 109,
+          "attachments": 109,
+          "fromMesh": 54,
+          "fromRegion": 55,
+          "maxResidualPx": 58.76,
+          "over2px": [
+            "Ear_B_L:9.81",
+            "Ear_B_R:12.91",
+            "Hand_R_01:3.12",
+            "Hand_R_02:58.76",
+            "Hand_R_02:44.97"
+          ],
+          "quadMeshForShear": [
+            "Ear_B_L",
+            "Ear_B_R",
+            "Hand_R_02",
+            "Hand_R_02"
+          ],
+          "maxAbsShearCosine": 0.89334,
+          "skins": 1,
+          "droppedNonImage": [],
+          "missingImages": []
+        }
+      }
+    },
+    {
+      "id": "Zeus",
+      "name": "AWP-Zeus-0516",
+      "project": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516.spine",
+      "activePlan": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\plans\\plan-48.json",
+      "activeBuild": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-32",
+      "correction": null,
+      "engineVersion": "0.5.16",
+      "events": [
+        {
+          "name": "Idle_02",
+          "restCoverage": 0.9,
+          "fitExit": 2
+        },
+        {
+          "name": "Touch01",
+          "restCoverage": 0.909,
+          "fitExit": 2
+        },
+        {
+          "name": "ToBonusGame",
+          "restCoverage": 0.909,
+          "fitExit": 2
+        }
+      ],
+      "delivery": {
+        "spine": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516.spine",
+        "spineVersion": "4.0.64",
+        "json": null,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516.mp4",
+        "images": "./images/",
+        "imageFiles": 118,
+        "strayImages": [],
+        "replaced": null,
+        "reference": {
+          "pass": false,
+          "animations": [
+            {
+              "animation": "Idle_02",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516-Idle_02-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-34\\Idle_02\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.861,
+                    0.811
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    0.61,
+                    2.96,
+                    "29 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": false,
+                  "value": [
+                    2,
+                    0.58
+                  ]
+                },
+                {
+                  "id": "V4 loop seam mean difference <= 0.002",
+                  "ok": true,
+                  "value": 0
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 44 (1.47s, overlap 0.81): pose, placement or size",
+                "the whole figure moves 0.58x as far as the reference (too small)",
+                "L_Hat: off by 7.4% of the height, moving differently",
+                "Belt: off by 2.5% of the height, moving differently",
+                "qunzi3: off by 2.1% of the height, 6 frames early, moves 1.35x (too big)",
+                "qunzi2: off by 1.7% of the height, moving differently"
+              ]
+            },
+            {
+              "animation": "Touch01",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516-Touch01-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-34\\Touch01\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.818,
+                    0.657
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    0.56,
+                    4.76,
+                    "30 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": false,
+                  "value": [
+                    2,
+                    0.14
+                  ]
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 25 (0.83s, overlap 0.66): pose, placement or size",
+                "the whole figure moves 0.14x as far as the reference (too small)",
+                "Belt: off by 2.5% of the height, moving differently",
+                "qunzi3: off by 2.4% of the height, 4 frames late, moves 1.80x (too big)",
+                "qunzi2: off by 1.8% of the height, moving differently",
+                "L_Arm_02: off by 1.3% of the height, moves 0.39x (too small)"
+              ]
+            },
+            {
+              "animation": "ToBonusGame",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516-ToBonusGame-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-34\\ToBonusGame\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.604,
+                    0
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    4.59,
+                    11.79,
+                    "23 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": false,
+                  "value": [
+                    10,
+                    0.01
+                  ]
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size",
+                "the whole figure moves 10 frames later than the reference",
+                "the whole figure moves 0.01x as far as the reference (too small)",
+                "L_Arm_03_01: off by 7.7% of the height, moves 0.34x (too small)",
+                "Face: off by 6.0% of the height, moving differently",
+                "Hair: off by 6.0% of the height, moving differently",
+                "R_Ear: off by 5.9% of the height, moving differently"
+              ]
+            }
+          ]
+        },
+        "stray": []
+      },
+      "native": {
+        "verified": true,
+        "image": "spine-native-bones.png",
+        "kind": "Official Spine CLI frame export; not an editor UI screenshot"
+      },
+      "editorUi": {
+        "verified": false,
+        "reason": "User requested background execution; existing Spine window was minimized with an unsaved project and was not activated."
+      },
+      "roundtrip": {
+        "engineVersion": "0.5.16",
+        "spineVersion": "4.0.64",
+        "pass": false,
+        "maxVertexErrorPx": 0.6804536877073329,
+        "rmsVertexErrorPx": 0.05197959238415066,
+        "sampledVertices": 96822,
+        "worst": {
+          "animation": "Touch01",
+          "frame": 21,
+          "time": 0.7001,
+          "part": "R_Arm_03#R_Arm_03"
+        },
+        "topologyMismatches": [],
+        "topologyMismatchCount": 0,
+        "bones": 36,
+        "meshes": 82,
+        "constraints": {
+          "ik": 0,
+          "transform": 0
+        },
+        "limitPx": 0.5,
+        "sampleOffsetSeconds": 0.0001,
+        "maxKeyTimeDeltaSeconds": 0.00003333333333338517,
+        "rawBoundaryMismatchCount": null,
+        "note": "Only generated build versus its delivered .spine re-export. Every animation sampled at 30 FPS, after the observed 100-microsecond decimal rounding bin of editor JSON export. Triangle order is normalized without changing winding. Exact frame-boundary discrepancies, where recorded, remain in the separate audit; this is editor interchange fidelity, not artist approval or validation against the original."
+      },
+      "bones": 36,
+      "meshes": 82,
+      "inputVerification": {
+        "id": "Zeus",
+        "originalUnchanged": true,
+        "imagesOnlyBones": 1,
+        "imagesOnlyAnimations": 0,
+        "imagesOnlyConstraints": [],
+        "forbiddenFittingInputs": [],
+        "inputCounts": [
+          {
+            "animation": "Idle_02",
+            "recordedInputs": 122,
+            "engineSummary": true,
+            "refused": false,
+            "refinementStopped": false
+          },
+          {
+            "animation": "Touch01",
+            "recordedInputs": 122,
+            "engineSummary": true,
+            "refused": false,
+            "refinementStopped": false
+          },
+          {
+            "animation": "ToBonusGame",
+            "recordedInputs": 122,
+            "engineSummary": true,
+            "refused": false,
+            "refinementStopped": false
+          }
+        ],
+        "staticPlacement": {
+          "slots": 171,
+          "attachments": 455,
+          "fromMesh": 356,
+          "fromRegion": 99,
+          "maxResidualPx": 306.07,
+          "over2px": [
+            "Body:5.25",
+            "Clothing:4.8",
+            "dian3/dian3_1_6:14.83",
+            "dian3/dian3_1_8:17.36",
+            "dian3/dian3_1_10:26.25",
+            "dian3/dian3_1_11:18.78",
+            "dian3/dian3_2_8:24.09",
+            "dian3/dian3_2_9:7.16",
+            "dian3/dian3_1_6:44.64",
+            "dian3/dian3_1_8:22.45",
+            "dian3/dian3_1_10:17.35",
+            "dian3/dian3_1_4:7.77",
+            "dian3/dian3_1_6:5.48",
+            "dian3/dian3_1_8:5.71",
+            "dian3/dian3_1_10:306.07",
+            "dian3/dian3_1_11:5.32",
+            "dian3/dian3_2_8:5.18",
+            "dian3/dian3_2_9:4.4",
+            "dian3/dian3_2_11:4.56",
+            "dian3/dian3_2_12:4.38",
+            "dian3/dian3_2_13:3.68",
+            "dian3/dian3_2_17:3.79",
+            "dian3/dian3_1_6:14.83",
+            "dian3/dian3_1_8:17.36",
+            "dian3/dian3_1_10:26.25",
+            "dian3/dian3_1_11:18.78",
+            "dian3/dian3_2_8:24.09",
+            "dian3/dian3_2_9:7.16",
+            "dian3/dian3_1_6:44.64",
+            "dian3/dian3_1_8:22.45",
+            "dian3/dian3_1_10:17.35",
+            "L_Arm_03_02:2.14",
+            "L_Beard:3.89",
+            "Mouth_In:14.98",
+            "Mouth_Out:11.97",
+            "qunzi12:4.99",
+            "R_Arm_01:25.47",
+            "R_Arm_02:24.54",
+            "R_Beard:2.67",
+            "ShoulderStrap:3.44",
+            "chuiji_shoubi1:60.57",
+            "chuiji_shoubi1:21.2",
+            "huzi2:2.11",
+            "toufa1:9.73",
+            "zuichun:6",
+            "tou_1_3:9.07",
+            "toufa2:6.75"
+          ],
+          "quadMeshForShear": [
+            "chuiji_xiong1",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_1_10",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "dian3/dian3_2_19",
+            "huzi3",
+            "Lightning_01",
+            "Lightning_02",
+            "Lightning_03",
+            "Lightning_04",
+            "Lightning_01",
+            "Lightning_02",
+            "Lightning_03",
+            "Lightning_04",
+            "Lightning_01",
+            "Lightning_02",
+            "Lightning_03",
+            "Lightning_04",
+            "Lightning_01",
+            "Lightning_02",
+            "Lightning_03",
+            "Lightning_04",
+            "Lightning_01",
+            "Lightning_02",
+            "Lightning_03",
+            "Lightning_04",
+            "L_Beard",
+            "Mouth_In",
+            "Mouth_Out",
+            "R_Arm_01",
+            "R_Arm_02",
+            "R_Beard",
+            "ShoulderStrap",
+            "chuiji_shoubi1",
+            "huzi2",
+            "toufa1",
+            "toufa2"
+          ],
+          "maxAbsShearCosine": 0.54211,
+          "skins": 1,
+          "droppedNonImage": [],
+          "missingImages": []
+        }
+      }
+    },
+    {
+      "id": "PolarRoar",
+      "name": "AWP-PolarRoar-0516",
+      "project": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516.spine",
+      "activePlan": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\plans\\plan-48.json",
+      "activeBuild": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32",
+      "correction": null,
+      "engineVersion": "0.5.16",
+      "events": [
+        {
+          "name": "Idle_LV4",
+          "restCoverage": 0.681,
+          "fitExit": 2
+        },
+        {
+          "name": "4Upgrade",
+          "restCoverage": 0.65,
+          "fitExit": 2
+        },
+        {
+          "name": "Trigger_Fail_Lv4",
+          "restCoverage": 0.656,
+          "fitExit": 2
+        }
+      ],
+      "delivery": {
+        "spine": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516.spine",
+        "spineVersion": "4.0.64",
+        "json": null,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516.mp4",
+        "images": "./images/",
+        "imageFiles": 170,
+        "strayImages": [],
+        "replaced": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\replaced-2026-10-27T03-15-10",
+        "reference": {
+          "pass": false,
+          "animations": [
+            {
+              "animation": "Idle_LV4",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516-Idle_LV4-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-01\\Idle_LV4\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": true,
+                  "value": [
+                    0.908,
+                    0.908
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    3.78,
+                    17.18,
+                    "22 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": true,
+                  "value": "reference figure barely moves; not judged"
+                },
+                {
+                  "id": "V4 loop seam mean difference <= 0.002",
+                  "ok": true,
+                  "value": 0
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "Igloo_Stone_33: off by 19.2% of the height, moving differently",
+                "Igloo_Stone_24: off by 17.1% of the height, moving differently",
+                "Igloo_Stone_55: off by 10.6% of the height, moving differently",
+                "Igloo_Stone_56: off by 9.1% of the height, moving differently"
+              ]
+            },
+            {
+              "animation": "4Upgrade",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516-4Upgrade-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-01\\4Upgrade\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.819,
+                    0.645
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    5.79,
+                    17.88,
+                    "24 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": false,
+                  "value": [
+                    12,
+                    0.28
+                  ]
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 26 (0.87s, overlap 0.64): pose, placement or size",
+                "the whole figure moves 12 frames later than the reference",
+                "the whole figure moves 0.28x as far as the reference (too small)",
+                "Igloo_Stone_7: off by 27.8% of the height, 7 frames early, moves 0.08x (too small)",
+                "Igloo_Stone_56: off by 11.9% of the height, 5 frames late, moves 0.46x (too small)",
+                "Igloo_Stone_33: off by 10.8% of the height, moving differently",
+                "Igloo_Stone_35: off by 10.5% of the height, 6 frames late, moves 0.73x (too small)"
+              ]
+            },
+            {
+              "animation": "Trigger_Fail_Lv4",
+              "pass": false,
+              "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516-Trigger_Fail_Lv4-vs-reference.mp4",
+              "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-01\\Trigger_Fail_Lv4\\report.json",
+              "rows": [
+                {
+                  "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+                  "ok": false,
+                  "value": [
+                    0.897,
+                    0.861
+                  ]
+                },
+                {
+                  "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+                  "ok": false,
+                  "value": [
+                    5.23,
+                    13.32,
+                    "22 parts"
+                  ]
+                },
+                {
+                  "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+                  "ok": false,
+                  "value": [
+                    -7,
+                    0
+                  ]
+                },
+                {
+                  "id": "V5 collapsed or squashed-through parts = 0",
+                  "ok": true,
+                  "value": []
+                }
+              ],
+              "hints": [
+                "outline differs most at frame 20 (0.67s, overlap 0.86): pose, placement or size",
+                "the whole figure moves 7 frames earlier than the reference",
+                "the whole figure moves 0.00x as far as the reference (too small)",
+                "Igloo_Stone_56: off by 12.7% of the height, 7 frames early, moves 0.00x (too small)",
+                "Igloo_Stone_33: off by 10.4% of the height, 4 frames late, moves 0.00x (too small)",
+                "Igloo_Stone_35: off by 9.1% of the height, 7 frames early, moves 0.00x (too small)",
+                "Igloo_Stone_40: off by 8.3% of the height, 7 frames early, moves 0.00x (too small)"
+              ]
+            }
+          ]
+        },
+        "stray": []
+      },
+      "native": {
+        "verified": true,
+        "image": "spine-native-bones.png",
+        "kind": "Official Spine CLI frame export; not an editor UI screenshot"
+      },
+      "editorUi": {
+        "verified": false,
+        "reason": "User requested background execution; existing Spine window was minimized with an unsaved project and was not activated."
+      },
+      "roundtrip": {
+        "engineVersion": "0.5.16",
+        "spineVersion": "4.0.64",
+        "pass": true,
+        "maxVertexErrorPx": 0.10747689811011353,
+        "rmsVertexErrorPx": 0.00993920961087123,
+        "sampledVertices": 132912,
+        "worst": {
+          "animation": "4Upgrade",
+          "frame": 33,
+          "time": 1.1001,
+          "part": "Igloo_Stone_87#Igloo_Stone_87"
+        },
+        "topologyMismatches": [],
+        "topologyMismatchCount": 0,
+        "bones": 97,
+        "meshes": 93,
+        "constraints": {
+          "ik": 0,
+          "transform": 0
+        },
+        "limitPx": 0.5,
+        "sampleOffsetSeconds": 0.0001,
+        "maxKeyTimeDeltaSeconds": 0.00003333333333338517,
+        "rawBoundaryMismatchCount": null,
+        "note": "Only generated build versus its delivered .spine re-export. Every animation sampled at 30 FPS, after the observed 100-microsecond decimal rounding bin of editor JSON export. Triangle order is normalized without changing winding. Exact frame-boundary discrepancies, where recorded, remain in the separate audit; this is editor interchange fidelity, not artist approval or validation against the original."
+      },
+      "bones": 97,
+      "meshes": 93,
+      "inputVerification": {
+        "id": "PolarRoar",
+        "originalUnchanged": true,
+        "imagesOnlyBones": 1,
+        "imagesOnlyAnimations": 0,
+        "imagesOnlyConstraints": [],
+        "forbiddenFittingInputs": [],
+        "inputCounts": [
+          {
+            "animation": "Idle_LV4",
+            "recordedInputs": null,
+            "engineSummary": false,
+            "refused": true,
+            "refinementStopped": false
+          },
+          {
+            "animation": "4Upgrade",
+            "recordedInputs": null,
+            "engineSummary": false,
+            "refused": false,
+            "refinementStopped": true
+          },
+          {
+            "animation": "Trigger_Fail_Lv4",
+            "recordedInputs": null,
+            "engineSummary": false,
+            "refused": true,
+            "refinementStopped": false
+          }
+        ],
+        "staticPlacement": {
+          "slots": 479,
+          "attachments": 543,
+          "fromMesh": 10,
+          "fromRegion": 533,
+          "maxResidualPx": 0.01,
+          "over2px": [],
+          "quadMeshForShear": [],
+          "maxAbsShearCosine": 0.00001,
+          "skins": 1,
+          "droppedNonImage": [],
+          "missingImages": []
+        }
+      }
+    }
+  ]
+}

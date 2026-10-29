@@ -1,0 +1,214 @@
+{
+  "bones": [
+    "bone",
+    "bone2",
+    "bone3",
+    "bone4",
+    "bone21",
+    "bone31",
+    "bone32",
+    "bone34",
+    "bone35",
+    "bone37",
+    "bone59",
+    "bone30"
+  ],
+  "owners": {
+    "Tail_R_01": "bone30",
+    "Tail_R_02": "bone30",
+    "Tail_R_03": "bone30",
+    "Tail_R_04": "bone30",
+    "Tail_R_05": "bone30",
+    "Tail_R_06": "bone30",
+    "Tail_L_01": "bone30",
+    "Tail_L_02": "bone30",
+    "Tail_L_03": "bone30",
+    "Tail_L_04": "bone30",
+    "Tail_L_05": "bone30",
+    "Tail_L_06": "bone30",
+    "Tail_M": "bone30",
+    "Body_01": "bone",
+    "Body_02": "bone2",
+    "Body_03": "bone2",
+    "Body_04": "bone2",
+    "Hand_L_01": "bone32",
+    "Hand_R_01": "bone35",
+    "Body_05": "bone4",
+    "Body_06": "bone3",
+    "Body_07": "bone4",
+    "Body_08": "bone3",
+    "Body_09": "bone3",
+    "Body_10": "bone4",
+    "Eye_L_01": "bone21",
+    "Eye_L_02": "bone21",
+    "Eye_L_03": "bone21",
+    "Eye_L_04": "bone21",
+    "Eye_R_01": "bone21",
+    "Eye_R_02": "bone21",
+    "Eye_R_03": "bone21",
+    "Eye_R_04": "bone21",
+    "Ear_R": "bone37",
+    "Ear_Hair_R": "bone37",
+    "Ear_B_R": "bone37",
+    "Ear_L": "bone59",
+    "Ear_Hair_L": "bone59",
+    "Ear_B_L": "bone59",
+    "Face": "bone21",
+    "Jaw": "bone21",
+    "Mouth_03": "bone21",
+    "Nose_01": "bone21",
+    "Beard_R": "bone21",
+    "Beard_L": "bone21",
+    "Crown_B": "bone4",
+    "Crown": "bone4"
+  },
+  "diagnostics": [
+    {
+      "frame": 0,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 6,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 12,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 18,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 24,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 30,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 36,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 42,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 48,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 54,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 60,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 66,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 72,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 78,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 84,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 90,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 96,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 102,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 108,
+      "forwardCoverage": 0.907,
+      "backwardCoverage": 0.907,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 114,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    },
+    {
+      "frame": 120,
+      "forwardCoverage": 0.963,
+      "backwardCoverage": 0.963,
+      "disagree": [],
+      "gaps": []
+    }
+  ]
+}

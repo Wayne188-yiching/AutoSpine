@@ -1,0 +1,160 @@
+{
+  "spine": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516.spine",
+  "spineVersion": "4.0.64",
+  "json": null,
+  "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516.mp4",
+  "images": "./images/",
+  "imageFiles": 118,
+  "strayImages": [],
+  "replaced": null,
+  "reference": {
+    "pass": false,
+    "animations": [
+      {
+        "animation": "Idle_02",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516-Idle_02-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-34\\Idle_02\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.861,
+              0.811
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              0.61,
+              2.96,
+              "29 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              2,
+              0.58
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 44 (1.47s, overlap 0.81): pose, placement or size",
+          "the whole figure moves 0.58x as far as the reference (too small)",
+          "L_Hat: off by 7.4% of the height, moving differently",
+          "Belt: off by 2.5% of the height, moving differently",
+          "qunzi3: off by 2.1% of the height, 6 frames early, moves 1.35x (too big)",
+          "qunzi2: off by 1.7% of the height, moving differently"
+        ]
+      },
+      {
+        "animation": "Touch01",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516-Touch01-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-34\\Touch01\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.818,
+              0.657
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              0.56,
+              4.76,
+              "30 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              2,
+              0.14
+            ]
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 25 (0.83s, overlap 0.66): pose, placement or size",
+          "the whole figure moves 0.14x as far as the reference (too small)",
+          "Belt: off by 2.5% of the height, moving differently",
+          "qunzi3: off by 2.4% of the height, 4 frames late, moves 1.80x (too big)",
+          "qunzi2: off by 1.8% of the height, moving differently",
+          "L_Arm_02: off by 1.3% of the height, moves 0.39x (too small)"
+        ]
+      },
+      {
+        "animation": "ToBonusGame",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\AWP-Zeus-0516-ToBonusGame-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-34\\ToBonusGame\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.604,
+              0
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              4.59,
+              11.79,
+              "23 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              10,
+              0.01
+            ]
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size",
+          "the whole figure moves 10 frames later than the reference",
+          "the whole figure moves 0.01x as far as the reference (too small)",
+          "L_Arm_03_01: off by 7.7% of the height, moves 0.34x (too small)",
+          "Face: off by 6.0% of the height, moving differently",
+          "Hair: off by 6.0% of the height, moving differently",
+          "R_Ear: off by 5.9% of the height, moving differently"
+        ]
+      }
+    ]
+  },
+  "stray": []
+}

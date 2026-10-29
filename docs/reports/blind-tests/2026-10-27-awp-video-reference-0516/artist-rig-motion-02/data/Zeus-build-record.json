@@ -1,0 +1,454 @@
+{
+  "kind": "artist-rig-video-motion",
+  "engineVersion": "0.5.16-local-unreleased",
+  "bones": 219,
+  "slots": 171,
+  "staticBindingUnchanged": true,
+  "bindingSha256": "904b3d5bf4fa973093431dc2072b5447eedce7b62f8f63deee118202bc529b29",
+  "sourceAnimationCount": 0,
+  "newAnimations": [
+    "Idle_02",
+    "Touch01"
+  ],
+  "motionSha256": "4905086820bcd1aa47d07a8b5ab47c7749dabc32ab61237eb29c58f766f3edb2",
+  "geometry": {
+    "Idle_02": {
+      "inversions": {},
+      "visibleInversions": {},
+      "maxCharacterStretch": {
+        "slot": "R_Arm_01",
+        "value": 0.495
+      },
+      "topStretch": [
+        [
+          "R_Arm_01",
+          0.495
+        ],
+        [
+          "R_Arm_02",
+          0.297
+        ],
+        [
+          "Face",
+          0.266
+        ],
+        [
+          "Body",
+          0.211
+        ],
+        [
+          "Mouth_In",
+          0.192
+        ],
+        [
+          "L_Ear",
+          0.169
+        ]
+      ],
+      "collapses": {},
+      "flips": {}
+    },
+    "Touch01": {
+      "inversions": {},
+      "visibleInversions": {},
+      "maxCharacterStretch": {
+        "slot": "L_Arm_01",
+        "value": 0.534
+      },
+      "topStretch": [
+        [
+          "L_Arm_01",
+          0.534
+        ],
+        [
+          "R_Arm_01",
+          0.481
+        ],
+        [
+          "Body",
+          0.348
+        ],
+        [
+          "L_Arm_03",
+          0.323
+        ],
+        [
+          "R_Arm_02",
+          0.288
+        ],
+        [
+          "Mouth_In",
+          0.191
+        ]
+      ],
+      "collapses": {},
+      "flips": {}
+    }
+  },
+  "observations": [
+    {
+      "animation": "Idle_02",
+      "firstCoverage": 1,
+      "owners": {
+        "R_Hair": "Head_01",
+        "L_Hair": "Head_01",
+        "L_Hair_01": "L_Hair_04",
+        "L_Arm_01": "L_Arm_IK",
+        "R_Hair_01": "R_Hair_04_1",
+        "R_HairLight_01": "R_Hair_04_1",
+        "Body": "Body_02",
+        "ShoulderStrap": "Body_02",
+        "Eye01": "Head_01",
+        "Eye02": "Head_01",
+        "Face": "Head_01",
+        "Hair": "Head_01",
+        "L_Ear": "Head_01",
+        "R_Ear": "Head_01",
+        "L_Beard": "Head_01",
+        "R_Beard": "Head_01",
+        "Mouth_In": "Head_01",
+        "Mouth_Out": "Head_01",
+        "Beard": "Head_01",
+        "L_Hat": "Head_01",
+        "Clothing": "Body_02",
+        "Beard_02_1": "Head_01",
+        "L_Arm_03": "L_Arm_IK_02",
+        "L_Arm_02": "L_Arm_IK_02",
+        "R_Arm_01": "R_Arm_IK_01",
+        "L_Arm_03_03": "L_Arm_03",
+        "ZEUS_MG_LightningFire": "L_Arm_03",
+        "L_Arm_03_02": "L_Arm_03",
+        "L_Arm_03_01": "L_Arm_03",
+        "R_Hat": "Head_01",
+        "L_Eyebrow": "Head_01",
+        "R_Eyebrow": "Head_01",
+        "Breastplate": "Body_02",
+        "Belt": "Body_01",
+        "R_Arm_02": "R_Arm_IK_02",
+        "R_Arm_03": "R_Arm_IK_02"
+      },
+      "diagnostics": [
+        {
+          "frame": 28,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 44,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 48,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        }
+      ]
+    },
+    {
+      "animation": "Touch01",
+      "firstCoverage": 1,
+      "owners": {
+        "R_Hair": "Head_01",
+        "L_Hair": "Head_01",
+        "L_Hair_01": "L_Hair_04",
+        "L_Arm_01": "L_Arm_IK",
+        "R_Hair_01": "R_Hair_04_1",
+        "R_HairLight_01": "R_Hair_04_1",
+        "Body": "Body_02",
+        "ShoulderStrap": "Body_02",
+        "Eye01": "Head_01",
+        "Eye02": "Head_01",
+        "Face": "Head_01",
+        "Hair": "Head_01",
+        "L_Ear": "Head_01",
+        "R_Ear": "Head_01",
+        "L_Beard": "Head_01",
+        "R_Beard": "Head_01",
+        "Mouth_In": "Head_01",
+        "Mouth_Out": "Head_01",
+        "Beard": "Head_01",
+        "L_Hat": "Head_01",
+        "Clothing": "Body_02",
+        "Beard_02_1": "Head_01",
+        "L_Arm_03": "L_Arm_IK_02",
+        "L_Arm_02": "L_Arm_IK_02",
+        "R_Arm_01": "R_Arm_IK_01",
+        "L_Arm_03_03": "L_Arm_03",
+        "ZEUS_MG_LightningFire": "L_Arm_03",
+        "L_Arm_03_02": "L_Arm_03",
+        "L_Arm_03_01": "L_Arm_03",
+        "R_Hat": "Head_01",
+        "L_Eyebrow": "Head_01",
+        "R_Eyebrow": "Head_01",
+        "Breastplate": "Body_02",
+        "Belt": "Body_01",
+        "R_Arm_02": "R_Arm_IK_02",
+        "R_Arm_03": "R_Arm_IK_02"
+      },
+      "diagnostics": [
+        {
+          "frame": 20,
+          "bone": "Head_01",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 24,
+          "bone": "Head_01",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 28,
+          "bone": "Head_01",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 0,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 4,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 8,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 12,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 16,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 20,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 24,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 28,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 32,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 36,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 40,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 44,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 48,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 52,
+          "bone": "L_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 0,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 4,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 8,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 12,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 16,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 20,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 24,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 28,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 32,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 36,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 40,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 44,
+          "bone": "L_Arm_IK",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 20,
+          "bone": "R_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 24,
+          "bone": "R_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 28,
+          "bone": "R_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 32,
+          "bone": "R_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 36,
+          "bone": "R_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 40,
+          "bone": "R_Arm_IK_02",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 0,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 4,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 8,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 12,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 16,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 20,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 24,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 28,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 32,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 36,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 40,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 44,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 48,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 52,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 56,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 60,
+          "bone": "L_Arm_03",
+          "reason": "Unconfirmed forward/backward observation"
+        },
+        {
+          "frame": 24,
+          "bone": "L_Hair_04",
+          "reason": "Unconfirmed forward/backward observation"
+        }
+      ]
+    }
+  ],
+  "sourcePolicy": "Static artist binding retained by authorization; new keys from MOV only. No original timelines read during authoring."
+}

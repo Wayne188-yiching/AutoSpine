@@ -1,0 +1,26 @@
+{
+  "artistBindingAuthorized": true,
+  "animationSource": "MOV only; input animations/events removed before authoring",
+  "inputAnimations": 0,
+  "outputAnimations": [
+    "Idle_LV4",
+    "Trigger_Fail_Lv4"
+  ],
+  "bindingBefore": "c96634d339a43a61755039627aba6c11eda128403f0d8cb82e5a568e400694e9",
+  "bindingAfter": "c96634d339a43a61755039627aba6c11eda128403f0d8cb82e5a568e400694e9",
+  "bindingUnchanged": true,
+  "originalSha256": "832575724a72312af073b76fa86226427374c5cdd1587cba6d74353930a1479f",
+  "originalUnchanged": true,
+  "movies": [
+    {
+      "animation": "Idle_LV4",
+      "sha256": "87b6dc73fd8c80827a3217a24391cfc77bda49fb7357aa535034d0dc42f540f4",
+      "sourceSha256": "87b6dc73fd8c80827a3217a24391cfc77bda49fb7357aa535034d0dc42f540f4"
+    },
+    {
+      "animation": "Trigger_Fail_Lv4",
+      "sha256": "9c4586408bbbe96ba2f08f2e16e9b8dbe60ea9f3c81584a9e484b01a9cec22e5",
+      "sourceSha256": "9c4586408bbbe96ba2f08f2e16e9b8dbe60ea9f3c81584a9e484b01a9cec22e5"
+    }
+  ]
+}

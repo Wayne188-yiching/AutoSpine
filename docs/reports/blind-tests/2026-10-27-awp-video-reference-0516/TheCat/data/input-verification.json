@@ -1,0 +1,55 @@
+{
+  "id": "TheCat",
+  "originalUnchanged": true,
+  "imagesOnlyBones": 1,
+  "imagesOnlyAnimations": 0,
+  "imagesOnlyConstraints": [],
+  "forbiddenFittingInputs": [],
+  "inputCounts": [
+    {
+      "animation": "Idel_02",
+      "recordedInputs": null,
+      "engineSummary": false,
+      "refused": true,
+      "refinementStopped": false
+    },
+    {
+      "animation": "Touch_01",
+      "recordedInputs": null,
+      "engineSummary": false,
+      "refused": true,
+      "refinementStopped": false
+    },
+    {
+      "animation": "MG_Bingo",
+      "recordedInputs": null,
+      "engineSummary": false,
+      "refused": true,
+      "refinementStopped": false
+    }
+  ],
+  "staticPlacement": {
+    "slots": 109,
+    "attachments": 109,
+    "fromMesh": 54,
+    "fromRegion": 55,
+    "maxResidualPx": 58.76,
+    "over2px": [
+      "Ear_B_L:9.81",
+      "Ear_B_R:12.91",
+      "Hand_R_01:3.12",
+      "Hand_R_02:58.76",
+      "Hand_R_02:44.97"
+    ],
+    "quadMeshForShear": [
+      "Ear_B_L",
+      "Ear_B_R",
+      "Hand_R_02",
+      "Hand_R_02"
+    ],
+    "maxAbsShearCosine": 0.89334,
+    "skins": 1,
+    "droppedNonImage": [],
+    "missingImages": []
+  }
+}

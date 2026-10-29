@@ -28,4 +28,6 @@ docs/reports/blind-tests/*-reference-imitation/
 docs/reports/blind-tests/*-clean-ref-rebuild/
 # Mummy cat rebuild report shown by the blind report, kept as written (eed7ca3, 2026-10-22).
 docs/reports/blind-tests/2026-10-19-jackpot-mummycat-clean-rebuild/
+# AWP video-reference report shown by the blind report, kept as written (2026-10-27).
+docs/reports/blind-tests/2026-10-27-awp-video-reference-0516/
 video-only-improvement-plan-20261018.html

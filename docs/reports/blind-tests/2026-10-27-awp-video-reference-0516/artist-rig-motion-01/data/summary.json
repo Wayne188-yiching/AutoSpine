@@ -1,0 +1,188 @@
+{
+  "date": "2026-10-27",
+  "mode": "Artist binding + MOV-authored motion; explicitly authorized",
+  "engine": "Local unreleased patch based on AutoSpine 0.5.16; installed version unchanged",
+  "animation": "Idel_02",
+  "plan": "plan-07",
+  "build": "build-07",
+  "pass": false,
+  "rows": [
+    {
+      "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+      "ok": true,
+      "value": [
+        0.936,
+        0.917
+      ]
+    },
+    {
+      "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+      "ok": false,
+      "value": [
+        0.83,
+        8.23,
+        "37 parts"
+      ]
+    },
+    {
+      "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+      "ok": true,
+      "value": [
+        0,
+        1.12
+      ]
+    },
+    {
+      "id": "V4 loop seam mean difference <= 0.002",
+      "ok": true,
+      "value": 0
+    },
+    {
+      "id": "V5 collapsed or squashed-through parts = 0",
+      "ok": true,
+      "value": []
+    }
+  ],
+  "bones": 135,
+  "slots": 109,
+  "integrity": {
+    "artistBindingAuthorized": true,
+    "animationSource": "MOV only; original animation data was removed before authoring",
+    "inputAnimations": 0,
+    "outputAnimations": [
+      "Idel_02"
+    ],
+    "bindingBefore": "48edf1d9e82a9cf1348acf90460249b446caa08fa6cee04298104b6cf58941f7",
+    "bindingAfter": "48edf1d9e82a9cf1348acf90460249b446caa08fa6cee04298104b6cf58941f7",
+    "bindingUnchanged": true,
+    "originalSha256": "ab7b757a8b96b9e479bb8f0996c8f21d7cddebfc5bee4efb5eae6b1f4d83f296",
+    "originalUnchanged": true,
+    "referenceMovieSha256": "5e7d286fb5258520dcf02fa7592eef974a2c04ae0ae19b37e1f7da779fd31284",
+    "sourceMovieSha256": "5e7d286fb5258520dcf02fa7592eef974a2c04ae0ae19b37e1f7da779fd31284"
+  },
+  "roundtrip": {
+    "pass": true,
+    "maxVertexErrorPx": 0.17206655161080692,
+    "rmsVertexErrorPx": 0.041253547763693846,
+    "sampledVertices": 63689,
+    "topologyMismatchCount": 0,
+    "topologyMismatches": [],
+    "worst": {
+      "frame": 87,
+      "part": "Ear_R#Ear_R"
+    },
+    "limitPx": 0.5,
+    "sampleOffsetSeconds": 0.0001,
+    "spineVersion": "4.0.64",
+    "note": "Newly animated artist rig versus its delivered Spine export, not source animation. 100 microsecond sample offset accounts for editor time rounding; cyclic triangle order normalized without reversing winding."
+  },
+  "geometry": {
+    "inversions": {},
+    "visibleInversions": {},
+    "maxCharacterStretch": {
+      "slot": "Mouth_01",
+      "value": 3.117
+    },
+    "topStretch": [
+      [
+        "Mouth_01",
+        3.117
+      ],
+      [
+        "Mouth_03",
+        0.746
+      ],
+      [
+        "Tail_M",
+        0.5
+      ],
+      [
+        "Tail_L_04",
+        0.5
+      ],
+      [
+        "Tail_L_05",
+        0.5
+      ],
+      [
+        "Tail_L_03",
+        0.5
+      ]
+    ],
+    "collapses": {},
+    "flips": {}
+  },
+  "firstFrame": {
+    "coverage": 0.963,
+    "shifted": 0,
+    "ready": true
+  },
+  "previousMode": [
+    {
+      "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+      "ok": true,
+      "value": [
+        0.907,
+        0.865
+      ]
+    },
+    {
+      "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+      "ok": false,
+      "value": [
+        1.46,
+        8.11,
+        "38 parts"
+      ]
+    },
+    {
+      "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+      "ok": true,
+      "value": [
+        1,
+        0.85
+      ]
+    },
+    {
+      "id": "V4 loop seam mean difference <= 0.002",
+      "ok": true,
+      "value": 0
+    },
+    {
+      "id": "V5 collapsed or squashed-through parts = 0",
+      "ok": true,
+      "value": []
+    }
+  ],
+  "baselineAnimations": 9,
+  "baselineFullyPassed": 0,
+  "tests": {
+    "files": 4,
+    "passed": 15,
+    "skipped": 0,
+    "scope": "Rig isolation/application and CLI immutability, weighted part ownership, temporal tracking, plan merge; targeted tests only"
+  },
+  "sources": [
+    {
+      "path": "packages/reference/src/rig-animation.ts",
+      "sha256": "649e68760b8e57c44dee74b0966ef9c26ff45994c2ae0f0df5590086a50be3dc"
+    },
+    {
+      "path": "packages/reference/src/pose-fit.ts",
+      "sha256": "3fd03b8e7ca979c7bcbd67f6a5cc445109c4f2d8fd9be70b77dd13d6d0404304"
+    },
+    {
+      "path": "packages/cli/src/rig.ts",
+      "sha256": "fc23ed1c6391441d9e823256c64af38d17bf2d23f5f5a5f2dc87a01b9e7de2e8"
+    },
+    {
+      "path": "skills/autospine/references/existing-rig-motion.md",
+      "sha256": "fc8df65147ef4b20d9d4e7e83ee6c9319b89e4cca687f25091662522dab5a83f"
+    }
+  ],
+  "zipSha256": "6fe9363b3807d431b3ebf7e4aaa345405215f6ae8fa71f726c9a6f62a8cc55f3",
+  "editorUi": {
+    "verified": false,
+    "note": "Native Spine export is not an editor interface screenshot. Background execution preserved the existing unsaved Spine window."
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "engineVersion": "0.5.16",
+  "original": "\\\\192.168.1.86\\art\\★H_70T\\04_虎機\\AWP\\171_AWP極地王者\\後製\\PolarRoar_MG\\PolarRoar_MG_4.0.64\\PolarRoar_MG_4.0.spine",
+  "originalSha256": "832575724a72312af073b76fa86226427374c5cdd1587cba6d74353930a1479f",
+  "originalUnchanged": true,
+  "sourceCopy": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\_work\\input\\quarantine\\PolarRoar\\original.spine",
+  "availableAnimations": 22,
+  "selectedAnimations": [
+    "Idle_LV4",
+    "4Upgrade",
+    "Trigger_Fail_Lv4"
+  ],
+  "imagesOnly": {
+    "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\input\\imagesOnly.json",
+    "sha256": "d801d555e7b623b78762ce6e987380382effca6cf55b724fcb7868dfd25385db",
+    "bones": 1,
+    "animations": [],
+    "constraints": []
+  },
+  "renders": [
+    {
+      "animation": "Idle_LV4",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\input\\reference\\Idle_LV4.mov",
+      "bytes": 2694210,
+      "sha256": "87b6dc73fd8c80827a3217a24391cfc77bda49fb7357aa535034d0dc42f540f4"
+    },
+    {
+      "animation": "4Upgrade",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\input\\reference\\4Upgrade.mov",
+      "bytes": 1763206,
+      "sha256": "bcf530b06b2f4c9defb747c1d64bf3be19a1dd9113fb2b371777dee25ba527de"
+    },
+    {
+      "animation": "Trigger_Fail_Lv4",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\input\\reference\\Trigger_Fail_Lv4.mov",
+      "bytes": 737626,
+      "sha256": "9c4586408bbbe96ba2f08f2e16e9b8dbe60ea9f3c81584a9e484b01a9cec22e5"
+    }
+  ],
+  "policy": "Original files and full JSON stay in batch quarantine. Build and fitting may read only this project input/imagesOnly.json, PNG images, MOV references, plans, and generated builds. No compare-reference, optimize-motion, original mesh, weights, constraints, or animation keys."
+}

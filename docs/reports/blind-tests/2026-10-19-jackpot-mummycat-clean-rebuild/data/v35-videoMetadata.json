@@ -1,0 +1,25 @@
+{
+  "animations": [
+    {
+      "name": "in",
+      "duration": 3
+    },
+    {
+      "name": "idle",
+      "duration": 6
+    },
+    {
+      "name": "idle2",
+      "duration": 12
+    },
+    {
+      "name": "idle_clap",
+      "duration": 1.6
+    },
+    {
+      "name": "clap",
+      "duration": 6
+    }
+  ],
+  "all5": 28.6
+}
