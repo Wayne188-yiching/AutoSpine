@@ -1,0 +1,41 @@
+{
+  "engineVersion": "0.5.16",
+  "original": "\\\\192.168.1.86\\art\\★H_70T\\04_虎機\\AWP\\170_宙斯五合一_宙斯\\00_編輯檔案\\02_後製\\SPINE\\01_MainGame\\上板角色\\ZEUS_MG_TopRole_Kuang.spine",
+  "originalSha256": "2e81a156a865d84e51e8b80ba132d8d344a0365b2cce9431a296bf4eff2fe2bf",
+  "originalUnchanged": true,
+  "sourceCopy": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\_work\\input\\quarantine\\Zeus\\original.spine",
+  "availableAnimations": 24,
+  "selectedAnimations": [
+    "Idle_02",
+    "Touch01",
+    "ToBonusGame"
+  ],
+  "imagesOnly": {
+    "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\imagesOnly.json",
+    "sha256": "f7dad6838d5bd06f320a5c87c1cd92bb4e5e9d780d57b8e585be40e9e64245ed",
+    "bones": 1,
+    "animations": [],
+    "constraints": []
+  },
+  "renders": [
+    {
+      "animation": "Idle_02",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\Idle_02.mov",
+      "bytes": 9239476,
+      "sha256": "9886fe5a5c500b16b95feba937e3067408211a5f90f11859198441ec2ae52682"
+    },
+    {
+      "animation": "Touch01",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\Touch01.mov",
+      "bytes": 9205630,
+      "sha256": "91a6c0ddee669c7429d625e126b22743ff0f87d54aaa8fb18b6f7d354e01cd72"
+    },
+    {
+      "animation": "ToBonusGame",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\ToBonusGame.mov",
+      "bytes": 6276058,
+      "sha256": "a7c5e22752e7e559a52b572b752dae57d30f3ea9b8690f3c7462cb1fdf4f52fc"
+    }
+  ],
+  "policy": "Original files and full JSON stay in batch quarantine. Build and fitting may read only this project input/imagesOnly.json, PNG images, MOV references, plans, and generated builds. No compare-reference, optimize-motion, original mesh, weights, constraints, or animation keys."
+}

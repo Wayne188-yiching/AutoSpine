@@ -1,0 +1,2380 @@
+{
+  "date": "2026-10-27",
+  "mode": "Artist binding + MOV-authored new motion",
+  "engine": "Local unreleased source based on AutoSpine 0.5.16; installed cache unchanged",
+  "projects": [
+    {
+      "id": "ZeusArtistRig",
+      "base": "Zeus",
+      "label": "宙斯",
+      "rev": 9,
+      "name": "AWP-Zeus-ArtistRig-VideoOnly",
+      "plan": "plan-09",
+      "build": "build-09",
+      "bones": 219,
+      "slots": 171,
+      "animations": [
+        {
+          "animation": "Idle_02",
+          "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\ZeusArtistRig\\_work\\input\\reference\\Idle_02.mov",
+          "start": 0,
+          "pass": false,
+          "rows": [
+            {
+              "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+              "ok": true,
+              "value": [
+                0.913,
+                0.86
+              ]
+            },
+            {
+              "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+              "ok": true,
+              "value": [
+                0.23,
+                1.46,
+                "30 parts"
+              ]
+            },
+            {
+              "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+              "ok": false,
+              "value": [
+                1,
+                0.45
+              ]
+            },
+            {
+              "id": "V4 loop seam mean difference <= 0.002",
+              "ok": true,
+              "value": 0
+            },
+            {
+              "id": "V5 collapsed or squashed-through parts = 0",
+              "ok": true,
+              "value": []
+            }
+          ],
+          "hints": [
+            "the whole figure moves 0.45x as far as the reference (too small)"
+          ],
+          "frameError": [
+            0.064,
+            0.083,
+            0.078,
+            0.097,
+            0.122,
+            0.111,
+            0.124,
+            0.137,
+            0.19,
+            0.272,
+            0.353,
+            0.327,
+            0.341,
+            0.369,
+            0.415,
+            0.436,
+            0.401,
+            0.364,
+            0.332,
+            0.345,
+            0.443,
+            0.416,
+            0.325,
+            0.322,
+            0.303,
+            0.303,
+            0.421,
+            0.429,
+            0.287,
+            0.197,
+            0.303,
+            0.267,
+            0.284,
+            0.254,
+            0.234,
+            0.21,
+            0.2,
+            0.271,
+            0.261,
+            0.248,
+            0.282,
+            0.245,
+            0.228,
+            0.195,
+            0.22,
+            0.237,
+            0.208,
+            0.155,
+            0.152,
+            0.137,
+            0.133,
+            0.141,
+            0.146,
+            0.12,
+            0.095,
+            0.09,
+            0.082,
+            0.077,
+            0.082,
+            0.084
+          ],
+          "parts": [
+            {
+              "part": "L_Hat",
+              "frames": 56,
+              "median": 0.07895392163534891,
+              "p90": 0.08285145012873676,
+              "lag": 12,
+              "amplitude": 0.19962942841957496,
+              "correlation": -0.35123496870377546
+            },
+            {
+              "part": "Belt",
+              "frames": 60,
+              "median": 0.03553489204839222,
+              "p90": 0.03929694590557765,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "R_Hair",
+              "frames": 60,
+              "median": 0.005435608457193207,
+              "p90": 0.014626907787786646,
+              "lag": 1,
+              "amplitude": 0.7342368575816587,
+              "correlation": 0.9859428309932678
+            },
+            {
+              "part": "R_Arm_02",
+              "frames": 60,
+              "median": 0.005150573241054567,
+              "p90": 0.007267565576605232,
+              "lag": 0,
+              "amplitude": 0.9922488848965499,
+              "correlation": 0.9975532663609373
+            },
+            {
+              "part": "qunzi3",
+              "frames": 60,
+              "median": 0.004884796717229717,
+              "p90": 0.005359439027369,
+              "lag": 0,
+              "amplitude": 0.9638391440481444,
+              "correlation": 0.9987029616045807
+            },
+            {
+              "part": "Face",
+              "frames": 60,
+              "median": 0.004849480990046865,
+              "p90": 0.005609840495403347,
+              "lag": 1,
+              "amplitude": 0.9528239817164849,
+              "correlation": 0.9959004347735733
+            },
+            {
+              "part": "L_Hair",
+              "frames": 41,
+              "median": 0.004688045770521506,
+              "p90": 0.010584644141545677,
+              "lag": 0,
+              "amplitude": 0.2543294294693709,
+              "correlation": 0.533388825653668
+            },
+            {
+              "part": "R_Arm_01",
+              "frames": 60,
+              "median": 0.003963675457096207,
+              "p90": 0.006230268268014711,
+              "lag": -1,
+              "amplitude": 0.8643093664310807,
+              "correlation": 0.9924988227873822
+            },
+            {
+              "part": "ZEUS_MG_LightningFire",
+              "frames": 52,
+              "median": 0.0039307707127026244,
+              "p90": 0.006129511315202009,
+              "lag": 0,
+              "amplitude": 0.8633180141586386,
+              "correlation": 0.9925399023509963
+            },
+            {
+              "part": "Beard_02_1",
+              "frames": 60,
+              "median": 0.003703777935417831,
+              "p90": 0.0063341426909219005,
+              "lag": 4,
+              "amplitude": 1.1451863128193376,
+              "correlation": 0.9837401908670395
+            },
+            {
+              "part": "Beard",
+              "frames": 60,
+              "median": 0.003676747968050597,
+              "p90": 0.005129343292453981,
+              "lag": 0,
+              "amplitude": 0.9604598653678297,
+              "correlation": 0.9869451315417956
+            },
+            {
+              "part": "L_Arm_01",
+              "frames": 60,
+              "median": 0.0034054821388420473,
+              "p90": 0.005491614437511653,
+              "lag": 0,
+              "amplitude": 1.09660345195534,
+              "correlation": 0.9921220003101849
+            },
+            {
+              "part": "qunzi2",
+              "frames": 60,
+              "median": 0.002721393665389812,
+              "p90": 0.002891635857462131,
+              "lag": 0,
+              "amplitude": 0.9759401450066442,
+              "correlation": 0.9984190047934799
+            },
+            {
+              "part": "L_Arm_03_02",
+              "frames": 57,
+              "median": 0.002381899454607718,
+              "p90": 0.005288016762230327,
+              "lag": 0,
+              "amplitude": 0.8472693185223324,
+              "correlation": 0.9909147839140939
+            },
+            {
+              "part": "L_Arm_02",
+              "frames": 60,
+              "median": 0.0023217878268958687,
+              "p90": 0.005896584808042192,
+              "lag": 0,
+              "amplitude": 0.9283000088747925,
+              "correlation": 0.9990964082852671
+            },
+            {
+              "part": "ShoulderStrap",
+              "frames": 60,
+              "median": 0.00194074633840483,
+              "p90": 0.003985449895551098,
+              "lag": 0,
+              "amplitude": 1.2697899685836256,
+              "correlation": 0.9962565653689613
+            },
+            {
+              "part": "Mouth_Out",
+              "frames": 48,
+              "median": 0.0017123082921116281,
+              "p90": 0.0034399001591204764,
+              "lag": 2,
+              "amplitude": 0.9539701324571265,
+              "correlation": 1.0130755389060933
+            },
+            {
+              "part": "L_Arm_03",
+              "frames": 58,
+              "median": 0.0016840126333064176,
+              "p90": 0.004972399001398022,
+              "lag": 0,
+              "amplitude": 0.8821656569529213,
+              "correlation": 0.9927338237090036
+            },
+            {
+              "part": "Body",
+              "frames": 60,
+              "median": 0.0014854332431796194,
+              "p90": 0.0033607917944996775,
+              "lag": 0,
+              "amplitude": 1.2302142606273745,
+              "correlation": 0.9961821147807705
+            },
+            {
+              "part": "L_Beard",
+              "frames": 60,
+              "median": 0.0014312430606703399,
+              "p90": 0.0023567306570569306,
+              "lag": 0,
+              "amplitude": 0.9959699283418629,
+              "correlation": 0.9950939896512022
+            },
+            {
+              "part": "Breastplate",
+              "frames": 60,
+              "median": 0.0014044055275159518,
+              "p90": 0.003160701712736396,
+              "lag": 0,
+              "amplitude": 1.2234658419950077,
+              "correlation": 0.9963006844465169
+            },
+            {
+              "part": "L_Hair_01",
+              "frames": 58,
+              "median": 0.001337254926537341,
+              "p90": 0.00212453781615412,
+              "lag": -1,
+              "amplitude": 1.0262697081817074,
+              "correlation": 1.0070941901642112
+            },
+            {
+              "part": "R_Beard",
+              "frames": 60,
+              "median": 0.0012421380528071738,
+              "p90": 0.0018135375288863339,
+              "lag": 0,
+              "amplitude": 1.0766982344015363,
+              "correlation": 0.9977151795217696
+            },
+            {
+              "part": "L_Arm_03_01",
+              "frames": 55,
+              "median": 0.0010501820135813955,
+              "p90": 0.002882856751632992,
+              "lag": 0,
+              "amplitude": 0.9498209025039083,
+              "correlation": 0.9975782311685327
+            },
+            {
+              "part": "L_Ear",
+              "frames": 44,
+              "median": 0.0010404783163342523,
+              "p90": 0.00183056819742078,
+              "lag": -10,
+              "amplitude": 0.3580746977894092,
+              "correlation": 0.4063875225798433
+            },
+            {
+              "part": "R_Hat",
+              "frames": 60,
+              "median": 0.0010369489651854526,
+              "p90": 0.0030754630378607593,
+              "lag": 0,
+              "amplitude": 1.0142672320375874,
+              "correlation": 0.9965004080613783
+            },
+            {
+              "part": "R_Ear",
+              "frames": 24,
+              "median": 0.0009890405286968832,
+              "p90": 0.0044395184700373146,
+              "lag": 0,
+              "amplitude": 0.9748496421700963,
+              "correlation": 0.9948651152848622
+            },
+            {
+              "part": "Hair",
+              "frames": 60,
+              "median": 0.0009890274361780147,
+              "p90": 0.0023578752247842157,
+              "lag": 0,
+              "amplitude": 0.9909096694320247,
+              "correlation": 0.998778961176207
+            },
+            {
+              "part": "R_Hair_01",
+              "frames": 60,
+              "median": 0.000816838931990463,
+              "p90": 0.005561268391953257,
+              "lag": 0,
+              "amplitude": 1.006826104754214,
+              "correlation": 0.9739644676238595
+            },
+            {
+              "part": "R_Arm_03",
+              "frames": 60,
+              "median": 0.0007635253054228295,
+              "p90": 0.0037632683995060616,
+              "lag": 0,
+              "amplitude": 0.9590198968866547,
+              "correlation": 0.9990937897743497
+            },
+            {
+              "part": "Clothing",
+              "frames": 60,
+              "median": 0.0007140043138972159,
+              "p90": 0.0061397798183670275,
+              "lag": 0,
+              "amplitude": 1.3327733372536883,
+              "correlation": 0.9319658338237575
+            },
+            {
+              "part": "R_HairLight_01",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "L_Eyebrow",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "R_Eyebrow",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye_white_l",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye_white_r",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "L_Arm_03_03",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye01",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye02",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            }
+          ],
+          "output": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\ZeusArtistRig\\_work\\checks\\compare-09\\Idle_02\\compare.mp4",
+          "report": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\ZeusArtistRig\\_work\\checks\\compare-09\\Idle_02\\report.json"
+        },
+        {
+          "animation": "Touch01",
+          "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\ZeusArtistRig\\_work\\input\\reference\\Touch01.mov",
+          "start": 0,
+          "pass": false,
+          "rows": [
+            {
+              "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+              "ok": false,
+              "value": [
+                0.875,
+                0.739
+              ]
+            },
+            {
+              "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+              "ok": false,
+              "value": [
+                0.61,
+                4.3,
+                "31 parts"
+              ]
+            },
+            {
+              "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+              "ok": false,
+              "value": [
+                1,
+                0.62
+              ]
+            },
+            {
+              "id": "V5 collapsed or squashed-through parts = 0",
+              "ok": true,
+              "value": []
+            }
+          ],
+          "hints": [
+            "outline differs most at frame 25 (0.83s, overlap 0.74): pose, placement or size",
+            "the whole figure moves 0.62x as far as the reference (too small)",
+            "Belt: off by 3.2% of the height, moving differently",
+            "ZEUS_MG_LightningFire: off by 2.5% of the height",
+            "L_Arm_03_01: off by 2.5% of the height",
+            "L_Arm_03_02: off by 2.4% of the height"
+          ],
+          "frameError": [
+            0.275,
+            0.301,
+            0.284,
+            0.43,
+            0.451,
+            0.352,
+            0.335,
+            0.391,
+            0.41,
+            0.261,
+            0.423,
+            0.313,
+            0.509,
+            0.522,
+            0.513,
+            0.59,
+            0.611,
+            0.655,
+            0.842,
+            0.951,
+            0.94,
+            1.728,
+            3.851,
+            1.936,
+            0.802,
+            2.292,
+            1.129,
+            0.847,
+            0.896,
+            0.925,
+            1.018,
+            1.018,
+            1.011,
+            1.144,
+            1.247,
+            1.072,
+            1.259,
+            1.299,
+            1.554,
+            1.477,
+            1.507,
+            1.388,
+            0.97,
+            0.962,
+            0.864,
+            0.678,
+            0.822,
+            0.649,
+            0.519,
+            0.36,
+            0.359,
+            0.299,
+            0.285,
+            0.295,
+            0.301,
+            0.278,
+            0.287,
+            0.297,
+            0.288,
+            0.272,
+            0.263
+          ],
+          "parts": [
+            {
+              "part": "Belt",
+              "frames": 60,
+              "median": 0.032103697388315214,
+              "p90": 0.035432344782343264,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "ZEUS_MG_LightningFire",
+              "frames": 34,
+              "median": 0.025434299137025693,
+              "p90": 0.04296961262832758,
+              "lag": 0,
+              "amplitude": 1.019036961303146,
+              "correlation": 0.9824543658933322
+            },
+            {
+              "part": "L_Arm_03_01",
+              "frames": 48,
+              "median": 0.024937394969015817,
+              "p90": 0.06326868413283489,
+              "lag": 0,
+              "amplitude": 1.0371015827209538,
+              "correlation": 0.9921779669123861
+            },
+            {
+              "part": "L_Arm_03_02",
+              "frames": 55,
+              "median": 0.02433817861451176,
+              "p90": 0.03384129306157334,
+              "lag": 0,
+              "amplitude": 1.0113049293693868,
+              "correlation": 0.9960636661503885
+            },
+            {
+              "part": "L_Arm_02",
+              "frames": 55,
+              "median": 0.023104132887568424,
+              "p90": 0.03941085774289663,
+              "lag": 0,
+              "amplitude": 1.0019788556474143,
+              "correlation": 0.9957214611017702
+            },
+            {
+              "part": "L_Arm_03",
+              "frames": 46,
+              "median": 0.022476930408671433,
+              "p90": 0.034203433960839795,
+              "lag": 0,
+              "amplitude": 1.016490132008466,
+              "correlation": 0.9757798513781571
+            },
+            {
+              "part": "R_Arm_02",
+              "frames": 58,
+              "median": 0.016283602521861108,
+              "p90": 0.027878128778871646,
+              "lag": 0,
+              "amplitude": 0.7762738313390966,
+              "correlation": 0.9616531304270122
+            },
+            {
+              "part": "L_Arm_01",
+              "frames": 56,
+              "median": 0.010864422248695957,
+              "p90": 0.01568217118410919,
+              "lag": 0,
+              "amplitude": 1.006870487907056,
+              "correlation": 0.9673797851926712
+            },
+            {
+              "part": "R_Arm_01",
+              "frames": 58,
+              "median": 0.010718840574409277,
+              "p90": 0.02064280702060399,
+              "lag": 0,
+              "amplitude": 0.8667733578276822,
+              "correlation": 0.9455834141593367
+            },
+            {
+              "part": "Beard_02_1",
+              "frames": 59,
+              "median": 0.010197395216024021,
+              "p90": 0.022512580609353888,
+              "lag": 0,
+              "amplitude": 1.0951245187331418,
+              "correlation": 0.864123880200504
+            },
+            {
+              "part": "Mouth_Out",
+              "frames": 47,
+              "median": 0.00939852580609612,
+              "p90": 0.02066263986935507,
+              "lag": 1,
+              "amplitude": 1.121069574979787,
+              "correlation": 0.9181983480623493
+            },
+            {
+              "part": "R_Hair",
+              "frames": 46,
+              "median": 0.007669900073332054,
+              "p90": 0.01546939201906961,
+              "lag": 0,
+              "amplitude": 0.9952126817894189,
+              "correlation": 0.9746454788847552
+            },
+            {
+              "part": "Beard",
+              "frames": 59,
+              "median": 0.006727838724522966,
+              "p90": 0.015118272276623783,
+              "lag": 1,
+              "amplitude": 1.1121088815605988,
+              "correlation": 0.9628696339280126
+            },
+            {
+              "part": "Face",
+              "frames": 59,
+              "median": 0.006512001709674728,
+              "p90": 0.013721149009293816,
+              "lag": 1,
+              "amplitude": 1.074126098214288,
+              "correlation": 0.9751760680282329
+            },
+            {
+              "part": "R_Arm_03",
+              "frames": 51,
+              "median": 0.006499442799000171,
+              "p90": 0.04947127190211139,
+              "lag": 0,
+              "amplitude": 0.8499264843340992,
+              "correlation": 0.9545769057099781
+            },
+            {
+              "part": "ShoulderStrap",
+              "frames": 59,
+              "median": 0.006107363764630954,
+              "p90": 0.010182112433892231,
+              "lag": 1,
+              "amplitude": 0.9699984607010931,
+              "correlation": 0.9719258508906982
+            },
+            {
+              "part": "Body",
+              "frames": 60,
+              "median": 0.005195475248628074,
+              "p90": 0.009145764624377785,
+              "lag": 1,
+              "amplitude": 0.7518784810314558,
+              "correlation": 0.9367074476369311
+            },
+            {
+              "part": "R_Hair_01",
+              "frames": 50,
+              "median": 0.004898868306628964,
+              "p90": 0.006060092135461545,
+              "lag": 0,
+              "amplitude": 1.0348889214014283,
+              "correlation": 0.8667752630073601
+            },
+            {
+              "part": "L_Beard",
+              "frames": 47,
+              "median": 0.004111280359590539,
+              "p90": 0.07221143579056294,
+              "lag": -1,
+              "amplitude": 0.3261027313533632,
+              "correlation": 0.9418758337341785
+            },
+            {
+              "part": "L_Hair",
+              "frames": 42,
+              "median": 0.004012388636840111,
+              "p90": 0.006401162530239638,
+              "lag": 0,
+              "amplitude": 0.9191388655991031,
+              "correlation": 0.9869778807209015
+            },
+            {
+              "part": "L_Hat",
+              "frames": 59,
+              "median": 0.003906633732426469,
+              "p90": 0.009004438918100807,
+              "lag": 1,
+              "amplitude": 1.0151570308181597,
+              "correlation": 0.9878065221044094
+            },
+            {
+              "part": "R_Beard",
+              "frames": 59,
+              "median": 0.0036573034917541975,
+              "p90": 0.009178262662819693,
+              "lag": 1,
+              "amplitude": 1.0739675671222415,
+              "correlation": 0.9923719784160024
+            },
+            {
+              "part": "Breastplate",
+              "frames": 60,
+              "median": 0.0033764491975150634,
+              "p90": 0.005078081610963266,
+              "lag": 1,
+              "amplitude": 0.9897439910461358,
+              "correlation": 0.9864425928263942
+            },
+            {
+              "part": "Clothing",
+              "frames": 61,
+              "median": 0.003205378843281833,
+              "p90": 0.005418322011071697,
+              "lag": 0,
+              "amplitude": 0.9031345386078273,
+              "correlation": 0.9196738743816225
+            },
+            {
+              "part": "R_Hat",
+              "frames": 58,
+              "median": 0.0030076859283739744,
+              "p90": 0.004806798063518419,
+              "lag": 0,
+              "amplitude": 1.0096607197695504,
+              "correlation": 0.9913727695461247
+            },
+            {
+              "part": "L_Ear",
+              "frames": 46,
+              "median": 0.002969276191079208,
+              "p90": 0.006047525030369546,
+              "lag": 0,
+              "amplitude": 1.0402539817672785,
+              "correlation": 0.995235326819225
+            },
+            {
+              "part": "qunzi3",
+              "frames": 60,
+              "median": 0.002898854283763845,
+              "p90": 0.003762862287424174,
+              "lag": 0,
+              "amplitude": 0.9119470504857126,
+              "correlation": 0.9446069567874562
+            },
+            {
+              "part": "L_Hair_01",
+              "frames": 48,
+              "median": 0.002313380421885931,
+              "p90": 0.006186730469422338,
+              "lag": 0,
+              "amplitude": 0.9838088522638628,
+              "correlation": 0.9940424836348931
+            },
+            {
+              "part": "R_Ear",
+              "frames": 36,
+              "median": 0.002296129782646235,
+              "p90": 0.005742247850968321,
+              "lag": 0,
+              "amplitude": 0.9983673947662749,
+              "correlation": 0.9738162013096802
+            },
+            {
+              "part": "Hair",
+              "frames": 59,
+              "median": 0.0022009275727385446,
+              "p90": 0.005875333017904036,
+              "lag": 1,
+              "amplitude": 1.0002031947017316,
+              "correlation": 0.9915565827334567
+            },
+            {
+              "part": "qunzi2",
+              "frames": 61,
+              "median": 0.0011835371901228102,
+              "p90": 0.001285880757270729,
+              "lag": 0,
+              "amplitude": 0.8778836954210932,
+              "correlation": 0.7700381321855744
+            },
+            {
+              "part": "R_HairLight_01",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "L_Eyebrow",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "R_Eyebrow",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye02",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye01",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye_white_l",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Eye_white_r",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "L_Arm_03_03",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Mouth_In",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            }
+          ],
+          "output": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\ZeusArtistRig\\_work\\checks\\compare-09\\Touch01\\compare.mp4",
+          "report": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\ZeusArtistRig\\_work\\checks\\compare-09\\Touch01\\report.json"
+        }
+      ],
+      "integrity": {
+        "artistBindingAuthorized": true,
+        "animationSource": "MOV only; input animations/events removed before authoring",
+        "inputAnimations": 0,
+        "outputAnimations": [
+          "Idle_02",
+          "Touch01"
+        ],
+        "bindingBefore": "904b3d5bf4fa973093431dc2072b5447eedce7b62f8f63deee118202bc529b29",
+        "bindingAfter": "904b3d5bf4fa973093431dc2072b5447eedce7b62f8f63deee118202bc529b29",
+        "bindingUnchanged": true,
+        "originalSha256": "2e81a156a865d84e51e8b80ba132d8d344a0365b2cce9431a296bf4eff2fe2bf",
+        "originalUnchanged": true,
+        "movies": [
+          {
+            "animation": "Idle_02",
+            "sha256": "9886fe5a5c500b16b95feba937e3067408211a5f90f11859198441ec2ae52682",
+            "sourceSha256": "9886fe5a5c500b16b95feba937e3067408211a5f90f11859198441ec2ae52682"
+          },
+          {
+            "animation": "Touch01",
+            "sha256": "91a6c0ddee669c7429d625e126b22743ff0f87d54aaa8fb18b6f7d354e01cd72",
+            "sourceSha256": "91a6c0ddee669c7429d625e126b22743ff0f87d54aaa8fb18b6f7d354e01cd72"
+          }
+        ]
+      },
+      "roundtrip": {
+        "pass": true,
+        "maxVertexErrorPx": 0.12704724979322124,
+        "rmsVertexErrorPx": 0.02030489865143987,
+        "sampledVertices": 76374,
+        "topologyMismatchCount": 0,
+        "topologyMismatches": [],
+        "worst": {
+          "animation": "Touch01",
+          "frame": 36,
+          "part": "ZEUS_MG_LightningFire_Light#ZEUS_MG_LightningFire_Light"
+        },
+        "limitPx": 0.5,
+        "sampleOffsetSeconds": 0.0001,
+        "spineVersion": "4.0.64",
+        "note": "Compared new motion against its own official native roundtrip, never against original timelines. Triangle cyclic order normalized, winding preserved."
+      },
+      "geometry": {
+        "Idle_02": {
+          "inversions": {},
+          "visibleInversions": {},
+          "maxCharacterStretch": {
+            "slot": "R_Arm_01",
+            "value": 0.495
+          },
+          "topStretch": [
+            [
+              "R_Arm_01",
+              0.495
+            ],
+            [
+              "R_Arm_02",
+              0.297
+            ],
+            [
+              "Face",
+              0.266
+            ],
+            [
+              "Body",
+              0.211
+            ],
+            [
+              "Mouth_In",
+              0.192
+            ],
+            [
+              "L_Ear",
+              0.169
+            ]
+          ],
+          "collapses": {},
+          "flips": {}
+        },
+        "Touch01": {
+          "inversions": {},
+          "visibleInversions": {},
+          "maxCharacterStretch": {
+            "slot": "L_Arm_01",
+            "value": 0.534
+          },
+          "topStretch": [
+            [
+              "L_Arm_01",
+              0.534
+            ],
+            [
+              "R_Arm_01",
+              0.481
+            ],
+            [
+              "Body",
+              0.348
+            ],
+            [
+              "L_Arm_03",
+              0.323
+            ],
+            [
+              "R_Arm_02",
+              0.288
+            ],
+            [
+              "Mouth_In",
+              0.191
+            ]
+          ],
+          "collapses": {},
+          "flips": {}
+        }
+      },
+      "zip": "AWP-Zeus-ArtistRig-VideoOnly.zip",
+      "zipSha256": "0764bf984dcef01a17a843339a3296a14835ef7b0f54e646700d3900435ee5ea",
+      "nativeAnimation": "Touch01",
+      "imageCount": 118
+    },
+    {
+      "id": "PolarRoarArtistRig",
+      "base": "PolarRoar",
+      "label": "極地王者・冰屋",
+      "rev": 6,
+      "name": "AWP-PolarRoar-ArtistRig-VideoOnly",
+      "plan": "plan-06",
+      "build": "build-06",
+      "bones": 507,
+      "slots": 479,
+      "animations": [
+        {
+          "animation": "Idle_LV4",
+          "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoarArtistRig\\_work\\input\\reference\\Idle_LV4.mov",
+          "start": 0,
+          "pass": false,
+          "rows": [
+            {
+              "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+              "ok": true,
+              "value": [
+                0.945,
+                0.945
+              ]
+            },
+            {
+              "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+              "ok": false,
+              "value": [
+                0.47,
+                1.57,
+                "24 parts"
+              ]
+            },
+            {
+              "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+              "ok": true,
+              "value": "reference figure barely moves; not judged"
+            },
+            {
+              "id": "V4 loop seam mean difference <= 0.002",
+              "ok": true,
+              "value": 0
+            },
+            {
+              "id": "V5 collapsed or squashed-through parts = 0",
+              "ok": true,
+              "value": []
+            }
+          ],
+          "hints": [
+            "Igloo_Stone_24: off by 12.5% of the height, moving differently",
+            "Igloo_Stone_35: off by 1.8% of the height, moving differently",
+            "Igloo4_Stone_light1a: off by 1.5% of the height, moving differently",
+            "Igloo_Stone_56: off by 1.0% of the height, moving differently"
+          ],
+          "frameError": [
+            0.53,
+            0.531,
+            0.48,
+            0.475,
+            0.477,
+            0.482,
+            0.483,
+            0.511,
+            0.51,
+            0.513,
+            0.514,
+            0.512,
+            0.514,
+            0.473,
+            0.475,
+            0.473,
+            0.474,
+            0.47,
+            0.469,
+            0.472,
+            0.469,
+            0.471,
+            0.473,
+            0.473,
+            0.474,
+            0.467,
+            0.465,
+            0.461,
+            0.462,
+            0.459,
+            0.462,
+            0.459,
+            0.462,
+            0.461,
+            0.465,
+            0.467,
+            0.474,
+            0.473,
+            0.473,
+            0.476,
+            0.481,
+            0.478,
+            0.484,
+            0.481,
+            0.492,
+            0.485,
+            0.467,
+            0.468,
+            0.464,
+            0.458,
+            0.439,
+            0.455,
+            0.445,
+            0.431,
+            0.461,
+            0.433,
+            0.42,
+            0.425,
+            0.434,
+            0.487,
+            0.503,
+            0.506,
+            0.505,
+            0.503,
+            0.495,
+            0.482,
+            0.476,
+            0.458,
+            0.48,
+            0.488,
+            0.481,
+            0.478,
+            0.478,
+            0.47,
+            0.473,
+            0.473,
+            0.474,
+            0.467,
+            0.466,
+            0.467,
+            0.469,
+            0.471,
+            0.473,
+            0.473,
+            0.474,
+            0.467,
+            0.465,
+            0.461,
+            0.462,
+            0.459,
+            0.462,
+            0.459,
+            0.462,
+            0.461,
+            0.465,
+            0.467,
+            0.474,
+            0.473,
+            0.473,
+            0.471,
+            0.469,
+            0.472,
+            0.469,
+            0.47,
+            0.474,
+            0.473,
+            0.475,
+            0.473,
+            0.514,
+            0.512,
+            0.514,
+            0.513,
+            0.51,
+            0.511,
+            0.543,
+            0.535,
+            0.535,
+            0.475,
+            0.48,
+            0.531
+          ],
+          "parts": [
+            {
+              "part": "Igloo_Stone_24",
+              "frames": 98,
+              "median": 0.12498359517115668,
+              "p90": 0.12597865751751422,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_35",
+              "frames": 120,
+              "median": 0.017732741653391608,
+              "p90": 0.01775878858625081,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_12",
+              "frames": 10,
+              "median": 0.016676015746468254,
+              "p90": 0.01686112867903924,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo4_Stone_light1a",
+              "frames": 120,
+              "median": 0.015075970161916077,
+              "p90": 0.01573360763906849,
+              "lag": 0,
+              "amplitude": 0.380332956176747,
+              "correlation": 0.4332287386325685
+            },
+            {
+              "part": "Igloo_Stone_56",
+              "frames": 120,
+              "median": 0.010302735836747196,
+              "p90": 0.010339595244180945,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_33",
+              "frames": 120,
+              "median": 0.00799459767851385,
+              "p90": 0.00819933398302027,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_32",
+              "frames": 120,
+              "median": 0.00794748887793524,
+              "p90": 0.0082433864735481,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_8",
+              "frames": 120,
+              "median": 0.007923497441974995,
+              "p90": 0.008320783442055729,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_10",
+              "frames": 120,
+              "median": 0.007335454327774803,
+              "p90": 0.007753741157489015,
+              "lag": 0,
+              "amplitude": 1.0000252891830166,
+              "correlation": 0.9998024898873713
+            },
+            {
+              "part": "Igloo_Stone_59",
+              "frames": 120,
+              "median": 0.007288973966044731,
+              "p90": 0.007322498934273185,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_5",
+              "frames": 120,
+              "median": 0.006448484703216966,
+              "p90": 0.006789688809852341,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_7",
+              "frames": 120,
+              "median": 0.005046232630277243,
+              "p90": 0.005772978569587899,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_6",
+              "frames": 120,
+              "median": 0.004691515199922957,
+              "p90": 0.004940885991432494,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_55",
+              "frames": 120,
+              "median": 0.004687732271564749,
+              "p90": 0.004851363078960856,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_9",
+              "frames": 120,
+              "median": 0.004540595834752611,
+              "p90": 0.0047263531679268955,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_40",
+              "frames": 120,
+              "median": 0.004527431450009376,
+              "p90": 0.005308697363839396,
+              "lag": 0,
+              "amplitude": 0.775318871868323,
+              "correlation": 0.9965660472008377
+            },
+            {
+              "part": "Igloo_Stone_57",
+              "frames": 120,
+              "median": 0.00447259648321827,
+              "p90": 0.004507627569419232,
+              "lag": 0,
+              "amplitude": 1.0096746641564043,
+              "correlation": 0.9999166630967934
+            },
+            {
+              "part": "Igloo_Stone_58",
+              "frames": 120,
+              "median": 0.004220107271715841,
+              "p90": 0.004563554474675181,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo4_Stone_light1",
+              "frames": 120,
+              "median": 0.003875198800872874,
+              "p90": 0.004286439503553711,
+              "lag": 0,
+              "amplitude": 1.006422000535421,
+              "correlation": 0.9995937369870554
+            },
+            {
+              "part": "FrontSnow",
+              "frames": 120,
+              "median": 0.0032598111641172485,
+              "p90": 0.0033440440655964523,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo4_Stone_light2a",
+              "frames": 120,
+              "median": 0.003001327045010798,
+              "p90": 0.004125866525841938,
+              "lag": 0,
+              "amplitude": 0.9923071676578527,
+              "correlation": 0.9744195870981067
+            },
+            {
+              "part": "Igloo_Stone_39",
+              "frames": 120,
+              "median": 0.0013989848216411813,
+              "p90": 0.0018552126684188179,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_11",
+              "frames": 114,
+              "median": 0.0012666096579598482,
+              "p90": 0.0013234258646971926,
+              "lag": 0,
+              "amplitude": 0.9999650075279786,
+              "correlation": 0.9999998111056637
+            },
+            {
+              "part": "Igloo_Stone_54",
+              "frames": 120,
+              "median": 0.00092076821663469,
+              "p90": 0.0010773223065143646,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_4",
+              "frames": 120,
+              "median": 0.00045592722611251886,
+              "p90": 0.0009092378534927589,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_27",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_26",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_30",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_29",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_25",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_28",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_47",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_23",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_45",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_36",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_31",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_34",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_41",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_37",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_38",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_48",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_61",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_62",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_89",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_63",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_66",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_72",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            }
+          ],
+          "output": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoarArtistRig\\_work\\checks\\compare-06\\Idle_LV4\\compare.mp4",
+          "report": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoarArtistRig\\_work\\checks\\compare-06\\Idle_LV4\\report.json"
+        },
+        {
+          "animation": "Trigger_Fail_Lv4",
+          "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoarArtistRig\\_work\\input\\reference\\Trigger_Fail_Lv4.mov",
+          "start": 0,
+          "pass": false,
+          "rows": [
+            {
+              "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+              "ok": true,
+              "value": [
+                0.962,
+                0.943
+              ]
+            },
+            {
+              "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+              "ok": false,
+              "value": [
+                0.42,
+                2.01,
+                "24 parts"
+              ]
+            },
+            {
+              "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+              "ok": true,
+              "value": [
+                0,
+                0.96
+              ]
+            },
+            {
+              "id": "V5 collapsed or squashed-through parts = 0",
+              "ok": true,
+              "value": []
+            }
+          ],
+          "hints": [
+            "Igloo_Stone_36: off by 1.5% of the height",
+            "Igloo4_Stone_light1a: off by 1.2% of the height",
+            "FrontSnow: off by 1.1% of the height, moving differently",
+            "Igloo_Stone_10: off by 1.1% of the height"
+          ],
+          "frameError": [
+            0.451,
+            0.348,
+            0.652,
+            0.331,
+            0.996,
+            2.609,
+            0.354,
+            2.037,
+            0.494,
+            1.058,
+            0.599,
+            0.506,
+            0.613,
+            0.488,
+            0.432,
+            0.313,
+            0.34,
+            0.36,
+            0.399,
+            0.354,
+            0.499,
+            0.324,
+            0.399,
+            0.397,
+            0.381,
+            0.379,
+            0.331,
+            0.436,
+            0.369,
+            0.405,
+            0.354
+          ],
+          "parts": [
+            {
+              "part": "Igloo_Stone_11",
+              "frames": 13,
+              "median": 0.016732510205935722,
+              "p90": 0.022132072255602004,
+              "lag": -1,
+              "amplitude": 0.4664549699542406,
+              "correlation": 0.87695961217775
+            },
+            {
+              "part": "Igloo_Stone_36",
+              "frames": 17,
+              "median": 0.015252815790302743,
+              "p90": 0.020470143637724567,
+              "lag": 0,
+              "amplitude": 0.9227414047266936,
+              "correlation": 0.9773767645711106
+            },
+            {
+              "part": "Igloo4_Stone_light1a",
+              "frames": 30,
+              "median": 0.011793868640525973,
+              "p90": 0.016542011026296214,
+              "lag": 0,
+              "amplitude": 0.9712441813702837,
+              "correlation": 0.9920153444801867
+            },
+            {
+              "part": "FrontSnow",
+              "frames": 31,
+              "median": 0.01123088352245908,
+              "p90": 0.012902812907735697,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_10",
+              "frames": 26,
+              "median": 0.01051334160675504,
+              "p90": 0.02236257218253066,
+              "lag": 0,
+              "amplitude": 1.078080028974799,
+              "correlation": 0.9894110870388856
+            },
+            {
+              "part": "Igloo_Stone_32",
+              "frames": 31,
+              "median": 0.006035940983703732,
+              "p90": 0.01009622076055159,
+              "lag": 0,
+              "amplitude": 0.9656000817537056,
+              "correlation": 0.9892609737464667
+            },
+            {
+              "part": "Igloo_Stone_57",
+              "frames": 22,
+              "median": 0.005861625341654835,
+              "p90": 0.01206705800392852,
+              "lag": 0,
+              "amplitude": 0.9874893815464381,
+              "correlation": 0.9941001068602192
+            },
+            {
+              "part": "Igloo4_Stone_light1",
+              "frames": 30,
+              "median": 0.005050993620285544,
+              "p90": 0.009280420153042564,
+              "lag": 0,
+              "amplitude": 1.007695411343738,
+              "correlation": 0.9891367323104435
+            },
+            {
+              "part": "Igloo_Stone_31",
+              "frames": 13,
+              "median": 0.0048705465174955715,
+              "p90": 0.006533204266246475,
+              "lag": 0,
+              "amplitude": 0.979579901945139,
+              "correlation": 0.990554745461293
+            },
+            {
+              "part": "Igloo_Stone_58",
+              "frames": 31,
+              "median": 0.004792789711598937,
+              "p90": 0.015618361695952897,
+              "lag": 0,
+              "amplitude": 1.0534584700776914,
+              "correlation": 0.9263383752737088
+            },
+            {
+              "part": "Igloo_Stone_35",
+              "frames": 31,
+              "median": 0.004632139312187626,
+              "p90": 0.013544811631506035,
+              "lag": 0,
+              "amplitude": 0.9025187616728104,
+              "correlation": 0.9917971599857826
+            },
+            {
+              "part": "Igloo_Stone_7",
+              "frames": 31,
+              "median": 0.004624682974903873,
+              "p90": 0.02008829398608906,
+              "lag": -1,
+              "amplitude": 1.2136881300969433,
+              "correlation": 0.9306069274799268
+            },
+            {
+              "part": "Igloo_Stone_24",
+              "frames": 24,
+              "median": 0.0045662620232423895,
+              "p90": 0.008058094856960019,
+              "lag": 0,
+              "amplitude": 0.9461439785813167,
+              "correlation": 0.9977082638735606
+            },
+            {
+              "part": "Igloo_Stone_4",
+              "frames": 31,
+              "median": 0.004233358708131504,
+              "p90": 0.009178452917151471,
+              "lag": 0,
+              "amplitude": 1.036754972933467,
+              "correlation": 0.9793324752474047
+            },
+            {
+              "part": "Igloo4_Stone_light2a",
+              "frames": 31,
+              "median": 0.004197014646650591,
+              "p90": 0.006445762714300557,
+              "lag": 0,
+              "amplitude": 1.0872066825620312,
+              "correlation": 0.9791136921905417
+            },
+            {
+              "part": "Igloo_Stone_55",
+              "frames": 30,
+              "median": 0.004155383467606191,
+              "p90": 0.0116213261388452,
+              "lag": 0,
+              "amplitude": 0.9651629930334992,
+              "correlation": 0.9941007055329146
+            },
+            {
+              "part": "Igloo_Stone_33",
+              "frames": 31,
+              "median": 0.00406105653871644,
+              "p90": 0.007291053419598744,
+              "lag": 0,
+              "amplitude": 0.9411542693370029,
+              "correlation": 0.9919766549981073
+            },
+            {
+              "part": "Igloo_Stone_40",
+              "frames": 31,
+              "median": 0.0039927419864226425,
+              "p90": 0.009244088355842334,
+              "lag": 0,
+              "amplitude": 0.9460279894743451,
+              "correlation": 0.9889258022638673
+            },
+            {
+              "part": "Igloo_Stone_9",
+              "frames": 29,
+              "median": 0.0038997937061133994,
+              "p90": 0.005142034826446952,
+              "lag": 0,
+              "amplitude": 1.0075772080932408,
+              "correlation": 0.9978965403887055
+            },
+            {
+              "part": "Igloo_Stone_25",
+              "frames": 12,
+              "median": 0.003590768468542461,
+              "p90": 0.0082778047718253,
+              "lag": 0,
+              "amplitude": 0.8781426359836538,
+              "correlation": 0.9742840884335127
+            },
+            {
+              "part": "Igloo_Stone_5",
+              "frames": 30,
+              "median": 0.0035283492011784893,
+              "p90": 0.006165739575508961,
+              "lag": 0,
+              "amplitude": 1.0056530627725886,
+              "correlation": 0.9902487736266625
+            },
+            {
+              "part": "Igloo_Stone_54",
+              "frames": 31,
+              "median": 0.003223878494922993,
+              "p90": 0.010143231929274927,
+              "lag": 0,
+              "amplitude": 1.0547393633743358,
+              "correlation": 0.9733036710705625
+            },
+            {
+              "part": "Igloo_Stone_59",
+              "frames": 31,
+              "median": 0.003146392753698248,
+              "p90": 0.008538329108195684,
+              "lag": 0,
+              "amplitude": 0.9544026079528555,
+              "correlation": 0.9802461809836767
+            },
+            {
+              "part": "Igloo_Stone_39",
+              "frames": 31,
+              "median": 0.002959989205620837,
+              "p90": 0.010220297693746293,
+              "lag": 0,
+              "amplitude": 1.006104718016489,
+              "correlation": 0.9879790939944538
+            },
+            {
+              "part": "Igloo_Stone_6",
+              "frames": 30,
+              "median": 0.0028654884197888476,
+              "p90": 0.005953368845080274,
+              "lag": 0,
+              "amplitude": 0.9870513101527607,
+              "correlation": 0.9904571102432395
+            },
+            {
+              "part": "Igloo_Stone_56",
+              "frames": 29,
+              "median": 0.0025312766338553253,
+              "p90": 0.011464718685458041,
+              "lag": 0,
+              "amplitude": 0.91175748063085,
+              "correlation": 0.9845760028717071
+            },
+            {
+              "part": "Igloo_Stone_8",
+              "frames": 31,
+              "median": 0.001869505812939535,
+              "p90": 0.0062131713283128664,
+              "lag": 0,
+              "amplitude": 1.2977662059131747,
+              "correlation": 0.9500571543646764
+            },
+            {
+              "part": "Igloo_Stone_27",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_26",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_30",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_29",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_28",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_47",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_23",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_42",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_45",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_34",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_41",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_37",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_38",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_48",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_60",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_62",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_63",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_89",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_66",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_12",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_49",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_61",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_64",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            },
+            {
+              "part": "Igloo_Stone_44",
+              "frames": 0,
+              "median": null,
+              "p90": null,
+              "lag": null,
+              "amplitude": null,
+              "correlation": null
+            }
+          ],
+          "output": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoarArtistRig\\_work\\checks\\compare-06\\Trigger_Fail_Lv4\\compare.mp4",
+          "report": "private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoarArtistRig\\_work\\checks\\compare-06\\Trigger_Fail_Lv4\\report.json"
+        }
+      ],
+      "integrity": {
+        "artistBindingAuthorized": true,
+        "animationSource": "MOV only; input animations/events removed before authoring",
+        "inputAnimations": 0,
+        "outputAnimations": [
+          "Idle_LV4",
+          "Trigger_Fail_Lv4"
+        ],
+        "bindingBefore": "c96634d339a43a61755039627aba6c11eda128403f0d8cb82e5a568e400694e9",
+        "bindingAfter": "c96634d339a43a61755039627aba6c11eda128403f0d8cb82e5a568e400694e9",
+        "bindingUnchanged": true,
+        "originalSha256": "832575724a72312af073b76fa86226427374c5cdd1587cba6d74353930a1479f",
+        "originalUnchanged": true,
+        "movies": [
+          {
+            "animation": "Idle_LV4",
+            "sha256": "87b6dc73fd8c80827a3217a24391cfc77bda49fb7357aa535034d0dc42f540f4",
+            "sourceSha256": "87b6dc73fd8c80827a3217a24391cfc77bda49fb7357aa535034d0dc42f540f4"
+          },
+          {
+            "animation": "Trigger_Fail_Lv4",
+            "sha256": "9c4586408bbbe96ba2f08f2e16e9b8dbe60ea9f3c81584a9e484b01a9cec22e5",
+            "sourceSha256": "9c4586408bbbe96ba2f08f2e16e9b8dbe60ea9f3c81584a9e484b01a9cec22e5"
+          }
+        ]
+      },
+      "roundtrip": {
+        "pass": true,
+        "maxVertexErrorPx": 0.11054614104714786,
+        "rmsVertexErrorPx": 0.05411321248375135,
+        "sampledVertices": 48640,
+        "topologyMismatchCount": 0,
+        "topologyMismatches": [],
+        "worst": {
+          "animation": "Idle_LV4",
+          "frame": 0,
+          "part": "Igloo4_Stone_light1#Igloo4_Stone_light1"
+        },
+        "limitPx": 0.5,
+        "sampleOffsetSeconds": 0.0001,
+        "spineVersion": "4.0.64",
+        "note": "Compared new motion against its own official native roundtrip, never against original timelines. Triangle cyclic order normalized, winding preserved."
+      },
+      "geometry": {
+        "Idle_LV4": {
+          "inversions": {},
+          "visibleInversions": {},
+          "maxCharacterStretch": {
+            "slot": "Igloo_Stone_37",
+            "value": 0.022
+          },
+          "topStretch": [
+            [
+              "Igloo_Stone_37",
+              0.022
+            ],
+            [
+              "Igloo_Stone_69",
+              0.022
+            ],
+            [
+              "Igloo_Stone_78",
+              0.022
+            ],
+            [
+              "Igloo_Stone_63",
+              0.022
+            ],
+            [
+              "Igloo_Stone_61",
+              0.022
+            ],
+            [
+              "Igloo_Stone_86",
+              0.022
+            ]
+          ],
+          "collapses": {},
+          "flips": {}
+        },
+        "Trigger_Fail_Lv4": {
+          "inversions": {},
+          "visibleInversions": {},
+          "maxCharacterStretch": {
+            "slot": "Igloo_Stone_67",
+            "value": 0.09
+          },
+          "topStretch": [
+            [
+              "Igloo_Stone_67",
+              0.09
+            ],
+            [
+              "Igloo_Stone_26",
+              0.09
+            ],
+            [
+              "Igloo_Stone_29",
+              0.09
+            ],
+            [
+              "Igloo_Stone_87",
+              0.09
+            ],
+            [
+              "Igloo_Stone_47",
+              0.09
+            ],
+            [
+              "Igloo_Stone_36",
+              0.09
+            ]
+          ],
+          "collapses": {},
+          "flips": {}
+        }
+      },
+      "zip": "AWP-PolarRoar-ArtistRig-VideoOnly.zip",
+      "zipSha256": "e2da8625998a1aeda84dedf0303bd3f7bece33e8c7be79fb9ad68f5b60ca686b",
+      "nativeAnimation": "Trigger_Fail_Lv4",
+      "imageCount": 170
+    }
+  ],
+  "animations": 4,
+  "fullyPassed": 0,
+  "judgedChecks": 17,
+  "passedChecks": 11,
+  "notJudgedChecks": 1,
+  "baseline": {
+    "animations": 9,
+    "fullyPassed": 0,
+    "unchanged": true
+  },
+  "samplePolicy": "Two files previously present in the original 9-clip batch, newly tested with authorized artist binding; not unseen blind samples.",
+  "editorUi": {
+    "verified": false,
+    "note": "Official Spine CLI bones output, not editor interface screenshots; unrelated unsaved Spine window untouched."
+  },
+  "changesThisRound": {
+    "engineImplementationChanged": false,
+    "skillReferenceUpdated": "Existing-rig control discovery, stage selection, IK targets, separate effect events and unjudged timing",
+    "checks": [
+      "Prettier on source/packaged reference",
+      "Plugin bundle consistency",
+      "Git diff check with Windows CR-at-EOL handling"
+    ]
+  },
+  "sources": [
+    {
+      "path": "skills/autospine/references/existing-rig-motion.md",
+      "sha256": "7ee01635e568b6906728ae79c7165840000b4afdf6b183bad231cc73eeef003d"
+    },
+    {
+      "path": "plugin/skills/autospine/references/existing-rig-motion.md",
+      "sha256": "984b7c3720e85ab9a5514992616d94f0e65734176662afb6fa4edba2e54ac0ee"
+    }
+  ]
+}

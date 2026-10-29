@@ -1,0 +1,232 @@
+{
+  "pass": false,
+  "animations": [
+    {
+      "animation": "clap",
+      "pass": false,
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\JackpotMummyCat_AutoSpine-clap-vs-reference.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-32-f20h0\\video-check-2026-10-19T04-05-38\\clap\\report.json",
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.836,
+            0.782
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            2.38,
+            6.32,
+            "22 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            0.91
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 5-13: shoubi_l_2s",
+        "drawn mirrored (left-right) in the reference on frames 22-32: shouzhi_l2_2",
+        "drawn mirrored (left-right) in the reference on frames 32-42: shoubi_l_1",
+        "drawn mirrored (left-right) in the reference on frames 43-55: shoubi_l_2",
+        "outline differs most at frame 22 (0.73s, overlap 0.78): pose, placement or size",
+        "mnm/er_2s: off by 5.8% of the height",
+        "er_2: off by 4.9% of the height",
+        "er_1: off by 3.9% of the height",
+        "yanpi_1: off by 3.6% of the height"
+      ]
+    },
+    {
+      "animation": "idle",
+      "pass": false,
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\JackpotMummyCat_AutoSpine-idle-vs-reference.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-32-f20h0\\video-check-2026-10-19T04-05-38\\idle\\report.json",
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": true,
+          "value": [
+            0.909,
+            0.892
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            0.94,
+            3.43,
+            "43 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            0.99
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 18-26: yan_1",
+        "drawn mirrored (left-right) in the reference on frames 27-44: shoubi_r_1",
+        "shouzhi_l_4: off by 2.6% of the height",
+        "jio_l_3: off by 2.0% of the height, moves 1.82x (too big)",
+        "shoubi_r_1: off by 1.9% of the height, 10 frames late, moves 0.39x (too small)",
+        "mnm/er_1s: off by 1.9% of the height"
+      ]
+    },
+    {
+      "animation": "idle2",
+      "pass": false,
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\JackpotMummyCat_AutoSpine-idle2-vs-reference.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-32-f20h0\\video-check-2026-10-19T04-05-38\\idle2\\report.json",
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.885,
+            0.851
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            0.96,
+            5.29,
+            "43 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            1,
+            1.23
+          ]
+        },
+        {
+          "id": "V4 loop seam mean difference <= 0.002",
+          "ok": true,
+          "value": 0
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 6-21: yan_2",
+        "drawn mirrored (left-right) in the reference on frames 26-44: shoubi_r_1",
+        "outline differs most at frame 45 (1.50s, overlap 0.85): pose, placement or size",
+        "yan_1: off by 5.1% of the height, moves 0.64x (too small)",
+        "yan_2: off by 4.4% of the height, moving differently",
+        "mnm/er_2s: off by 3.5% of the height",
+        "er_2: off by 3.1% of the height"
+      ]
+    },
+    {
+      "animation": "idle_clap",
+      "pass": false,
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\JackpotMummyCat_AutoSpine-idle_clap-vs-reference.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-32-f20h0\\video-check-2026-10-19T04-05-38\\idle_clap\\report.json",
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.869,
+            0.816
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            0.68,
+            1.43,
+            "15 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": false,
+          "value": [
+            0,
+            0.58
+          ]
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 0-4: shoubi_r_2",
+        "outline differs most at frame 2 (0.07s, overlap 0.82): pose, placement or size",
+        "the whole figure moves 0.58x as far as the reference (too small)",
+        "shouzhi_l_5s: off by 1.4% of the height, moving differently",
+        "weiba_1: off by 1.3% of the height, moving differently",
+        "mnm/jio_l_1s: off by 1.0% of the height, moving differently",
+        "jio_l_1: off by 1.0% of the height, moving differently"
+      ]
+    },
+    {
+      "animation": "in",
+      "pass": false,
+      "video": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\JackpotMummyCat_AutoSpine-in-vs-reference.mp4",
+      "report": "E:\\ACD_RD8\\AWP\\169_NUDGE_木乃伊貓\\動畫\\源文件\\05_Jackpot Game\\002_木乃伊\\AutoSpine\\JackpotMummyCat\\_work\\builds\\build-32-f20h0\\video-check-2026-10-19T04-05-38\\in\\report.json",
+      "rows": [
+        {
+          "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+          "ok": false,
+          "value": [
+            0.738,
+            0.696
+          ]
+        },
+        {
+          "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+          "ok": false,
+          "value": [
+            5.93,
+            8.16,
+            "28 parts"
+          ]
+        },
+        {
+          "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+          "ok": true,
+          "value": [
+            0,
+            0.98
+          ]
+        }
+      ],
+      "hints": [
+        "drawn mirrored (left-right) in the reference on frames 0-4: yan_2",
+        "drawn mirrored (left-right) in the reference on frames 0-8: shoubi_l_1",
+        "drawn mirrored (left-right) in the reference on frames 7-10: shoubi_r_1",
+        "outline differs most at frame 10 (0.33s, overlap 0.70): pose, placement or size",
+        "shouzhi_r_4: off by 7.2% of the height",
+        "shouzhi_l_3: off by 6.7% of the height",
+        "shouzhi_l_5s: off by 6.5% of the height",
+        "shenti_1: off by 6.3% of the height"
+      ]
+    }
+  ]
+}

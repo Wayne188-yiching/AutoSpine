@@ -1,0 +1,203 @@
+{
+  "date": "2026-10-27",
+  "engine": "local unreleased patch based on 0.5.16; installed plugin unchanged",
+  "baselineAnimations": 9,
+  "baselineFullyPassed": 0,
+  "candidate": {
+    "animation": "Idel_02",
+    "plan": "plan-71",
+    "build": "build-51",
+    "pass": false,
+    "rows": [
+      {
+        "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+        "ok": true,
+        "value": [
+          0.907,
+          0.865
+        ]
+      },
+      {
+        "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+        "ok": false,
+        "value": [
+          1.46,
+          8.11,
+          "38 parts"
+        ]
+      },
+      {
+        "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+        "ok": true,
+        "value": [
+          1,
+          0.85
+        ]
+      },
+      {
+        "id": "V4 loop seam mean difference <= 0.002",
+        "ok": true,
+        "value": 0
+      },
+      {
+        "id": "V5 collapsed or squashed-through parts = 0",
+        "ok": true,
+        "value": []
+      }
+    ],
+    "preflightReady": true,
+    "roundtrip": {
+      "pass": true,
+      "maxVertexErrorPx": 0.3106043073655077,
+      "rmsVertexErrorPx": 0.04776918056865984,
+      "sampledVertices": 90288,
+      "topologyMismatchCount": 0,
+      "topologyMismatches": [],
+      "worst": {
+        "frame": 69,
+        "part": "Ear_B_R#Ear_B_R"
+      },
+      "limitPx": 0.5,
+      "sampleOffsetSeconds": 0.0001,
+      "spineVersion": "4.0.64",
+      "note": "Generated build versus official Spine JSON re-export only. Sample 100 microseconds after frame boundaries for four-decimal export rounding; normalize cyclic triangle order without changing winding. No original artist data used."
+    }
+  },
+  "intermediate": [
+    {
+      "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+      "ok": true,
+      "value": [
+        0.908,
+        0.867
+      ]
+    },
+    {
+      "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+      "ok": false,
+      "value": [
+        1.28,
+        8.28,
+        "38 parts"
+      ]
+    },
+    {
+      "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+      "ok": false,
+      "value": [
+        -6,
+        0.85
+      ]
+    },
+    {
+      "id": "V4 loop seam mean difference <= 0.002",
+      "ok": true,
+      "value": 0
+    },
+    {
+      "id": "V5 collapsed or squashed-through parts = 0",
+      "ok": true,
+      "value": []
+    }
+  ],
+  "baseline": [
+    {
+      "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+      "ok": false,
+      "value": [
+        0.89,
+        0.864
+      ]
+    },
+    {
+      "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+      "ok": false,
+      "value": [
+        1.82,
+        11.42,
+        "38 parts"
+      ]
+    },
+    {
+      "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+      "ok": false,
+      "value": [
+        -12,
+        0
+      ]
+    },
+    {
+      "id": "V4 loop seam mean difference <= 0.002",
+      "ok": true,
+      "value": 0
+    },
+    {
+      "id": "V5 collapsed or squashed-through parts = 0",
+      "ok": true,
+      "value": []
+    }
+  ],
+  "newInput": {
+    "kind": "post-discovery input and first-frame regression",
+    "newInput": true,
+    "untouchedBlindPass": false,
+    "selectedSkin": "Ball_fiscal",
+    "inputOnly": {
+      "bones": 1,
+      "animations": 0,
+      "skins": 1,
+      "attachments": 43
+    },
+    "policy": "New bones, weights and motion are authored from PNG/static placement and exported MOV only. No source rig or animation numbers read by this authoring script. This is not full motion acceptance.",
+    "preflight": {
+      "ready": false,
+      "coverage": 1,
+      "shifted": 0.9529497028554863,
+      "unreachableShare": 0.038527322800405855
+    },
+    "staticPlacementResidualMaxPx": 2.19
+  },
+  "tests": {
+    "affectedSuite": {
+      "files": 8,
+      "passed": 39,
+      "skipped": 1
+    },
+    "stripSuite": {
+      "files": 1,
+      "passed": 12
+    },
+    "note": "Targeted tests, not the whole repository suite."
+  },
+  "sources": [
+    {
+      "path": "packages/reference/src/pose-fit.ts",
+      "sha256": "88e45d1982df457dd8381445cd98cce5a826f6097829d5e995046a953cc8fe8b"
+    },
+    {
+      "path": "packages/reference/src/strip.ts",
+      "sha256": "170592b24a81978446146a181b93c7ea80ce51664a3a9476bf98c556b1c22b09"
+    },
+    {
+      "path": "packages/cli/src/character.ts",
+      "sha256": "f63be969471670212aff9032a92b6c88830e08a3201bd38e5a9a7685c69728fe"
+    },
+    {
+      "path": "packages/cli/src/index.ts",
+      "sha256": "8e1c22e90d75974715f5192180674019b4e55216528cd6d230a0a6870d1432c8"
+    },
+    {
+      "path": "packages/character/src/rig.ts",
+      "sha256": "4d008b99fc98d7b23ff88de7b8578d12f202ca8d1ca03d260fc7e5b1139f0a65"
+    },
+    {
+      "path": "skills/autospine/references/engine-pipeline.md",
+      "sha256": "3fa7634335d6b0c163e64a067d650c87d9f4c95d3583866acd4a8a27f54752f2"
+    }
+  ],
+  "zipSha256": "d20f42799c5257217ed449cc376950ab0d32fdaaa854972055a381f494a2a74a",
+  "editorUi": {
+    "verified": false,
+    "reason": "Background execution; minimized Spine has an unrelated unsaved project. Native CLI exports are not editor interface screenshots."
+  }
+}

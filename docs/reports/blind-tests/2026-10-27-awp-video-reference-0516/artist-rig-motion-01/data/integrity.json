@@ -1,0 +1,15 @@
+{
+  "artistBindingAuthorized": true,
+  "animationSource": "MOV only; original animation data was removed before authoring",
+  "inputAnimations": 0,
+  "outputAnimations": [
+    "Idel_02"
+  ],
+  "bindingBefore": "48edf1d9e82a9cf1348acf90460249b446caa08fa6cee04298104b6cf58941f7",
+  "bindingAfter": "48edf1d9e82a9cf1348acf90460249b446caa08fa6cee04298104b6cf58941f7",
+  "bindingUnchanged": true,
+  "originalSha256": "ab7b757a8b96b9e479bb8f0996c8f21d7cddebfc5bee4efb5eae6b1f4d83f296",
+  "originalUnchanged": true,
+  "referenceMovieSha256": "5e7d286fb5258520dcf02fa7592eef974a2c04ae0ae19b37e1f7da779fd31284",
+  "sourceMovieSha256": "5e7d286fb5258520dcf02fa7592eef974a2c04ae0ae19b37e1f7da779fd31284"
+}

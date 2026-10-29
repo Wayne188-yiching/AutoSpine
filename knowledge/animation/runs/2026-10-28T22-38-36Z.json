@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T22:38:27.865Z",
+  "startedAt": "2026-10-28T22:38:36Z",
+  "completedAt": "2026-10-28T22:42:08.532Z",
+  "result": "updated",
+  "focus": ["重訪已核對的官方走路影片", "補真正可見的接觸／屈膝支撐 Pose"],
+  "addedIds": [],
+  "updatedIds": ["us-animationmentor-walk-video-queue"],
+  "evidence": {
+    "upgradedFromMetadataOnly": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=Oda0Au-gj4c",
+      "outcome": "本輪成功看清 11:14、12:14 的兩張暫停畫面，核對播放器時間。記錄前後腳尖／腳跟角度及前膝彎曲，未把自動字幕或章節標題當成已觀察的動作。"
+    }
+  ],
+  "priorAccessIssueResolved": [
+    {
+      "run": "2026-10-28T21-39-35Z.json",
+      "url": "https://www.youtube.com/watch?v=Oda0Au-gj4c",
+      "outcome": "正常背景瀏覽器本輪可擷取畫面；舊的失敗紀錄保留，不回填成先前已觀看。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 22 sources",
+    "indexBuild": "passed — 22 sources",
+    "generatedTitleAndFirstSeen": "passed",
+    "defaultSearchIncludesReviewedSource": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "沒有連續檢視步態，不推算節奏、受力、滑步、速度或插值品質。",
+    "姿勢是教學編輯狀態，尚未確認最終循環；第一張只取可見腿腳，不推論未完整入鏡的頭肩。",
+    "保留 source ID 與 firstSeen，移除待研讀顯示標記並更新證據範圍；沒有重複新增同一影片。",
+    "只更新 knowledge/animation/；未下載媒體或保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "日本或歐洲的動作／支撐姿勢，或既有來源可清楚辨識的 passing 與離地轉折；仍以真正看見的畫面決定研讀狀態。"
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T12:26:47.760Z",
+  "startedAt": "2026-10-28T12:26:57Z",
+  "completedAt": "2026-10-28T12:32:37.751Z",
+  "result": "updated",
+  "focus": ["補足跟隨、重疊與次要動作技法", "提升既有待研讀官方影片的畫面證據"],
+  "addedIds": ["us-animationmentor-overlap-follow-through"],
+  "updatedIds": ["us-disney-frozen-snowman-queue"],
+  "evidence": {
+    "textReviewed": 1,
+    "upgradedFromMetadataOnly": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.animationmentor.com/blog/follow-through-and-overlapping-action-the-12-basic-principles-of-animation/",
+      "outcome": "在背景瀏覽器讀完 Drew Adams 主文。記錄主動作先完成、被動擺動的驅動來源、材質差異及可主動控制尾巴的例外；沒有把文章內嵌影片當成已觀看。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=RGqY56dAzsc",
+      "outcome": "原有條目重訪；正常播放並暫停後實際抽查約 00:20、00:40，核對播放器整秒時間及 2:07 片長。升級為 visual-samples，保留 firstSeen，未宣稱連續觀看或節奏量測。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.animationmentor.com/blog/follow-through-and-overlapping-action-the-12-basic-principles-of-animation/",
+      "issue": "文字抓取逾時；正常公開背景瀏覽器可讀全文，沒有登入、付款或繞過限制。",
+      "resolved": true
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://player.vimeo.com/video/221818781",
+      "reason": "文章內的無重疊松鼠範例播放器顯示暫時無法使用；未播放，也未完成前後版本的畫面比較。其他內嵌影片本輪未播放。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 12 sources",
+    "indexBuild": "passed — 12 sources",
+    "generatedEntriesAndEvidence": "passed",
+    "whitespace": "passed"
+  },
+  "coalescedTriggersWithoutSeparateCompletedResearch": [
+    "2026-10-28T10:25:15.845Z",
+    "2026-10-28T11:30:16.826Z"
+  ],
+  "limits": [
+    "較早兩個心跳沒有各自完成的研究紀錄，本輪沒有補造該時段的執行或成果。",
+    "播放器在背景播放的時間不算連續觀看；僅記錄實際看過的兩個暫停畫面。",
+    "沒有下載影片、複製圖片或保存完整瀏覽器截圖；未修改引擎、角色素材或已安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "日本或歐洲官方來源，優先補動作／預備動作與可回查的轉折 Pose；若能實際連續檢視同鏡頭，再建立連續節奏證據。"
+}

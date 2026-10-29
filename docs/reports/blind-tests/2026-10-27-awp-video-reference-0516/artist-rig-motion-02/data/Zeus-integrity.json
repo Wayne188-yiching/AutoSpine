@@ -1,0 +1,26 @@
+{
+  "artistBindingAuthorized": true,
+  "animationSource": "MOV only; input animations/events removed before authoring",
+  "inputAnimations": 0,
+  "outputAnimations": [
+    "Idle_02",
+    "Touch01"
+  ],
+  "bindingBefore": "904b3d5bf4fa973093431dc2072b5447eedce7b62f8f63deee118202bc529b29",
+  "bindingAfter": "904b3d5bf4fa973093431dc2072b5447eedce7b62f8f63deee118202bc529b29",
+  "bindingUnchanged": true,
+  "originalSha256": "2e81a156a865d84e51e8b80ba132d8d344a0365b2cce9431a296bf4eff2fe2bf",
+  "originalUnchanged": true,
+  "movies": [
+    {
+      "animation": "Idle_02",
+      "sha256": "9886fe5a5c500b16b95feba937e3067408211a5f90f11859198441ec2ae52682",
+      "sourceSha256": "9886fe5a5c500b16b95feba937e3067408211a5f90f11859198441ec2ae52682"
+    },
+    {
+      "animation": "Touch01",
+      "sha256": "91a6c0ddee669c7429d625e126b22743ff0f87d54aaa8fb18b6f7d354e01cd72",
+      "sourceSha256": "91a6c0ddee669c7429d625e126b22743ff0f87d54aaa8fb18b6f7d354e01cd72"
+    }
+  ]
+}

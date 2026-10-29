@@ -1,0 +1,152 @@
+{
+  "spine": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516.spine",
+  "spineVersion": "4.0.64",
+  "json": null,
+  "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516.mp4",
+  "images": "./images/",
+  "imageFiles": 81,
+  "strayImages": [],
+  "replaced": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\replaced-2026-10-27T03-03-11",
+  "reference": {
+    "pass": false,
+    "animations": [
+      {
+        "animation": "Idel_02",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516-Idel_02-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\video-check-2026-10-27T03-02-48\\Idel_02\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.89,
+              0.864
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              1.82,
+              11.42,
+              "38 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              -12,
+              0
+            ]
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 77 (2.57s, overlap 0.86): pose, placement or size",
+          "the whole figure moves 12 frames earlier than the reference",
+          "the whole figure moves 0.00x as far as the reference (too small)",
+          "Eye_R_02: off by 10.0% of the height, 12 frames early, moves 0.00x (too small)",
+          "Tail_R_03: off by 8.6% of the height, moving differently",
+          "Tail_L_04: off by 7.6% of the height, 12 frames early, moves 0.00x (too small)",
+          "Ear_Hair_R: off by 7.6% of the height, 12 frames late, moves 0.00x (too small)"
+        ]
+      },
+      {
+        "animation": "Touch_01",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516-Touch_01-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\video-check-2026-10-27T03-02-48\\Touch_01\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.895,
+              0.878
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              0.68,
+              15.18,
+              "38 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": true,
+            "value": "reference figure barely moves; not judged"
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 32 (1.07s, overlap 0.88): pose, placement or size",
+          "Tail_L_05: off by 12.8% of the height, 12 frames early, moves 0.00x (too small)",
+          "Tail_R_04: off by 10.9% of the height, 12 frames early, moves 0.00x (too small)",
+          "Tail_R_03: off by 10.5% of the height, 12 frames early, moves 0.00x (too small)",
+          "Tail_R_06: off by 9.7% of the height, moves 0.00x (too small)"
+        ]
+      },
+      {
+        "animation": "MG_Bingo",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\AWP-TheCat-0516-MG_Bingo-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-31\\video-check-2026-10-27T03-02-48\\MG_Bingo\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.896,
+              0.878
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              0.69,
+              14.64,
+              "39 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": true,
+            "value": "reference figure barely moves; not judged"
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 33 (1.10s, overlap 0.88): pose, placement or size",
+          "Tail_L_05: off by 11.0% of the height, 12 frames early, moves 0.00x (too small)",
+          "Tail_R_04: off by 10.6% of the height, moves 0.00x (too small)",
+          "Tail_R_03: off by 10.2% of the height, moves 0.00x (too small)",
+          "Tail_R_06: off by 9.3% of the height, 12 frames late, moves 0.00x (too small)"
+        ]
+      }
+    ]
+  },
+  "stray": []
+}

@@ -1,0 +1,211 @@
+{
+ "engineVersion": "0.5.16",
+ "plan": {
+  "id": "TheCat_all",
+  "sha256": "b897b127cc46213b0f1e8a4641bb064ecce5bb0b29016098ec4118777f024e12"
+ },
+ "imagesOnly": {
+  "sha256": "1e439aed785fe796c3cf9f0ef1eee35f84d4048481f745ea34c1de2c0955d32a"
+ },
+ "params": {},
+ "joints": {
+  "pelvis": [
+   223.77,
+   311.29
+  ],
+  "neck": [
+   66.25,
+   -264.89
+  ],
+  "torso_middle": [
+   145.01,
+   23.2
+  ],
+  "head_top": [
+   68.48,
+   -604.34
+  ],
+  "shoulder_L": [
+   -80.02,
+   46.67
+  ],
+  "wrist_L": [
+   21.66,
+   545.85
+  ],
+  "elbow_L": [
+   -24.1,
+   321.22
+  ],
+  "whisker_anchor": [
+   67.58,
+   -328.31
+  ],
+  "shoulder_R": [
+   248.97,
+   97.48
+  ],
+  "wrist_R": [
+   149.52,
+   544.93
+  ],
+  "elbow_R": [
+   194.27,
+   343.58
+  ]
+ },
+ "faceMix": {},
+ "bend": {},
+ "setupDeviationPx": 0.01,
+ "seams": [],
+ "evidence": {
+  "Beard_L:strand": [
+   [
+    28.1,
+    -346.9
+   ],
+   [
+    -40.6,
+    -348.8
+   ],
+   [
+    -109.2,
+    -318.6
+   ],
+   [
+    -177.8,
+    -323.5
+   ]
+  ],
+  "Beard_R:strand": [
+   [
+    128.2,
+    -345.8
+   ],
+   [
+    195.6,
+    -328.5
+   ],
+   [
+    263.1,
+    -319
+   ],
+   [
+    330.5,
+    -324.2
+   ]
+  ],
+  "Tail_M:strand": [
+   [
+    -593.2,
+    282.6
+   ],
+   [
+    -592.7,
+    -50.7
+   ],
+   [
+    -599.5,
+    -384.1
+   ],
+   [
+    -598.6,
+    -717.5
+   ]
+  ],
+  "Body_10:alphaPrep": {
+   "discarded": 74
+  },
+  "Body_01:alphaPrep": {
+   "discarded": 110
+  },
+  "Hand_L_01:alphaPrep": {
+   "discarded": 1
+  },
+  "Beard_L:alphaPrep": {
+   "discarded": 4
+  },
+  "Beard_R:alphaPrep": {
+   "discarded": 4
+  },
+  "Tail_M:alphaPrep": {
+   "discarded": 37
+  },
+  "Tail_R_01:alphaPrep": {
+   "discarded": 5
+  },
+  "Tail_R_02:alphaPrep": {
+   "discarded": 3
+  },
+  "Tail_R_03:alphaPrep": {
+   "discarded": 17
+  },
+  "Tail_R_04:alphaPrep": {
+   "discarded": 25
+  },
+  "Tail_R_05:alphaPrep": {
+   "discarded": 37
+  },
+  "Tail_R_06:alphaPrep": {
+   "discarded": 34
+  },
+  "Tail_L_01:alphaPrep": {
+   "discarded": 9
+  },
+  "Tail_L_02:alphaPrep": {
+   "discarded": 17
+  },
+  "Tail_L_03:alphaPrep": {
+   "discarded": 23
+  },
+  "Tail_L_04:alphaPrep": {
+   "discarded": 22
+  },
+  "Tail_L_05:alphaPrep": {
+   "discarded": 8
+  },
+  "Tail_L_06:alphaPrep": {
+   "discarded": 27
+  },
+  "Body_02:alphaPrep": {
+   "discarded": 14
+  },
+  "Body_03:alphaPrep": {
+   "discarded": 8
+  },
+  "Body_04:alphaPrep": {
+   "discarded": 7
+  },
+  "Body_05:alphaPrep": {
+   "discarded": 17
+  },
+  "Body_06:alphaPrep": {
+   "discarded": 6
+  },
+  "Body_07:alphaPrep": {
+   "discarded": 35
+  },
+  "Body_08:alphaPrep": {
+   "discarded": 21
+  },
+  "Body_09:alphaPrep": {
+   "discarded": 13
+  },
+  "Ear_R:alphaPrep": {
+   "discarded": 67
+  },
+  "Ear_L:alphaPrep": {
+   "discarded": 135
+  },
+  "Ear_Hair_L:alphaPrep": {
+   "discarded": 14
+  },
+  "Mouth_03:alphaPrep": {
+   "discarded": 1
+  },
+  "Crown_B:alphaPrep": {
+   "discarded": 4
+  }
+ },
+ "artistQualityAccepted": false
+}

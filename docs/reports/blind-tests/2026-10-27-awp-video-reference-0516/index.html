@@ -1,0 +1,2828 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AWP 影片參考測試 · AutoSpine 0.5.16</title><style>body{margin:0;background:#101722;color:#e8edf6;font:16px/1.65 system-ui,sans-serif}header,section{max-width:1120px;margin:auto;padding:32px 24px;border-bottom:1px solid #344155}h1{font-size:40px;line-height:1.2}h2 small{font-size:15px;color:#adbcd0}a{color:#86caff}video{display:block;width:100%;background:#141923}.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}.vcard{margin:15px 0;background:#1d2939;padding:12px}.vcard p{font-size:14px}.pill{float:right;color:#ffb7ae}.main{max-height:680px}table{border-collapse:collapse;width:100%;margin:24px 0;font-size:14px}th,td{text-align:left;border-bottom:1px solid #344155;padding:10px}.bad{color:#ffa79c}.ok{color:#bed5d0}details{padding:16px;background:#192435;margin:14px 0}pre{white-space:pre-wrap;font-size:12px;max-height:420px;overflow:auto}.native{max-width:100%;max-height:640px;display:block;margin:20px auto}summary{cursor:pointer}strong{color:#ffd7a3}</style><header><p>2026-10-27 · AutoSpine 0.5.16 · AWP</p><h1>只看影片，重建三份 Spine 專案</h1><p>本批使用 AutoSpine <strong>0.5.16</strong>，從 AWP 候選優先挑動畫種類較多的三份專案（34／24／22 段），各測三段，共九段；並非宣稱已完整排名整個 NAS。原作只用於輸出 MOV、選片與取得靜態圖像擺位，製作與擬合只讀單根 root、零動畫、零約束的圖像配置、PNG 和 MOV；沒有讀取原作動畫數值作擬合，也沒有原作骨架、權重或網格複製。</p><p>這是<strong>影片參考測試（reference-fitted）</strong>。MOV 在此模擬正式製作時收到的 AI 示範影片；逐動畫匯出、隔離與報告整理屬本次測試措施，不是正式製作步驟。數值通過不代表美術驗收；「未評」不算通過。</p><p><a href="../autospine-blind-report.html#awp-video-reference-0516">返回主報告</a></p></header><section><h2>本輪量測</h2><p>V1 輪廓：1/9　｜　V2 部件位置：0/9　｜　V3 節奏與幅度：0/6　｜　V4 循環接點：3/3　｜　V5 翻折：9/9</p><p>輪廓、位置、動作只比較 MOV 影像。未使用原作 A–D 數值調校。</p></section><section id="TheCat"><h2>貓咪王 <small>34 段候選動畫，測三段</small></h2><p><strong>輸入限制：</strong>靜態擺位擷取有 5 個附件實例超過 2 px，最大 58.76 px；新建置的 setup 偏差是相對這份乾淨擺位，不能當成相對原作的誤差。原 NAS 檔案 SHA-256 前後一致。<a href="TheCat/data/input-verification.json">完整輸入核對與靜態誤差</a></p><p><strong>已依回饋修正：</strong>兩側鬍鬚由嘴邊附著處往外長，原生骨架圖、專案與影片已更新。</p><p>Spine 匯入再匯出核對：<strong>通過</strong>，最大頂點誤差 0.0885 px；JSON 時間小數捨入另列於<a href="TheCat/data/editor-roundtrip.json">往返核對</a>。</p><p>三段影片擬合均因首幀配對不足 0.6 而停止；成品保留已建骨架、靜態姿勢修正與觀察影片後安排的眨眼。沒有完成動作追蹤。尾巴、表情與局部形變差異明顯，不能視為影片模仿成功。</p><p>新骨架 25 骨；靜態配置偏差 0.01 px。<a href="TheCat/AWP-TheCat-0516.zip">下載 Spine 專案與圖檔</a> · <a href="TheCat/data/HANDOVER.md">接手說明</a> · <a href="TheCat/data/input-isolation.json">輸入來源紀錄</a></p><video class="main" controls playsinline preload="metadata" poster="TheCat/video/Idel_02-poster.jpg"><source src="TheCat/video/TheCat-all3-review.mp4" type="video/mp4"></video><p>三段連播；每段左參考／右成品，佈線 → 骨架 → 動態。</p><table><thead><tr><th>動畫</th><th>V1 輪廓</th><th>V2 部件</th><th>V3 節奏幅度</th><th>V4 接點</th><th>V5 翻折</th></tr></thead><tbody><tr><td>Idel_02</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">PASS</td><td class="ok">PASS</td></tr><tr><td>Touch_01</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">未評</td><td class="ok">—</td><td class="ok">PASS</td></tr><tr><td>MG_Bingo</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">未評</td><td class="ok">—</td><td class="ok">PASS</td></tr></tbody></table><div class="vgrid"><figure class="vcard"><video controls playsinline preload="none" poster="TheCat/video/Idel_02-poster.jpg" aria-label="貓咪王 Idel_02 參考與自動製作對照"><source src="TheCat/video/Idel_02-review.mp4" type="video/mp4"></video><figcaption><span class="vname">Idel_02</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="TheCat/video/Idel_02-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure><figure class="vcard"><video controls playsinline preload="none" poster="TheCat/video/Touch_01-poster.jpg" aria-label="貓咪王 Touch_01 參考與自動製作對照"><source src="TheCat/video/Touch_01-review.mp4" type="video/mp4"></video><figcaption><span class="vname">Touch_01</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="TheCat/video/Touch_01-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure><figure class="vcard"><video controls playsinline preload="none" poster="TheCat/video/MG_Bingo-poster.jpg" aria-label="貓咪王 MG_Bingo 參考與自動製作對照"><source src="TheCat/video/MG_Bingo-review.mp4" type="video/mp4"></video><figcaption><span class="vname">MG_Bingo</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="TheCat/video/MG_Bingo-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure></div><h3>Spine 本體驗證</h3><p>成品已由 Spine 4.0.64 匯入並重新匯出。下圖為 Spine 原生命令列輸出的骨架畫面；不是編輯器介面截圖。 使用者要求全程背景執行，現有 Spine 視窗帶有未儲存專案且最小化，因此未喚起或操作該視窗。<strong>Spine 編輯器內的佈線與骨架畫面尚待檢視，未以軟體模擬圖冒充。</strong></p><img class="native" src="TheCat/spine-native-bones.png" alt="貓咪王 Spine 原生骨架輸出"><details><summary>逐段擬合輪次、週期、關鍵幀與提示</summary><h4>Idel_02</h4><p>引擎拒絕擬合：pictures: 121 frames at 0.354 px per unit
+CLI_FIT_VIDEO: frame 0 covers 0.482 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted
+</p><a href="TheCat/data/Idel_02-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;TheCat&quot;,
+  &quot;animation&quot;: &quot;Idel_02&quot;,
+  &quot;refused&quot;: &quot;pictures: 121 frames at 0.354 px per unit\nCLI_FIT_VIDEO: frame 0 covers 0.482 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted\n&quot;
+}</pre><h4>Touch_01</h4><p>引擎拒絕擬合：pictures: 61 frames at 0.354 px per unit
+CLI_FIT_VIDEO: frame 0 covers 0.482 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted
+</p><a href="TheCat/data/Touch_01-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;TheCat&quot;,
+  &quot;animation&quot;: &quot;Touch_01&quot;,
+  &quot;refused&quot;: &quot;pictures: 61 frames at 0.354 px per unit\nCLI_FIT_VIDEO: frame 0 covers 0.482 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted\n&quot;
+}</pre><h4>MG_Bingo</h4><p>引擎拒絕擬合：pictures: 61 frames at 0.354 px per unit
+CLI_FIT_VIDEO: frame 0 covers 0.51 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted
+</p><a href="TheCat/data/MG_Bingo-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;TheCat&quot;,
+  &quot;animation&quot;: &quot;MG_Bingo&quot;,
+  &quot;refused&quot;: &quot;pictures: 61 frames at 0.354 px per unit\nCLI_FIT_VIDEO: frame 0 covers 0.51 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted\n&quot;
+}</pre></details><details><summary>V1–V5 原始差異提示</summary><h4>Idel_02</h4><ul><li>outline differs most at frame 77 (2.57s, overlap 0.86): pose, placement or size</li><li>the whole figure moves 12 frames earlier than the reference</li><li>the whole figure moves 0.00x as far as the reference (too small)</li><li>Eye_R_02: off by 10.0% of the height, 12 frames early, moves 0.00x (too small)</li><li>Tail_R_03: off by 8.6% of the height, moving differently</li><li>Tail_L_04: off by 7.6% of the height, 12 frames early, moves 0.00x (too small)</li><li>Ear_Hair_R: off by 7.6% of the height, 12 frames late, moves 0.00x (too small)</li></ul><h4>Touch_01</h4><ul><li>outline differs most at frame 32 (1.07s, overlap 0.88): pose, placement or size</li><li>Tail_L_05: off by 12.8% of the height, 12 frames early, moves 0.00x (too small)</li><li>Tail_R_04: off by 10.9% of the height, 12 frames early, moves 0.00x (too small)</li><li>Tail_R_03: off by 10.5% of the height, 12 frames early, moves 0.00x (too small)</li><li>Tail_R_06: off by 9.7% of the height, moves 0.00x (too small)</li></ul><h4>MG_Bingo</h4><ul><li>outline differs most at frame 33 (1.10s, overlap 0.88): pose, placement or size</li><li>Tail_L_05: off by 11.0% of the height, 12 frames early, moves 0.00x (too small)</li><li>Tail_R_04: off by 10.6% of the height, moves 0.00x (too small)</li><li>Tail_R_03: off by 10.2% of the height, moves 0.00x (too small)</li><li>Tail_R_06: off by 9.3% of the height, 12 frames late, moves 0.00x (too small)</li></ul></details></section><section id="Zeus"><h2>宙斯 <small>24 段候選動畫，測三段</small></h2><p><strong>輸入限制：</strong>靜態擺位擷取有 47 個附件實例超過 2 px，最大 306.07 px；新建置的 setup 偏差是相對這份乾淨擺位，不能當成相對原作的誤差。原 NAS 檔案 SHA-256 前後一致。<a href="Zeus/data/input-verification.json">完整輸入核對與靜態誤差</a></p><p>Spine 匯入再匯出核對：<strong>未通過 0.5 px 限制</strong>，最大頂點誤差 0.6805 px；JSON 時間小數捨入另列於<a href="Zeus/data/editor-roundtrip.json">往返核對</a>。</p><p>持武器的手臂、頭部與鬍髮以影片追蹤擬合。閃電特效、表情與局部形變不在自動擬合範圍，實際輪次、延遲與未追到的部件列在每段數據。</p><p>新骨架 36 骨；靜態配置偏差 0.014 px。<a href="Zeus/AWP-Zeus-0516.zip">下載 Spine 專案與圖檔</a> · <a href="Zeus/data/HANDOVER.md">接手說明</a> · <a href="Zeus/data/input-isolation.json">輸入來源紀錄</a></p><video class="main" controls playsinline preload="metadata" poster="Zeus/video/Idle_02-poster.jpg"><source src="Zeus/video/Zeus-all3-review.mp4" type="video/mp4"></video><p>三段連播；每段左參考／右成品，佈線 → 骨架 → 動態。</p><table><thead><tr><th>動畫</th><th>V1 輪廓</th><th>V2 部件</th><th>V3 節奏幅度</th><th>V4 接點</th><th>V5 翻折</th></tr></thead><tbody><tr><td>Idle_02</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">PASS</td><td class="ok">PASS</td></tr><tr><td>Touch01</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">—</td><td class="ok">PASS</td></tr><tr><td>ToBonusGame</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">—</td><td class="ok">PASS</td></tr></tbody></table><div class="vgrid"><figure class="vcard"><video controls playsinline preload="none" poster="Zeus/video/Idle_02-poster.jpg" aria-label="宙斯 Idle_02 參考與自動製作對照"><source src="Zeus/video/Idle_02-review.mp4" type="video/mp4"></video><figcaption><span class="vname">Idle_02</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="Zeus/video/Idle_02-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure><figure class="vcard"><video controls playsinline preload="none" poster="Zeus/video/Touch01-poster.jpg" aria-label="宙斯 Touch01 參考與自動製作對照"><source src="Zeus/video/Touch01-review.mp4" type="video/mp4"></video><figcaption><span class="vname">Touch01</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="Zeus/video/Touch01-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure><figure class="vcard"><video controls playsinline preload="none" poster="Zeus/video/ToBonusGame-poster.jpg" aria-label="宙斯 ToBonusGame 參考與自動製作對照"><source src="Zeus/video/ToBonusGame-review.mp4" type="video/mp4"></video><figcaption><span class="vname">ToBonusGame</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="Zeus/video/ToBonusGame-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure></div><h3>Spine 本體驗證</h3><p>成品已由 Spine 4.0.64 匯入並重新匯出。下圖為 Spine 原生命令列輸出的骨架畫面；不是編輯器介面截圖。 使用者要求全程背景執行，現有 Spine 視窗帶有未儲存專案且最小化，因此未喚起或操作該視窗。<strong>Spine 編輯器內的佈線與骨架畫面尚待檢視，未以軟體模擬圖冒充。</strong></p><img class="native" src="Zeus/spine-native-bones.png" alt="宙斯 Spine 原生骨架輸出"><details><summary>逐段擬合輪次、週期、關鍵幀與提示</summary><h4>Idle_02</h4><p>輪次 3；最佳輪次 2。</p><a href="Zeus/data/Idle_02-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;Zeus&quot;,
+  &quot;animation&quot;: &quot;Idle_02&quot;,
+  &quot;video&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\Idle_02.mov&quot;,
+  &quot;start&quot;: 0,
+  &quot;fps&quot;: 30,
+  &quot;label&quot;: &quot;reference-fitted&quot;,
+  &quot;pass&quot;: false,
+  &quot;inputs&quot;: [
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\plans\\plan-22.json&quot;,
+      &quot;bytes&quot;: 16982,
+      &quot;sha256&quot;: &quot;2f7506d0652f80cf0455841f55fba9e827b430d24a2b9a17ead50dff118b3486&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\imagesOnly.json&quot;,
+      &quot;bytes&quot;: 151424,
+      &quot;sha256&quot;: &quot;f7dad6838d5bd06f320a5c87c1cd92bb4e5e9d780d57b8e585be40e9e64245ed&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Black.png&quot;,
+      &quot;bytes&quot;: 81,
+      &quot;sha256&quot;: &quot;fd5652040fe08327e0b8dfe192f6457c266aca0e3b3400c847b757b824e450f5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi12.png&quot;,
+      &quot;bytes&quot;: 90616,
+      &quot;sha256&quot;: &quot;64089569f523bb6eff86a5aff158be1c5ff7bb1b807d4b7d93e1577c1a07e06b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi11.png&quot;,
+      &quot;bytes&quot;: 24418,
+      &quot;sha256&quot;: &quot;d6c534a52df72edcfaf73d648505f77578f51b03c18cc0de1df0cec7c5016461&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair.png&quot;,
+      &quot;bytes&quot;: 42314,
+      &quot;sha256&quot;: &quot;cb1fd8b8177c59290a9591843e320fae76a3d419443e73f6c4c04c957399c277&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair.png&quot;,
+      &quot;bytes&quot;: 29265,
+      &quot;sha256&quot;: &quot;0e08ce38f639c3d286f76b16773e06ba1f3e65937596b6db5c232b1c1b94c363&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_HairLight.png&quot;,
+      &quot;bytes&quot;: 24867,
+      &quot;sha256&quot;: &quot;bcab89ba79f3a189bfac40ebef5d087310aba7cff2f108fbbfdc3485956a635c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair_01.png&quot;,
+      &quot;bytes&quot;: 13339,
+      &quot;sha256&quot;: &quot;4d680760b78aa1ed8f19c71767cdb4ba08d171ca47ab7934eeabe67f5ee534b8&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_01.png&quot;,
+      &quot;bytes&quot;: 67678,
+      &quot;sha256&quot;: &quot;9859e6ffdba4478f9863415de5c78179c590fb10d83203b4067de7d1bbb65a42&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_Light_01.png&quot;,
+      &quot;bytes&quot;: 47421,
+      &quot;sha256&quot;: &quot;4fb054b27db5cc21717fb84bb405469314d11c253c4bcdc807128da22e1478d5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair_01.png&quot;,
+      &quot;bytes&quot;: 20432,
+      &quot;sha256&quot;: &quot;db479b448f7d0eb10c280a232177855a1795dca3efc452f08346a4c659bd0c8f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_HairLight_01.png&quot;,
+      &quot;bytes&quot;: 5173,
+      &quot;sha256&quot;: &quot;b1f21f64b7874b3899f84cf055909c1c000375213d6104e937edeb4c323ff66f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Body.png&quot;,
+      &quot;bytes&quot;: 195551,
+      &quot;sha256&quot;: &quot;eb1b0974d67ce409f0148d0c9686f1145a474242ed794e213399534bc7cca84a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ShoulderStrap.png&quot;,
+      &quot;bytes&quot;: 40856,
+      &quot;sha256&quot;: &quot;87aa56c17ba7994208e56f587167fbaa2113221ad53f0ff7c63ee69068c96bcb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye01.png&quot;,
+      &quot;bytes&quot;: 4472,
+      &quot;sha256&quot;: &quot;d92912535e732194a3a166d988a681c109858c4df0c06f61dd967303f3eaa89f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye02.png&quot;,
+      &quot;bytes&quot;: 3034,
+      &quot;sha256&quot;: &quot;6fa33e4a69d8546150f771c5b5b2334ea1e97bcb58d42b23230206a2af33fb9f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Face.png&quot;,
+      &quot;bytes&quot;: 40035,
+      &quot;sha256&quot;: &quot;50c8f0b6b74f2fcc431af48f5223c1c29feb772d13bd7f3e2096c3bdc6798908&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Hair.png&quot;,
+      &quot;bytes&quot;: 39139,
+      &quot;sha256&quot;: &quot;7f147a77c2022aa8540ac1e8f005772c43fb7e858792d76732d29b5acda5f907&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Ear.png&quot;,
+      &quot;bytes&quot;: 6089,
+      &quot;sha256&quot;: &quot;3fe5a2b8b3d4e00464c92c0bdca1fee909d12323474d6ecf573fcaab7e0acab6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Ear.png&quot;,
+      &quot;bytes&quot;: 5732,
+      &quot;sha256&quot;: &quot;46d247787cb6adae19e5371f2e1cc87043e656796c776c29819f9064394638dd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Beard.png&quot;,
+      &quot;bytes&quot;: 8847,
+      &quot;sha256&quot;: &quot;6d44f53834ff80e154cde6c89b65d8eeb10ae892e843f2356babd8f7c6e31c17&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Beard.png&quot;,
+      &quot;bytes&quot;: 9166,
+      &quot;sha256&quot;: &quot;b37812105a6788e6d65db454ed0e4f2b88ab022e413290b0128a7b160a3b1623&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_In.png&quot;,
+      &quot;bytes&quot;: 2576,
+      &quot;sha256&quot;: &quot;99df8fbe40f9600e058ef8fcc648a3046cea33b6ac16c3bd2c9facaa5e6b8940&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_Out.png&quot;,
+      &quot;bytes&quot;: 6055,
+      &quot;sha256&quot;: &quot;dc6f65aad6726800d37c8028d83c26a5745d146e5b8701766ed118e0addaf6d3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard.png&quot;,
+      &quot;bytes&quot;: 13495,
+      &quot;sha256&quot;: &quot;4f5f018f2809b625bc832aa5a496a158975fb479705b4d6a45e0d93a9e56757a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hat.png&quot;,
+      &quot;bytes&quot;: 8181,
+      &quot;sha256&quot;: &quot;df38b531f0716796e0f4e6d6d654abed3417a8b0191370f15d7efb621b2861db&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Clothing.png&quot;,
+      &quot;bytes&quot;: 131559,
+      &quot;sha256&quot;: &quot;ac25210b733d86f489af9feeac4d01b3fa211002c044821ecb661e68df8b689c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard_02_1.png&quot;,
+      &quot;bytes&quot;: 13932,
+      &quot;sha256&quot;: &quot;a477d8bf712bbf2771809b7e28c039b5c2906d51c545fe89d027489571657cab&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03.png&quot;,
+      &quot;bytes&quot;: 19327,
+      &quot;sha256&quot;: &quot;3a11f41e5cab7ed4b493fa08d38a4f224eda0948f378686c97916bef0150fd70&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_02.png&quot;,
+      &quot;bytes&quot;: 45755,
+      &quot;sha256&quot;: &quot;ef24328e227945e0399711d5dcf12614e22e6e5d1f32d6d2089f88ea49dbf145&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_01.png&quot;,
+      &quot;bytes&quot;: 62437,
+      &quot;sha256&quot;: &quot;967b0266d80d87fe5bc23897cc9e94274701830eabbd77a0474bab7e5685b06c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_03.png&quot;,
+      &quot;bytes&quot;: 2699,
+      &quot;sha256&quot;: &quot;a372869eec5ad9a15a72823cab18bd15173289eeb790dc19c3154ea197703680&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire.png&quot;,
+      &quot;bytes&quot;: 253324,
+      &quot;sha256&quot;: &quot;fdf6e06f0f9a5520236d60bef721246e951dbd7136ca1dc6d546e8b81f26ba98&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire_Light.png&quot;,
+      &quot;bytes&quot;: 28111,
+      &quot;sha256&quot;: &quot;b9d59248c7d81cb752ab049dc41d84e2fdd65e2debcd0f061a44aaf6cd293d0f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_02.png&quot;,
+      &quot;bytes&quot;: 15553,
+      &quot;sha256&quot;: &quot;1c62a60f6252456c991d76887cc1e840063f6dfe224646bfdb1900b7a785d123&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_01.png&quot;,
+      &quot;bytes&quot;: 5154,
+      &quot;sha256&quot;: &quot;4079272fcb1669bad92e2f7586cfad3011251bd14b89d50f03bc9d61e40647cd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hat.png&quot;,
+      &quot;bytes&quot;: 8352,
+      &quot;sha256&quot;: &quot;95e3c30cf0f3085e081d1d438b57444dd3521111f77c30004f3ddb6d66a25c04&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Eyebrow.png&quot;,
+      &quot;bytes&quot;: 4084,
+      &quot;sha256&quot;: &quot;a1ffa67655fb5965c0b64bd72af8021181300609784a96d61586560cd742d87f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Eyebrow.png&quot;,
+      &quot;bytes&quot;: 3927,
+      &quot;sha256&quot;: &quot;c9d53b68f6120ef96de35c8381b81e99a60f1fc10da4b24fd5e18b142b781ade&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_r.png&quot;,
+      &quot;bytes&quot;: 2931,
+      &quot;sha256&quot;: &quot;816e71ea85a2c69804488fc2e36b571409cb302faa9369d73af39ac5ac74c4fb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_l.png&quot;,
+      &quot;bytes&quot;: 2946,
+      &quot;sha256&quot;: &quot;aed701294764c59f50e75c9b1b6aeb6bc38e30edc385c455dece4789cb5d2719&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_Glow.png&quot;,
+      &quot;bytes&quot;: 5558,
+      &quot;sha256&quot;: &quot;dd96ff688c021cd39525f8f7010993d84d918e84d9059be8c092045c370598e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_l.png&quot;,
+      &quot;bytes&quot;: 3054,
+      &quot;sha256&quot;: &quot;376bd00d1b2df9056026915f423013ea72695c5a23479c9078078df156caed7f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_r.png&quot;,
+      &quot;bytes&quot;: 3053,
+      &quot;sha256&quot;: &quot;8ee9f9f2e9e5e3d01a5f879e744fddb46c96e8f144f9124a064420a3bdc9ddfc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\LightZEUS.png&quot;,
+      &quot;bytes&quot;: 62095,
+      &quot;sha256&quot;: &quot;82eb7a2bcd23cb39c2912d452223c8f0d86f53cf30312cb41442200ea3ce7a6a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_01.png&quot;,
+      &quot;bytes&quot;: 9136,
+      &quot;sha256&quot;: &quot;9ae7b154d974b1cd92345a8e41e8fbc15fd98079dc6ab544e7004c61aceb36e9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_02.png&quot;,
+      &quot;bytes&quot;: 15339,
+      &quot;sha256&quot;: &quot;257f58613f07aa85d8684af067917ccf9c10c0738bc3d20151da53d10c9093fa&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_03.png&quot;,
+      &quot;bytes&quot;: 15067,
+      &quot;sha256&quot;: &quot;f21a05acfcdfbc083e7ec314cb5ba16c2782f4244a7ca5eb83098fb382ddc22b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_04.png&quot;,
+      &quot;bytes&quot;: 18464,
+      &quot;sha256&quot;: &quot;2af84d6796ce65b951e48c3708c153c84d3b5460561ba194a911517dea783b4a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_01.png&quot;,
+      &quot;bytes&quot;: 51604,
+      &quot;sha256&quot;: &quot;8449b877835f547e3ecf5d5fd222e77ce1b135736fe5b118413fc87a0a0300ec&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_02.png&quot;,
+      &quot;bytes&quot;: 65710,
+      &quot;sha256&quot;: &quot;fe978c299a38aad3c85c2e838a6c84b112e5c2cd45bd4834b4e10161e194c1e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_03.png&quot;,
+      &quot;bytes&quot;: 77544,
+      &quot;sha256&quot;: &quot;91fb5711e2f31d6349379b63e6f3a863eb17d044cb2c53427af05d4b23cdb06e&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_04.png&quot;,
+      &quot;bytes&quot;: 59016,
+      &quot;sha256&quot;: &quot;0c0007bcb974ce1794c5e88242ee147370d24c51ff6725cde8141de1833b8f91&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_04.png&quot;,
+      &quot;bytes&quot;: 34940,
+      &quot;sha256&quot;: &quot;deaff8c72113afd116452dbc88189797eea4d4d4ed7efa37573537502f508345&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\kouqiang.png&quot;,
+      &quot;bytes&quot;: 1431,
+      &quot;sha256&quot;: &quot;ecc82183d91434818feb645efff49dcfee2bb90d18a10edd5699900778a73363&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yingzi.png&quot;,
+      &quot;bytes&quot;: 37048,
+      &quot;sha256&quot;: &quot;03f899e955532fa53f881526afecf98c6d3117607198ae4b39d910c207e5d16a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa2.png&quot;,
+      &quot;bytes&quot;: 100877,
+      &quot;sha256&quot;: &quot;cffa4684d4795b33840c2fb8d4c06ca70a7120f6a5a67214f9c2a008f346600c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa1.png&quot;,
+      &quot;bytes&quot;: 157143,
+      &quot;sha256&quot;: &quot;6cc461b94be6758fbb946169dd70e9bfc393a6709a49fed5ab833b7f52a54737&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shenti.png&quot;,
+      &quot;bytes&quot;: 271904,
+      &quot;sha256&quot;: &quot;d7b73e2844f9ee680d47e5501821e9a4ba4b6845f54e3029bf552b87a8623167&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\xiong_bozi.png&quot;,
+      &quot;bytes&quot;: 339358,
+      &quot;sha256&quot;: &quot;3840e5ddc8419952260d7a09a74f2959c7886fb36b79078671560156235cfd04&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shoubi1.png&quot;,
+      &quot;bytes&quot;: 335643,
+      &quot;sha256&quot;: &quot;c52a500c3366519e1003251048ef33e26d3d70b7dad1abedb18881dc6e567639&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_xiong1.png&quot;,
+      &quot;bytes&quot;: 107458,
+      &quot;sha256&quot;: &quot;8a8d25dd58167a1a953e025cf76a2a9ebad79de3e9c901627bf9482189ca442a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_quan1.png&quot;,
+      &quot;bytes&quot;: 85512,
+      &quot;sha256&quot;: &quot;8e77b9875772c23434f6f95a409367151f5933869ba5077097a96eddf33b87a5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Breastplate.png&quot;,
+      &quot;bytes&quot;: 12012,
+      &quot;sha256&quot;: &quot;63e5310aab44a630c428a77f3f2d20a161b4547a3f7f9baed7e14eb8b8458028&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu2.png&quot;,
+      &quot;bytes&quot;: 203025,
+      &quot;sha256&quot;: &quot;ffda782229072695fb99d307c12817b9a5167f83369d439a9730b3ee8b17be40&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu3.png&quot;,
+      &quot;bytes&quot;: 437322,
+      &quot;sha256&quot;: &quot;5618af1475ebf0211f16f3057098d091509a6201c8833a6761b550d9c50064a1&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi1.png&quot;,
+      &quot;bytes&quot;: 154485,
+      &quot;sha256&quot;: &quot;f853436343cfbae9352fea0d5524214c341eaf711bbc7fcb2b2898d65fcd28d7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu1.png&quot;,
+      &quot;bytes&quot;: 55884,
+      &quot;sha256&quot;: &quot;dac14ae53171c4b21e745b55722932f791d767718aebbbcb88fb07a70081793d&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai.png&quot;,
+      &quot;bytes&quot;: 111644,
+      &quot;sha256&quot;: &quot;1cd15086ea1331a906c5ce5d3546177ca62c3f9b9345e2f62275fbbb4f6946a4&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi2.png&quot;,
+      &quot;bytes&quot;: 154485,
+      &quot;sha256&quot;: &quot;d6bbd2a4c39e9b8bd56deab8e143f9f31617e022227dc7f29e12fe5c78917104&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\tou_1_3.png&quot;,
+      &quot;bytes&quot;: 63114,
+      &quot;sha256&quot;: &quot;b55ec72ea66bd5aefbea6ac1b710cb83f83a7b5a0634aff21444a5f334fd1390&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\zuichun.png&quot;,
+      &quot;bytes&quot;: 1074,
+      &quot;sha256&quot;: &quot;7232652a592747ddce3d8a72171ef2fa1b17313da38f705f87fc8a495380f9e4&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi2.png&quot;,
+      &quot;bytes&quot;: 46864,
+      &quot;sha256&quot;: &quot;81bea8edaca7192a42a74be6306a96b70cc3a8e581adad2b2fad7693cefa4df6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai1.png&quot;,
+      &quot;bytes&quot;: 57070,
+      &quot;sha256&quot;: &quot;1f3da60613b205cd26271fff46f899cc2eabc588469e78b7d6218fcf6718f738&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_02.png&quot;,
+      &quot;bytes&quot;: 71045,
+      &quot;sha256&quot;: &quot;b9aa130fc1b07ec402e390a03615c0b381900702f1bdf36ce2abc57ce7f014dd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_03.png&quot;,
+      &quot;bytes&quot;: 40002,
+      &quot;sha256&quot;: &quot;9549a681d5f8c992d362245b07be70d80bfa7d5cce9908f9efb7c0d6537e1776&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi3.png&quot;,
+      &quot;bytes&quot;: 47403,
+      &quot;sha256&quot;: &quot;49521f767e95da375f90c020b5758224e89db211528758f605524b42b3d15c40&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan.png&quot;,
+      &quot;bytes&quot;: 38765,
+      &quot;sha256&quot;: &quot;ce6dd369d861be60884e69d110b53b315881e26bb2b7ae02795a33029c7171cc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan2.png&quot;,
+      &quot;bytes&quot;: 38765,
+      &quot;sha256&quot;: &quot;a46a24072a1f3f5b5ce7a48cdfedca5250a6df47b313e712c1d3c17480f331a9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiong.png&quot;,
+      &quot;bytes&quot;: 132559,
+      &quot;sha256&quot;: &quot;6b437cd91b91d28615e88985fe1b7a5f814d2220fb2b5ac51fd9f9263b6ba4e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou2.png&quot;,
+      &quot;bytes&quot;: 92008,
+      &quot;sha256&quot;: &quot;c8c70026dcc1c6ade0f1aab321e3e1729a66db1644c9dfede0d57b64d474913b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_1.png&quot;,
+      &quot;bytes&quot;: 85506,
+      &quot;sha256&quot;: &quot;610ec2692b57b875a20d65d0d0be7f74b46a65371fee5e4b50e988569210a113&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_2.png&quot;,
+      &quot;bytes&quot;: 43510,
+      &quot;sha256&quot;: &quot;bec78ecf41e7f25e0634aab1e38da5d248d6c3e31a2411fd0e281ff9141e7807&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_3.png&quot;,
+      &quot;bytes&quot;: 43326,
+      &quot;sha256&quot;: &quot;3391c181bd6c5c9f718c8db970e4c911c5b98b11f2a3b90c757e76b278635bd6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_4.png&quot;,
+      &quot;bytes&quot;: 44683,
+      &quot;sha256&quot;: &quot;cb82e08ec485da026baad4d86bbc15a5d89397651c534ad875244932bfbe9db9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_5.png&quot;,
+      &quot;bytes&quot;: 43324,
+      &quot;sha256&quot;: &quot;b194394ca21b565e65ceedc493e40c4385f889362a8de0376122767de69eecb2&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1.png&quot;,
+      &quot;bytes&quot;: 179140,
+      &quot;sha256&quot;: &quot;1cb43593ce7e92eb135c440164d1f46540651539e8439f4618ae40d4482df8fe&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1_ying.png&quot;,
+      &quot;bytes&quot;: 65201,
+      &quot;sha256&quot;: &quot;42e9e2b2dc813d0473c341261ea83efd8ccfcbd2d749afdda1c6d9d7b4e179ca&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi2.png&quot;,
+      &quot;bytes&quot;: 186530,
+      &quot;sha256&quot;: &quot;b421968ce26f38845c18669f0c96ebb3c1a013c0da62a59af209b3938f61a687&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1.png&quot;,
+      &quot;bytes&quot;: 101779,
+      &quot;sha256&quot;: &quot;ee4ec2e98aa936dc3be4ea5b8540870c64b5324b9ced64e112369a16c2abcaeb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_2.png&quot;,
+      &quot;bytes&quot;: 43474,
+      &quot;sha256&quot;: &quot;3056ab2ca018a6add56ef23970ca2c0c91b2037f1c72b967032f1735356265a6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_3.png&quot;,
+      &quot;bytes&quot;: 46504,
+      &quot;sha256&quot;: &quot;22d25223a2fb5b2864d8c5e6c16992d4b50c20e46b3e132cfebdee0325daaebc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_4.png&quot;,
+      &quot;bytes&quot;: 50269,
+      &quot;sha256&quot;: &quot;ff425570083a58486c5481ebb89e80e9cdd46ba32db8d2313a4a42cad4dd305e&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_5.png&quot;,
+      &quot;bytes&quot;: 46705,
+      &quot;sha256&quot;: &quot;4c82c50f4d06e32ef37bc3fbf0a4d5519cb998d62b05333c3526297ec1d4992c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu01.png&quot;,
+      &quot;bytes&quot;: 13569,
+      &quot;sha256&quot;: &quot;a46cadd67382687b462f0acbd68b68cdb5a7ea3693e805166ae1d694ce03ce2b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu02.png&quot;,
+      &quot;bytes&quot;: 15477,
+      &quot;sha256&quot;: &quot;dbed050a0e52606f31feba4868131bf0d0f052eb46ef59ea8fcb55733f8307f7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu03.png&quot;,
+      &quot;bytes&quot;: 15888,
+      &quot;sha256&quot;: &quot;79a2b4aa85c06fe510332ffe3ef63fdf91778608fbcc9bb01fe783384a751a37&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu04.png&quot;,
+      &quot;bytes&quot;: 15902,
+      &quot;sha256&quot;: &quot;144e745ee3d267a76fd765d39eb5a1931a68b04af98ee651275cda88af379eea&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu05.png&quot;,
+      &quot;bytes&quot;: 16056,
+      &quot;sha256&quot;: &quot;a80f82fe0fbdc30c456ea39c5584df78e6d1ae89a233239cb7ac92bf2196e66a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu06.png&quot;,
+      &quot;bytes&quot;: 16055,
+      &quot;sha256&quot;: &quot;55586829985e0c853c6987cd591d28c4b0e19389c479bfaf1a229e1614d3e635&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\circle0352.png&quot;,
+      &quot;bytes&quot;: 7911,
+      &quot;sha256&quot;: &quot;49cc1c7e5c320209fa15569ccd490de7a8780e634661c68e53706588c5609700&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0023.png&quot;,
+      &quot;bytes&quot;: 7699,
+      &quot;sha256&quot;: &quot;eb3c9b5a726562617df578603d2ca4e0125b55bb52916cb1bebacd37e80d6b5c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light0099.png&quot;,
+      &quot;bytes&quot;: 22787,
+      &quot;sha256&quot;: &quot;7c34af48d6054f7c8d1943426a00bb8506d9f05198d9ca3ae373fe2afe992ae9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yanguang.png&quot;,
+      &quot;bytes&quot;: 2104,
+      &quot;sha256&quot;: &quot;1d8b5a9a6b8f39ea4fb1f469e0fc3f75b7862748f4d6edc93c79f70875001507&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0050.png&quot;,
+      &quot;bytes&quot;: 16265,
+      &quot;sha256&quot;: &quot;b5ecadcea8025dbbb8deb5e47193f0c5f2ddf0cb4ae03e7d49814e6a9a7a575c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian2\\big_xd.png&quot;,
+      &quot;bytes&quot;: 15035,
+      &quot;sha256&quot;: &quot;a388c5dc59fb3e1b637d18c8fba82941766fa1113276c1b66aadc70a8eeb0e30&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_0.png&quot;,
+      &quot;bytes&quot;: 75175,
+      &quot;sha256&quot;: &quot;a4c826c3fa076a44b4da0c833daf2322aa49c24d080c70796ade8a3b269219f5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_4.png&quot;,
+      &quot;bytes&quot;: 71044,
+      &quot;sha256&quot;: &quot;f64f9b2f0d29676fb894ef850200fa07ae3fa59cea7be025838e44590aac77e7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_6.png&quot;,
+      &quot;bytes&quot;: 65905,
+      &quot;sha256&quot;: &quot;b1e3fb5b2aeeb95308a9f9cbfb63f3ae7527d27356761243d29aa2a6000afc1c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_8.png&quot;,
+      &quot;bytes&quot;: 79428,
+      &quot;sha256&quot;: &quot;b1aa8b0c54748956465f1e3bf32541016d6de31d71b1cce9342cea26df5a4542&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_10.png&quot;,
+      &quot;bytes&quot;: 60526,
+      &quot;sha256&quot;: &quot;eb6738b8d93fd5a2ee1fcf889c306f18bbda8162ce7ca6494be4ba175e609d6d&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_11.png&quot;,
+      &quot;bytes&quot;: 63439,
+      &quot;sha256&quot;: &quot;2a1a94787181535948e873054995712cfd7a0572d3c83c2e5f6ac767e69033fd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_8.png&quot;,
+      &quot;bytes&quot;: 55748,
+      &quot;sha256&quot;: &quot;d2037312633f5d1a0c44ff3f74f2917ae91da369703b14fc488c755990ca6567&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_9.png&quot;,
+      &quot;bytes&quot;: 36046,
+      &quot;sha256&quot;: &quot;8b01e5cb8b6f68d68f61ebb3b31fbaeb66b9bb8578eb2be9044c4fd811562bf9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_11.png&quot;,
+      &quot;bytes&quot;: 41296,
+      &quot;sha256&quot;: &quot;7b23cee253ee1406997251fec8ee2663ddd8dcc51533ec3d00c9ea420d9f6566&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_12.png&quot;,
+      &quot;bytes&quot;: 20876,
+      &quot;sha256&quot;: &quot;f87a8bc052d72c805b113d8e86d80b4deac6bf27fa326a776d7a604583f0c1a0&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_13.png&quot;,
+      &quot;bytes&quot;: 25918,
+      &quot;sha256&quot;: &quot;2e2c201d8d65ecdcecc80267d5c5fb06bcb03e0f2ade46d7347aa2447fcbe7e2&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_17.png&quot;,
+      &quot;bytes&quot;: 20985,
+      &quot;sha256&quot;: &quot;10cf5b3a579b130a61f9698649fd166fc8cc9bb963e47fb7025b55e1accd6cee&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_19.png&quot;,
+      &quot;bytes&quot;: 13973,
+      &quot;sha256&quot;: &quot;4d9145bf3f88ed2825e3d7732abadcd17c805c8a106fd33a2e09d2b6b53415c1&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-13\\Zeus.json&quot;,
+      &quot;bytes&quot;: 297130,
+      &quot;sha256&quot;: &quot;3b7deb1bf0309717990da5c12cf38bc0ec713086f8008de470c8fb08d5733bb5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\Idle_02.mov&quot;,
+      &quot;bytes&quot;: 9239476,
+      &quot;sha256&quot;: &quot;9886fe5a5c500b16b95feba937e3067408211a5f90f11859198441ec2ae52682&quot;
+    }
+  ],
+  &quot;best&quot;: {
+    &quot;round&quot;: 2,
+    &quot;dir&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-1\\fit-01\\best&quot;,
+    &quot;plan&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-1\\fit-01\\best\\plan.json&quot;,
+    &quot;build&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-1\\fit-01\\best\\build&quot;
+  },
+  &quot;frames&quot;: {
+    &quot;video&quot;: 61,
+    &quot;fitted&quot;: 59,
+    &quot;accepted&quot;: 58,
+    &quot;rejected&quot;: [
+      28
+    ]
+  },
+  &quot;zero&quot;: {
+    &quot;frame&quot;: 0,
+    &quot;coverage&quot;: 0.903,
+    &quot;residual&quot;: {
+      &quot;median&quot;: 3.32,
+      &quot;max&quot;: 30.99
+    },
+    &quot;shifted&quot;: 0.093,
+    &quot;largestOffset&quot;: {
+      &quot;bone&quot;: &quot;body&quot;,
+      &quot;channel&quot;: &quot;x&quot;,
+      &quot;value&quot;: -3.87
+    }
+  },
+  &quot;searchWindow&quot;: 160.57,
+  &quot;tracking&quot;: {
+    &quot;span&quot;: {
+      &quot;move&quot;: 160.57,
+      &quot;turn&quot;: 24
+    },
+    &quot;agreement&quot;: {
+      &quot;turn&quot;: 8,
+      &quot;move&quot;: 23.76
+    },
+    &quot;disagree&quot;: {},
+    &quot;singlePass&quot;: [],
+    &quot;lost&quot;: {
+      &quot;forward&quot;: 23,
+      &quot;backward&quot;: 28
+    }
+  },
+  &quot;loop&quot;: {
+    &quot;period&quot;: 60,
+    &quot;cycles&quot;: 1,
+    &quot;foldFrames&quot;: 60,
+    &quot;drift&quot;: 0,
+    &quot;cyclesInAnimation&quot;: 1,
+    &quot;stretch&quot;: 0,
+    &quot;wholeCycles&quot;: {
+      &quot;frames&quot;: 60,
+      &quot;cycles&quot;: 1,
+      &quot;stretch&quot;: 0
+    },
+    &quot;oneCycle&quot;: true
+  },
+  &quot;unfitted&quot;: [
+    {
+      &quot;bone&quot;: &quot;arm_L&quot;,
+      &quot;parts&quot;: [
+        &quot;L_Arm_01&quot;
+      ],
+      &quot;share&quot;: 0.16
+    },
+    {
+      &quot;bone&quot;: &quot;lightning&quot;,
+      &quot;parts&quot;: [
+        &quot;ZEUS_MG_LightningFire&quot;,
+        &quot;ZEUS_MG_LightningFire_Light&quot;,
+        &quot;T_LightningAtk_center_01&quot;,
+        &quot;Lightning_03&quot;,
+        &quot;Lightning_04&quot;,
+        &quot;Lightning_07&quot;,
+        &quot;Lightning_05&quot;,
+        &quot;Lightning_08&quot;,
+        &quot;Lightning_06&quot;,
+        &quot;Lightning_09&quot;
+      ],
+      &quot;share&quot;: 0.39
+    }
+  ],
+  &quot;freed&quot;: [],
+  &quot;rounds&quot;: [
+    {
+      &quot;round&quot;: 1,
+      &quot;dir&quot;: &quot;round-1&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 1.5022,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.865,
+            0.817
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.89,
+            2.65,
+            &quot;28 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0,
+            0.59
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 44 (1.47s, overlap 0.82): pose, placement or size&quot;,
+        &quot;the whole figure moves 0.59x as far as the reference (too small)&quot;,
+        &quot;L_Hat: off by 7.7% of the height, moving differently&quot;,
+        &quot;Belt: off by 2.3% of the height, moving differently&quot;,
+        &quot;qunzi3: off by 1.8% of the height, 8 frames early&quot;,
+        &quot;L_Arm_02: off by 1.8% of the height, 12 frames early, moves 0.10x (too small)&quot;
+      ],
+      &quot;fitted&quot;: 31,
+      &quot;accepted&quot;: 30,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 6,
+        &quot;bones&quot;: 53,
+        &quot;perSecond&quot;: 3,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;idle&quot;,
+          &quot;perSecond&quot;: 1.5
+        },
+        &quot;error&quot;: 3.059,
+        &quot;capped&quot;: true,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 7.6
+    },
+    {
+      &quot;round&quot;: 2,
+      &quot;dir&quot;: &quot;round-2&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 1.26,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.861,
+            0.811
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.61,
+            2.96,
+            &quot;29 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            2,
+            0.58
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 44 (1.47s, overlap 0.81): pose, placement or size&quot;,
+        &quot;the whole figure moves 0.58x as far as the reference (too small)&quot;,
+        &quot;L_Hat: off by 7.4% of the height, moving differently&quot;,
+        &quot;Belt: off by 2.5% of the height, moving differently&quot;,
+        &quot;qunzi3: off by 2.1% of the height, 6 frames early, moves 1.35x (too big)&quot;,
+        &quot;qunzi2: off by 1.7% of the height, moving differently&quot;
+      ],
+      &quot;fitted&quot;: 59,
+      &quot;accepted&quot;: 56,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 6,
+        &quot;bones&quot;: 54,
+        &quot;perSecond&quot;: 3,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;idle&quot;,
+          &quot;perSecond&quot;: 1.5
+        },
+        &quot;error&quot;: 3.245,
+        &quot;capped&quot;: true,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 231.4
+    },
+    {
+      &quot;round&quot;: 3,
+      &quot;dir&quot;: &quot;round-3&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 2.1933,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.861,
+            0.819
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.85,
+            3.01,
+            &quot;29 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            3,
+            0.58
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V4 loop seam mean difference &lt;= 0.002&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: 0
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 44 (1.47s, overlap 0.82): pose, placement or size&quot;,
+        &quot;the whole figure moves 3 frames later than the reference&quot;,
+        &quot;the whole figure moves 0.58x as far as the reference (too small)&quot;,
+        &quot;L_Hat: off by 7.5% of the height, moving differently&quot;,
+        &quot;Belt: off by 2.6% of the height, moving differently&quot;,
+        &quot;qunzi3: off by 2.4% of the height, 3 frames early, moves 1.51x (too big)&quot;,
+        &quot;L_Arm_02: off by 1.9% of the height, moving differently&quot;
+      ],
+      &quot;fitted&quot;: 35,
+      &quot;accepted&quot;: 33,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 6,
+        &quot;bones&quot;: 54,
+        &quot;perSecond&quot;: 3,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;idle&quot;,
+          &quot;perSecond&quot;: 1.5
+        },
+        &quot;error&quot;: 2.515,
+        &quot;capped&quot;: true,
+        &quot;lag&quot;: {
+          &quot;body&quot;: -8,
+          &quot;spine&quot;: -8,
+          &quot;head&quot;: -8,
+          &quot;forearm_L&quot;: -16,
+          &quot;hand_L&quot;: -26,
+          &quot;arm_R&quot;: -11,
+          &quot;forearm_R&quot;: -15,
+          &quot;hand_R&quot;: -16,
+          &quot;lightning&quot;: -16
+        }
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 140.4
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;arm_L (L_Arm_01): drawn differently in the video in 84% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;lightning (ZEUS_MG_LightningFire, ZEUS_MG_LightningFire_Light, T_LightningAtk_center_01, Lightning_03, Lightning_04, Lightning_07, Lightning_05, Lightning_08, Lightning_06, Lightning_09): drawn differently in the video in 61% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;no repeat found in the video: its first 60 frames are taken as one loop&quot;,
+    &quot;folded 1 cycles (frames 0-59); the clip's last cycle comes 0 frames late&quot;,
+    &quot;the key cap (twice the idle key density) held: the keys stay within 3.245x their tolerance (0.5 degree or px, or twice a channel's fit noise)&quot;
+  ],
+  &quot;note&quot;: &quot;Reference-fitted, not a blind result. Look at best/compare; the numbers do not replace it.&quot;
+}</pre><h4>Touch01</h4><p>輪次 3；最佳輪次 1。</p><a href="Zeus/data/Touch01-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;Zeus&quot;,
+  &quot;animation&quot;: &quot;Touch01&quot;,
+  &quot;video&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\Touch01.mov&quot;,
+  &quot;start&quot;: 0,
+  &quot;fps&quot;: 30,
+  &quot;label&quot;: &quot;reference-fitted&quot;,
+  &quot;pass&quot;: false,
+  &quot;inputs&quot;: [
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\plans\\plan-23.json&quot;,
+      &quot;bytes&quot;: 16985,
+      &quot;sha256&quot;: &quot;ce3515a90e07b373a6fb976c4bbf596e22274cadac821200348b2eb51dc7ddd6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\imagesOnly.json&quot;,
+      &quot;bytes&quot;: 151424,
+      &quot;sha256&quot;: &quot;f7dad6838d5bd06f320a5c87c1cd92bb4e5e9d780d57b8e585be40e9e64245ed&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Black.png&quot;,
+      &quot;bytes&quot;: 81,
+      &quot;sha256&quot;: &quot;fd5652040fe08327e0b8dfe192f6457c266aca0e3b3400c847b757b824e450f5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi12.png&quot;,
+      &quot;bytes&quot;: 90616,
+      &quot;sha256&quot;: &quot;64089569f523bb6eff86a5aff158be1c5ff7bb1b807d4b7d93e1577c1a07e06b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi11.png&quot;,
+      &quot;bytes&quot;: 24418,
+      &quot;sha256&quot;: &quot;d6c534a52df72edcfaf73d648505f77578f51b03c18cc0de1df0cec7c5016461&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair.png&quot;,
+      &quot;bytes&quot;: 42314,
+      &quot;sha256&quot;: &quot;cb1fd8b8177c59290a9591843e320fae76a3d419443e73f6c4c04c957399c277&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair.png&quot;,
+      &quot;bytes&quot;: 29265,
+      &quot;sha256&quot;: &quot;0e08ce38f639c3d286f76b16773e06ba1f3e65937596b6db5c232b1c1b94c363&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_HairLight.png&quot;,
+      &quot;bytes&quot;: 24867,
+      &quot;sha256&quot;: &quot;bcab89ba79f3a189bfac40ebef5d087310aba7cff2f108fbbfdc3485956a635c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair_01.png&quot;,
+      &quot;bytes&quot;: 13339,
+      &quot;sha256&quot;: &quot;4d680760b78aa1ed8f19c71767cdb4ba08d171ca47ab7934eeabe67f5ee534b8&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_01.png&quot;,
+      &quot;bytes&quot;: 67678,
+      &quot;sha256&quot;: &quot;9859e6ffdba4478f9863415de5c78179c590fb10d83203b4067de7d1bbb65a42&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_Light_01.png&quot;,
+      &quot;bytes&quot;: 47421,
+      &quot;sha256&quot;: &quot;4fb054b27db5cc21717fb84bb405469314d11c253c4bcdc807128da22e1478d5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair_01.png&quot;,
+      &quot;bytes&quot;: 20432,
+      &quot;sha256&quot;: &quot;db479b448f7d0eb10c280a232177855a1795dca3efc452f08346a4c659bd0c8f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_HairLight_01.png&quot;,
+      &quot;bytes&quot;: 5173,
+      &quot;sha256&quot;: &quot;b1f21f64b7874b3899f84cf055909c1c000375213d6104e937edeb4c323ff66f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Body.png&quot;,
+      &quot;bytes&quot;: 195551,
+      &quot;sha256&quot;: &quot;eb1b0974d67ce409f0148d0c9686f1145a474242ed794e213399534bc7cca84a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ShoulderStrap.png&quot;,
+      &quot;bytes&quot;: 40856,
+      &quot;sha256&quot;: &quot;87aa56c17ba7994208e56f587167fbaa2113221ad53f0ff7c63ee69068c96bcb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye01.png&quot;,
+      &quot;bytes&quot;: 4472,
+      &quot;sha256&quot;: &quot;d92912535e732194a3a166d988a681c109858c4df0c06f61dd967303f3eaa89f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye02.png&quot;,
+      &quot;bytes&quot;: 3034,
+      &quot;sha256&quot;: &quot;6fa33e4a69d8546150f771c5b5b2334ea1e97bcb58d42b23230206a2af33fb9f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Face.png&quot;,
+      &quot;bytes&quot;: 40035,
+      &quot;sha256&quot;: &quot;50c8f0b6b74f2fcc431af48f5223c1c29feb772d13bd7f3e2096c3bdc6798908&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Hair.png&quot;,
+      &quot;bytes&quot;: 39139,
+      &quot;sha256&quot;: &quot;7f147a77c2022aa8540ac1e8f005772c43fb7e858792d76732d29b5acda5f907&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Ear.png&quot;,
+      &quot;bytes&quot;: 6089,
+      &quot;sha256&quot;: &quot;3fe5a2b8b3d4e00464c92c0bdca1fee909d12323474d6ecf573fcaab7e0acab6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Ear.png&quot;,
+      &quot;bytes&quot;: 5732,
+      &quot;sha256&quot;: &quot;46d247787cb6adae19e5371f2e1cc87043e656796c776c29819f9064394638dd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Beard.png&quot;,
+      &quot;bytes&quot;: 8847,
+      &quot;sha256&quot;: &quot;6d44f53834ff80e154cde6c89b65d8eeb10ae892e843f2356babd8f7c6e31c17&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Beard.png&quot;,
+      &quot;bytes&quot;: 9166,
+      &quot;sha256&quot;: &quot;b37812105a6788e6d65db454ed0e4f2b88ab022e413290b0128a7b160a3b1623&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_In.png&quot;,
+      &quot;bytes&quot;: 2576,
+      &quot;sha256&quot;: &quot;99df8fbe40f9600e058ef8fcc648a3046cea33b6ac16c3bd2c9facaa5e6b8940&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_Out.png&quot;,
+      &quot;bytes&quot;: 6055,
+      &quot;sha256&quot;: &quot;dc6f65aad6726800d37c8028d83c26a5745d146e5b8701766ed118e0addaf6d3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard.png&quot;,
+      &quot;bytes&quot;: 13495,
+      &quot;sha256&quot;: &quot;4f5f018f2809b625bc832aa5a496a158975fb479705b4d6a45e0d93a9e56757a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hat.png&quot;,
+      &quot;bytes&quot;: 8181,
+      &quot;sha256&quot;: &quot;df38b531f0716796e0f4e6d6d654abed3417a8b0191370f15d7efb621b2861db&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Clothing.png&quot;,
+      &quot;bytes&quot;: 131559,
+      &quot;sha256&quot;: &quot;ac25210b733d86f489af9feeac4d01b3fa211002c044821ecb661e68df8b689c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard_02_1.png&quot;,
+      &quot;bytes&quot;: 13932,
+      &quot;sha256&quot;: &quot;a477d8bf712bbf2771809b7e28c039b5c2906d51c545fe89d027489571657cab&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03.png&quot;,
+      &quot;bytes&quot;: 19327,
+      &quot;sha256&quot;: &quot;3a11f41e5cab7ed4b493fa08d38a4f224eda0948f378686c97916bef0150fd70&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_02.png&quot;,
+      &quot;bytes&quot;: 45755,
+      &quot;sha256&quot;: &quot;ef24328e227945e0399711d5dcf12614e22e6e5d1f32d6d2089f88ea49dbf145&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_01.png&quot;,
+      &quot;bytes&quot;: 62437,
+      &quot;sha256&quot;: &quot;967b0266d80d87fe5bc23897cc9e94274701830eabbd77a0474bab7e5685b06c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_03.png&quot;,
+      &quot;bytes&quot;: 2699,
+      &quot;sha256&quot;: &quot;a372869eec5ad9a15a72823cab18bd15173289eeb790dc19c3154ea197703680&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire.png&quot;,
+      &quot;bytes&quot;: 253324,
+      &quot;sha256&quot;: &quot;fdf6e06f0f9a5520236d60bef721246e951dbd7136ca1dc6d546e8b81f26ba98&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire_Light.png&quot;,
+      &quot;bytes&quot;: 28111,
+      &quot;sha256&quot;: &quot;b9d59248c7d81cb752ab049dc41d84e2fdd65e2debcd0f061a44aaf6cd293d0f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_02.png&quot;,
+      &quot;bytes&quot;: 15553,
+      &quot;sha256&quot;: &quot;1c62a60f6252456c991d76887cc1e840063f6dfe224646bfdb1900b7a785d123&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_01.png&quot;,
+      &quot;bytes&quot;: 5154,
+      &quot;sha256&quot;: &quot;4079272fcb1669bad92e2f7586cfad3011251bd14b89d50f03bc9d61e40647cd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hat.png&quot;,
+      &quot;bytes&quot;: 8352,
+      &quot;sha256&quot;: &quot;95e3c30cf0f3085e081d1d438b57444dd3521111f77c30004f3ddb6d66a25c04&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Eyebrow.png&quot;,
+      &quot;bytes&quot;: 4084,
+      &quot;sha256&quot;: &quot;a1ffa67655fb5965c0b64bd72af8021181300609784a96d61586560cd742d87f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Eyebrow.png&quot;,
+      &quot;bytes&quot;: 3927,
+      &quot;sha256&quot;: &quot;c9d53b68f6120ef96de35c8381b81e99a60f1fc10da4b24fd5e18b142b781ade&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_r.png&quot;,
+      &quot;bytes&quot;: 2931,
+      &quot;sha256&quot;: &quot;816e71ea85a2c69804488fc2e36b571409cb302faa9369d73af39ac5ac74c4fb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_l.png&quot;,
+      &quot;bytes&quot;: 2946,
+      &quot;sha256&quot;: &quot;aed701294764c59f50e75c9b1b6aeb6bc38e30edc385c455dece4789cb5d2719&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_Glow.png&quot;,
+      &quot;bytes&quot;: 5558,
+      &quot;sha256&quot;: &quot;dd96ff688c021cd39525f8f7010993d84d918e84d9059be8c092045c370598e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_l.png&quot;,
+      &quot;bytes&quot;: 3054,
+      &quot;sha256&quot;: &quot;376bd00d1b2df9056026915f423013ea72695c5a23479c9078078df156caed7f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_r.png&quot;,
+      &quot;bytes&quot;: 3053,
+      &quot;sha256&quot;: &quot;8ee9f9f2e9e5e3d01a5f879e744fddb46c96e8f144f9124a064420a3bdc9ddfc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\LightZEUS.png&quot;,
+      &quot;bytes&quot;: 62095,
+      &quot;sha256&quot;: &quot;82eb7a2bcd23cb39c2912d452223c8f0d86f53cf30312cb41442200ea3ce7a6a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_01.png&quot;,
+      &quot;bytes&quot;: 9136,
+      &quot;sha256&quot;: &quot;9ae7b154d974b1cd92345a8e41e8fbc15fd98079dc6ab544e7004c61aceb36e9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_02.png&quot;,
+      &quot;bytes&quot;: 15339,
+      &quot;sha256&quot;: &quot;257f58613f07aa85d8684af067917ccf9c10c0738bc3d20151da53d10c9093fa&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_03.png&quot;,
+      &quot;bytes&quot;: 15067,
+      &quot;sha256&quot;: &quot;f21a05acfcdfbc083e7ec314cb5ba16c2782f4244a7ca5eb83098fb382ddc22b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_04.png&quot;,
+      &quot;bytes&quot;: 18464,
+      &quot;sha256&quot;: &quot;2af84d6796ce65b951e48c3708c153c84d3b5460561ba194a911517dea783b4a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_01.png&quot;,
+      &quot;bytes&quot;: 51604,
+      &quot;sha256&quot;: &quot;8449b877835f547e3ecf5d5fd222e77ce1b135736fe5b118413fc87a0a0300ec&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_02.png&quot;,
+      &quot;bytes&quot;: 65710,
+      &quot;sha256&quot;: &quot;fe978c299a38aad3c85c2e838a6c84b112e5c2cd45bd4834b4e10161e194c1e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_03.png&quot;,
+      &quot;bytes&quot;: 77544,
+      &quot;sha256&quot;: &quot;91fb5711e2f31d6349379b63e6f3a863eb17d044cb2c53427af05d4b23cdb06e&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_04.png&quot;,
+      &quot;bytes&quot;: 59016,
+      &quot;sha256&quot;: &quot;0c0007bcb974ce1794c5e88242ee147370d24c51ff6725cde8141de1833b8f91&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_04.png&quot;,
+      &quot;bytes&quot;: 34940,
+      &quot;sha256&quot;: &quot;deaff8c72113afd116452dbc88189797eea4d4d4ed7efa37573537502f508345&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\kouqiang.png&quot;,
+      &quot;bytes&quot;: 1431,
+      &quot;sha256&quot;: &quot;ecc82183d91434818feb645efff49dcfee2bb90d18a10edd5699900778a73363&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yingzi.png&quot;,
+      &quot;bytes&quot;: 37048,
+      &quot;sha256&quot;: &quot;03f899e955532fa53f881526afecf98c6d3117607198ae4b39d910c207e5d16a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa2.png&quot;,
+      &quot;bytes&quot;: 100877,
+      &quot;sha256&quot;: &quot;cffa4684d4795b33840c2fb8d4c06ca70a7120f6a5a67214f9c2a008f346600c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa1.png&quot;,
+      &quot;bytes&quot;: 157143,
+      &quot;sha256&quot;: &quot;6cc461b94be6758fbb946169dd70e9bfc393a6709a49fed5ab833b7f52a54737&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shenti.png&quot;,
+      &quot;bytes&quot;: 271904,
+      &quot;sha256&quot;: &quot;d7b73e2844f9ee680d47e5501821e9a4ba4b6845f54e3029bf552b87a8623167&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\xiong_bozi.png&quot;,
+      &quot;bytes&quot;: 339358,
+      &quot;sha256&quot;: &quot;3840e5ddc8419952260d7a09a74f2959c7886fb36b79078671560156235cfd04&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shoubi1.png&quot;,
+      &quot;bytes&quot;: 335643,
+      &quot;sha256&quot;: &quot;c52a500c3366519e1003251048ef33e26d3d70b7dad1abedb18881dc6e567639&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_xiong1.png&quot;,
+      &quot;bytes&quot;: 107458,
+      &quot;sha256&quot;: &quot;8a8d25dd58167a1a953e025cf76a2a9ebad79de3e9c901627bf9482189ca442a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_quan1.png&quot;,
+      &quot;bytes&quot;: 85512,
+      &quot;sha256&quot;: &quot;8e77b9875772c23434f6f95a409367151f5933869ba5077097a96eddf33b87a5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Breastplate.png&quot;,
+      &quot;bytes&quot;: 12012,
+      &quot;sha256&quot;: &quot;63e5310aab44a630c428a77f3f2d20a161b4547a3f7f9baed7e14eb8b8458028&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu2.png&quot;,
+      &quot;bytes&quot;: 203025,
+      &quot;sha256&quot;: &quot;ffda782229072695fb99d307c12817b9a5167f83369d439a9730b3ee8b17be40&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu3.png&quot;,
+      &quot;bytes&quot;: 437322,
+      &quot;sha256&quot;: &quot;5618af1475ebf0211f16f3057098d091509a6201c8833a6761b550d9c50064a1&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi1.png&quot;,
+      &quot;bytes&quot;: 154485,
+      &quot;sha256&quot;: &quot;f853436343cfbae9352fea0d5524214c341eaf711bbc7fcb2b2898d65fcd28d7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu1.png&quot;,
+      &quot;bytes&quot;: 55884,
+      &quot;sha256&quot;: &quot;dac14ae53171c4b21e745b55722932f791d767718aebbbcb88fb07a70081793d&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai.png&quot;,
+      &quot;bytes&quot;: 111644,
+      &quot;sha256&quot;: &quot;1cd15086ea1331a906c5ce5d3546177ca62c3f9b9345e2f62275fbbb4f6946a4&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi2.png&quot;,
+      &quot;bytes&quot;: 154485,
+      &quot;sha256&quot;: &quot;d6bbd2a4c39e9b8bd56deab8e143f9f31617e022227dc7f29e12fe5c78917104&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\tou_1_3.png&quot;,
+      &quot;bytes&quot;: 63114,
+      &quot;sha256&quot;: &quot;b55ec72ea66bd5aefbea6ac1b710cb83f83a7b5a0634aff21444a5f334fd1390&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\zuichun.png&quot;,
+      &quot;bytes&quot;: 1074,
+      &quot;sha256&quot;: &quot;7232652a592747ddce3d8a72171ef2fa1b17313da38f705f87fc8a495380f9e4&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi2.png&quot;,
+      &quot;bytes&quot;: 46864,
+      &quot;sha256&quot;: &quot;81bea8edaca7192a42a74be6306a96b70cc3a8e581adad2b2fad7693cefa4df6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai1.png&quot;,
+      &quot;bytes&quot;: 57070,
+      &quot;sha256&quot;: &quot;1f3da60613b205cd26271fff46f899cc2eabc588469e78b7d6218fcf6718f738&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_02.png&quot;,
+      &quot;bytes&quot;: 71045,
+      &quot;sha256&quot;: &quot;b9aa130fc1b07ec402e390a03615c0b381900702f1bdf36ce2abc57ce7f014dd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_03.png&quot;,
+      &quot;bytes&quot;: 40002,
+      &quot;sha256&quot;: &quot;9549a681d5f8c992d362245b07be70d80bfa7d5cce9908f9efb7c0d6537e1776&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi3.png&quot;,
+      &quot;bytes&quot;: 47403,
+      &quot;sha256&quot;: &quot;49521f767e95da375f90c020b5758224e89db211528758f605524b42b3d15c40&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan.png&quot;,
+      &quot;bytes&quot;: 38765,
+      &quot;sha256&quot;: &quot;ce6dd369d861be60884e69d110b53b315881e26bb2b7ae02795a33029c7171cc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan2.png&quot;,
+      &quot;bytes&quot;: 38765,
+      &quot;sha256&quot;: &quot;a46a24072a1f3f5b5ce7a48cdfedca5250a6df47b313e712c1d3c17480f331a9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiong.png&quot;,
+      &quot;bytes&quot;: 132559,
+      &quot;sha256&quot;: &quot;6b437cd91b91d28615e88985fe1b7a5f814d2220fb2b5ac51fd9f9263b6ba4e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou2.png&quot;,
+      &quot;bytes&quot;: 92008,
+      &quot;sha256&quot;: &quot;c8c70026dcc1c6ade0f1aab321e3e1729a66db1644c9dfede0d57b64d474913b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_1.png&quot;,
+      &quot;bytes&quot;: 85506,
+      &quot;sha256&quot;: &quot;610ec2692b57b875a20d65d0d0be7f74b46a65371fee5e4b50e988569210a113&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_2.png&quot;,
+      &quot;bytes&quot;: 43510,
+      &quot;sha256&quot;: &quot;bec78ecf41e7f25e0634aab1e38da5d248d6c3e31a2411fd0e281ff9141e7807&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_3.png&quot;,
+      &quot;bytes&quot;: 43326,
+      &quot;sha256&quot;: &quot;3391c181bd6c5c9f718c8db970e4c911c5b98b11f2a3b90c757e76b278635bd6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_4.png&quot;,
+      &quot;bytes&quot;: 44683,
+      &quot;sha256&quot;: &quot;cb82e08ec485da026baad4d86bbc15a5d89397651c534ad875244932bfbe9db9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_5.png&quot;,
+      &quot;bytes&quot;: 43324,
+      &quot;sha256&quot;: &quot;b194394ca21b565e65ceedc493e40c4385f889362a8de0376122767de69eecb2&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1.png&quot;,
+      &quot;bytes&quot;: 179140,
+      &quot;sha256&quot;: &quot;1cb43593ce7e92eb135c440164d1f46540651539e8439f4618ae40d4482df8fe&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1_ying.png&quot;,
+      &quot;bytes&quot;: 65201,
+      &quot;sha256&quot;: &quot;42e9e2b2dc813d0473c341261ea83efd8ccfcbd2d749afdda1c6d9d7b4e179ca&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi2.png&quot;,
+      &quot;bytes&quot;: 186530,
+      &quot;sha256&quot;: &quot;b421968ce26f38845c18669f0c96ebb3c1a013c0da62a59af209b3938f61a687&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1.png&quot;,
+      &quot;bytes&quot;: 101779,
+      &quot;sha256&quot;: &quot;ee4ec2e98aa936dc3be4ea5b8540870c64b5324b9ced64e112369a16c2abcaeb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_2.png&quot;,
+      &quot;bytes&quot;: 43474,
+      &quot;sha256&quot;: &quot;3056ab2ca018a6add56ef23970ca2c0c91b2037f1c72b967032f1735356265a6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_3.png&quot;,
+      &quot;bytes&quot;: 46504,
+      &quot;sha256&quot;: &quot;22d25223a2fb5b2864d8c5e6c16992d4b50c20e46b3e132cfebdee0325daaebc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_4.png&quot;,
+      &quot;bytes&quot;: 50269,
+      &quot;sha256&quot;: &quot;ff425570083a58486c5481ebb89e80e9cdd46ba32db8d2313a4a42cad4dd305e&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_5.png&quot;,
+      &quot;bytes&quot;: 46705,
+      &quot;sha256&quot;: &quot;4c82c50f4d06e32ef37bc3fbf0a4d5519cb998d62b05333c3526297ec1d4992c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu01.png&quot;,
+      &quot;bytes&quot;: 13569,
+      &quot;sha256&quot;: &quot;a46cadd67382687b462f0acbd68b68cdb5a7ea3693e805166ae1d694ce03ce2b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu02.png&quot;,
+      &quot;bytes&quot;: 15477,
+      &quot;sha256&quot;: &quot;dbed050a0e52606f31feba4868131bf0d0f052eb46ef59ea8fcb55733f8307f7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu03.png&quot;,
+      &quot;bytes&quot;: 15888,
+      &quot;sha256&quot;: &quot;79a2b4aa85c06fe510332ffe3ef63fdf91778608fbcc9bb01fe783384a751a37&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu04.png&quot;,
+      &quot;bytes&quot;: 15902,
+      &quot;sha256&quot;: &quot;144e745ee3d267a76fd765d39eb5a1931a68b04af98ee651275cda88af379eea&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu05.png&quot;,
+      &quot;bytes&quot;: 16056,
+      &quot;sha256&quot;: &quot;a80f82fe0fbdc30c456ea39c5584df78e6d1ae89a233239cb7ac92bf2196e66a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu06.png&quot;,
+      &quot;bytes&quot;: 16055,
+      &quot;sha256&quot;: &quot;55586829985e0c853c6987cd591d28c4b0e19389c479bfaf1a229e1614d3e635&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\circle0352.png&quot;,
+      &quot;bytes&quot;: 7911,
+      &quot;sha256&quot;: &quot;49cc1c7e5c320209fa15569ccd490de7a8780e634661c68e53706588c5609700&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0023.png&quot;,
+      &quot;bytes&quot;: 7699,
+      &quot;sha256&quot;: &quot;eb3c9b5a726562617df578603d2ca4e0125b55bb52916cb1bebacd37e80d6b5c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light0099.png&quot;,
+      &quot;bytes&quot;: 22787,
+      &quot;sha256&quot;: &quot;7c34af48d6054f7c8d1943426a00bb8506d9f05198d9ca3ae373fe2afe992ae9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yanguang.png&quot;,
+      &quot;bytes&quot;: 2104,
+      &quot;sha256&quot;: &quot;1d8b5a9a6b8f39ea4fb1f469e0fc3f75b7862748f4d6edc93c79f70875001507&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0050.png&quot;,
+      &quot;bytes&quot;: 16265,
+      &quot;sha256&quot;: &quot;b5ecadcea8025dbbb8deb5e47193f0c5f2ddf0cb4ae03e7d49814e6a9a7a575c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian2\\big_xd.png&quot;,
+      &quot;bytes&quot;: 15035,
+      &quot;sha256&quot;: &quot;a388c5dc59fb3e1b637d18c8fba82941766fa1113276c1b66aadc70a8eeb0e30&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_0.png&quot;,
+      &quot;bytes&quot;: 75175,
+      &quot;sha256&quot;: &quot;a4c826c3fa076a44b4da0c833daf2322aa49c24d080c70796ade8a3b269219f5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_4.png&quot;,
+      &quot;bytes&quot;: 71044,
+      &quot;sha256&quot;: &quot;f64f9b2f0d29676fb894ef850200fa07ae3fa59cea7be025838e44590aac77e7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_6.png&quot;,
+      &quot;bytes&quot;: 65905,
+      &quot;sha256&quot;: &quot;b1e3fb5b2aeeb95308a9f9cbfb63f3ae7527d27356761243d29aa2a6000afc1c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_8.png&quot;,
+      &quot;bytes&quot;: 79428,
+      &quot;sha256&quot;: &quot;b1aa8b0c54748956465f1e3bf32541016d6de31d71b1cce9342cea26df5a4542&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_10.png&quot;,
+      &quot;bytes&quot;: 60526,
+      &quot;sha256&quot;: &quot;eb6738b8d93fd5a2ee1fcf889c306f18bbda8162ce7ca6494be4ba175e609d6d&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_11.png&quot;,
+      &quot;bytes&quot;: 63439,
+      &quot;sha256&quot;: &quot;2a1a94787181535948e873054995712cfd7a0572d3c83c2e5f6ac767e69033fd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_8.png&quot;,
+      &quot;bytes&quot;: 55748,
+      &quot;sha256&quot;: &quot;d2037312633f5d1a0c44ff3f74f2917ae91da369703b14fc488c755990ca6567&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_9.png&quot;,
+      &quot;bytes&quot;: 36046,
+      &quot;sha256&quot;: &quot;8b01e5cb8b6f68d68f61ebb3b31fbaeb66b9bb8578eb2be9044c4fd811562bf9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_11.png&quot;,
+      &quot;bytes&quot;: 41296,
+      &quot;sha256&quot;: &quot;7b23cee253ee1406997251fec8ee2663ddd8dcc51533ec3d00c9ea420d9f6566&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_12.png&quot;,
+      &quot;bytes&quot;: 20876,
+      &quot;sha256&quot;: &quot;f87a8bc052d72c805b113d8e86d80b4deac6bf27fa326a776d7a604583f0c1a0&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_13.png&quot;,
+      &quot;bytes&quot;: 25918,
+      &quot;sha256&quot;: &quot;2e2c201d8d65ecdcecc80267d5c5fb06bcb03e0f2ade46d7347aa2447fcbe7e2&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_17.png&quot;,
+      &quot;bytes&quot;: 20985,
+      &quot;sha256&quot;: &quot;10cf5b3a579b130a61f9698649fd166fc8cc9bb963e47fb7025b55e1accd6cee&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_19.png&quot;,
+      &quot;bytes&quot;: 13973,
+      &quot;sha256&quot;: &quot;4d9145bf3f88ed2825e3d7732abadcd17c805c8a106fd33a2e09d2b6b53415c1&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-14\\Zeus.json&quot;,
+      &quot;bytes&quot;: 297138,
+      &quot;sha256&quot;: &quot;2ba866d46dfad160282a65a90d12fe6fe441f72b83ab28419d579d67c9235519&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\Touch01.mov&quot;,
+      &quot;bytes&quot;: 9205630,
+      &quot;sha256&quot;: &quot;91a6c0ddee669c7429d625e126b22743ff0f87d54aaa8fb18b6f7d354e01cd72&quot;
+    }
+  ],
+  &quot;best&quot;: {
+    &quot;round&quot;: 1,
+    &quot;dir&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-2\\fit-01\\best&quot;,
+    &quot;plan&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-2\\fit-01\\best\\plan.json&quot;,
+    &quot;build&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-2\\fit-01\\best\\build&quot;
+  },
+  &quot;frames&quot;: {
+    &quot;video&quot;: 61,
+    &quot;fitted&quot;: 48,
+    &quot;accepted&quot;: 48,
+    &quot;rejected&quot;: []
+  },
+  &quot;zero&quot;: {
+    &quot;frame&quot;: 0,
+    &quot;coverage&quot;: 0.912,
+    &quot;residual&quot;: {
+      &quot;median&quot;: 3.78,
+      &quot;max&quot;: 32.7
+    },
+    &quot;shifted&quot;: 0.092,
+    &quot;largestOffset&quot;: {
+      &quot;bone&quot;: &quot;body&quot;,
+      &quot;channel&quot;: &quot;y&quot;,
+      &quot;value&quot;: -2.34
+    }
+  },
+  &quot;searchWindow&quot;: 211.01,
+  &quot;tracking&quot;: {
+    &quot;span&quot;: {
+      &quot;move&quot;: 197.55,
+      &quot;turn&quot;: 24
+    },
+    &quot;agreement&quot;: {
+      &quot;turn&quot;: 8,
+      &quot;move&quot;: 23.71
+    },
+    &quot;disagree&quot;: {},
+    &quot;singlePass&quot;: [],
+    &quot;lost&quot;: {
+      &quot;forward&quot;: 26,
+      &quot;backward&quot;: 29
+    }
+  },
+  &quot;unfitted&quot;: [
+    {
+      &quot;bone&quot;: &quot;arm_L&quot;,
+      &quot;parts&quot;: [
+        &quot;L_Arm_01&quot;
+      ],
+      &quot;share&quot;: 0.13
+    },
+    {
+      &quot;bone&quot;: &quot;lightning&quot;,
+      &quot;parts&quot;: [
+        &quot;ZEUS_MG_LightningFire&quot;,
+        &quot;ZEUS_MG_LightningFire_Light&quot;,
+        &quot;T_LightningAtk_center_01&quot;,
+        &quot;Lightning_03&quot;,
+        &quot;Lightning_04&quot;,
+        &quot;Lightning_07&quot;,
+        &quot;Lightning_05&quot;,
+        &quot;Lightning_08&quot;,
+        &quot;Lightning_06&quot;,
+        &quot;Lightning_09&quot;
+      ],
+      &quot;share&quot;: 0.32
+    }
+  ],
+  &quot;freed&quot;: [],
+  &quot;rounds&quot;: [
+    {
+      &quot;round&quot;: 1,
+      &quot;dir&quot;: &quot;round-1&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 3.2565,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.818,
+            0.657
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.56,
+            4.76,
+            &quot;30 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            2,
+            0.14
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 25 (0.83s, overlap 0.66): pose, placement or size&quot;,
+        &quot;the whole figure moves 0.14x as far as the reference (too small)&quot;,
+        &quot;Belt: off by 2.5% of the height, moving differently&quot;,
+        &quot;qunzi3: off by 2.4% of the height, 4 frames late, moves 1.80x (too big)&quot;,
+        &quot;qunzi2: off by 1.8% of the height, moving differently&quot;,
+        &quot;L_Arm_02: off by 1.3% of the height, moves 0.39x (too small)&quot;
+      ],
+      &quot;fitted&quot;: 31,
+      &quot;accepted&quot;: 31,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 9,
+        &quot;bones&quot;: 63,
+        &quot;perSecond&quot;: 4.5,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;transition&quot;,
+          &quot;perSecond&quot;: 3.33
+        },
+        &quot;error&quot;: 6.358,
+        &quot;capped&quot;: false,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 8.8
+    },
+    {
+      &quot;round&quot;: 2,
+      &quot;dir&quot;: &quot;round-2&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 7.069,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.809,
+            0.655
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.52,
+            2.86,
+            &quot;29 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            12,
+            0.09
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 27 (0.90s, overlap 0.66): pose, placement or size&quot;,
+        &quot;the whole figure moves 12 frames later than the reference&quot;,
+        &quot;the whole figure moves 0.09x as far as the reference (too small)&quot;,
+        &quot;Belt: off by 2.6% of the height, moving differently&quot;,
+        &quot;qunzi3: off by 2.3% of the height&quot;,
+        &quot;qunzi2: off by 1.8% of the height, moving differently&quot;,
+        &quot;R_Arm_02: off by 1.5% of the height&quot;
+      ],
+      &quot;fitted&quot;: 32,
+      &quot;accepted&quot;: 32,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 8,
+        &quot;bones&quot;: 55,
+        &quot;perSecond&quot;: 4,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;transition&quot;,
+          &quot;perSecond&quot;: 3.33
+        },
+        &quot;error&quot;: 11.738,
+        &quot;capped&quot;: false,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 128.8
+    },
+    {
+      &quot;round&quot;: 3,
+      &quot;dir&quot;: &quot;round-3&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 7.3136,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.809,
+            0.646
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.57,
+            3.19,
+            &quot;29 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            12,
+            0.08
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 27 (0.90s, overlap 0.65): pose, placement or size&quot;,
+        &quot;the whole figure moves 12 frames later than the reference&quot;,
+        &quot;the whole figure moves 0.08x as far as the reference (too small)&quot;,
+        &quot;Belt: off by 2.6% of the height, moving differently&quot;,
+        &quot;qunzi3: off by 2.3% of the height&quot;,
+        &quot;qunzi2: off by 1.8% of the height, moving differently&quot;,
+        &quot;R_Arm_02: off by 1.5% of the height&quot;
+      ],
+      &quot;fitted&quot;: 31,
+      &quot;accepted&quot;: 31,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 8,
+        &quot;bones&quot;: 55,
+        &quot;perSecond&quot;: 4,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;transition&quot;,
+          &quot;perSecond&quot;: 3.33
+        },
+        &quot;error&quot;: 12.889,
+        &quot;capped&quot;: false,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 128.3
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;arm_L (L_Arm_01): drawn differently in the video in 87% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;lightning (ZEUS_MG_LightningFire, ZEUS_MG_LightningFire_Light, T_LightningAtk_center_01, Lightning_03, Lightning_04, Lightning_07, Lightning_05, Lightning_08, Lightning_06, Lightning_09): drawn differently in the video in 68% of the frames; not fitted, its plan motion stays&quot;
+  ],
+  &quot;note&quot;: &quot;Reference-fitted, not a blind result. Look at best/compare; the numbers do not replace it.&quot;
+}</pre><h4>ToBonusGame</h4><p>輪次 3；最佳輪次 1。</p><a href="Zeus/data/ToBonusGame-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;Zeus&quot;,
+  &quot;animation&quot;: &quot;ToBonusGame&quot;,
+  &quot;video&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\ToBonusGame.mov&quot;,
+  &quot;start&quot;: 0,
+  &quot;fps&quot;: 30,
+  &quot;label&quot;: &quot;reference-fitted&quot;,
+  &quot;pass&quot;: false,
+  &quot;inputs&quot;: [
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\plans\\plan-24.json&quot;,
+      &quot;bytes&quot;: 16992,
+      &quot;sha256&quot;: &quot;91d0de60dc914d38ed085d62562c7d0a0d2cd3fa7ff25ee54657991af8feecce&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\imagesOnly.json&quot;,
+      &quot;bytes&quot;: 151424,
+      &quot;sha256&quot;: &quot;f7dad6838d5bd06f320a5c87c1cd92bb4e5e9d780d57b8e585be40e9e64245ed&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Black.png&quot;,
+      &quot;bytes&quot;: 81,
+      &quot;sha256&quot;: &quot;fd5652040fe08327e0b8dfe192f6457c266aca0e3b3400c847b757b824e450f5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi12.png&quot;,
+      &quot;bytes&quot;: 90616,
+      &quot;sha256&quot;: &quot;64089569f523bb6eff86a5aff158be1c5ff7bb1b807d4b7d93e1577c1a07e06b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\qunzi11.png&quot;,
+      &quot;bytes&quot;: 24418,
+      &quot;sha256&quot;: &quot;d6c534a52df72edcfaf73d648505f77578f51b03c18cc0de1df0cec7c5016461&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair.png&quot;,
+      &quot;bytes&quot;: 42314,
+      &quot;sha256&quot;: &quot;cb1fd8b8177c59290a9591843e320fae76a3d419443e73f6c4c04c957399c277&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair.png&quot;,
+      &quot;bytes&quot;: 29265,
+      &quot;sha256&quot;: &quot;0e08ce38f639c3d286f76b16773e06ba1f3e65937596b6db5c232b1c1b94c363&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_HairLight.png&quot;,
+      &quot;bytes&quot;: 24867,
+      &quot;sha256&quot;: &quot;bcab89ba79f3a189bfac40ebef5d087310aba7cff2f108fbbfdc3485956a635c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hair_01.png&quot;,
+      &quot;bytes&quot;: 13339,
+      &quot;sha256&quot;: &quot;4d680760b78aa1ed8f19c71767cdb4ba08d171ca47ab7934eeabe67f5ee534b8&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_01.png&quot;,
+      &quot;bytes&quot;: 67678,
+      &quot;sha256&quot;: &quot;9859e6ffdba4478f9863415de5c78179c590fb10d83203b4067de7d1bbb65a42&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_Light_01.png&quot;,
+      &quot;bytes&quot;: 47421,
+      &quot;sha256&quot;: &quot;4fb054b27db5cc21717fb84bb405469314d11c253c4bcdc807128da22e1478d5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hair_01.png&quot;,
+      &quot;bytes&quot;: 20432,
+      &quot;sha256&quot;: &quot;db479b448f7d0eb10c280a232177855a1795dca3efc452f08346a4c659bd0c8f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_HairLight_01.png&quot;,
+      &quot;bytes&quot;: 5173,
+      &quot;sha256&quot;: &quot;b1f21f64b7874b3899f84cf055909c1c000375213d6104e937edeb4c323ff66f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Body.png&quot;,
+      &quot;bytes&quot;: 195551,
+      &quot;sha256&quot;: &quot;eb1b0974d67ce409f0148d0c9686f1145a474242ed794e213399534bc7cca84a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ShoulderStrap.png&quot;,
+      &quot;bytes&quot;: 40856,
+      &quot;sha256&quot;: &quot;87aa56c17ba7994208e56f587167fbaa2113221ad53f0ff7c63ee69068c96bcb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye01.png&quot;,
+      &quot;bytes&quot;: 4472,
+      &quot;sha256&quot;: &quot;d92912535e732194a3a166d988a681c109858c4df0c06f61dd967303f3eaa89f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye02.png&quot;,
+      &quot;bytes&quot;: 3034,
+      &quot;sha256&quot;: &quot;6fa33e4a69d8546150f771c5b5b2334ea1e97bcb58d42b23230206a2af33fb9f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Face.png&quot;,
+      &quot;bytes&quot;: 40035,
+      &quot;sha256&quot;: &quot;50c8f0b6b74f2fcc431af48f5223c1c29feb772d13bd7f3e2096c3bdc6798908&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Hair.png&quot;,
+      &quot;bytes&quot;: 39139,
+      &quot;sha256&quot;: &quot;7f147a77c2022aa8540ac1e8f005772c43fb7e858792d76732d29b5acda5f907&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Ear.png&quot;,
+      &quot;bytes&quot;: 6089,
+      &quot;sha256&quot;: &quot;3fe5a2b8b3d4e00464c92c0bdca1fee909d12323474d6ecf573fcaab7e0acab6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Ear.png&quot;,
+      &quot;bytes&quot;: 5732,
+      &quot;sha256&quot;: &quot;46d247787cb6adae19e5371f2e1cc87043e656796c776c29819f9064394638dd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Beard.png&quot;,
+      &quot;bytes&quot;: 8847,
+      &quot;sha256&quot;: &quot;6d44f53834ff80e154cde6c89b65d8eeb10ae892e843f2356babd8f7c6e31c17&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Beard.png&quot;,
+      &quot;bytes&quot;: 9166,
+      &quot;sha256&quot;: &quot;b37812105a6788e6d65db454ed0e4f2b88ab022e413290b0128a7b160a3b1623&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_In.png&quot;,
+      &quot;bytes&quot;: 2576,
+      &quot;sha256&quot;: &quot;99df8fbe40f9600e058ef8fcc648a3046cea33b6ac16c3bd2c9facaa5e6b8940&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Mouth_Out.png&quot;,
+      &quot;bytes&quot;: 6055,
+      &quot;sha256&quot;: &quot;dc6f65aad6726800d37c8028d83c26a5745d146e5b8701766ed118e0addaf6d3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard.png&quot;,
+      &quot;bytes&quot;: 13495,
+      &quot;sha256&quot;: &quot;4f5f018f2809b625bc832aa5a496a158975fb479705b4d6a45e0d93a9e56757a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Hat.png&quot;,
+      &quot;bytes&quot;: 8181,
+      &quot;sha256&quot;: &quot;df38b531f0716796e0f4e6d6d654abed3417a8b0191370f15d7efb621b2861db&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Clothing.png&quot;,
+      &quot;bytes&quot;: 131559,
+      &quot;sha256&quot;: &quot;ac25210b733d86f489af9feeac4d01b3fa211002c044821ecb661e68df8b689c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Beard_02_1.png&quot;,
+      &quot;bytes&quot;: 13932,
+      &quot;sha256&quot;: &quot;a477d8bf712bbf2771809b7e28c039b5c2906d51c545fe89d027489571657cab&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03.png&quot;,
+      &quot;bytes&quot;: 19327,
+      &quot;sha256&quot;: &quot;3a11f41e5cab7ed4b493fa08d38a4f224eda0948f378686c97916bef0150fd70&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_02.png&quot;,
+      &quot;bytes&quot;: 45755,
+      &quot;sha256&quot;: &quot;ef24328e227945e0399711d5dcf12614e22e6e5d1f32d6d2089f88ea49dbf145&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_01.png&quot;,
+      &quot;bytes&quot;: 62437,
+      &quot;sha256&quot;: &quot;967b0266d80d87fe5bc23897cc9e94274701830eabbd77a0474bab7e5685b06c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_03.png&quot;,
+      &quot;bytes&quot;: 2699,
+      &quot;sha256&quot;: &quot;a372869eec5ad9a15a72823cab18bd15173289eeb790dc19c3154ea197703680&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire.png&quot;,
+      &quot;bytes&quot;: 253324,
+      &quot;sha256&quot;: &quot;fdf6e06f0f9a5520236d60bef721246e951dbd7136ca1dc6d546e8b81f26ba98&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\ZEUS_MG_LightningFire_Light.png&quot;,
+      &quot;bytes&quot;: 28111,
+      &quot;sha256&quot;: &quot;b9d59248c7d81cb752ab049dc41d84e2fdd65e2debcd0f061a44aaf6cd293d0f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_02.png&quot;,
+      &quot;bytes&quot;: 15553,
+      &quot;sha256&quot;: &quot;1c62a60f6252456c991d76887cc1e840063f6dfe224646bfdb1900b7a785d123&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_03_01.png&quot;,
+      &quot;bytes&quot;: 5154,
+      &quot;sha256&quot;: &quot;4079272fcb1669bad92e2f7586cfad3011251bd14b89d50f03bc9d61e40647cd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Hat.png&quot;,
+      &quot;bytes&quot;: 8352,
+      &quot;sha256&quot;: &quot;95e3c30cf0f3085e081d1d438b57444dd3521111f77c30004f3ddb6d66a25c04&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Eyebrow.png&quot;,
+      &quot;bytes&quot;: 4084,
+      &quot;sha256&quot;: &quot;a1ffa67655fb5965c0b64bd72af8021181300609784a96d61586560cd742d87f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Eyebrow.png&quot;,
+      &quot;bytes&quot;: 3927,
+      &quot;sha256&quot;: &quot;c9d53b68f6120ef96de35c8381b81e99a60f1fc10da4b24fd5e18b142b781ade&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_r.png&quot;,
+      &quot;bytes&quot;: 2931,
+      &quot;sha256&quot;: &quot;816e71ea85a2c69804488fc2e36b571409cb302faa9369d73af39ac5ac74c4fb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_white_l.png&quot;,
+      &quot;bytes&quot;: 2946,
+      &quot;sha256&quot;: &quot;aed701294764c59f50e75c9b1b6aeb6bc38e30edc385c455dece4789cb5d2719&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_Glow.png&quot;,
+      &quot;bytes&quot;: 5558,
+      &quot;sha256&quot;: &quot;dd96ff688c021cd39525f8f7010993d84d918e84d9059be8c092045c370598e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_l.png&quot;,
+      &quot;bytes&quot;: 3054,
+      &quot;sha256&quot;: &quot;376bd00d1b2df9056026915f423013ea72695c5a23479c9078078df156caed7f&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Eye_close_r.png&quot;,
+      &quot;bytes&quot;: 3053,
+      &quot;sha256&quot;: &quot;8ee9f9f2e9e5e3d01a5f879e744fddb46c96e8f144f9124a064420a3bdc9ddfc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\LightZEUS.png&quot;,
+      &quot;bytes&quot;: 62095,
+      &quot;sha256&quot;: &quot;82eb7a2bcd23cb39c2912d452223c8f0d86f53cf30312cb41442200ea3ce7a6a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_01.png&quot;,
+      &quot;bytes&quot;: 9136,
+      &quot;sha256&quot;: &quot;9ae7b154d974b1cd92345a8e41e8fbc15fd98079dc6ab544e7004c61aceb36e9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_02.png&quot;,
+      &quot;bytes&quot;: 15339,
+      &quot;sha256&quot;: &quot;257f58613f07aa85d8684af067917ccf9c10c0738bc3d20151da53d10c9093fa&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_03.png&quot;,
+      &quot;bytes&quot;: 15067,
+      &quot;sha256&quot;: &quot;f21a05acfcdfbc083e7ec314cb5ba16c2782f4244a7ca5eb83098fb382ddc22b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\T_LightningAtk_center_04.png&quot;,
+      &quot;bytes&quot;: 18464,
+      &quot;sha256&quot;: &quot;2af84d6796ce65b951e48c3708c153c84d3b5460561ba194a911517dea783b4a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_01.png&quot;,
+      &quot;bytes&quot;: 51604,
+      &quot;sha256&quot;: &quot;8449b877835f547e3ecf5d5fd222e77ce1b135736fe5b118413fc87a0a0300ec&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_02.png&quot;,
+      &quot;bytes&quot;: 65710,
+      &quot;sha256&quot;: &quot;fe978c299a38aad3c85c2e838a6c84b112e5c2cd45bd4834b4e10161e194c1e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_03.png&quot;,
+      &quot;bytes&quot;: 77544,
+      &quot;sha256&quot;: &quot;91fb5711e2f31d6349379b63e6f3a863eb17d044cb2c53427af05d4b23cdb06e&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Lightning_04.png&quot;,
+      &quot;bytes&quot;: 59016,
+      &quot;sha256&quot;: &quot;0c0007bcb974ce1794c5e88242ee147370d24c51ff6725cde8141de1833b8f91&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\L_Arm_04.png&quot;,
+      &quot;bytes&quot;: 34940,
+      &quot;sha256&quot;: &quot;deaff8c72113afd116452dbc88189797eea4d4d4ed7efa37573537502f508345&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\kouqiang.png&quot;,
+      &quot;bytes&quot;: 1431,
+      &quot;sha256&quot;: &quot;ecc82183d91434818feb645efff49dcfee2bb90d18a10edd5699900778a73363&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yingzi.png&quot;,
+      &quot;bytes&quot;: 37048,
+      &quot;sha256&quot;: &quot;03f899e955532fa53f881526afecf98c6d3117607198ae4b39d910c207e5d16a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa2.png&quot;,
+      &quot;bytes&quot;: 100877,
+      &quot;sha256&quot;: &quot;cffa4684d4795b33840c2fb8d4c06ca70a7120f6a5a67214f9c2a008f346600c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\toufa1.png&quot;,
+      &quot;bytes&quot;: 157143,
+      &quot;sha256&quot;: &quot;6cc461b94be6758fbb946169dd70e9bfc393a6709a49fed5ab833b7f52a54737&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shenti.png&quot;,
+      &quot;bytes&quot;: 271904,
+      &quot;sha256&quot;: &quot;d7b73e2844f9ee680d47e5501821e9a4ba4b6845f54e3029bf552b87a8623167&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\xiong_bozi.png&quot;,
+      &quot;bytes&quot;: 339358,
+      &quot;sha256&quot;: &quot;3840e5ddc8419952260d7a09a74f2959c7886fb36b79078671560156235cfd04&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shoubi1.png&quot;,
+      &quot;bytes&quot;: 335643,
+      &quot;sha256&quot;: &quot;c52a500c3366519e1003251048ef33e26d3d70b7dad1abedb18881dc6e567639&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_xiong1.png&quot;,
+      &quot;bytes&quot;: 107458,
+      &quot;sha256&quot;: &quot;8a8d25dd58167a1a953e025cf76a2a9ebad79de3e9c901627bf9482189ca442a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_quan1.png&quot;,
+      &quot;bytes&quot;: 85512,
+      &quot;sha256&quot;: &quot;8e77b9875772c23434f6f95a409367151f5933869ba5077097a96eddf33b87a5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\Breastplate.png&quot;,
+      &quot;bytes&quot;: 12012,
+      &quot;sha256&quot;: &quot;63e5310aab44a630c428a77f3f2d20a161b4547a3f7f9baed7e14eb8b8458028&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu2.png&quot;,
+      &quot;bytes&quot;: 203025,
+      &quot;sha256&quot;: &quot;ffda782229072695fb99d307c12817b9a5167f83369d439a9730b3ee8b17be40&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu3.png&quot;,
+      &quot;bytes&quot;: 437322,
+      &quot;sha256&quot;: &quot;5618af1475ebf0211f16f3057098d091509a6201c8833a6761b550d9c50064a1&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi1.png&quot;,
+      &quot;bytes&quot;: 154485,
+      &quot;sha256&quot;: &quot;f853436343cfbae9352fea0d5524214c341eaf711bbc7fcb2b2898d65fcd28d7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yifu1.png&quot;,
+      &quot;bytes&quot;: 55884,
+      &quot;sha256&quot;: &quot;dac14ae53171c4b21e745b55722932f791d767718aebbbcb88fb07a70081793d&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai.png&quot;,
+      &quot;bytes&quot;: 111644,
+      &quot;sha256&quot;: &quot;1cd15086ea1331a906c5ce5d3546177ca62c3f9b9345e2f62275fbbb4f6946a4&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shoubi2.png&quot;,
+      &quot;bytes&quot;: 154485,
+      &quot;sha256&quot;: &quot;d6bbd2a4c39e9b8bd56deab8e143f9f31617e022227dc7f29e12fe5c78917104&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\tou_1_3.png&quot;,
+      &quot;bytes&quot;: 63114,
+      &quot;sha256&quot;: &quot;b55ec72ea66bd5aefbea6ac1b710cb83f83a7b5a0634aff21444a5f334fd1390&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\zuichun.png&quot;,
+      &quot;bytes&quot;: 1074,
+      &quot;sha256&quot;: &quot;7232652a592747ddce3d8a72171ef2fa1b17313da38f705f87fc8a495380f9e4&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi2.png&quot;,
+      &quot;bytes&quot;: 46864,
+      &quot;sha256&quot;: &quot;81bea8edaca7192a42a74be6306a96b70cc3a8e581adad2b2fad7693cefa4df6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yaodai1.png&quot;,
+      &quot;bytes&quot;: 57070,
+      &quot;sha256&quot;: &quot;1f3da60613b205cd26271fff46f899cc2eabc588469e78b7d6218fcf6718f738&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_02.png&quot;,
+      &quot;bytes&quot;: 71045,
+      &quot;sha256&quot;: &quot;b9aa130fc1b07ec402e390a03615c0b381900702f1bdf36ce2abc57ce7f014dd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\R_Arm_03.png&quot;,
+      &quot;bytes&quot;: 40002,
+      &quot;sha256&quot;: &quot;9549a681d5f8c992d362245b07be70d80bfa7d5cce9908f9efb7c0d6537e1776&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\huzi3.png&quot;,
+      &quot;bytes&quot;: 47403,
+      &quot;sha256&quot;: &quot;49521f767e95da375f90c020b5758224e89db211528758f605524b42b3d15c40&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan.png&quot;,
+      &quot;bytes&quot;: 38765,
+      &quot;sha256&quot;: &quot;ce6dd369d861be60884e69d110b53b315881e26bb2b7ae02795a33029c7171cc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\biyan2.png&quot;,
+      &quot;bytes&quot;: 38765,
+      &quot;sha256&quot;: &quot;a46a24072a1f3f5b5ce7a48cdfedca5250a6df47b313e712c1d3c17480f331a9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiong.png&quot;,
+      &quot;bytes&quot;: 132559,
+      &quot;sha256&quot;: &quot;6b437cd91b91d28615e88985fe1b7a5f814d2220fb2b5ac51fd9f9263b6ba4e3&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou2.png&quot;,
+      &quot;bytes&quot;: 92008,
+      &quot;sha256&quot;: &quot;c8c70026dcc1c6ade0f1aab321e3e1729a66db1644c9dfede0d57b64d474913b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_1.png&quot;,
+      &quot;bytes&quot;: 85506,
+      &quot;sha256&quot;: &quot;610ec2692b57b875a20d65d0d0be7f74b46a65371fee5e4b50e988569210a113&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_2.png&quot;,
+      &quot;bytes&quot;: 43510,
+      &quot;sha256&quot;: &quot;bec78ecf41e7f25e0634aab1e38da5d248d6c3e31a2411fd0e281ff9141e7807&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_3.png&quot;,
+      &quot;bytes&quot;: 43326,
+      &quot;sha256&quot;: &quot;3391c181bd6c5c9f718c8db970e4c911c5b98b11f2a3b90c757e76b278635bd6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_4.png&quot;,
+      &quot;bytes&quot;: 44683,
+      &quot;sha256&quot;: &quot;cb82e08ec485da026baad4d86bbc15a5d89397651c534ad875244932bfbe9db9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_shou1_5.png&quot;,
+      &quot;bytes&quot;: 43324,
+      &quot;sha256&quot;: &quot;b194394ca21b565e65ceedc493e40c4385f889362a8de0376122767de69eecb2&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1.png&quot;,
+      &quot;bytes&quot;: 179140,
+      &quot;sha256&quot;: &quot;1cb43593ce7e92eb135c440164d1f46540651539e8439f4618ae40d4482df8fe&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi1_ying.png&quot;,
+      &quot;bytes&quot;: 65201,
+      &quot;sha256&quot;: &quot;42e9e2b2dc813d0473c341261ea83efd8ccfcbd2d749afdda1c6d9d7b4e179ca&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\baoxiong_xiaobi2.png&quot;,
+      &quot;bytes&quot;: 186530,
+      &quot;sha256&quot;: &quot;b421968ce26f38845c18669f0c96ebb3c1a013c0da62a59af209b3938f61a687&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1.png&quot;,
+      &quot;bytes&quot;: 101779,
+      &quot;sha256&quot;: &quot;ee4ec2e98aa936dc3be4ea5b8540870c64b5324b9ced64e112369a16c2abcaeb&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_2.png&quot;,
+      &quot;bytes&quot;: 43474,
+      &quot;sha256&quot;: &quot;3056ab2ca018a6add56ef23970ca2c0c91b2037f1c72b967032f1735356265a6&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_3.png&quot;,
+      &quot;bytes&quot;: 46504,
+      &quot;sha256&quot;: &quot;22d25223a2fb5b2864d8c5e6c16992d4b50c20e46b3e132cfebdee0325daaebc&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_4.png&quot;,
+      &quot;bytes&quot;: 50269,
+      &quot;sha256&quot;: &quot;ff425570083a58486c5481ebb89e80e9cdd46ba32db8d2313a4a42cad4dd305e&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\chuiji_shou1_5.png&quot;,
+      &quot;bytes&quot;: 46705,
+      &quot;sha256&quot;: &quot;4c82c50f4d06e32ef37bc3fbf0a4d5519cb998d62b05333c3526297ec1d4992c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu01.png&quot;,
+      &quot;bytes&quot;: 13569,
+      &quot;sha256&quot;: &quot;a46cadd67382687b462f0acbd68b68cdb5a7ea3693e805166ae1d694ce03ce2b&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu02.png&quot;,
+      &quot;bytes&quot;: 15477,
+      &quot;sha256&quot;: &quot;dbed050a0e52606f31feba4868131bf0d0f052eb46ef59ea8fcb55733f8307f7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu03.png&quot;,
+      &quot;bytes&quot;: 15888,
+      &quot;sha256&quot;: &quot;79a2b4aa85c06fe510332ffe3ef63fdf91778608fbcc9bb01fe783384a751a37&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu04.png&quot;,
+      &quot;bytes&quot;: 15902,
+      &quot;sha256&quot;: &quot;144e745ee3d267a76fd765d39eb5a1931a68b04af98ee651275cda88af379eea&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu05.png&quot;,
+      &quot;bytes&quot;: 16056,
+      &quot;sha256&quot;: &quot;a80f82fe0fbdc30c456ea39c5584df78e6d1ae89a233239cb7ac92bf2196e66a&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\shandianqiu\\shandianqiu06.png&quot;,
+      &quot;bytes&quot;: 16055,
+      &quot;sha256&quot;: &quot;55586829985e0c853c6987cd591d28c4b0e19389c479bfaf1a229e1614d3e635&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\circle0352.png&quot;,
+      &quot;bytes&quot;: 7911,
+      &quot;sha256&quot;: &quot;49cc1c7e5c320209fa15569ccd490de7a8780e634661c68e53706588c5609700&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0023.png&quot;,
+      &quot;bytes&quot;: 7699,
+      &quot;sha256&quot;: &quot;eb3c9b5a726562617df578603d2ca4e0125b55bb52916cb1bebacd37e80d6b5c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light0099.png&quot;,
+      &quot;bytes&quot;: 22787,
+      &quot;sha256&quot;: &quot;7c34af48d6054f7c8d1943426a00bb8506d9f05198d9ca3ae373fe2afe992ae9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\yanguang.png&quot;,
+      &quot;bytes&quot;: 2104,
+      &quot;sha256&quot;: &quot;1d8b5a9a6b8f39ea4fb1f469e0fc3f75b7862748f4d6edc93c79f70875001507&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\light_spot0050.png&quot;,
+      &quot;bytes&quot;: 16265,
+      &quot;sha256&quot;: &quot;b5ecadcea8025dbbb8deb5e47193f0c5f2ddf0cb4ae03e7d49814e6a9a7a575c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian2\\big_xd.png&quot;,
+      &quot;bytes&quot;: 15035,
+      &quot;sha256&quot;: &quot;a388c5dc59fb3e1b637d18c8fba82941766fa1113276c1b66aadc70a8eeb0e30&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_0.png&quot;,
+      &quot;bytes&quot;: 75175,
+      &quot;sha256&quot;: &quot;a4c826c3fa076a44b4da0c833daf2322aa49c24d080c70796ade8a3b269219f5&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_4.png&quot;,
+      &quot;bytes&quot;: 71044,
+      &quot;sha256&quot;: &quot;f64f9b2f0d29676fb894ef850200fa07ae3fa59cea7be025838e44590aac77e7&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_6.png&quot;,
+      &quot;bytes&quot;: 65905,
+      &quot;sha256&quot;: &quot;b1e3fb5b2aeeb95308a9f9cbfb63f3ae7527d27356761243d29aa2a6000afc1c&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_8.png&quot;,
+      &quot;bytes&quot;: 79428,
+      &quot;sha256&quot;: &quot;b1aa8b0c54748956465f1e3bf32541016d6de31d71b1cce9342cea26df5a4542&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_10.png&quot;,
+      &quot;bytes&quot;: 60526,
+      &quot;sha256&quot;: &quot;eb6738b8d93fd5a2ee1fcf889c306f18bbda8162ce7ca6494be4ba175e609d6d&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_1_11.png&quot;,
+      &quot;bytes&quot;: 63439,
+      &quot;sha256&quot;: &quot;2a1a94787181535948e873054995712cfd7a0572d3c83c2e5f6ac767e69033fd&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_8.png&quot;,
+      &quot;bytes&quot;: 55748,
+      &quot;sha256&quot;: &quot;d2037312633f5d1a0c44ff3f74f2917ae91da369703b14fc488c755990ca6567&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_9.png&quot;,
+      &quot;bytes&quot;: 36046,
+      &quot;sha256&quot;: &quot;8b01e5cb8b6f68d68f61ebb3b31fbaeb66b9bb8578eb2be9044c4fd811562bf9&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_11.png&quot;,
+      &quot;bytes&quot;: 41296,
+      &quot;sha256&quot;: &quot;7b23cee253ee1406997251fec8ee2663ddd8dcc51533ec3d00c9ea420d9f6566&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_12.png&quot;,
+      &quot;bytes&quot;: 20876,
+      &quot;sha256&quot;: &quot;f87a8bc052d72c805b113d8e86d80b4deac6bf27fa326a776d7a604583f0c1a0&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_13.png&quot;,
+      &quot;bytes&quot;: 25918,
+      &quot;sha256&quot;: &quot;2e2c201d8d65ecdcecc80267d5c5fb06bcb03e0f2ade46d7347aa2447fcbe7e2&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_17.png&quot;,
+      &quot;bytes&quot;: 20985,
+      &quot;sha256&quot;: &quot;10cf5b3a579b130a61f9698649fd166fc8cc9bb963e47fb7025b55e1accd6cee&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\images\\dian3\\dian3_2_19.png&quot;,
+      &quot;bytes&quot;: 13973,
+      &quot;sha256&quot;: &quot;4d9145bf3f88ed2825e3d7732abadcd17c805c8a106fd33a2e09d2b6b53415c1&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\builds\\build-15\\Zeus.json&quot;,
+      &quot;bytes&quot;: 300077,
+      &quot;sha256&quot;: &quot;7cf1523cfaa10ffbf9266fdc3829c72c909109f4a33a824025610b421a6d98d4&quot;
+    },
+    {
+      &quot;path&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\input\\reference\\ToBonusGame.mov&quot;,
+      &quot;bytes&quot;: 6276058,
+      &quot;sha256&quot;: &quot;a7c5e22752e7e559a52b572b752dae57d30f3ea9b8690f3c7462cb1fdf4f52fc&quot;
+    }
+  ],
+  &quot;best&quot;: {
+    &quot;round&quot;: 1,
+    &quot;dir&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-3\\fit-01\\best&quot;,
+    &quot;plan&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-3\\fit-01\\best\\plan.json&quot;,
+    &quot;build&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\Zeus\\_work\\checks\\event-3\\fit-01\\best\\build&quot;
+  },
+  &quot;frames&quot;: {
+    &quot;video&quot;: 41,
+    &quot;fitted&quot;: 29,
+    &quot;accepted&quot;: 17,
+    &quot;rejected&quot;: [
+      16,
+      18,
+      22,
+      24,
+      26,
+      28,
+      30,
+      32,
+      34,
+      36,
+      38,
+      40
+    ]
+  },
+  &quot;zero&quot;: {
+    &quot;frame&quot;: 0,
+    &quot;coverage&quot;: 0.828,
+    &quot;residual&quot;: {
+      &quot;median&quot;: 1.42,
+      &quot;max&quot;: 535.32
+    },
+    &quot;shifted&quot;: 0.004,
+    &quot;largestOffset&quot;: {
+      &quot;bone&quot;: &quot;body&quot;,
+      &quot;channel&quot;: &quot;y&quot;,
+      &quot;value&quot;: 6.45
+    }
+  },
+  &quot;searchWindow&quot;: 507.58,
+  &quot;tracking&quot;: {
+    &quot;span&quot;: {
+      &quot;move&quot;: 198.53,
+      &quot;turn&quot;: 24
+    },
+    &quot;agreement&quot;: {
+      &quot;turn&quot;: 8,
+      &quot;move&quot;: 23.82
+    },
+    &quot;disagree&quot;: {},
+    &quot;singlePass&quot;: [],
+    &quot;lost&quot;: {
+      &quot;forward&quot;: 18,
+      &quot;backward&quot;: 5
+    }
+  },
+  &quot;unfitted&quot;: [
+    {
+      &quot;bone&quot;: &quot;body&quot;,
+      &quot;parts&quot;: [
+        &quot;qunzi3&quot;,
+        &quot;qunzi2&quot;,
+        &quot;Belt&quot;
+      ],
+      &quot;share&quot;: 0.38
+    },
+    {
+      &quot;bone&quot;: &quot;arm_L&quot;,
+      &quot;parts&quot;: [
+        &quot;L_Arm_01&quot;
+      ],
+      &quot;share&quot;: 0.38
+    },
+    {
+      &quot;bone&quot;: &quot;lightning&quot;,
+      &quot;parts&quot;: [
+        &quot;ZEUS_MG_LightningFire&quot;,
+        &quot;ZEUS_MG_LightningFire_Light&quot;,
+        &quot;T_LightningAtk_center_01&quot;,
+        &quot;Lightning_03&quot;,
+        &quot;Lightning_04&quot;,
+        &quot;Lightning_07&quot;,
+        &quot;Lightning_05&quot;,
+        &quot;Lightning_08&quot;,
+        &quot;Lightning_06&quot;,
+        &quot;Lightning_09&quot;
+      ],
+      &quot;share&quot;: 0.19
+    }
+  ],
+  &quot;freed&quot;: [],
+  &quot;rounds&quot;: [
+    {
+      &quot;round&quot;: 1,
+      &quot;dir&quot;: &quot;round-1&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 19.8256,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.604,
+            0
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            4.59,
+            11.79,
+            &quot;23 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            10,
+            0.01
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size&quot;,
+        &quot;the whole figure moves 10 frames later than the reference&quot;,
+        &quot;the whole figure moves 0.01x as far as the reference (too small)&quot;,
+        &quot;L_Arm_03_01: off by 7.7% of the height, moves 0.34x (too small)&quot;,
+        &quot;Face: off by 6.0% of the height, moving differently&quot;,
+        &quot;Hair: off by 6.0% of the height, moving differently&quot;,
+        &quot;R_Ear: off by 5.9% of the height, moving differently&quot;
+      ],
+      &quot;fitted&quot;: 21,
+      &quot;accepted&quot;: 9,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 8,
+        &quot;bones&quot;: 49,
+        &quot;perSecond&quot;: 6,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;transition&quot;,
+          &quot;perSecond&quot;: 3.33
+        },
+        &quot;error&quot;: 1.671,
+        &quot;capped&quot;: false,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 7.2
+    },
+    {
+      &quot;round&quot;: 2,
+      &quot;dir&quot;: &quot;round-2&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 23.0344,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.584,
+            0
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            5.47,
+            14.37,
+            &quot;20 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            10,
+            0.01
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size&quot;,
+        &quot;the whole figure moves 10 frames later than the reference&quot;,
+        &quot;the whole figure moves 0.01x as far as the reference (too small)&quot;,
+        &quot;Hair: off by 11.5% of the height, moving differently&quot;,
+        &quot;R_Ear: off by 10.4% of the height, moving differently&quot;,
+        &quot;R_Hair_01: off by 9.8% of the height, moving differently&quot;,
+        &quot;Beard: off by 9.4% of the height, moving differently&quot;
+      ],
+      &quot;fitted&quot;: 36,
+      &quot;accepted&quot;: 13,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 10,
+        &quot;bones&quot;: 63,
+        &quot;perSecond&quot;: 7.5,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;transition&quot;,
+          &quot;perSecond&quot;: 3.33
+        },
+        &quot;error&quot;: 7.728,
+        &quot;capped&quot;: false,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 216.2
+    },
+    {
+      &quot;round&quot;: 3,
+      &quot;dir&quot;: &quot;round-3&quot;,
+      &quot;pass&quot;: false,
+      &quot;penalty&quot;: 23.6633,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.57,
+            0
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            5.57,
+            15.04,
+            &quot;21 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            10,
+            0.01
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size&quot;,
+        &quot;the whole figure moves 10 frames later than the reference&quot;,
+        &quot;the whole figure moves 0.01x as far as the reference (too small)&quot;,
+        &quot;Hair: off by 13.4% of the height, moving differently&quot;,
+        &quot;Face: off by 11.9% of the height, moving differently&quot;,
+        &quot;R_Hair_01: off by 10.8% of the height, moving differently&quot;,
+        &quot;R_Arm_02: off by 10.7% of the height&quot;
+      ],
+      &quot;fitted&quot;: 37,
+      &quot;accepted&quot;: 13,
+      &quot;keys&quot;: {
+        &quot;frames&quot;: 10,
+        &quot;bones&quot;: 63,
+        &quot;perSecond&quot;: 7.5,
+        &quot;prior&quot;: {
+          &quot;category&quot;: &quot;transition&quot;,
+          &quot;perSecond&quot;: 3.33
+        },
+        &quot;error&quot;: 10.533,
+        &quot;capped&quot;: false,
+        &quot;lag&quot;: {}
+      },
+      &quot;waves&quot;: [],
+      &quot;freed&quot;: [],
+      &quot;seconds&quot;: 222.8
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;body (qunzi3, qunzi2, Belt): drawn differently in the video in 63% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;arm_L (L_Arm_01): drawn differently in the video in 63% of the frames; not fitted, its plan motion stays&quot;,
+    &quot;lightning (ZEUS_MG_LightningFire, ZEUS_MG_LightningFire_Light, T_LightningAtk_center_01, Lightning_03, Lightning_04, Lightning_07, Lightning_05, Lightning_08, Lightning_06, Lightning_09): drawn differently in the video in 81% of the frames; not fitted, its plan motion stays&quot;
+  ],
+  &quot;note&quot;: &quot;Reference-fitted, not a blind result. Look at best/compare; the numbers do not replace it.&quot;
+}</pre></details><details><summary>V1–V5 原始差異提示</summary><h4>Idle_02</h4><ul><li>outline differs most at frame 44 (1.47s, overlap 0.81): pose, placement or size</li><li>the whole figure moves 0.58x as far as the reference (too small)</li><li>L_Hat: off by 7.4% of the height, moving differently</li><li>Belt: off by 2.5% of the height, moving differently</li><li>qunzi3: off by 2.1% of the height, 6 frames early, moves 1.35x (too big)</li><li>qunzi2: off by 1.7% of the height, moving differently</li></ul><h4>Touch01</h4><ul><li>outline differs most at frame 25 (0.83s, overlap 0.66): pose, placement or size</li><li>the whole figure moves 0.14x as far as the reference (too small)</li><li>Belt: off by 2.5% of the height, moving differently</li><li>qunzi3: off by 2.4% of the height, 4 frames late, moves 1.80x (too big)</li><li>qunzi2: off by 1.8% of the height, moving differently</li><li>L_Arm_02: off by 1.3% of the height, moves 0.39x (too small)</li></ul><h4>ToBonusGame</h4><ul><li>outline differs most at frame 40 (1.33s, overlap 0.00): pose, placement or size</li><li>the whole figure moves 10 frames later than the reference</li><li>the whole figure moves 0.01x as far as the reference (too small)</li><li>L_Arm_03_01: off by 7.7% of the height, moves 0.34x (too small)</li><li>Face: off by 6.0% of the height, moving differently</li><li>Hair: off by 6.0% of the height, moving differently</li><li>R_Ear: off by 5.9% of the height, moving differently</li></ul></details></section><section id="PolarRoar"><h2>極地王者・冰屋 <small>22 段候選動畫，測三段</small></h2><p><strong>輸入限制：</strong>靜態擺位擷取有 0 個附件實例超過 2 px，最大 0.01 px；新建置的 setup 偏差是相對這份乾淨擺位，不能當成相對原作的誤差。原 NAS 檔案 SHA-256 前後一致。<a href="PolarRoar/data/input-verification.json">完整輸入核對與靜態誤差</a></p><p>升級動畫保留一輪已完成擬合；第二輪追加調校已中止，未計為完成。</p><p>Spine 匯入再匯出核對：<strong>通過</strong>，最大頂點誤差 0.1075 px；JSON 時間小數捨入另列於<a href="PolarRoar/data/editor-roundtrip.json">往返核對</a>。</p><p>冰屋以各冰塊獨立骨骼重新建置，另依影片安排門口發光。待機首幀配對不足而停止；升級破損、冰塊位移與閃光層仍需看對照影片判定。</p><p>新骨架 97 骨；靜態配置偏差 0.001 px。<a href="PolarRoar/AWP-PolarRoar-0516.zip">下載 Spine 專案與圖檔</a> · <a href="PolarRoar/data/HANDOVER.md">接手說明</a> · <a href="PolarRoar/data/input-isolation.json">輸入來源紀錄</a></p><video class="main" controls playsinline preload="metadata" poster="PolarRoar/video/Idle_LV4-poster.jpg"><source src="PolarRoar/video/PolarRoar-all3-review.mp4" type="video/mp4"></video><p>三段連播；每段左參考／右成品，佈線 → 骨架 → 動態。</p><table><thead><tr><th>動畫</th><th>V1 輪廓</th><th>V2 部件</th><th>V3 節奏幅度</th><th>V4 接點</th><th>V5 翻折</th></tr></thead><tbody><tr><td>Idle_LV4</td><td class="ok">PASS</td><td class="bad">FAIL</td><td class="ok">未評</td><td class="ok">PASS</td><td class="ok">PASS</td></tr><tr><td>4Upgrade</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">—</td><td class="ok">PASS</td></tr><tr><td>Trigger_Fail_Lv4</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="bad">FAIL</td><td class="ok">—</td><td class="ok">PASS</td></tr></tbody></table><div class="vgrid"><figure class="vcard"><video controls playsinline preload="none" poster="PolarRoar/video/Idle_LV4-poster.jpg" aria-label="極地王者・冰屋 Idle_LV4 參考與自動製作對照"><source src="PolarRoar/video/Idle_LV4-review.mp4" type="video/mp4"></video><figcaption><span class="vname">Idle_LV4</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="PolarRoar/video/Idle_LV4-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure><figure class="vcard"><video controls playsinline preload="none" poster="PolarRoar/video/4Upgrade-poster.jpg" aria-label="極地王者・冰屋 4Upgrade 參考與自動製作對照"><source src="PolarRoar/video/4Upgrade-review.mp4" type="video/mp4"></video><figcaption><span class="vname">4Upgrade</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="PolarRoar/video/4Upgrade-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure><figure class="vcard"><video controls playsinline preload="none" poster="PolarRoar/video/Trigger_Fail_Lv4-poster.jpg" aria-label="極地王者・冰屋 Trigger_Fail_Lv4 參考與自動製作對照"><source src="PolarRoar/video/Trigger_Fail_Lv4-review.mp4" type="video/mp4"></video><figcaption><span class="vname">Trigger_Fail_Lv4</span><span class="pill lo">未通過</span></figcaption><p>左：原作 MOV 參考　右：新製專案。依序佈線 → 骨架 → 完整動態。<a href="PolarRoar/video/Trigger_Fail_Lv4-vs-reference.mp4">參考｜成品｜差異 ×4</a></p></figure></div><h3>Spine 本體驗證</h3><p>成品已由 Spine 4.0.64 匯入並重新匯出。下圖為 Spine 原生命令列輸出的骨架畫面；不是編輯器介面截圖。 使用者要求全程背景執行，現有 Spine 視窗帶有未儲存專案且最小化，因此未喚起或操作該視窗。<strong>Spine 編輯器內的佈線與骨架畫面尚待檢視，未以軟體模擬圖冒充。</strong></p><img class="native" src="PolarRoar/spine-native-bones.png" alt="極地王者・冰屋 Spine 原生骨架輸出"><details><summary>逐段擬合輪次、週期、關鍵幀與提示</summary><h4>Idle_LV4</h4><p>引擎拒絕擬合：pictures: 121 frames at 0.365 px per unit
+CLI_FIT_VIDEO: frame 0 covers 0.578 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted
+</p><a href="PolarRoar/data/Idle_LV4-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;PolarRoar&quot;,
+  &quot;animation&quot;: &quot;Idle_LV4&quot;,
+  &quot;refused&quot;: &quot;pictures: 121 frames at 0.365 px per unit\nCLI_FIT_VIDEO: frame 0 covers 0.578 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted\n&quot;
+}</pre><h4>4Upgrade</h4><p>輪次 1；最佳輪次 1。</p><a href="PolarRoar/data/4Upgrade-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;PolarRoar&quot;,
+  &quot;animation&quot;: &quot;4Upgrade&quot;,
+  &quot;label&quot;: &quot;reference-fitted&quot;,
+  &quot;status&quot;: &quot;one completed round retained; optional second refinement stopped&quot;,
+  &quot;pass&quot;: false,
+  &quot;best&quot;: {
+    &quot;round&quot;: 1,
+    &quot;plan&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\checks\\event-2\\fit-01\\round-1\\plan.json&quot;,
+    &quot;build&quot;: &quot;D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\checks\\event-2\\fit-01\\round-1\\build&quot;
+  },
+  &quot;rounds&quot;: [
+    {
+      &quot;round&quot;: 1,
+      &quot;pass&quot;: false,
+      &quot;rows&quot;: [
+        {
+          &quot;id&quot;: &quot;V1 silhouette IoU mean &gt;= 0.9, min &gt;= 0.8&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            0.819,
+            0.645
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V2 part motion error median &lt;= 0.6% / p90 &lt;= 1.5% of height&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            5.79,
+            17.88,
+            &quot;24 parts&quot;
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V3 figure timing |lag| &lt;= 2 frames, size 0.75-1.33&quot;,
+          &quot;ok&quot;: false,
+          &quot;value&quot;: [
+            12,
+            0.28
+          ]
+        },
+        {
+          &quot;id&quot;: &quot;V5 collapsed or squashed-through parts = 0&quot;,
+          &quot;ok&quot;: true,
+          &quot;value&quot;: []
+        }
+      ],
+      &quot;hints&quot;: [
+        &quot;outline differs most at frame 26 (0.87s, overlap 0.64): pose, placement or size&quot;,
+        &quot;the whole figure moves 12 frames later than the reference&quot;,
+        &quot;the whole figure moves 0.28x as far as the reference (too small)&quot;,
+        &quot;Igloo_Stone_7: off by 27.8% of the height, 7 frames early, moves 0.08x (too small)&quot;,
+        &quot;Igloo_Stone_56: off by 11.9% of the height, 5 frames late, moves 0.46x (too small)&quot;,
+        &quot;Igloo_Stone_33: off by 10.8% of the height, moving differently&quot;,
+        &quot;Igloo_Stone_35: off by 10.5% of the height, 6 frames late, moves 0.73x (too small)&quot;
+      ]
+    }
+  ],
+  &quot;hints&quot;: [
+    &quot;outline differs most at frame 26 (0.87s, overlap 0.64): pose, placement or size&quot;,
+    &quot;the whole figure moves 12 frames later than the reference&quot;,
+    &quot;the whole figure moves 0.28x as far as the reference (too small)&quot;,
+    &quot;Igloo_Stone_7: off by 27.8% of the height, 7 frames early, moves 0.08x (too small)&quot;,
+    &quot;Igloo_Stone_56: off by 11.9% of the height, 5 frames late, moves 0.46x (too small)&quot;,
+    &quot;Igloo_Stone_33: off by 10.8% of the height, moving differently&quot;,
+    &quot;Igloo_Stone_35: off by 10.5% of the height, 6 frames late, moves 0.73x (too small)&quot;,
+    &quot;The dense first pass took 879 seconds for 29 sampled frames. The second refinement was stopped; no completed second or third round is claimed.&quot;
+  ],
+  &quot;note&quot;: &quot;This is an operator partial-run record, not an engine summary. The completed round is used unchanged; original Spine motion was not an input.&quot;
+}</pre><h4>Trigger_Fail_Lv4</h4><p>引擎拒絕擬合：pictures: 31 frames at 0.363 px per unit
+CLI_FIT_VIDEO: frame 0 covers 0.584 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted
+</p><a href="PolarRoar/data/Trigger_Fail_Lv4-fit.json">完整擬合數據（含輸入、週期、精簡與延遲）</a><pre>{
+  &quot;project&quot;: &quot;PolarRoar&quot;,
+  &quot;animation&quot;: &quot;Trigger_Fail_Lv4&quot;,
+  &quot;refused&quot;: &quot;pictures: 31 frames at 0.363 px per unit\nCLI_FIT_VIDEO: frame 0 covers 0.584 of the parts (below 0.6): the video does not draw these images, or another pose set; nothing was fitted\n&quot;
+}</pre></details><details><summary>V1–V5 原始差異提示</summary><h4>Idle_LV4</h4><ul><li>Igloo_Stone_33: off by 19.2% of the height, moving differently</li><li>Igloo_Stone_24: off by 17.1% of the height, moving differently</li><li>Igloo_Stone_55: off by 10.6% of the height, moving differently</li><li>Igloo_Stone_56: off by 9.1% of the height, moving differently</li></ul><h4>4Upgrade</h4><ul><li>outline differs most at frame 26 (0.87s, overlap 0.64): pose, placement or size</li><li>the whole figure moves 12 frames later than the reference</li><li>the whole figure moves 0.28x as far as the reference (too small)</li><li>Igloo_Stone_7: off by 27.8% of the height, 7 frames early, moves 0.08x (too small)</li><li>Igloo_Stone_56: off by 11.9% of the height, 5 frames late, moves 0.46x (too small)</li><li>Igloo_Stone_33: off by 10.8% of the height, moving differently</li><li>Igloo_Stone_35: off by 10.5% of the height, 6 frames late, moves 0.73x (too small)</li></ul><h4>Trigger_Fail_Lv4</h4><ul><li>outline differs most at frame 20 (0.67s, overlap 0.86): pose, placement or size</li><li>the whole figure moves 7 frames earlier than the reference</li><li>the whole figure moves 0.00x as far as the reference (too small)</li><li>Igloo_Stone_56: off by 12.7% of the height, 7 frames early, moves 0.00x (too small)</li><li>Igloo_Stone_33: off by 10.4% of the height, 4 frames late, moves 0.00x (too small)</li><li>Igloo_Stone_35: off by 9.1% of the height, 7 frames early, moves 0.00x (too small)</li><li>Igloo_Stone_40: off by 8.3% of the height, 7 frames early, moves 0.00x (too small)</li></ul></details></section></html>

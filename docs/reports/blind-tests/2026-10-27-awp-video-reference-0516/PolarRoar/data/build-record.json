@@ -1,0 +1,76 @@
+{
+ "engineVersion": "0.5.16",
+ "plan": {
+  "id": "PolarRoar_all",
+  "sha256": "e5763adb4c7339b4667fee84a1bce1f711dd1e3c1c108aacc5cd7f92d970b36b"
+ },
+ "imagesOnly": {
+  "sha256": "d801d555e7b623b78762ce6e987380382effca6cf55b724fcb7868dfd25385db"
+ },
+ "params": {},
+ "joints": {},
+ "faceMix": {},
+ "bend": {},
+ "setupDeviationPx": 0.001,
+ "seams": [],
+ "evidence": {
+  "Igloo_Stone_84:alphaPrep": {
+   "discarded": 1
+  },
+  "Igloo_Stone_75:alphaPrep": {
+   "discarded": 1
+  },
+  "Igloo_Stone_70:alphaPrep": {
+   "discarded": 2
+  },
+  "Igloo_Stone_62:alphaPrep": {
+   "discarded": 1
+  },
+  "Igloo_Stone_59:alphaPrep": {
+   "discarded": 4
+  },
+  "Igloo_Stone_57:alphaPrep": {
+   "discarded": 15
+  },
+  "Igloo_Stone_56:alphaPrep": {
+   "discarded": 2
+  },
+  "Igloo_Stone_49:alphaPrep": {
+   "discarded": 1
+  },
+  "Igloo_Stone_48:alphaPrep": {
+   "discarded": 1
+  },
+  "Igloo_Stone_45:alphaPrep": {
+   "discarded": 3
+  },
+  "Igloo_Stone_42:alphaPrep": {
+   "discarded": 6
+  },
+  "Igloo_Stone_41:alphaPrep": {
+   "discarded": 2
+  },
+  "Igloo_Stone_35:alphaPrep": {
+   "discarded": 1
+  },
+  "Igloo_Stone_28:alphaPrep": {
+   "discarded": 5
+  },
+  "Igloo4_Stone_light1a#Igloo_Stone_light1:alphaPrep": {
+   "discarded": 39
+  },
+  "Igloo_Stone_25:alphaPrep": {
+   "discarded": 2
+  },
+  "Igloo4_Stone_light1#Igloo4_Stone_light1:alphaPrep": {
+   "discarded": 16
+  },
+  "Igloo_Stone_20:alphaPrep": {
+   "discarded": 1
+  },
+  "Igloo_Stone_8:alphaPrep": {
+   "discarded": 2
+  }
+ },
+ "artistQualityAccepted": false
+}

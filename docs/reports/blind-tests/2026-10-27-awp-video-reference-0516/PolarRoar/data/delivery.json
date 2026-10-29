@@ -1,0 +1,156 @@
+{
+  "spine": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516.spine",
+  "spineVersion": "4.0.64",
+  "json": null,
+  "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516.mp4",
+  "images": "./images/",
+  "imageFiles": 170,
+  "strayImages": [],
+  "replaced": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\replaced-2026-10-27T03-15-10",
+  "reference": {
+    "pass": false,
+    "animations": [
+      {
+        "animation": "Idle_LV4",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516-Idle_LV4-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-01\\Idle_LV4\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": true,
+            "value": [
+              0.908,
+              0.908
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              3.78,
+              17.18,
+              "22 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": true,
+            "value": "reference figure barely moves; not judged"
+          },
+          {
+            "id": "V4 loop seam mean difference <= 0.002",
+            "ok": true,
+            "value": 0
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "Igloo_Stone_33: off by 19.2% of the height, moving differently",
+          "Igloo_Stone_24: off by 17.1% of the height, moving differently",
+          "Igloo_Stone_55: off by 10.6% of the height, moving differently",
+          "Igloo_Stone_56: off by 9.1% of the height, moving differently"
+        ]
+      },
+      {
+        "animation": "4Upgrade",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516-4Upgrade-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-01\\4Upgrade\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.819,
+              0.645
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              5.79,
+              17.88,
+              "24 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              12,
+              0.28
+            ]
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 26 (0.87s, overlap 0.64): pose, placement or size",
+          "the whole figure moves 12 frames later than the reference",
+          "the whole figure moves 0.28x as far as the reference (too small)",
+          "Igloo_Stone_7: off by 27.8% of the height, 7 frames early, moves 0.08x (too small)",
+          "Igloo_Stone_56: off by 11.9% of the height, 5 frames late, moves 0.46x (too small)",
+          "Igloo_Stone_33: off by 10.8% of the height, moving differently",
+          "Igloo_Stone_35: off by 10.5% of the height, 6 frames late, moves 0.73x (too small)"
+        ]
+      },
+      {
+        "animation": "Trigger_Fail_Lv4",
+        "pass": false,
+        "video": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\AWP-PolarRoar-0516-Trigger_Fail_Lv4-vs-reference.mp4",
+        "report": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\PolarRoar\\_work\\builds\\build-32\\video-check-2026-10-27T03-15-01\\Trigger_Fail_Lv4\\report.json",
+        "rows": [
+          {
+            "id": "V1 silhouette IoU mean >= 0.9, min >= 0.8",
+            "ok": false,
+            "value": [
+              0.897,
+              0.861
+            ]
+          },
+          {
+            "id": "V2 part motion error median <= 0.6% / p90 <= 1.5% of height",
+            "ok": false,
+            "value": [
+              5.23,
+              13.32,
+              "22 parts"
+            ]
+          },
+          {
+            "id": "V3 figure timing |lag| <= 2 frames, size 0.75-1.33",
+            "ok": false,
+            "value": [
+              -7,
+              0
+            ]
+          },
+          {
+            "id": "V5 collapsed or squashed-through parts = 0",
+            "ok": true,
+            "value": []
+          }
+        ],
+        "hints": [
+          "outline differs most at frame 20 (0.67s, overlap 0.86): pose, placement or size",
+          "the whole figure moves 7 frames earlier than the reference",
+          "the whole figure moves 0.00x as far as the reference (too small)",
+          "Igloo_Stone_56: off by 12.7% of the height, 7 frames early, moves 0.00x (too small)",
+          "Igloo_Stone_33: off by 10.4% of the height, 4 frames late, moves 0.00x (too small)",
+          "Igloo_Stone_35: off by 9.1% of the height, 7 frames early, moves 0.00x (too small)",
+          "Igloo_Stone_40: off by 8.3% of the height, 7 frames early, moves 0.00x (too small)"
+        ]
+      }
+    ]
+  },
+  "stray": []
+}

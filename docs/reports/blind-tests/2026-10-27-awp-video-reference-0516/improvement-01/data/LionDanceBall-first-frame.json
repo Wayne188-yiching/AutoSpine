@@ -1,0 +1,285 @@
+{
+ "animation": "06_Ball_swinging_loop",
+ "label": "reference-fit-preflight",
+ "inputs": [
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\plans\\plan-04.json",
+   "bytes": 7700,
+   "sha256": "e80f0596f9cff39032e04bbf45a783ffabc8dacc22f315bb17cd23a8903f000e"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\imagesOnly-fiscal.json",
+   "bytes": 18975,
+   "sha256": "c73eebb3d9f4a9f12cc97b093fc81cf96c47b1750a8009b46d7bef598b08b348"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\BallOpen.png",
+   "bytes": 8388,
+   "sha256": "6e4baa63c10dca6c33d2e0c687a47176362e9225e17f6aae7530291c445192c1"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\Ball.png",
+   "bytes": 241850,
+   "sha256": "ec75c73f13316827908de1bf843d46c4599ddc7b57896df42077c4680ebbe4ac"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\Chineseknot.png",
+   "bytes": 52429,
+   "sha256": "32688ad4030333b8d40c2a6dc5c7a1c1d04501f8a2e0d82bed1b4de7083af858"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\Ball_Light.png",
+   "bytes": 44155,
+   "sha256": "5d81bcc275b9ab6fc9e379bba45b204c91797ee4c79a1bdbc0129eb9d64edf6c"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\ribbon_03.png",
+   "bytes": 5169,
+   "sha256": "301015da47f5504ddb250562f6b326dfc3bd1c22683dfb46e331d21b94080e90"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\ribbonlight_03.png",
+   "bytes": 9407,
+   "sha256": "74fcfa99b4c9ed7648b1717d41ef62a03dbc8d626b5769d8358ecd44c72baee2"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\ribbon_02.png",
+   "bytes": 5126,
+   "sha256": "7dcec078d0ff2355efa1bbfc1f280822c74031d18991c345af1bde5ab25acd8a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\ribbonlight_02.png",
+   "bytes": 9353,
+   "sha256": "91760bce9fd2eb751f00d16be36dd73b5f731ea4e6904dd41c09488b1421d5ea"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\ribbon_01.png",
+   "bytes": 5633,
+   "sha256": "c409238689c5e07332a09280ee62bb8054c386f767dbe5870f0ac4de1d1d87f9"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\ribbonlight_01.png",
+   "bytes": 10864,
+   "sha256": "4380af821962053925ba2250aed9aa5ba3ef5041b8eaf7415a1dde68aa8a8915"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\Ball_fiscal.png",
+   "bytes": 99402,
+   "sha256": "13cec2132a631cd89fcd7d1229847f152435b89be9b9d77f68cf515efc9e3262"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\FX\\boxshine.png",
+   "bytes": 16641,
+   "sha256": "2413d8f72aee554ac5425c5085e236f11ca419cfbebb51d72bdff389677387ca"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\FX\\CRM_BGShiny.png",
+   "bytes": 21213,
+   "sha256": "141715d070483285f2d269be60cbe62c6a95791077d9a7bbb29868e73af3548d"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\images\\FX\\portal_ring_spiky.png",
+   "bytes": 147090,
+   "sha256": "78261736649a5a15d941fefd0cc598eb87e52c9dc31de47aec6afa280704a89a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\builds\\build-04\\LionDanceBall_new.json",
+   "bytes": 173371,
+   "sha256": "ebfcfaeee1690db45df0f1eccfa8130957ccb457a28198dc0daef6d1b6c1e43a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\LionDanceBallHoldout\\_work\\input\\reference\\06_Ball_swinging_loop.mov",
+   "bytes": 9030376,
+   "sha256": "bfe6c374eac0f31b492a2e03c16dc1a9a888557d86488c7c9e299d6c1125abed"
+  }
+ ],
+ "coverageBasis": "visible sampled texels; unobserved layers are listed separately, not fitted",
+ "ready": false,
+ "coverage": 1,
+ "residual": {
+  "median": 0,
+  "max": 34.86
+ },
+ "shifted": 0.9529497028554863,
+ "unreachableShare": 0.038527322800405855,
+ "unreachable": [
+  "Chineseknot"
+ ],
+ "limits": {
+  "minCoverage": 0.6,
+  "maxShiftedShare": 0.25,
+  "maxUnreachableShare": 0.25,
+  "partDistance": 12.568719386617778
+ },
+ "pose": {
+  "body": {
+   "x": 3.13,
+   "y": 23.75,
+   "rotate": -8.25
+  }
+ },
+ "parts": [
+  {
+   "slot": "Chineseknot",
+   "samples": 1329,
+   "score": 0.579,
+   "dx": -34.12,
+   "dy": -2.53,
+   "rotate": 2.5,
+   "used": true,
+   "shift": 34.56,
+   "residual": 34.86
+  },
+  {
+   "slot": "Ball",
+   "samples": 560,
+   "score": 0.809,
+   "dx": -2.04,
+   "dy": 10.85,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 19.13,
+   "residual": 0
+  },
+  {
+   "slot": "Ball2",
+   "samples": 583,
+   "score": 0.804,
+   "dx": -0.86,
+   "dy": -13.88,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 20.92,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_06",
+   "samples": 2514,
+   "score": 0.622,
+   "dx": 6.94,
+   "dy": 24.08,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 25.53,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_016",
+   "samples": 2544,
+   "score": 0.684,
+   "dx": 10.28,
+   "dy": -25.99,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 28.37,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_02",
+   "samples": 2814,
+   "score": 0.377,
+   "dx": 14.49,
+   "dy": 14.09,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 20.72,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_012",
+   "samples": 2796,
+   "score": 0.31,
+   "dx": 16.46,
+   "dy": -15.08,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 22.78,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_08",
+   "samples": 2700,
+   "score": 0.852,
+   "dx": 9.95,
+   "dy": 22.64,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 25.31,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_010",
+   "samples": 2693,
+   "score": 0.837,
+   "dx": 13.01,
+   "dy": -24.16,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 27.96,
+   "residual": 0
+  },
+  {
+   "slot": "ribbonlight_02",
+   "samples": 3043,
+   "score": 0.298,
+   "dx": 18.1,
+   "dy": 10.22,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 21.3,
+   "residual": 0
+  },
+  {
+   "slot": "ribbonlight_03",
+   "samples": 3240,
+   "score": 0.365,
+   "dx": 18.92,
+   "dy": -10.67,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 22.29,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_04",
+   "samples": 4034,
+   "score": 0.825,
+   "dx": 13.38,
+   "dy": 19.32,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 24.16,
+   "residual": 0
+  },
+  {
+   "slot": "ribbon_014",
+   "samples": 4022,
+   "score": 0.795,
+   "dx": 16.01,
+   "dy": -20.42,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 26.55,
+   "residual": 0
+  },
+  {
+   "slot": "Ball_Exterior_L",
+   "samples": 1623,
+   "score": 0.828,
+   "dx": -1.57,
+   "dy": -1.48,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 11.13,
+   "residual": 0
+  }
+ ],
+ "unobserved": [
+  {
+   "slot": "Ball_Exterior_R",
+   "reason": "occluded",
+   "samples": 1623,
+   "visible": 0
+  }
+ ]
+}

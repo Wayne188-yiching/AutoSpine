@@ -340,7 +340,15 @@ export function matchPart(
   /** Last frame's answer: searched around first; the full search runs only if that is poor. */
   guess?: { dx: number; dy: number; angle: number; mirrored?: boolean },
   mirror = false,
-): { dx: number; dy: number; angle: number; mirrored: boolean; score: number } {
+): {
+  dx: number;
+  dy: number;
+  angle: number;
+  mirrored: boolean;
+  score: number;
+  /** A distinct location looks equally plausible; do not report it as an identified part. */
+  ambiguous?: boolean;
+} {
   const { xs, ys, t, norm } = tpl,
     n = t.length,
     w = img.w,
@@ -354,6 +362,7 @@ export function matchPart(
   cx /= n;
   cy /= n;
   const turned = new Map<string, { ox: Int32Array; oy: Int32Array }>();
+  const locations = new Map<string, { dx: number; dy: number; score: number }>();
   const offsets = (deg: number, flip: boolean) => {
     const key = `${deg}${flip ? "m" : ""}`;
     let o = turned.get(key);
@@ -387,7 +396,10 @@ export function matchPart(
       dot += v * t[i]!;
     }
     const varSum = sq - (sum * sum) / n;
-    return varSum <= 1e-6 ? -1 : dot / (Math.sqrt(varSum) * norm);
+    const score = varSum <= 1e-6 ? -1 : dot / (Math.sqrt(varSum) * norm);
+    const key = `${dx},${dy}`;
+    if (score > (locations.get(key)?.score ?? -Infinity)) locations.set(key, { dx, dy, score });
+    return score;
   };
   interface Hit {
     dx: number;
@@ -455,12 +467,18 @@ export function matchPart(
     return a >= 0 && b >= 0 && d < -1e-9 ? Math.max(-0.5, Math.min(0.5, (a - b) / (2 * d))) : 0;
   };
   const { dx, dy, angle, mirrored } = best;
+  // Repeated fur, flat gradients and duplicate limbs can have high NCC at several places.
+  // Keep the original positional thresholds; leave an uncertain identity unmeasured instead.
+  const ambiguous = [...locations.values()].some(
+    (p) => Math.hypot(p.dx - dx, p.dy - dy) >= 4 && p.score >= 0.75 && p.score >= best.score - 0.02,
+  );
   return {
     dx: dx + offset(ncc(dx - 1, dy, angle, mirrored), ncc(dx + 1, dy, angle, mirrored)),
     dy: dy + offset(ncc(dx, dy - 1, angle, mirrored), ncc(dx, dy + 1, angle, mirrored)),
     angle,
     mirrored,
     score: best.score,
+    ...(ambiguous ? { ambiguous: true } : {}),
   };
 }
 

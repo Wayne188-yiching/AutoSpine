@@ -147,6 +147,30 @@ async function texturedWorkspace() {
 }
 
 describe("video acceptance measures (ADR-034)", () => {
+  it("does not claim a repeated texture uniquely identifies a part", () => {
+    const w = 140,
+      h = 90;
+    const image = (shifts: number[]) => {
+      const g = new Float32Array(w * h).fill(20);
+      for (const shift of shifts)
+        for (let y = -7; y <= 7; y++)
+          for (let x = -7; x <= 7; x++)
+            g[(45 + y) * w + 55 + x + shift] =
+              110 + 45 * Math.sin(x * 1.3 + y * 0.7) + 30 * Math.cos(x * y * 0.4);
+      return { w, h, g };
+    };
+    const owned: number[] = [];
+    for (let y = 38; y <= 52; y++) for (let x = 48; x <= 62; x++) owned.push(y * w + x);
+    const template = partTemplate(image([0]), owned)!;
+    const unique = matchPart(image([-10]), template, 36);
+    expect(unique.score).toBeGreaterThan(0.9);
+    expect(Math.abs(unique.dx + 10)).toBeLessThan(1);
+    expect(unique.ambiguous).not.toBe(true);
+    const repeated = matchPart(image([-10, 20]), template, 36);
+    expect(repeated.score).toBeGreaterThan(0.9);
+    expect(repeated.ambiguous).toBe(true);
+  });
+
   it("finds the shift and the size of a motion", () => {
     const n = 60;
     const r = Array.from({ length: n }, (_, i) => Math.sin((2 * Math.PI * i) / n));
@@ -265,6 +289,34 @@ describe("video acceptance measures (ADR-034)", () => {
 });
 
 describe.skipIf(!hasFfmpeg)("compare-video: the build against a reference video", () => {
+  it("compares visible additive light on the same basis as the reference pixels", async () => {
+    const ws = await texturedWorkspace();
+    const plan = join(ws, "plan.json");
+    await buildCharacterFiles(plan, join(ws, "build"));
+    const path = join(ws, "build", "fixture_character.json");
+    const document = JSON.parse(await readFile(path, "utf8"));
+    document.bones.push({ name: "glow", parent: "head" });
+    document.slots.push({ name: "Glow", bone: "glow", attachment: "Glow", blend: "additive" });
+    document.skins[0].attachments.Glow = {
+      Glow: { path: "Head", width: 140, height: 140 },
+    };
+    document.animations.IDLE.slots ??= {};
+    document.animations.IDLE.slots.Glow = {
+      rgba: [
+        { time: 0, color: "ffffffb3" },
+        { time: 1, color: "ffffffff" },
+        { time: 2, color: "ffffffb3" },
+      ],
+    };
+    await writeFile(path, JSON.stringify(document));
+    const checked = await compareVideoFiles(plan, join(ws, "build"), join(ws, "check-glow"), {
+      video: await referenceVideo(ws, join(ws, "glow.mp4"), { background: [0.11, 0.13, 0.16] }),
+    });
+    const rows = checked.animations[0]!.rows;
+    expect(rows.find((r) => r.id.startsWith("V1"))?.ok).toBe(true);
+    expect(rows.find((r) => r.id.startsWith("V2"))?.ok).toBe(true);
+  }, 120_000);
+
   it("matches a video of its own motion and reports a late one", async () => {
     const ws = await texturedWorkspace();
     const plan = join(ws, "plan.json");

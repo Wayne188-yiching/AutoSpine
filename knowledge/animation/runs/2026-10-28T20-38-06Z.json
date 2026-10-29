@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T20:37:55.269Z",
+  "startedAt": "2026-10-28T20:38:06Z",
+  "completedAt": "2026-10-28T20:42:05.999Z",
+  "result": "updated",
+  "focus": ["補足走路的接觸、passing 與重量轉移", "原地循環、根位移及滑步檢查的文字依據"],
+  "addedIds": ["us-animationmentor-human-walk-support"],
+  "updatedIds": [],
+  "evidence": {
+    "textReviewed": 1,
+    "imageEntries": 0,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.animationmentor.com/blog/tutorial-animating-human-walk-cycle/",
+      "outcome": "已讀官方原頁的主要 Pose、Blocking、Breakdowns、Splining、手臂重疊與前進／停步段落，核對 Jason Martinsen 講師介紹、文章署名及日期。未播放內嵌影片。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://content.animationmentor.com/pdfs/AnimationMentor_TipsTricks_Creatures.pdf",
+      "reason": "文字工具因約 15.4 MB 檔案大小拒絕擷取；正常背景瀏覽器在本輪檢視時只顯示空白，沒有讀到頁面或姿勢圖。未下載檔案，也未將搜尋文摘當成已研讀的圖像。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 21 sources",
+    "indexBuild": "passed — 21 sources",
+    "generatedEntryAndEvidence": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "沒有實際看過本次走路示範圖或連續影片，知識僅以文字證據分類。",
+    "示範的幀率／循環格數與腳曲線設定沒有改成工具預設；接觸與根位移需實際預覽。",
+    "只更新 knowledge/animation/；未下載媒體或保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "可正常檢視的原作者走路／跑步 Pose 圖或較小的公開教材，優先補實際支撐姿勢圖像；維持單格與連續觀看的證據差異。"
+}

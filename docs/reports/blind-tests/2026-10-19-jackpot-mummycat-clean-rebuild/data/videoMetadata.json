@@ -1,0 +1,82 @@
+[
+  {
+    "name": "in",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1084,
+        "height": 596,
+        "r_frame_rate": "30/1",
+        "nb_frames": "90"
+      }
+    ],
+    "format": {
+      "duration": "3.000000"
+    }
+  },
+  {
+    "name": "idle",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1084,
+        "height": 596,
+        "r_frame_rate": "30/1",
+        "nb_frames": "180"
+      }
+    ],
+    "format": {
+      "duration": "6.000000"
+    }
+  },
+  {
+    "name": "idle2",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1084,
+        "height": 596,
+        "r_frame_rate": "30/1",
+        "nb_frames": "360"
+      }
+    ],
+    "format": {
+      "duration": "12.000000"
+    }
+  },
+  {
+    "name": "idle_clap",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1084,
+        "height": 596,
+        "r_frame_rate": "30/1",
+        "nb_frames": "48"
+      }
+    ],
+    "format": {
+      "duration": "1.600000"
+    }
+  },
+  {
+    "name": "clap",
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "width": 1084,
+        "height": 596,
+        "r_frame_rate": "30/1",
+        "nb_frames": "180"
+      }
+    ],
+    "format": {
+      "duration": "6.000000"
+    }
+  }
+]

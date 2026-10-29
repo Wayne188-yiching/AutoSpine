@@ -1,0 +1,958 @@
+{
+ "animation": "Idel_02",
+ "label": "reference-fit-preflight",
+ "inputs": [
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\plans\\plan-71.json",
+   "bytes": 51006,
+   "sha256": "77d109449e6c98da7b5944595983ce2a62d083a4a9968cc56ecaabf81eeed620"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\imagesOnly.json",
+   "bytes": 34064,
+   "sha256": "1e439aed785fe796c3cf9f0ef1eee35f84d4048481f745ea34c1de2c0955d32a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_R_01.png",
+   "bytes": 598498,
+   "sha256": "31f0c7f895bd5d114b06d5f2a94596205a97356c43c1d23633ace7a02f684093"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_R_02.png",
+   "bytes": 574684,
+   "sha256": "ee48f6d60bbf7d026447c7b603afa225e22048baea7d313377c9e56871b73185"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_R_03.png",
+   "bytes": 567313,
+   "sha256": "f3117763678c5890d955d0807463a94fa7f2595d5537034e1260ab32316d6f0a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_R_04.png",
+   "bytes": 554338,
+   "sha256": "40070a442617b67beb68ba7b1b4a8bd0de8a3ec40bd1c0edafbb76adf60daf0b"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_R_05.png",
+   "bytes": 449978,
+   "sha256": "a2dd5ab8b86fead68d475c02f2243d4e65be8c42aaf415941da86bb2cce8a192"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_R_06.png",
+   "bytes": 470067,
+   "sha256": "7b7ced535df94c66ee35a027767a2a3dd47882bad422f11842dcb7c6824600e9"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_L_01.png",
+   "bytes": 668821,
+   "sha256": "66264f77f3572b77480fddeb7190351f988f118a764bbbb57d44ca54f811602f"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_L_02.png",
+   "bytes": 812489,
+   "sha256": "81f5c898ac080925328747f834241ff45c0450831f4964ad85096a022631fcb8"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_L_03.png",
+   "bytes": 683310,
+   "sha256": "06efd2f25df281a9b7946d4d4c609187430f403d4ad8cd86bcaccc67082bb6e8"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_L_04.png",
+   "bytes": 721988,
+   "sha256": "4e73829d894f0aa083630aa84d649d7de1fc83de3a41c9dd759e07249d2716f0"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_L_05.png",
+   "bytes": 399258,
+   "sha256": "71dc88ec456a6884cced0867a45620cc73438f1957bec68a52ed2d8c851d4425"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_L_06.png",
+   "bytes": 392239,
+   "sha256": "604ad411d719167e21c54eb71442c6839a0da0c87aa198d592da2d45732f4ec4"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tail_M.png",
+   "bytes": 1213093,
+   "sha256": "73eae3e1fd63982e9c61c6b28ac4018ae52075267260dd5126948266071d026e"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\FG_Light_02.png",
+   "bytes": 12141,
+   "sha256": "40425074815d1d7e9ae934e6d0845613bd723549022705dbc33239f97b6b04d9"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_01.png",
+   "bytes": 2592055,
+   "sha256": "e8404d186ba91e383b25bd810f122af4debf905946493d92780b8e3965d47623"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_02.png",
+   "bytes": 1199753,
+   "sha256": "abcf22f61497924b6df8dba29ead980751d3796a725976aac7759b83e3c28d81"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_03.png",
+   "bytes": 754397,
+   "sha256": "723c8e81ecd9d09b0dae28ab1784488066c2522e53e00fffb654a1be2f1ac200"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_04.png",
+   "bytes": 671376,
+   "sha256": "b846e3eaf5ad7670b812f4a9700a683f669ef3d76a4de9d13cce431921654686"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_L_01.png",
+   "bytes": 518639,
+   "sha256": "2bbdf21a76231b25f6eaa458666124bf70ba6b3eee3eed09ca691c4152651aef"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_L_02.png",
+   "bytes": 110084,
+   "sha256": "d30584397967904e9771d68278a99590e4135c9015eeb27c68f1fbf7afc7dcb4"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_R_01.png",
+   "bytes": 670423,
+   "sha256": "de6e492f51cfb159bb9b463073d5799190fed6906bbe79edeae8b88f87b548c9"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_R_02.png",
+   "bytes": 889671,
+   "sha256": "075f2ecb7ad1ef13fd8e6cfdef246fddd0b22d33926300850f0896e6c8638126"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_R_03.png",
+   "bytes": 110991,
+   "sha256": "7a47e895c4450c9fc64428e71d4dff2a39177f4ec6f70d3ab20b9866a313d6df"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_05.png",
+   "bytes": 179350,
+   "sha256": "3e31c264a7182e2549c6d06d3a8c0dce81f5aab7360765492a06de2201654ddc"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_06.png",
+   "bytes": 456381,
+   "sha256": "fcb9d97fad4d17781681cd1d11aed250c1c504b5db0b651e148c19f6dcad1c35"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_07.png",
+   "bytes": 579386,
+   "sha256": "25ee298f935b12c9933f2f0bb04a8885d2382dd1a5b7847bfcaa5813cbfbf1cb"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_08.png",
+   "bytes": 1351832,
+   "sha256": "365f4ebec0a8af968bef437f1e9aecf022a3c51a82f1bec9b90555e44978219a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_09.png",
+   "bytes": 1144279,
+   "sha256": "29fa28eb52cfbd270ee872d7ce21b546615b6d8f7317b5e7467734036a7685ba"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Body_10.png",
+   "bytes": 1867137,
+   "sha256": "25a9358febe066a13ee13d36db837f518d8a68f10e3361dd3ce160c5747133cb"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_R_04.png",
+   "bytes": 176972,
+   "sha256": "600b5424effcdf8f50c5e61ea9e423a39e0b23e19975606e1d4b858fa3f669d7"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_01.png",
+   "bytes": 19450,
+   "sha256": "5151d0b5d75b31cb0f7563168c8f5800519ef2dea89d66a96eaf684a22eea071"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_02.png",
+   "bytes": 3828,
+   "sha256": "c1c75517c102d8f0dac7029215e914d4fec314c643b7bd66a08c5300f8c06d96"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_03.png",
+   "bytes": 5358,
+   "sha256": "0485a87d2127b1f6a7ad97bc63f85c6d7fc12828be4f475f036de34857add1b2"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_04.png",
+   "bytes": 5293,
+   "sha256": "a92f6c32619408ed232994ca4618552a1dd270013874061097634432efd09636"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_05.png",
+   "bytes": 3876,
+   "sha256": "b534231ec56d59d865fe305d93f06079046713f06b1d95f7aae0763f9012f2f2"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_06.png",
+   "bytes": 5055,
+   "sha256": "4aaaa1c1bb472d187184a2be528b175c0373d929a1bc9a8622c110c828980121"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_07.png",
+   "bytes": 5045,
+   "sha256": "34b35b52a1f11fce1365cd759360da7db4a58be32dfff03bd0339623d72b857d"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_08.png",
+   "bytes": 5273,
+   "sha256": "51660328c4f287f8c2e863a992ff23b57a196c970127103aa050d2add6bba32b"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_09.png",
+   "bytes": 8343,
+   "sha256": "c1332951b015147275867675eb9d68c369ae6ce6483010f6a87fb4202e9c56b6"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CatPaw_10.png",
+   "bytes": 6537,
+   "sha256": "50fe952ff5abc71814b6d87ccea42d5e72b6aec32e615e503e454f2bbed16744"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_L_03.png",
+   "bytes": 141933,
+   "sha256": "6478507a3d3ffb63dd9a9e637941b8f5b1f0ab369d1972cf892e396551fb7389"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Eye_L_01.png",
+   "bytes": 50024,
+   "sha256": "9a7b2aa70a3e2ec1f083db139fd1668b03e63084c22bb3cfda94506be9584620"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Eye_R_02.png",
+   "bytes": 33103,
+   "sha256": "e31f58499c239f0ab9d1a8b54d70c3b894b9de71e673b1758ed65eb032adfb01"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Eye_L_03.png",
+   "bytes": 23483,
+   "sha256": "f21a7bbbb1ca5259f820d11223f4b5e97f2769df02d89f8baa2d39d80eff292b"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Eye_L_04.png",
+   "bytes": 29063,
+   "sha256": "9e35005bc6754b097cf11a17c0bc46d0ecb8c3ac074df88447927b630833401c"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Eye_R_01.png",
+   "bytes": 50024,
+   "sha256": "668b21067b22fd068c38ca0e014b0af6d71199238e7de6da222a197b18aade4c"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Eye_R_03.png",
+   "bytes": 23483,
+   "sha256": "a8e8697d0f6d2378887504c99db7cf1608d5a5dbce6f8330478e59882cbce429"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Eye_R_04.png",
+   "bytes": 27359,
+   "sha256": "c5527cc736c57cb967a1a3ebf4843259a5e0af7d338f4539bc83410cb3329a48"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Ear_R.png",
+   "bytes": 296966,
+   "sha256": "018ec96a11ac083a8c685baea33746afd64eddef0f835106ddd3d6c7a6437380"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Ear_Hair_R.png",
+   "bytes": 62778,
+   "sha256": "56ab41c4cd348023ed145228560917ac412b2bbec0a8f61ed94fca6b86b8ff5a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Ear_B_R.png",
+   "bytes": 170753,
+   "sha256": "236b3604f2ab1419e393553f8a784b877bc14a6340d0c25007d527c820a558fd"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Ear_L.png",
+   "bytes": 298056,
+   "sha256": "b4cafef6db825fc5f231a3ac3a3601b4483f10dd069abbeacdda080529bf3c3e"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Ear_Hair_L.png",
+   "bytes": 52589,
+   "sha256": "9a81a2491c169ab6b2fe1dc9dff495968992b7feafd60c9da32173864bdbe37b"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Ear_B_L.png",
+   "bytes": 186532,
+   "sha256": "8f18bf9faa2cee2d9661a3c26e754fdbd3358b7e4f4b7a62931bfc9ab93cbab9"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Face.png",
+   "bytes": 820940,
+   "sha256": "e7e886172d72159834c1b2196a6485411e96923e8cf93bc3d4ab3b1f3d03b0c5"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Jaw.png",
+   "bytes": 92094,
+   "sha256": "e4f06d53af20b036bbe952eb9cbe332d6b54e345d70b41275bfe7b51a4e47898"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Mouth_01.png",
+   "bytes": 79242,
+   "sha256": "4f4442ca93510b730a793aa50ed404e701a6ac63fc757ec50792ffac824da1ad"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Teeth_Down_01.png",
+   "bytes": 28589,
+   "sha256": "18f612de1e54650d42076c6cef5a0700dcbc3f636b9855c1cd5deb27da073589"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Teeth_Up_01.png",
+   "bytes": 32306,
+   "sha256": "b41404d1f76f5496d7e12c711b64615d14ba63751e017dbc679dc640fcc27229"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Mouth_02.png",
+   "bytes": 368111,
+   "sha256": "8bfbbbe37c49d27dcf4026f863e77369cdbd0dd842b54dbc838569ff21983909"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Teeth_Down_02.png",
+   "bytes": 75764,
+   "sha256": "8caa94bfde25f210a3e9919d92562472ebd6a39e3ce8df401b6665bc0c03fe1e"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Tongue.png",
+   "bytes": 81025,
+   "sha256": "267c255ec7a94e1c48e5baec3aca163fab9a87e4e3bbcfa8445d5a4c8aab8521"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Teeth_Up_02.png",
+   "bytes": 62951,
+   "sha256": "87db59e91d7a402d2c7c22eaebac5b803991be5fc5b25362c10ecb9e2ed402f6"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Mouth_03.png",
+   "bytes": 185276,
+   "sha256": "dbfff21b2dfde94803bbf30d797c9a45a44f67ea1241b70425a08318f6f75880"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Nose_01.png",
+   "bytes": 67034,
+   "sha256": "9b8d6cb66c0ca52857601b09b1bcf79e8b27d11f25b6d8ad11a470c0bf3d31e8"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CloseEye_R.png",
+   "bytes": 16154,
+   "sha256": "07849be79868c6280c374d6672301d0be75eeefb81ee111a9c079d11cf3a6ca9"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CloseEye_L.png",
+   "bytes": 16477,
+   "sha256": "dc6c06c414bc7bc84d2554d189165b2d4a3081f0f51a1f3d6d0ec797de80c4fd"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\PalmPrint_01.png",
+   "bytes": 2022,
+   "sha256": "3a48bc1a80a238bf3009ad79a5ed9feab02ce2a47a2d1af896e224c454d6849f"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\PalmPrint_02.png",
+   "bytes": 821,
+   "sha256": "df9eb5210bdba50b54a7d8ef2e63fd5bdd2f45b5376d00f08755870f7768e651"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\PalmPrint_03.png",
+   "bytes": 982,
+   "sha256": "6cdd5256f7ce9814d92cf16c537c77e074667479de2143be80be4e918274b39e"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Beard.png",
+   "bytes": 131236,
+   "sha256": "5499974e32a98a082c5344241458517dee0d0a018e33d6f95dca4b2393e027ee"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Crown_B.png",
+   "bytes": 127277,
+   "sha256": "8f69201e7d1979f03583060262c10c5b39049c54f3f329bf047deb03717bbe90"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Crown.png",
+   "bytes": 257812,
+   "sha256": "fc3646f9356a0947332aec40698e4020fa023cf86a76959dc1ec39b04af8edd2"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Hand_R_02_Eff.png",
+   "bytes": 84712,
+   "sha256": "c5b21563294f564c836d966f43112a99699bc15e6a5f529ac3a0a2c7281de1bd"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CloseEye_L_02.png",
+   "bytes": 14156,
+   "sha256": "7500c66371c9b80ac1cbec7a51fc0ebe27efd76a2f00c858946d9b35365fb95a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\CloseEye_R_02.png",
+   "bytes": 13945,
+   "sha256": "b5f5ea8735dc3b934c705f5ef39ec0008b407d00185cfc3b2bae2aff565e569a"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Heart_02.png",
+   "bytes": 9572,
+   "sha256": "deec0bf002a5334c31315e0428a78bcbf7970bd9f2fcd00a7d111aa83db86395"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Heart_01.png",
+   "bytes": 43079,
+   "sha256": "45a8cfce7b176f74170b8532fcbe527838c7978e9927bbd2b2991df4ba9dd81f"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\Heart_03.png",
+   "bytes": 11533,
+   "sha256": "1da74c19e334ff892b35884deb69b3775cd2caf7518e223122058df1ef527d57"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\FG_Light.png",
+   "bytes": 84195,
+   "sha256": "dc6f53920d4fd477775d833121e5aac34745d0a6218ab9d52c9351e7c950cbad"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\images\\P_Paw_02.png",
+   "bytes": 57810,
+   "sha256": "9303937f7c4dc1a9e40be05cd670b00cb10ddf337e06ad566fa88b0e02e5f48d"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\builds\\build-51\\TheCat_all.json",
+   "bytes": 262157,
+   "sha256": "060e63742a10150e640a9c323ee7942f728d627d70b0d14a7f20f9ec9591e1c5"
+  },
+  {
+   "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\reference\\Idel_02.mov",
+   "bytes": 31007947,
+   "sha256": "5e7d286fb5258520dcf02fa7592eef974a2c04ae0ae19b37e1f7da779fd31284"
+  }
+ ],
+ "coverageBasis": "visible sampled texels; unobserved layers are listed separately, not fitted",
+ "ready": true,
+ "coverage": 0.877,
+ "residual": {
+  "median": 3.47,
+  "max": 30.86
+ },
+ "shifted": 0.10622362869198312,
+ "unreachableShare": 0.058157524613220817,
+ "unreachable": [
+  "Body_01",
+  "Tail_R_03",
+  "Tail_L_03",
+  "Tail_L_04"
+ ],
+ "limits": {
+  "minCoverage": 0.6,
+  "maxShiftedShare": 0.25,
+  "maxUnreachableShare": 0.25,
+  "partDistance": 19.64199131231001
+ },
+ "pose": {
+  "body": {
+   "x": 16.04,
+   "y": -11.02,
+   "rotate": -3.895
+  },
+  "spine": {
+   "rotate": 4.53
+  },
+  "head": {
+   "rotate": -0.885
+  },
+  "arm_L": {
+   "rotate": -1.677
+  },
+  "forearm_L": {
+   "rotate": 0.143
+  },
+  "ear_L": {
+   "rotate": 0.888
+  },
+  "eye_L": {
+   "rotate": 0.986
+  },
+  "arm_R": {
+   "rotate": -0.554
+  },
+  "forearm_R": {
+   "rotate": 0.037
+  },
+  "ear_R": {
+   "rotate": -0.339
+  },
+  "tail_control": {
+   "rotate": 3.536
+  }
+ },
+ "parts": [
+  {
+   "slot": "Body_01",
+   "samples": 672,
+   "score": 0.357,
+   "dx": -0.31,
+   "dy": 1,
+   "rotate": 0.25,
+   "used": true,
+   "shift": 1.81,
+   "residual": 30.86
+  },
+  {
+   "slot": "Body_02",
+   "samples": 378,
+   "score": 0.86,
+   "dx": -3.23,
+   "dy": -4.15,
+   "rotate": -1,
+   "used": true,
+   "shift": 5.46,
+   "residual": 3.15
+  },
+  {
+   "slot": "Body_03",
+   "samples": 507,
+   "score": 0.905,
+   "dx": -4.09,
+   "dy": 6.09,
+   "rotate": -1,
+   "used": true,
+   "shift": 7.46,
+   "residual": 0.88
+  },
+  {
+   "slot": "Body_04",
+   "samples": 891,
+   "score": 0.869,
+   "dx": -1.01,
+   "dy": -5.95,
+   "rotate": -1,
+   "used": true,
+   "shift": 6.2,
+   "residual": 3.83
+  },
+  {
+   "slot": "Body_05",
+   "samples": 781,
+   "score": 0.845,
+   "dx": 1.57,
+   "dy": -5.24,
+   "rotate": -1,
+   "used": true,
+   "shift": 5.59,
+   "residual": 3.99
+  },
+  {
+   "slot": "Body_06",
+   "samples": 490,
+   "score": 0.907,
+   "dx": -0.75,
+   "dy": 7.02,
+   "rotate": -1,
+   "used": true,
+   "shift": 7.13,
+   "residual": 1.3
+  },
+  {
+   "slot": "Body_07",
+   "samples": 665,
+   "score": 0.898,
+   "dx": 1.6,
+   "dy": 7.55,
+   "rotate": -1,
+   "used": true,
+   "shift": 7.76,
+   "residual": 2.05
+  },
+  {
+   "slot": "Body_08",
+   "samples": 916,
+   "score": 0.896,
+   "dx": -1.12,
+   "dy": 3.74,
+   "rotate": -1,
+   "used": true,
+   "shift": 4.55,
+   "residual": 1.15
+  },
+  {
+   "slot": "Body_09",
+   "samples": 1093,
+   "score": 0.88,
+   "dx": -0.94,
+   "dy": -0.63,
+   "rotate": -1,
+   "used": true,
+   "shift": 2.59,
+   "residual": 2.34
+  },
+  {
+   "slot": "Body_10",
+   "samples": 579,
+   "score": 0.875,
+   "dx": -2.14,
+   "dy": 1.52,
+   "rotate": -0.25,
+   "used": true,
+   "shift": 2.83,
+   "residual": 3.21
+  },
+  {
+   "slot": "Face",
+   "samples": 934,
+   "score": 0.888,
+   "dx": -1.35,
+   "dy": 1.61,
+   "rotate": -0.25,
+   "used": true,
+   "shift": 2.19,
+   "residual": 2.25
+  },
+  {
+   "slot": "Jaw",
+   "samples": 1030,
+   "score": 0.933,
+   "dx": -2.23,
+   "dy": 1.62,
+   "rotate": -0.25,
+   "used": true,
+   "shift": 2.76,
+   "residual": 3.47
+  },
+  {
+   "slot": "Mouth_03",
+   "samples": 1938,
+   "score": 0.88,
+   "dx": -2.02,
+   "dy": 1.62,
+   "rotate": -0.25,
+   "used": true,
+   "shift": 2.61,
+   "residual": 3.17
+  },
+  {
+   "slot": "Nose_01",
+   "samples": 1509,
+   "score": 0.861,
+   "dx": -1.74,
+   "dy": 1.62,
+   "rotate": -0.25,
+   "used": true,
+   "shift": 2.38,
+   "residual": 2.54
+  },
+  {
+   "slot": "Beard_R",
+   "samples": 1175,
+   "score": 0.154,
+   "dx": -1.97,
+   "dy": 0.97,
+   "rotate": -0.25,
+   "used": false,
+   "shift": 2.21
+  },
+  {
+   "slot": "Beard_L",
+   "samples": 1174,
+   "score": 0.082,
+   "dx": -1.97,
+   "dy": 2.18,
+   "rotate": -0.25,
+   "used": false,
+   "shift": 2.94
+  },
+  {
+   "slot": "Crown",
+   "samples": 1393,
+   "score": 0.36,
+   "dx": -0.64,
+   "dy": 1.62,
+   "rotate": -0.25,
+   "used": true,
+   "shift": 1.78,
+   "residual": 1.43
+  },
+  {
+   "slot": "Hand_L_01",
+   "samples": 1067,
+   "score": 0.912,
+   "dx": 2.08,
+   "dy": 12.43,
+   "rotate": 0,
+   "used": true,
+   "shift": 12.6,
+   "residual": 6.99
+  },
+  {
+   "slot": "Ear_L",
+   "samples": 1018,
+   "score": 0.851,
+   "dx": 1.56,
+   "dy": -0.4,
+   "rotate": -0.5,
+   "used": true,
+   "shift": 1.71,
+   "residual": 2.2
+  },
+  {
+   "slot": "Ear_Hair_L",
+   "samples": 1073,
+   "score": 0.846,
+   "dx": 1.06,
+   "dy": -0.79,
+   "rotate": -0.5,
+   "used": true,
+   "shift": 1.36,
+   "residual": 2.08
+  },
+  {
+   "slot": "Ear_B_L",
+   "samples": 495,
+   "score": 0.552,
+   "dx": 2.02,
+   "dy": -0.81,
+   "rotate": -0.5,
+   "used": true,
+   "shift": 2.19,
+   "residual": 2.13
+  },
+  {
+   "slot": "Eye_L_01",
+   "samples": 250,
+   "score": 0.435,
+   "dx": -0.3,
+   "dy": 0.99,
+   "rotate": 0.25,
+   "used": true,
+   "shift": 1.04,
+   "residual": 1.49
+  },
+  {
+   "slot": "Eye_L_02",
+   "samples": 1227,
+   "score": 0.355,
+   "dx": -0.35,
+   "dy": 1,
+   "rotate": 0.25,
+   "used": true,
+   "shift": 1.06,
+   "residual": 1.5
+  },
+  {
+   "slot": "Eye_L_03",
+   "samples": 174,
+   "score": 0.393,
+   "dx": -0.33,
+   "dy": 1.09,
+   "rotate": 0.25,
+   "used": true,
+   "shift": 1.14,
+   "residual": 1.17
+  },
+  {
+   "slot": "Hand_R_01",
+   "samples": 1146,
+   "score": 0.91,
+   "dx": -2.53,
+   "dy": 8.66,
+   "rotate": 0.25,
+   "used": true,
+   "shift": 9.04,
+   "residual": 8.02
+  },
+  {
+   "slot": "Ear_R",
+   "samples": 1007,
+   "score": 0.851,
+   "dx": -1.31,
+   "dy": -1.64,
+   "rotate": -1,
+   "used": true,
+   "shift": 2.33,
+   "residual": 5.62
+  },
+  {
+   "slot": "Ear_Hair_R",
+   "samples": 733,
+   "score": 0.814,
+   "dx": -2.72,
+   "dy": -1.18,
+   "rotate": -1,
+   "used": true,
+   "shift": 3.06,
+   "residual": 5.04
+  },
+  {
+   "slot": "Ear_B_R",
+   "samples": 492,
+   "score": 0.513,
+   "dx": -0.53,
+   "dy": -0.73,
+   "rotate": -1,
+   "used": true,
+   "shift": 1.1,
+   "residual": 4.2
+  },
+  {
+   "slot": "Eye_R_01",
+   "samples": 264,
+   "score": 0.415,
+   "dx": -1.49,
+   "dy": 1.19,
+   "rotate": -0.25,
+   "used": false,
+   "shift": 1.91
+  },
+  {
+   "slot": "Eye_R_02",
+   "samples": 1194,
+   "score": 0.304,
+   "dx": -1.45,
+   "dy": 1.23,
+   "rotate": -0.25,
+   "used": false,
+   "shift": 1.91
+  },
+  {
+   "slot": "Eye_R_03",
+   "samples": 171,
+   "score": 0.389,
+   "dx": -1.44,
+   "dy": 1.15,
+   "rotate": -0.25,
+   "used": false,
+   "shift": 1.84
+  },
+  {
+   "slot": "Tail_R_03",
+   "samples": 121,
+   "score": 0.232,
+   "dx": -9.41,
+   "dy": 17.11,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 19.74,
+   "residual": 25.26
+  },
+  {
+   "slot": "Tail_R_04",
+   "samples": 833,
+   "score": 0.369,
+   "dx": -3.35,
+   "dy": 11.18,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 13.26,
+   "residual": 17.88
+  },
+  {
+   "slot": "Tail_R_05",
+   "samples": 1072,
+   "score": 0.695,
+   "dx": 4.05,
+   "dy": -1.77,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 7.6,
+   "residual": 12.05
+  },
+  {
+   "slot": "Tail_R_06",
+   "samples": 661,
+   "score": 0.611,
+   "dx": 12.63,
+   "dy": -8.86,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 16.26,
+   "residual": 12.99
+  },
+  {
+   "slot": "Tail_L_03",
+   "samples": 98,
+   "score": 0.835,
+   "dx": 28.49,
+   "dy": 28.21,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 40.13,
+   "residual": 28.06
+  },
+  {
+   "slot": "Tail_L_04",
+   "samples": 763,
+   "score": 0.595,
+   "dx": 26.18,
+   "dy": 18.95,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 32.88,
+   "residual": 19.75
+  },
+  {
+   "slot": "Tail_L_05",
+   "samples": 895,
+   "score": 0.523,
+   "dx": 25.84,
+   "dy": 6.59,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 27.33,
+   "residual": 13.98
+  },
+  {
+   "slot": "Tail_L_06",
+   "samples": 1144,
+   "score": 0.666,
+   "dx": 21.77,
+   "dy": -5.69,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 23.13,
+   "residual": 13.06
+  },
+  {
+   "slot": "Tail_M",
+   "samples": 395,
+   "score": 0.516,
+   "dx": 12.03,
+   "dy": 11.86,
+   "rotate": 8.25,
+   "used": true,
+   "shift": 18.43,
+   "residual": 10.67
+  }
+ ],
+ "unobserved": [
+  {
+   "slot": "Tail_R_01",
+   "reason": "occluded",
+   "samples": 1462,
+   "visible": 0
+  },
+  {
+   "slot": "Tail_R_02",
+   "reason": "occluded",
+   "samples": 1549,
+   "visible": 0
+  },
+  {
+   "slot": "Tail_L_01",
+   "reason": "occluded",
+   "samples": 1796,
+   "visible": 0
+  },
+  {
+   "slot": "Tail_L_02",
+   "reason": "occluded",
+   "samples": 1567,
+   "visible": 0
+  },
+  {
+   "slot": "Crown_B",
+   "reason": "too-few-visible-samples",
+   "samples": 1377,
+   "visible": 35
+  }
+ ]
+}

@@ -1,0 +1,31 @@
+{
+  "pass": true,
+  "localReferencesChecked": 17,
+  "zip": "CRC and delivered project SHA-256 verified; 81 PNGs",
+  "videosDecoded": [
+    {
+      "file": "TheCat-review.mp4",
+      "width": 956,
+      "height": 596,
+      "duration": "24.000000",
+      "nb_frames": "720"
+    },
+    {
+      "file": "TheCat-Spine-native-bones.mp4",
+      "width": 544,
+      "height": 570,
+      "duration": "4.033008",
+      "nb_frames": "121"
+    },
+    {
+      "file": "TheCat-vs-reference.mp4",
+      "width": 1538,
+      "height": 538,
+      "duration": "4.000000",
+      "nb_frames": "120"
+    }
+  ],
+  "baselineUnchanged": "Nine animations remain, no full acceptance claimed",
+  "renderedBrowserReview": false,
+  "reviewNote": "Local file URL blocked by browser policy; no bypass attempted. HTML links, IDs, archive and media checked directly; native bones and video frames visually reviewed."
+}

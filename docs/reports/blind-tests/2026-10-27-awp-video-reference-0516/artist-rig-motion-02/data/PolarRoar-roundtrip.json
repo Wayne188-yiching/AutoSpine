@@ -1,0 +1,17 @@
+{
+  "pass": true,
+  "maxVertexErrorPx": 0.11054614104714786,
+  "rmsVertexErrorPx": 0.05411321248375135,
+  "sampledVertices": 48640,
+  "topologyMismatchCount": 0,
+  "topologyMismatches": [],
+  "worst": {
+    "animation": "Idle_LV4",
+    "frame": 0,
+    "part": "Igloo4_Stone_light1#Igloo4_Stone_light1"
+  },
+  "limitPx": 0.5,
+  "sampleOffsetSeconds": 0.0001,
+  "spineVersion": "4.0.64",
+  "note": "Compared new motion against its own official native roundtrip, never against original timelines. Triangle cyclic order normalized, winding preserved."
+}

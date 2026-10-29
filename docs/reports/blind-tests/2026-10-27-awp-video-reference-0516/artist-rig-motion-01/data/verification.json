@@ -1,0 +1,32 @@
+{
+  "pass": true,
+  "localLinksChecked": 20,
+  "videosDecoded": [
+    {
+      "file": "Spine-native-bones.mp4",
+      "width": 516,
+      "height": 558,
+      "duration": "4.033333",
+      "nb_frames": "121"
+    },
+    {
+      "file": "TheCat-artist-rig-compare.mp4",
+      "width": 1538,
+      "height": 538,
+      "duration": "4.000000",
+      "nb_frames": "120"
+    },
+    {
+      "file": "TheCat-artist-rig-review.mp4",
+      "width": 956,
+      "height": 596,
+      "duration": "24.000000",
+      "nb_frames": "720"
+    }
+  ],
+  "zip": "CRC, delivered Spine SHA-256 and 81 PNGs verified",
+  "source": "Original file unchanged; static binding unchanged; input animations zero; reference movie unchanged",
+  "baseline": "Nine original animations retained separately; no new complete pass claimed",
+  "browserRenderChecked": false,
+  "visualReview": "Native bones frame and generated poses reviewed; browser file URL was previously blocked by policy and was not bypassed."
+}

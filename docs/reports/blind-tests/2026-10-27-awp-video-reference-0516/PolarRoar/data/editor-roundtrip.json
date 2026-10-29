@@ -1,0 +1,27 @@
+{
+  "engineVersion": "0.5.16",
+  "spineVersion": "4.0.64",
+  "pass": true,
+  "maxVertexErrorPx": 0.10747689811011353,
+  "rmsVertexErrorPx": 0.00993920961087123,
+  "sampledVertices": 132912,
+  "worst": {
+    "animation": "4Upgrade",
+    "frame": 33,
+    "time": 1.1001,
+    "part": "Igloo_Stone_87#Igloo_Stone_87"
+  },
+  "topologyMismatches": [],
+  "topologyMismatchCount": 0,
+  "bones": 97,
+  "meshes": 93,
+  "constraints": {
+    "ik": 0,
+    "transform": 0
+  },
+  "limitPx": 0.5,
+  "sampleOffsetSeconds": 0.0001,
+  "maxKeyTimeDeltaSeconds": 0.00003333333333338517,
+  "rawBoundaryMismatchCount": null,
+  "note": "Only generated build versus its delivered .spine re-export. Every animation sampled at 30 FPS, after the observed 100-microsecond decimal rounding bin of editor JSON export. Triangle order is normalized without changing winding. Exact frame-boundary discrepancies, where recorded, remain in the separate audit; this is editor interchange fidelity, not artist approval or validation against the original."
+}

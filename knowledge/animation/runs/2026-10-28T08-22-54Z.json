@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T08:22:43.966Z",
+  "startedAt": "2026-10-28T08:22:54Z",
+  "completedAt": "2026-10-28T08:27:11.234Z",
+  "result": "updated",
+  "focus": ["歐洲角色表情與 Pose 對照圖片", "有原始官方出處及可核對授權的圖片"],
+  "addedIds": ["europe-blender-sprite-expression-library"],
+  "updatedIds": [],
+  "evidence": {
+    "imageEntries": 1,
+    "textReviewedEntries": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://studio.blender.org/characters/sprite/v1/",
+      "outcome": "實際看過官方頁首圖片：全身 Pose、臉部控制與眼眉／嘴形／手勢縮圖格，記為 image-reviewed。只保存來源、公開圖片連結和原創筆記，沒有下載模型或影像。"
+    },
+    {
+      "url": "https://studio.blender.org/projects/sprite-fright/pages/about/",
+      "outcome": "在正常公開瀏覽器讀到 Licensing 與排除範圍；保留專案文字版本與資產頁授權連結版本差異，沒有混稱為同一版。"
+    },
+    {
+      "url": "https://www.blender.org/about/",
+      "outcome": "官方搜尋資料將 Production 團隊置於 Blender HQ Amsterdam；地域依製作團隊所在地，不以英國故事設定推論。"
+    }
+  ],
+  "skippedSources": [
+    {
+      "url": "https://www.ghibli.jp/works/mononoke/",
+      "reason": "公開相簿的圖片檢視器另列個人影迷用途及商業用途限制。本輪沒有把該圖片加入外掛知識庫，也未分析未完整顯示的大圖。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://studio.blender.org/projects/sprite-fright/pages/about/",
+      "issue": "文字抓取回報 HTTP 402；正常背景瀏覽器可直接讀取公開頁，未登入、未付款、未繞過限制。",
+      "resolved": true
+    },
+    {
+      "url": "https://studio.blender.org/contact/",
+      "issue": "文字抓取回報 HTTP 402；背景瀏覽器可直接讀取，但此頁沒有所需地域資訊，改以官方 About 查證。",
+      "resolved": true
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 10 sources",
+    "indexBuild": "passed — 10 sources",
+    "generatedSourceAndImageLink": "passed"
+  },
+  "limits": [
+    "僅看圖片，沒有把縮圖格當連續影格或聲稱掌握眨眼／情緒切換節奏。",
+    "圖中的官方 Blender 操作截圖並非使用者的瀏覽器截圖，沒有收錄私人分頁或帳戶資訊。",
+    "沒有修改引擎、角色素材、安裝快取，沒有 Commit、Push、付費模型調用或私有資料上傳。"
+  ],
+  "nextFocus": "日本官方可連續觀看的動作短片，或授權明確的分鏡／動勢圖；本庫仍缺連續影片證據，不以靜態圖補造節奏分析。"
+}

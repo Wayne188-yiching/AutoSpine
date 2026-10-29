@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T17:34:22.455Z",
+  "startedAt": "2026-10-28T17:34:30Z",
+  "completedAt": "2026-10-28T17:40:18.192Z",
+  "result": "updated",
+  "focus": ["日本官方擠壓伸展影片的視覺證據", "區分製作中的待修狀態與完成示範"],
+  "addedIds": ["japan-autodesk-squash-stretch-video-samples"],
+  "updatedIds": [],
+  "evidence": {
+    "videoEntries": 1,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://area.autodesk.jp/column/tutorial/maya-animation/03-tips/",
+      "outcome": "重訪官方教材第⑤節並核對其內嵌 YouTube ID，確認影片是既有文字教材的對應示範；沒有把原文字條目改成整片已觀看。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=M3mouJmdw48",
+      "outcome": "正常背景瀏覽器核對 AREA JAPAN 發布者及 10:14 片長，實際抽查 02:02、05:07、08:11。05:07 原生字卡標示壓扁形待修，已在樣本與限制中明確標記。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/embed/M3mouJmdw48?rel=0",
+      "issue": "文字工具開啟內嵌 URL 回報 Cache miss；正常公開 YouTube 頁可觀看及擷取，未登入或繞過限制。",
+      "resolved": true
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 17 sources",
+    "indexBuild": "passed — 17 sources",
+    "generatedVideoAndEvidence": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "影片背景播放經過的時間不算連續觀看；本輪只收錄三張實際看過的暫停畫面。",
+    "可見原生教學字卡用於判斷待修狀態，未將自動字幕或編輯畫面當作已完成的動作節奏證據。",
+    "沒有下載影片或保存瀏覽器截圖；只更新 knowledge/animation/，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "補實際完成的擠壓伸展或接觸 Pose 參考，優先有明確原作者與過程標記的官方素材；若只抽樣畫面，維持單格證據範圍。"
+}

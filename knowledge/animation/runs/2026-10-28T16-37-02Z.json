@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T16:36:51.614Z",
+  "startedAt": "2026-10-28T16:37:02Z",
+  "completedAt": "2026-10-28T16:40:46.106Z",
+  "result": "updated",
+  "focus": ["重訪上輪待研讀的拖影示例", "補足日本擠壓伸展與預備動作教材"],
+  "addedIds": ["japan-autodesk-squash-stretch-basics"],
+  "updatedIds": ["europe-blender-sprite-smear-shapes"],
+  "taxonomyAddedForms": ["smear-frame"],
+  "evidence": {
+    "textReviewed": 1,
+    "imageReviewedUpgrade": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://studio.blender.org/files/public/thumbnail/0c/0c2c0b4dd1c7af074ed3e21b117c75d5/0c2c0b4dd1c7af074ed3e21b117c75d5.png",
+      "outcome": "本輪在背景瀏覽器成功看清 2048×858 靜態圖，新增前景延展形塊、分離尖片與臉／雙手輪廓的圖中區域觀察。保留既有 firstSeen，並分開前輪文字筆記與本輪圖像證據。"
+    },
+    {
+      "url": "https://area.autodesk.jp/column/tutorial/maya-animation/03-tips/",
+      "outcome": "已讀官方原頁第 1–5 節、總結及金野義徳作者介紹。新增擠壓伸展、預備與 Pose-to-Pose 工作順序的文字依據；未播放教學影片或下載工程。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://studio.blender.org/files/public/thumbnail/0c/0c2c0b4dd1c7af074ed3e21b117c75d5/0c2c0b4dd1c7af074ed3e21b117c75d5.png",
+      "issue": "網頁文字工具無法存取圖片內容；正常背景瀏覽器載入後，本輪擷取成功，沒有下載或改用私人快取。",
+      "resolved": true
+    }
+  ],
+  "priorDeferredMediaResolved": [
+    {
+      "run": "2026-10-28T15-32-30Z.json",
+      "url": "https://studio.blender.org/files/public/thumbnail/0c/0c2c0b4dd1c7af074ed3e21b117c75d5/0c2c0b4dd1c7af074ed3e21b117c75d5.png",
+      "evidenceNow": "image-reviewed — single still only"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 16 sources",
+    "indexBuild": "passed — 16 sources",
+    "generatedEntriesImageAndForm": "passed",
+    "evidenceAndFirstSeen": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "拖影僅有單格視覺證據，沒有從形塊推算幀數、速度、spacing 或顯示時間；沒有連續看片分析。",
+    "新增拖影／過渡單格分類，避免把中間效果圖當作 Layout 主要 Pose；只調整知識庫資料與生成頁面。",
+    "文字教材沒有實際示例觀看證據；不把文字原則轉成固定的引擎參數。",
+    "沒有下載／重傳原圖或保存完整瀏覽器截圖；未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "擠壓伸展的實際公開示例或已知影片的動作轉折；保留文字、單格與連續動作之間的證據差異，優先補有來源的圖像。"
+}

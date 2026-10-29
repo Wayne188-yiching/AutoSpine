@@ -1,0 +1,27 @@
+{
+  "engineVersion": "0.5.16",
+  "spineVersion": "4.0.64",
+  "pass": true,
+  "maxVertexErrorPx": 0.08845395322398783,
+  "rmsVertexErrorPx": 0.04523300494023267,
+  "sampledVertices": 190063,
+  "worst": {
+    "animation": "Idel_02",
+    "frame": 0,
+    "time": 0.0001,
+    "part": "Ear_B_R#Ear_B_R"
+  },
+  "topologyMismatches": [],
+  "topologyMismatchCount": 0,
+  "bones": 25,
+  "meshes": 52,
+  "constraints": {
+    "ik": 0,
+    "transform": 0
+  },
+  "limitPx": 0.5,
+  "sampleOffsetSeconds": 0.0001,
+  "maxKeyTimeDeltaSeconds": 0.00003333333333355171,
+  "rawBoundaryMismatchCount": null,
+  "note": "Only generated build versus its delivered .spine re-export. Every animation sampled at 30 FPS, after the observed 100-microsecond decimal rounding bin of editor JSON export. Triangle order is normalized without changing winding. Exact frame-boundary discrepancies, where recorded, remain in the separate audit; this is editor interchange fidelity, not artist approval or validation against the original."
+}

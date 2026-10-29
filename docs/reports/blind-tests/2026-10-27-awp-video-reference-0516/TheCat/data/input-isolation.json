@@ -1,0 +1,41 @@
+{
+  "engineVersion": "0.5.16",
+  "original": "\\\\192.168.1.86\\art\\★H_70T\\04_虎機\\AWP\\154_INFINITE LINK NEON_貓咪\\00_編輯檔案\\02_後製\\Spine\\01_MainGame\\TheCat_TopRole_20240217_紀景鳳\\v2_紀景鳳\\TheCat_TopRole.spine",
+  "originalSha256": "ab7b757a8b96b9e479bb8f0996c8f21d7cddebfc5bee4efb5eae6b1f4d83f296",
+  "originalUnchanged": true,
+  "sourceCopy": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\_work\\input\\quarantine\\TheCat\\original.spine",
+  "availableAnimations": 34,
+  "selectedAnimations": [
+    "Idel_02",
+    "Touch_01",
+    "MG_Bingo"
+  ],
+  "imagesOnly": {
+    "path": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\imagesOnly.json",
+    "sha256": "1e439aed785fe796c3cf9f0ef1eee35f84d4048481f745ea34c1de2c0955d32a",
+    "bones": 1,
+    "animations": [],
+    "constraints": []
+  },
+  "renders": [
+    {
+      "animation": "Idel_02",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\reference\\Idel_02.mov",
+      "bytes": 31007947,
+      "sha256": "5e7d286fb5258520dcf02fa7592eef974a2c04ae0ae19b37e1f7da779fd31284"
+    },
+    {
+      "animation": "Touch_01",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\reference\\Touch_01.mov",
+      "bytes": 15422082,
+      "sha256": "c26f3008fdb078495085a0e3b2527601877c42e2a0767e3a980d6af25c9d8ae5"
+    },
+    {
+      "animation": "MG_Bingo",
+      "movie": "D:\\Wayne\\Codex\\AutoSpine\\private-gate32-candidates\\AWP-VideoOnly-0516-20261027\\TheCat\\_work\\input\\reference\\MG_Bingo.mov",
+      "bytes": 15400046,
+      "sha256": "165561bb5e798855276b8ece1eb6908e50524b981ecde535f115a309ef039219"
+    }
+  ],
+  "policy": "Original files and full JSON stay in batch quarantine. Build and fitting may read only this project input/imagesOnly.json, PNG images, MOV references, plans, and generated builds. No compare-reference, optimize-motion, original mesh, weights, constraints, or animation keys."
+}

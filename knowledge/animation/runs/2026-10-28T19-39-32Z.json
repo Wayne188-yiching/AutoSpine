@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T19:39:24.372Z",
+  "startedAt": "2026-10-28T19:39:32Z",
+  "completedAt": "2026-10-28T19:45:01.801Z",
+  "result": "updated",
+  "focus": ["歐洲角色表演與互動反應的取捨", "原作者公開角色／變身造型對照"],
+  "addedIds": ["europe-aardman-morph-game-anticipation", "europe-aardman-morph-form-sheet"],
+  "updatedIds": [],
+  "taxonomyAddedForms": ["model-sheet"],
+  "taxonomyAddedActions": ["transform"],
+  "evidence": {
+    "textReviewed": 1,
+    "imageEntries": 1,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://aardman.com/latest-news/2023/august/behind-the-craft-morph-thingy-ma-bobstacle-course/",
+      "outcome": "已讀官方製作訪談，記錄粗動畫測試後完成細節、全身預備，以及依遊戲急迫程度保留不同蓄勢量的文字證據；未播放內嵌動畫。"
+    },
+    {
+      "url": "https://aardman.com/media/allaqccm/picture7.png",
+      "outcome": "實際看過 579×295 靜態造型表。圖中的人形 T Pose、飛機、船及下排簡化形體作為外輪廓比較；沒有將它們當動畫順序或完整 Layout。已確認移除純尺寸參數仍可讀同圖，尺寸版本合併為 alias。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://aardman.com/media/allaqccm/picture7.png?height=295&width=579",
+      "issue": "文字工具開啟圖片回報 Cache miss；正常公開背景瀏覽器成功載入並檢視，亦確認原始檔案 URL。",
+      "resolved": true
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 20 sources",
+    "indexBuild": "passed — 20 sources",
+    "generatedEntriesImageAndTaxonomy": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "文中的蓄勢／反應取捨只按文字原意保存，沒有觀看影片或量測延遲，沒有轉成固定幀數規則。",
+    "模型表的形體差異不代表已知變身順序、體積或材質參數；獨立建模作者未確認，未以動畫師姓名代填。",
+    "只更新 knowledge/animation/；沒有下載媒體或保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "原作者公開的走路／跑步支撐 Pose 或連續姿勢表，補足位移與重量轉移；靜態圖仍只記造型與支撐關係，不推算速度。"
+}

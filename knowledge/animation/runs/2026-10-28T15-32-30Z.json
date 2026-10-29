@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T15:32:20.601Z",
+  "startedAt": "2026-10-28T15:32:30Z",
+  "completedAt": "2026-10-28T15:38:41.255Z",
+  "result": "updated",
+  "focus": ["補足拖影與變形技法", "保留文字解說與實際視覺證據的差異"],
+  "addedIds": ["europe-blender-sprite-smear-shapes"],
+  "updatedIds": [],
+  "evidence": {
+    "textReviewed": 1,
+    "imageEntries": 0,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://studio.blender.org/blog/one-thing-ive-learned-from-sprite-fright-animation-edition/",
+      "outcome": "已在正常公開背景瀏覽器讀到完整訪談、作者與日期。收錄彩色形狀表達來源／去向及快速動作用途的文字說明，未播放內嵌影片。"
+    }
+  ],
+  "deferredMedia": [
+    {
+      "url": "https://studio.blender.org/files/public/thumbnail/0c/0c2c0b4dd1c7af074ed3e21b117c75d5/0c2c0b4dd1c7af074ed3e21b117c75d5.png",
+      "status": "not-visually-reviewed",
+      "reason": "由原頁圖像 DOM 確認公開 src 與 2048×858 尺寸；直接圖片頁兩次、原文內一次擷取均逾時。沒有看到實際像素，未新增圖片條目或圖像觀察。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://studio.blender.org/blog/bcon22-animating-the-default-cube/",
+      "reason": "文字抓取回應 HTTP 402；本輪未完成原頁檢視，未依標題／文摘編寫技法筆記。"
+    },
+    {
+      "url": "https://studio.blender.org/blog/cat-purkour-combining-2d-animation-in-a-3d-environment/",
+      "reason": "搜尋傳回長篇文字摘要，但開啟原頁的文字抓取回應 HTTP 402；本輪未追加該來源，留待正常原頁檢視。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 15 sources",
+    "indexBuild": "passed — 15 sources",
+    "generatedEntryAndEvidence": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "圖說、標題與原始圖片網址只作查找線索，沒有當作已看過示例的證據。",
+    "文章沒有可直接採用的幀數／時間值，未把快速動作說明改成固定拖影時長。",
+    "只更新 knowledge/animation/；未下載媒體或儲存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "重訪本篇拖影靜態圖以補真正視覺證據，或尋找日本官方擠壓伸展示例；若擷取仍受阻，保存限制並改查可讀的原始資料。"
+}

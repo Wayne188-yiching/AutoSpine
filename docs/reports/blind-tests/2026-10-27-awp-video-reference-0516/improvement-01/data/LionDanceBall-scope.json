@@ -1,0 +1,13 @@
+{
+  "kind": "post-discovery input and first-frame regression",
+  "newInput": true,
+  "untouchedBlindPass": false,
+  "selectedSkin": "Ball_fiscal",
+  "inputOnly": {
+    "bones": 1,
+    "animations": 0,
+    "skins": 1,
+    "attachments": 43
+  },
+  "policy": "New bones, weights and motion are authored from PNG/static placement and exported MOV only. No source rig or animation numbers read by this authoring script. This is not full motion acceptance."
+}

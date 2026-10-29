@@ -33217,7 +33217,7 @@ async function buildJobFile(jobPath) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.21";
+var AUTOSPINE_VERSION = "0.5.22";
 
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
@@ -39034,6 +39034,7 @@ function matchPart(img, tpl, radius, guess, mirror = false) {
   cx /= n;
   cy /= n;
   const turned = /* @__PURE__ */ new Map();
+  const locations = /* @__PURE__ */ new Map();
   const offsets = (deg, flip) => {
     const key = `${deg}${flip ? "m" : ""}`;
     let o = turned.get(key);
@@ -39061,7 +39062,10 @@ function matchPart(img, tpl, radius, guess, mirror = false) {
       dot += v * t[i];
     }
     const varSum = sq - sum * sum / n;
-    return varSum <= 1e-6 ? -1 : dot / (Math.sqrt(varSum) * norm);
+    const score = varSum <= 1e-6 ? -1 : dot / (Math.sqrt(varSum) * norm);
+    const key = `${dx2},${dy2}`;
+    if (score > (locations.get(key)?.score ?? -Infinity)) locations.set(key, { dx: dx2, dy: dy2, score });
+    return score;
   };
   const at2 = (dx2, dy2, angle2, mirrored2) => ({
     dx: dx2,
@@ -39120,12 +39124,16 @@ function matchPart(img, tpl, radius, guess, mirror = false) {
     return a >= 0 && b >= 0 && d < -1e-9 ? Math.max(-0.5, Math.min(0.5, (a - b) / (2 * d))) : 0;
   };
   const { dx, dy, angle, mirrored } = best;
+  const ambiguous = [...locations.values()].some(
+    (p) => Math.hypot(p.dx - dx, p.dy - dy) >= 4 && p.score >= 0.75 && p.score >= best.score - 0.02
+  );
   return {
     dx: dx + offset(ncc(dx - 1, dy, angle, mirrored), ncc(dx + 1, dy, angle, mirrored)),
     dy: dy + offset(ncc(dx, dy - 1, angle, mirrored), ncc(dx, dy + 1, angle, mirrored)),
     angle,
     mirrored,
-    score: best.score
+    score: best.score,
+    ...ambiguous ? { ambiguous: true } : {}
   };
 }
 function mirrorSimilarity(img, tpl) {
@@ -42007,9 +42015,7 @@ function placeOnVideo(sk, texture, animation, ref0, video) {
     width: W,
     height: H
   };
-  const canvas = render(sk, texture, probe), mask = new Uint8Array(W * H);
-  for (let i = 0; i < mask.length; i++)
-    mask[i] = canvas[i * 4 + 3] > 0.5 ? 1 : 0;
+  const canvas = render(sk, texture, probe), mask = foregroundMask({ width: W, height: H, rgb: flatten2(canvas, W, H, bgUnit) }, bg);
   const reg = registerMasks(refMask0, mask, W, H);
   const k = reg.scale;
   const view = {
@@ -42035,12 +42041,6 @@ async function compareOneVideo(sk, texture, animation, loop, fps, exclude, job, 
       throw new Error(`CLI_VIDEO: ${job.video} has no frames after ${job.start}s`);
     const ref0 = first.value;
     const { bg, bgUnit, figureHeight, view, reg } = placeOnVideo(sk, texture, animation, ref0, job.video);
-    const alphaMask = (canvas) => {
-      const m = new Uint8Array(W * H);
-      for (let i = 0; i < m.length; i++)
-        m[i] = canvas[i * 4 + 3] > 0.5 ? 1 : 0;
-      return m;
-    };
     pose(sk, animation, frameTime(0, N, D, fps));
     const build0 = {
       width: W,
@@ -42052,6 +42052,7 @@ async function compareOneVideo(sk, texture, animation, loop, fps, exclude, job, 
     const tracksByPart = /* @__PURE__ */ new Map();
     const owner = new Int16Array(W * H);
     const lastHit = /* @__PURE__ */ new Map();
+    const ambiguousFrames = /* @__PURE__ */ new Map();
     const mirroredByPart = /* @__PURE__ */ new Map();
     const symmetryByPart = /* @__PURE__ */ new Map();
     const radius = Math.max(6, Math.ceil(0.08 * figureHeight / 2));
@@ -42068,7 +42069,7 @@ async function compareOneVideo(sk, texture, animation, loop, fps, exclude, job, 
       pose(sk, animation, frameTime(f, N, D, fps));
       const canvas = render(sk, texture, view, owner);
       const build = f === 0 ? build0 : { width: W, height: H, rgb: flatten2(canvas, W, H, bgUnit) };
-      const rm3 = foregroundMask(ref, bg), bm = alphaMask(canvas);
+      const rm3 = foregroundMask(ref, bg), bm = foregroundMask(build, bg);
       ious.push(iou(rm3, bm));
       const a = maskStats(rm3, W, H), b = maskStats(bm, W, H);
       refC.push([a.cx, a.cy]);
@@ -42096,14 +42097,16 @@ async function compareOneVideo(sk, texture, animation, loop, fps, exclude, job, 
         const mine = pixels.get(slotNames.indexOf(name));
         const tpl = mine && partTemplate(gb, mine);
         const hit = tpl && matchPart(gr, tpl, radius, lastHit.get(name), true);
-        if (hit && hit.score >= 0.6)
+        if (hit?.ambiguous)
+          ambiguousFrames.set(name, (ambiguousFrames.get(name) ?? 0) + 1);
+        if (hit && !hit.ambiguous && hit.score >= 0.6)
           lastHit.set(name, hit);
         else
           lastHit.delete(name);
         let flips2 = mirroredByPart.get(name);
         if (!flips2)
           mirroredByPart.set(name, flips2 = Array(f).fill(null));
-        if (!mine || !tpl || !hit || hit.score < 0.6) {
+        if (!mine || !tpl || !hit || hit.ambiguous || hit.score < 0.6) {
           track.ref.push(null);
           track.build.push(null);
           flips2.push(null);
@@ -42209,7 +42212,14 @@ async function compareOneVideo(sk, texture, animation, loop, fps, exclude, job, 
       registration: { iou: +reg.iou.toFixed(3), pixelsPerUnit: +view.scale.toFixed(4) },
       mirrored,
       deformation,
-      notJudged: parts.filter((p) => !judgedParts([p], ious.length).length).map((p) => ({ part: p.part, frames: p.frames })),
+      notJudged: parts.filter((p) => !judgedParts([p], ious.length).length).map((p) => ({
+        part: p.part,
+        frames: p.frames,
+        ...ambiguousFrames.has(p.part) ? {
+          ambiguousFrames: ambiguousFrames.get(p.part),
+          reason: "ambiguous visual identity"
+        } : {}
+      })),
       ...process.env.AUTOSPINE_DEBUG_TRACKS ? { debugTracks: [...tracksByPart.values()] } : {},
       pass,
       rows,

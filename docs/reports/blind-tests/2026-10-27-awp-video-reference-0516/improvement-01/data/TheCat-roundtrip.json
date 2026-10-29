@@ -1,0 +1,16 @@
+{
+  "pass": true,
+  "maxVertexErrorPx": 0.3106043073655077,
+  "rmsVertexErrorPx": 0.04776918056865984,
+  "sampledVertices": 90288,
+  "topologyMismatchCount": 0,
+  "topologyMismatches": [],
+  "worst": {
+    "frame": 69,
+    "part": "Ear_B_R#Ear_B_R"
+  },
+  "limitPx": 0.5,
+  "sampleOffsetSeconds": 0.0001,
+  "spineVersion": "4.0.64",
+  "note": "Generated build versus official Spine JSON re-export only. Sample 100 microseconds after frame boundaries for four-decimal export rounding; normalize cyclic triangle order without changing winding. No original artist data used."
+}

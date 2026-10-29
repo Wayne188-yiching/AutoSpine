@@ -1,0 +1,55 @@
+{
+  "bones": 51,
+  "slots": 77,
+  "meshes": 91,
+  "vertices": 1457,
+  "ik": 0,
+  "transform": 3,
+  "animations": [
+    {
+      "name": "clap",
+      "boneTimelines": 20
+    },
+    {
+      "name": "idle",
+      "boneTimelines": 14
+    },
+    {
+      "name": "idle2",
+      "boneTimelines": 13
+    },
+    {
+      "name": "idle_clap",
+      "boneTimelines": 12
+    },
+    {
+      "name": "in",
+      "boneTimelines": 15
+    }
+  ],
+  "maxVertexDeltaPx": 11.028240454298938,
+  "samples": 550,
+  "semanticMismatch": [
+    {
+      "animation": "idle",
+      "frame": 46,
+      "reason": "draw count"
+    },
+    {
+      "animation": "idle2",
+      "frame": 146,
+      "reason": "draw count"
+    },
+    {
+      "animation": "idle_clap",
+      "frame": 2,
+      "reason": "draw count"
+    },
+    {
+      "animation": "idle_clap",
+      "frame": 8,
+      "reason": "draw count"
+    }
+  ],
+  "pass": false
+}

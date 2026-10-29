@@ -1,0 +1,79 @@
+{
+  "method": "Images-only placement + independently planned alpha meshes and weights + rendered reference fitting. No original bone hierarchy, mesh topology, UV crop, weights, deform keys or bone animation keys are used in any plan.",
+  "placementQuads": "Only four-corner affine placement carriers created by strip-images are kept in the input; they are not artist topology.",
+  "setupResidual": {
+    "slots": 77,
+    "attachments": 106,
+    "fromMesh": 95,
+    "fromRegion": 11,
+    "maxResidualPx": 53.27,
+    "over2px": [
+      "mnm/er_1:11.32",
+      "mnm/er_2:8.3",
+      "mnm/jio_l2_2:10.89",
+      "mnm/jio_l2_3:11.5",
+      "mnm/jio_rl2_3:37.61",
+      "mnm/er_1ss:14.76",
+      "mnm/er_2ss:10.57",
+      "mnm/jio_l2_1:24.92",
+      "mnm/jio_l2_2:6.85",
+      "mnm/jio_l2_3:21.97",
+      "mnm/jio_rl2_2:10.08",
+      "mnm/jio_rl2_3:37.38",
+      "mnm/shenti_1ss:10.96",
+      "mnm/shoubi_l_2:53.27",
+      "mnm/shouzhi_l2_2:7.82",
+      "mnm/shouzhi_r_1:3.44",
+      "mnm/shouzhi_l2_4ss:32.35"
+    ],
+    "quadMeshForShear": [
+      "mnm/er_1",
+      "mnm/er_2",
+      "mnm/jio_l2_2",
+      "mnm/jio_l2_3",
+      "mnm/jio_rl2_3",
+      "mnm/er_1ss",
+      "mnm/er_2ss",
+      "mnm/jio_l2_1",
+      "mnm/jio_l2_3",
+      "mnm/jio_rl2_2",
+      "mnm/jio_rl2_3",
+      "mnm/shoubi_l_2",
+      "mnm/shouzhi_l2_2",
+      "mnm/shouzhi_r_1"
+    ],
+    "maxAbsShearCosine": 0.41752,
+    "skins": 1,
+    "droppedNonImage": [
+      "default/mask/mask:clipping"
+    ],
+    "missingImages": []
+  },
+  "animations": [
+    {
+      "name": "clap",
+      "frames": 60,
+      "loop": true
+    },
+    {
+      "name": "idle",
+      "frames": 60,
+      "loop": true
+    },
+    {
+      "name": "idle2",
+      "frames": 120,
+      "loop": true
+    },
+    {
+      "name": "idle_clap",
+      "frames": 4,
+      "loop": false
+    },
+    {
+      "name": "in",
+      "frames": 30,
+      "loop": false
+    }
+  ]
+}

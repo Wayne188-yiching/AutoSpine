@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T13:29:18.632Z",
+  "startedAt": "2026-10-28T13:29:27Z",
+  "completedAt": "2026-10-28T13:33:51.093Z",
+  "result": "updated",
+  "focus": ["日本／歐洲的動作與預備動作參考", "跳躍主要 Pose 及自動插值仍需動畫師控制的依據"],
+  "addedIds": ["japan-autodesk-production-keyposes"],
+  "updatedIds": [],
+  "evidence": {
+    "textReviewed": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://area.autodesk.jp/column/trend_tech/animation/03-production/",
+      "outcome": "已讀官方教材的 Layout、原畫、動画與數位切紙段落及作者介紹。補入跳躍預備、最高點、落地等主要 Pose 的文字依據；未觀看內嵌影片。"
+    },
+    {
+      "url": "https://kinggnu.jp/news/2023/08/specialz-0824/",
+      "outcome": "搜尋找到樂團官方消息引用既有咒術迴戰 PV 同一影片 ID；只作來源交叉核對，未新增重複條目。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://www.youtube.com/watch?v=PKHQuQF1S8k",
+      "reason": "播放器與時間可讀，已暫停於約 01:00；畫面擷取連續兩次逾時，沒有取得可判讀的新影像。沒有新增該秒數觀察，也沒有變更舊條目的研讀證據。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 13 sources",
+    "indexBuild": "passed — 13 sources",
+    "generatedEntryAndSource": "passed",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "沒有把播放經過時間或可讀的標題／字幕當成已看過畫面；既有 PV 本輪無新增視覺證據。",
+    "跳躍四個要點是教材示例，未固化成幀數、時長或 Key 數限制。",
+    "只更新 knowledge/animation/ 與本紀錄；未修改引擎、角色素材或安裝快取，未提交／推送、付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "歐洲官方動作／預備動作素材或既有日本 PV 補看。先確認可取得實際畫面，連續節奏須另有真正連續觀看證據。"
+}

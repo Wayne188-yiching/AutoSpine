@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-28T07:25:13.065Z",
+  "startedAt": "2026-10-28T07:25:24Z",
+  "completedAt": "2026-10-28T07:30:21.626Z",
+  "result": "updated",
+  "focus": ["補足歐洲官方教材", "重量、接觸與慢抬／接住下沉的文字節奏證據"],
+  "addedIds": ["europe-aardman-heavy-lift-diary"],
+  "updatedIds": [],
+  "evidence": {
+    "textReviewed": 1,
+    "imageEntries": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.aardman.com/latest-news/2018/november/aardman-academy-student-diary/",
+      "outcome": "已讀官方刊登的 Evelyn Ross 課程日誌，記錄 WEEKS 4–6 第四週抬重物段落；來源身分與學生經驗適用範圍分開。"
+    },
+    "本輪沒有實際觀看影片或圖片，沒有新增畫面或連續節奏分析；timingBasis 僅指文章明述的速度反差。"
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 9 sources",
+    "indexBuild": "passed — 9 sources"
+  },
+  "limits": [
+    "未把學生文字中的循環幀數套用為通用動畫參數。",
+    "本輪只新增一筆有實質內容的官方來源，沒有為數量增添僅有標題的條目。",
+    "只更新本機知識庫與執行紀錄，未提交、推送或更新已安裝外掛。"
+  ],
+  "nextFocus": "日本或歐洲官方的接觸／重量短片，若能實際連續觀看同一鏡頭，再補起訖時間與動作節奏；也可補有明確作者的關鍵 Pose 圖。"
+}
