@@ -1688,9 +1688,10 @@ export function placeOnVideo(
     width: W,
     height: H,
   };
+  // Compare the same visible RGB evidence as the movie: additive light contributes colour
+  // without increasing the raster's alpha, and translucent edges need the same threshold too.
   const canvas = render(sk, texture, probe),
-    mask = new Uint8Array(W * H);
-  for (let i = 0; i < mask.length; i++) mask[i] = canvas[i * 4 + 3]! > 0.5 ? 1 : 0;
+    mask = foregroundMask({ width: W, height: H, rgb: flatten(canvas, W, H, bgUnit) }, bg);
   const reg = registerMasks(refMask0, mask, W, H);
   const k = reg.scale;
   const view: View = {
@@ -1732,11 +1733,6 @@ async function compareOneVideo(
       ref0,
       job.video,
     );
-    const alphaMask = (canvas: Float32Array) => {
-      const m = new Uint8Array(W * H);
-      for (let i = 0; i < m.length; i++) m[i] = canvas[i * 4 + 3]! > 0.5 ? 1 : 0;
-      return m;
-    };
     pose(sk, animation, frameTime(0, N, D, fps));
     const build0: RgbFrame = {
       width: W,
@@ -1750,6 +1746,7 @@ async function compareOneVideo(
     const tracksByPart = new Map<string, PartTrack>();
     const owner = new Int16Array(W * H);
     const lastHit = new Map<string, { dx: number; dy: number; angle: number; mirrored: boolean }>();
+    const ambiguousFrames = new Map<string, number>();
     // Which way round each part shows in the reference (found mirrored: the best scores flipped
     // and the right way round), and how symmetric it is in the build.
     type Flip = { flipped: number; unflipped: number } | false | null;
@@ -1782,7 +1779,7 @@ async function compareOneVideo(
       const canvas = render(sk, texture, view, owner);
       const build = f === 0 ? build0 : { width: W, height: H, rgb: flatten(canvas, W, H, bgUnit) };
       const rm = foregroundMask(ref, bg),
-        bm = alphaMask(canvas);
+        bm = foregroundMask(build, bg);
       ious.push(iou(rm, bm));
       const a = maskStats(rm, W, H),
         b = maskStats(bm, W, H);
@@ -1814,11 +1811,12 @@ async function compareOneVideo(
         const mine = pixels.get(slotNames.indexOf(name));
         const tpl = mine && partTemplate(gb, mine);
         const hit = tpl && matchPart(gr, tpl, radius, lastHit.get(name), true);
-        if (hit && hit.score >= 0.6) lastHit.set(name, hit);
+        if (hit?.ambiguous) ambiguousFrames.set(name, (ambiguousFrames.get(name) ?? 0) + 1);
+        if (hit && !hit.ambiguous && hit.score >= 0.6) lastHit.set(name, hit);
         else lastHit.delete(name);
         let flips = mirroredByPart.get(name);
         if (!flips) mirroredByPart.set(name, (flips = Array<Flip>(f).fill(null)));
-        if (!mine || !tpl || !hit || hit.score < 0.6) {
+        if (!mine || !tpl || !hit || hit.ambiguous || hit.score < 0.6) {
           track.ref.push(null);
           track.build.push(null);
           flips.push(null);
@@ -1981,7 +1979,16 @@ async function compareOneVideo(
         deformation,
         notJudged: parts
           .filter((p) => !judgedParts([p], ious.length).length)
-          .map((p) => ({ part: p.part, frames: p.frames })),
+          .map((p) => ({
+            part: p.part,
+            frames: p.frames,
+            ...(ambiguousFrames.has(p.part)
+              ? {
+                  ambiguousFrames: ambiguousFrames.get(p.part),
+                  reason: "ambiguous visual identity",
+                }
+              : {}),
+          })),
         ...(process.env.AUTOSPINE_DEBUG_TRACKS ? { debugTracks: [...tracksByPart.values()] } : {}),
         pass,
         rows,
