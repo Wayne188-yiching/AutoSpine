@@ -2329,7 +2329,10 @@ async function runVideoFitFiles(
       .filter((c) => Number.isFinite(c[0]))
       .map((c) => Math.hypot(c[0] - centroid[0]![0], c[1] - centroid[0]![1])),
   );
-  const searchWindow = +(travel + (0.1 * placed.figureHeight) / placed.view.scale).toFixed(2);
+  // Frame 0 is posed at the build's own frame 0, so the clip's travel says nothing about where its
+  // parts are: it is searched over a tenth of the figure, as check-video-fit does (ADR-052).
+  const zeroWindow = +((0.1 * placed.figureHeight) / placed.view.scale).toFixed(2);
+  const searchWindow = +(travel + zeroWindow).toFixed(2);
   // The main bone carries what the base took out (its depth): it is fitted even on the root.
   const fitOptions = (free: readonly string[]) => ({
     view: area,
@@ -2416,7 +2419,11 @@ async function runVideoFitFiles(
   type Offset = { bone: string; channel: "rotate" | "x" | "y"; value: number };
   let zero: (PoseFitResult & { shifted: number; largest?: Offset }) | undefined;
   if (zeroOn) {
-    const r = fitRestPose(baseDoc, name, await picture(0), image, { ...options, time: 0 });
+    const r = fitRestPose(baseDoc, name, await picture(0), image, {
+      ...options,
+      window: zeroWindow,
+      time: 0,
+    });
     let largest: Offset | undefined;
     for (const [bone, p] of Object.entries(r.pose))
       for (const channel of ["rotate", "x", "y"] as const) {
@@ -2430,7 +2437,7 @@ async function runVideoFitFiles(
       ...(largest ? { largest } : {}),
     };
   }
-  const first = zero ?? (await fitFrame(baseDoc, 0, options));
+  const first = zero ?? (await fitFrame(baseDoc, 0, { ...options, window: zeroWindow }));
   const inputs = await inputsOf([
     resolve(planPath),
     resolve(paths.imagesOnly),
@@ -2464,6 +2471,7 @@ async function runVideoFitFiles(
       maxShiftedShare: ZERO_SHIFTED,
       maxUnreachableShare: ZERO_SHIFTED,
       partDistance: VIDEO_ACCEPTANCE.partP90 * unit,
+      window: zeroWindow,
     },
     pose: first.pose,
     parts: first.parts,
@@ -2563,16 +2571,40 @@ async function runVideoFitFiles(
       if (f % 10 === 0) log(`fit: frame ${f} of ${reach - 1}`);
     }
   else {
+    // The camera is still (ADR-036), so the silhouette's own travel since a placement was found
+    // carries it to this frame: a fast move (an entry rising a figure height) stays in the track
+    // span instead of being lost to the whole-clip window (ADR-052).
+    const carried = (near: Record<string, Placement>, at: Map<string, number>, f: number) =>
+      Object.fromEntries(
+        Object.entries(near).map(([bone, p]) => {
+          const a = centroid[f],
+            b = centroid[at.get(bone) ?? f];
+          const ok = a && b && Number.isFinite(a[0]) && Number.isFinite(b[0]);
+          return [
+            bone,
+            ok
+              ? { r: p.r, t: [p.t[0] + a[0] - b[0], p.t[1] + a[1] - b[1]] as [number, number] }
+              : p,
+          ];
+        }),
+      );
     // Forward from frame 0, then backward from the last frame fitted alone (ADR-039).
     const passes = [new Map<number, FrameFit>(), new Map<number, FrameFit>()] as const;
     for (const [k, order] of [dense, [...dense].reverse()].entries()) {
       let near: Record<string, Placement> | undefined =
         k === 0 ? (zero?.placements ?? (first as FrameFit).placements) : undefined;
+      const nearFrame = new Map<string, number>(Object.keys(near ?? {}).map((bone) => [bone, 0]));
       const history = new Map<string, { frame: number; placement: Placement }[]>();
       for (const [bone, placement] of Object.entries(near ?? {}))
         history.set(bone, [{ frame: 0, placement }]);
       for (const f of order) {
-        const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near);
+        const fit = await fitFrame(
+          baseDoc,
+          f,
+          options,
+          zeroPlacements,
+          near && carried(near, nearFrame, f),
+        );
         const unreliable = new Set(fit.lost);
         for (const [bone, placement] of Object.entries(fit.placements))
           if (
@@ -2607,8 +2639,10 @@ async function runVideoFitFiles(
         if (fit.accepted) {
           const reliable = Object.entries(fit.placements).filter(([bone]) => !unreliable.has(bone));
           near = { ...near, ...Object.fromEntries(reliable) };
-          for (const [bone, placement] of reliable)
+          for (const [bone, placement] of reliable) {
+            nearFrame.set(bone, f);
             history.set(bone, [...(history.get(bone) ?? []).slice(-1), { frame: f, placement }]);
+          }
         }
         if (f % 10 === 0) log(`fit: frame ${f} of ${reach - 1} (${k ? "backward" : "forward"})`);
       }

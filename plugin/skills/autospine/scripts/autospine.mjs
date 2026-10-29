@@ -41702,7 +41702,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.20";
+var AUTOSPINE_VERSION = "0.5.21";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");
@@ -43172,7 +43172,8 @@ async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
     return (g) => sampleAnimation(animation, rigging.rigged.rig, Math.min(animation.duration, g / fps));
   };
   const travel = Math.max(0, ...centroid.filter((c) => Number.isFinite(c[0])).map((c) => Math.hypot(c[0] - centroid[0][0], c[1] - centroid[0][1])));
-  const searchWindow = +(travel + 0.1 * placed.figureHeight / placed.view.scale).toFixed(2);
+  const zeroWindow = +(0.1 * placed.figureHeight / placed.view.scale).toFixed(2);
+  const searchWindow = +(travel + zeroWindow).toFixed(2);
   const fitOptions = (free2) => ({
     view: area3,
     ...fitBones(base, base.motion.animations[index], rigging, [own.main.bone, ...free2]),
@@ -43227,7 +43228,11 @@ async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
   const zeroOn = opts.zero !== false;
   let zero;
   if (zeroOn) {
-    const r = fitRestPose(baseDoc, name, await picture(0), image, { ...options, time: 0 });
+    const r = fitRestPose(baseDoc, name, await picture(0), image, {
+      ...options,
+      window: zeroWindow,
+      time: 0
+    });
     let largest;
     for (const [bone, p] of Object.entries(r.pose))
       for (const channel of ["rotate", "x", "y"]) {
@@ -43241,7 +43246,7 @@ async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
       ...largest ? { largest } : {}
     };
   }
-  const first = zero ?? await fitFrame(baseDoc, 0, options);
+  const first = zero ?? await fitFrame(baseDoc, 0, { ...options, window: zeroWindow });
   const inputs = await inputsOf([
     resolve3(planPath),
     resolve3(paths.imagesOnly),
@@ -43265,7 +43270,8 @@ async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
       minCoverage: 0.6,
       maxShiftedShare: ZERO_SHIFTED,
       maxUnreachableShare: ZERO_SHIFTED,
-      partDistance: VIDEO_ACCEPTANCE.partP90 * unit
+      partDistance: VIDEO_ACCEPTANCE.partP90 * unit,
+      window: zeroWindow
     },
     pose: first.pose,
     parts: first.parts,
@@ -43342,14 +43348,23 @@ async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
         log(`fit: frame ${f} of ${reach - 1}`);
     }
   else {
+    const carried = (near, at2, f) => Object.fromEntries(Object.entries(near).map(([bone, p]) => {
+      const a = centroid[f], b = centroid[at2.get(bone) ?? f];
+      const ok = a && b && Number.isFinite(a[0]) && Number.isFinite(b[0]);
+      return [
+        bone,
+        ok ? { r: p.r, t: [p.t[0] + a[0] - b[0], p.t[1] + a[1] - b[1]] } : p
+      ];
+    }));
     const passes = [/* @__PURE__ */ new Map(), /* @__PURE__ */ new Map()];
     for (const [k, order] of [dense, [...dense].reverse()].entries()) {
       let near = k === 0 ? zero?.placements ?? first.placements : void 0;
+      const nearFrame = new Map(Object.keys(near ?? {}).map((bone) => [bone, 0]));
       const history = /* @__PURE__ */ new Map();
       for (const [bone, placement] of Object.entries(near ?? {}))
         history.set(bone, [{ frame: 0, placement }]);
       for (const f of order) {
-        const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near);
+        const fit = await fitFrame(baseDoc, f, options, zeroPlacements, near && carried(near, nearFrame, f));
         const unreliable = new Set(fit.lost);
         for (const [bone, placement] of Object.entries(fit.placements))
           if (trackTurnJump(history.get(bone) ?? [], f, placement, {
@@ -43380,8 +43395,10 @@ async function runVideoFitFiles(planPath, buildDir, outDir, opts = {}) {
         if (fit.accepted) {
           const reliable = Object.entries(fit.placements).filter(([bone]) => !unreliable.has(bone));
           near = { ...near, ...Object.fromEntries(reliable) };
-          for (const [bone, placement] of reliable)
+          for (const [bone, placement] of reliable) {
+            nearFrame.set(bone, f);
             history.set(bone, [...(history.get(bone) ?? []).slice(-1), { frame: f, placement }]);
+          }
         }
         if (f % 10 === 0)
           log(`fit: frame ${f} of ${reach - 1} (${k ? "backward" : "forward"})`);
