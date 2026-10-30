@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T12:39:09.921Z",
+  "startedAt": "2026-10-30T12:39:19Z",
+  "completedAt": "2026-10-30T12:42:51.721Z",
+  "result": "updated",
+  "focus": [
+    "Spine 原創角色動作集",
+    "大型武器與小比例身體的 Pose、握點及輪廓"
+  ],
+  "addedIds": [
+    "spine-sukru-bagci-character-showreel"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/3837-spine-animation-showreel",
+      "outcome": "原作者 sukrubagci 署名 Şükrü Bağcı，將嵌入影片稱為自己的 Spine showreel；沒有把其他回覆者的評語當成觀看證據。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=AR5meY01HRE",
+      "outcome": "背景瀏覽器核對 animation_showreel、同名作者頻道及 165.901 秒片長；實際檢視 49.76 秒的大刀角色和 116.11 秒的高帽持矛人物。23.97 秒畫面較局部，未採作動作或受力判斷。"
+    },
+    {
+      "url": "https://esotericsoftware.com/forum/d/29794-im-an-animator-looking-for-work",
+      "outcome": "僅讀到作者列出多種工具及 Vimeo 舊作品集入口，未觀看該片，也未假定其中所有作品都使用 Spine；本輪未建立條目。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/embed/AR5meY01HRE",
+      "reason": "網頁文字工具 cache miss；一般背景瀏覽器可正常檢視原始 watch 影片，已按實際樣本記錄。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 50 entries",
+    "indexBuild": "passed — 6 Spine videos",
+    "sourceDedup": "passed — canonical video ID plus original forum URL",
+    "evidence": "visual-samples; two timestamps; no segments; timingBasis none",
+    "scope": "only library catalogue, generated index and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; tool reply and Git-local receipt provide the remote commit verification."
+  },
+  "limits": [
+    "沒有連續觀看動作，不將兩個不同角色的靜態樣本當成一個動作的節奏或關鍵幀序列。",
+    "來源地區、Spine 版本與角色素材重用授權未確認；不把展示導線當真實地面／碰撞證據。",
+    "未下載或重傳來源媒體，未修改引擎、角色或安裝快取，未調用付費模型或上傳私人資料。"
+  ],
+  "nextFocus": "優先補原創 Spine 步行／跑步或攻擊動作的清楚全身影片，避免只增加頭肩近景與靜態立繪；取得真正連續觀看證據後才分析節奏。"
+}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-30T11:39:54.655Z",
+  "updatedAt": "2026-10-30T12:42:11.998Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -2597,6 +2597,73 @@
         "三個時間碼屬不同角色鏡頭，不是同一動作的連續姿勢；不能據此分析節奏、幀數、插值、固定延遲或 2.5D 實作方式。",
         "Spine 版本、骨架、附件、網格、實際權重與角色素材授權未確認，不能由成品畫面反推可直接套用 Spine 4.0 的技術。",
         "作者自述在第比利斯工作，這不等於各作品的製作地或客戶地區；本輪地區保持 unknown。"
+      ]
+    },
+    {
+      "id": "spine-sukru-bagci-character-showreel",
+      "title": "Spine 動作集｜Şükrü Bağcı 遊戲角色與大型武器",
+      "work": "animation_showreel",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging"
+      ],
+      "actions": [
+        "acting"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=AR5meY01HRE",
+        "publisher": "Şükrü Bağcı",
+        "creator": "Şükrü Bağcı（論壇 sukrubagci）",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "Spine Forum 原作者 sukrubagci 在 https://en.esotericsoftware.com/forum/d/3837-spine-animation-showreel 將此片標為自己的 Spine animation showreel，並署名 Şükrü Bağcı；一般背景瀏覽器核對原始影片 ID、animation_showreel 標題與同名發布頻道。此為作者公開作品，不是 Esoteric Software 自製示範；個別遊戲／角色權利人未核對。",
+        "durationSeconds": 165.901,
+        "aliases": [
+          "https://en.esotericsoftware.com/forum/d/3837-spine-animation-showreel"
+        ],
+        "rights": "未找到可重用角色素材的授權；權利屬作者與各原權利人。只保存原始公開連結和原創短篇觀察，不下載或重傳影片／截圖。"
+      },
+      "firstSeen": "2026-10-30T12:42:11.998Z",
+      "lastVerified": "2026-10-30T12:42:11.998Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音、暫停與跳轉，核對正片時間後逐張檢視；只抽查姿勢，未連續觀看動作。",
+        "locator": "00:49.76 與 01:56.11，棋盤格背景上的兩個不同角色。",
+        "samples": [
+          {
+            "seconds": 49.76,
+            "note": "小比例戴皇冠角色位於右側，大型刀刃往左上伸出，握柄在人物前方，武器形狀佔畫面較大範圍。"
+          },
+          {
+            "seconds": 116.11,
+            "note": "高白帽、鬍鬚與橘色衣服的人物全身；左側手握近直立的長矛，紫色旗布掛在矛上，腰側有另一件帶粉色護手的武器。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "49.76 秒：大型刀刃與小身體形成明顯尺度對比，握柄、臉與刀刃方向仍可分辨。",
+        "116.11 秒：高帽與長矛形成兩條縱向形狀，紫色旗布、手臂和軀幹之間留有分離輪廓。"
+      ],
+      "application": [
+        "Layout 先 Key 手部握點、武器端點、頭與骨盆的主要 Pose，先用剪影確認大型武器沒有遮掉角色表情與動作方向；Blocking 再補轉折姿勢及重心變化。",
+        "對自己的素材可把武器設為獨立附件／骨骼，先維持握點與端點可讀性；Final 才處理旗布、鬍鬚或帽飾等細節，連續預覽後再判斷重量與接地。"
+      ],
+      "limits": [
+        "兩張樣本是不同角色，不能當作同一動作的連續姿勢；沒有從靜態畫面推論走跑、攻擊、速度、停頓或幀數。",
+        "棋盤格與導線只作展示背景，不足以證明碰撞、地面接觸、角色受力或真正的動畫骨架。",
+        "未確認製作地、Spine 版本與個別專案技術；不按姓名或服裝猜地區，不把成品當作可直接套用 Spine 4.0 的骨架／權重規格。"
       ]
     }
   ]
