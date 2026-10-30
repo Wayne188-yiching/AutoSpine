@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-30T07:20:29.319Z",
+  "updatedAt": "2026-10-30T11:39:54.655Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -2522,6 +2522,81 @@
         "只檢視兩張暫停畫面，沒有連續觀看彈跳，也沒有根據影片量測速度、停頓、間距、幀數或材質的動力參數。",
         "未確認教學的 Spine 版本；Graph 與骨架操作需另核對 AutoSpine 的 Spine 4.0，不以畫面斷言較新功能可用。",
         "影片中的球體紋理、名字與大小不構成對真實質量、彈性或地面接觸的物理驗證；製作地區未核對。"
+      ]
+    },
+    {
+      "id": "spine-mousedeer-character-showreel",
+      "title": "Spine 動作集｜MouseDeer 角色演出 Showreel",
+      "work": "Spine Animation Showreel",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "facial"
+      ],
+      "actions": [
+        "acting",
+        "expression"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=SLvl3nJSgVo",
+        "publisher": "MouseDeer（@ptrSpzh）",
+        "platform": "YouTube",
+        "official": true,
+        "creator": "Petr Sapozhnikov（論壇 ptrSpzh／自述 Peter）",
+        "verification": "Spine Forum 原作者自介 https://esotericsoftware.com/forum/d/26084-spine-animator 直接嵌入此片，並連到 ArtStation 的 petrsapozhnikov 作品集；影片頻道 handle 同為 @ptrSpzh、顯示名稱 MouseDeer，描述寫明為 Spine 遊戲動畫。此為動畫師自行公開的作品集，不是 Esoteric Software 製作的官方示範片；角色個別權利人未逐一核對。",
+        "durationSeconds": 93.641,
+        "aliases": [
+          "https://esotericsoftware.com/forum/d/26084-spine-animator"
+        ],
+        "rights": "公開作品集未提供素材可重用授權；權利屬動畫師及各原權利人。只保留公開連結與原創短篇筆記，不下載、重傳影片或截圖。"
+      },
+      "firstSeen": "2026-10-30T11:39:54.655Z",
+      "lastVerified": "2026-10-30T11:39:54.655Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音、暫停及跳轉，核對正片、頻道與實際秒數後逐張檢視；沒有連續觀看各動作過程。",
+        "locator": "00:29.14、00:56.18、01:14.90，三個不同角色鏡頭。",
+        "samples": [
+          {
+            "seconds": 29.14,
+            "note": "戴綠色眼罩的紅衣人物屈膝站立，兩腳分開，左側手部向外拿著裝置；頭上有小型機械造型，背後藍色軟管形成弧形輪廓。"
+          },
+          {
+            "seconds": 56.18,
+            "note": "女性頭肩近景位於兩側機械框架之間；五官、頭髮與橘色衣領集中於中央，周圍有藍色亮點。"
+          },
+          {
+            "seconds": 74.9,
+            "note": "粉紅長髮、藍衣人物坐在有輪子的椅子上，一腿向右伸出，另一腿屈下；持杯的手向前伸，髮尾從身體左側分離。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "29.14 秒：屈膝、分開的雙腳與向外拿裝置的手構成不對稱姿勢；背部軟管在頭肩之外留下可讀輪廓。",
+        "56.18 秒：近景把五官置於機械框架中央，面部與衣領透過明暗和背景分離；本樣本只支持靜態面部配置。",
+        "74.90 秒：椅子、前伸腿與持杯手分向不同位置，粉色髮尾和衣服之間有清楚形狀差異。"
+      ],
+      "application": [
+        "Layout 先 Key 腳、骨盆、持物手及頭部方向，檢查手持物與軟管的輪廓；Blocking 再安排主要 Pose 的轉折，不從這些單格指定動作速度。",
+        "坐姿表演先明確設計骨盆與座面、伸腿及持杯手的主要關係；通過 Pose 檢查後，Final 才調整髮尾、軟管與面部細節。",
+        "近景面部和遠景全身應各以實際顯示尺寸檢查；要分析眼神、口型或跟隨效果，必須另外連續觀看相應鏡頭。"
+      ],
+      "limits": [
+        "三個時間碼屬不同角色鏡頭，不是同一動作的連續姿勢；不能據此分析節奏、幀數、插值、固定延遲或 2.5D 實作方式。",
+        "Spine 版本、骨架、附件、網格、實際權重與角色素材授權未確認，不能由成品畫面反推可直接套用 Spine 4.0 的技術。",
+        "作者自述在第比利斯工作，這不等於各作品的製作地或客戶地區；本輪地區保持 unknown。"
       ]
     }
   ]

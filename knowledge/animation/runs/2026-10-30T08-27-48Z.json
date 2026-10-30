@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T08:27:36.033Z",
+  "startedAt": "2026-10-30T08:27:48Z",
+  "resumedAt": "2026-10-30T11:39:05Z",
+  "completedAt": "2026-10-30T11:40:35.978Z",
+  "notSeparatelyExecutedTriggers": [
+    "2026-10-30T09:32:07.026Z",
+    "2026-10-30T10:34:37.970Z",
+    "2026-10-30T11:38:38.997Z"
+  ],
+  "result": "updated",
+  "executionNote": "本輪跨越後續排程喚醒才完成，未達十分鐘的牆鐘時間目標；只記錄這一次實際研究，未補造其他時段的執行或觀看。",
+  "focus": [
+    "Spine 動畫師自行發布的完整角色演出 showreel",
+    "主要 Pose、持物手與輪廓、坐姿與面部近景"
+  ],
+  "addedIds": [
+    "spine-mousedeer-character-showreel"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://esotericsoftware.com/forum/d/26084-spine-animator",
+      "outcome": "讀到作者 ptrSpzh 自介與原始影片嵌入 SLvl3nJSgVo，連到 petrsapozhnikov 作品集；未使用回覆者稱讚當成自己已看過的動態證據。"
+    },
+    {
+      "url": "https://www.artstation.com/petrsapozhnikov",
+      "outcome": "只取得作品集標題 Petr Sapozhnikov 與頁面連結，未檢視其其他作品，不記其他作品觀察。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=SLvl3nJSgVo",
+      "outcome": "實際在背景瀏覽器核對 MouseDeer／@ptrSpzh、Spine Animation Showreel 與描述，暫停檢視 29.14、56.18、74.90 秒；記錄 93.641 秒片長。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/21330-spine-animator",
+      "reason": "網頁工具回報無法存取；未重試或記錄其中作品觀察，改研究可存取的另一位原創動畫師。"
+    },
+    {
+      "url": "https://www.youtube.com/embed/SLvl3nJSgVo",
+      "reason": "網頁文字工具 cache miss；一般背景瀏覽器可正常觀看原始 watch 影片，已按實際畫面抽查記錄。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 49 entries",
+    "indexBuild": "passed — 5 Spine videos",
+    "sourceDedup": "passed — canonical video ID and original forum URL",
+    "evidence": "visual-samples; three actual timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, index.html and this run record changed during this curation"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Run after this saved record; authoritative result is the tool reply and Git-local autospine-animation-publish.json receipt."
+  },
+  "limits": [
+    "未連續觀看動作；三個不同鏡頭不能當成同一動作的連續姿勢或 timing 證據。",
+    "製作地與 Spine 版本／技術細節未核對，保持 unknown 與明確限制。",
+    "未下載或重傳來源影片、截圖或私人資料；未修改引擎、角色或已安裝快取。"
+  ],
+  "nextFocus": "繼續優先找原創 Spine 動作集，補清楚的走跑、待機、攻擊全身示範；實際連續觀看後才補節奏分析。"
+}
