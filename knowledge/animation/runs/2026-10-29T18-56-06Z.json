@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T18:55:52.654Z",
+  "startedAt": "2026-10-29T18:56:06Z",
+  "completedAt": "2026-10-29T19:02:03.243Z",
+  "result": "updated",
+  "focus": [
+    "日本官方製作圖",
+    "原画／動画工序對照中的主要表情與手勢"
+  ],
+  "addedIds": [
+    "japan-toei-key-inbetween-expression-gesture"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "referenceImagesViewed": 2,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://corp.toei-anim.co.jp/ja/company/animation_production.html",
+      "outcome": "重讀原画／動画工序文字；對應作畫照片可在正常背景瀏覽器開啟，但未以照片推導動作或節奏。"
+    },
+    {
+      "url": "https://recruit.toei-anim.co.jp/recruit_grad/production/",
+      "outcome": "閱讀官方採用頁アニメーターのポイント，核對原画／動画工序標示，從對應原圖連結檢視示例。"
+    },
+    {
+      "url": "https://recruit.toei-anim.co.jp/recruit_grad/production/img/production-anime-parts1.jpg",
+      "outcome": "實際檢視 280×200 原画圖的頭胸、張口表情、色線與前伸手形；以單張姿勢、acting／expression 分類，不當成完整全身。"
+    },
+    {
+      "url": "https://recruit.toei-anim.co.jp/recruit_grad/production/img/production-anime-parts2.jpg",
+      "outcome": "實際檢視 280×200 動画對照圖，臉與手勢相近，輪廓線及部分色線仍可辨。兩張工序圖集中一筆並保留第二張公開連結，不當成連續姿勢或動畫時間證據。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://corp.toei-anim.co.jp/ja/company/animation_production/animation_production-2/main/02/teaserItems2/00/binaryNodeName/1000-9976.jpg",
+      "outcome": "實際看見作畫桌、頭胸線稿與作畫者手部；視角與遮擋不適合補全身姿勢，未單獨新增。"
+    },
+    {
+      "url": "https://corp.toei-anim.co.jp/ja/company/animation_production/animation_production-2/main/012/teaserItems1/0117/binaryNodeName/2black.png",
+      "outcome": "開啟後只核對到 50×49 尺寸，未檢視像素或新增畫面觀察。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://corp.toei-anim.co.jp/ja/company/animation_production/animation_production-2/main/02/teaserItems2/00/binaryNodeName/1000-9976.jpg",
+      "reason": "搜尋工具原圖請求回傳 403；正常背景瀏覽器可直接公開呈現 1000×666 照片，未登入或繞過限制。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 37 sources",
+    "indexBuild": "passed — 37 sources",
+    "defaultSearchAndEvidence": "passed — image-reviewed; samples/segments empty; timingBasis none",
+    "imageDedup": "passed — one primary image URL; comparison linked inside the same entry",
+    "classification": "passed — key-pose, acting/expression; no pose-sequence/timing/contact claim",
+    "generatedTitleAndComparisonLink": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "只有頭胸與手勢，沒有完整全身／腳底接觸；280×200 圖的細小註記不解讀，也不猜個別畫師或角色作品。",
+    "動画是原站工序名稱，不是本輪觀看影片；不把工序圖片當成動作順序或本工具三階段的逐字定義。",
+    "只更新 knowledge/animation/；未下載、打包或重傳來源圖片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到歐洲官方製作資料，優先全身姿勢、接觸或道具配置；同類表情近景已有多筆，可回訪既有來源補強證據。"
+}

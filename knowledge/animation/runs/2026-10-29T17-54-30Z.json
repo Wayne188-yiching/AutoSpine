@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T17:54:21.751Z",
+  "startedAt": "2026-10-29T17:54:30Z",
+  "completedAt": "2026-10-29T17:59:21.309Z",
+  "result": "updated",
+  "focus": [
+    "補看既有官方步態教材的全身姿勢規劃",
+    "區分可見 Pose、編輯視窗與完整步態驗證"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "us-animationmentor-walk-video-queue"
+  ],
+  "evidence": {
+    "newReviewedSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=Oda0Au-gj4c",
+      "outcome": "重訪 Animation Mentor／@animationmentor 官方影片，暫停核對 03:33 正面全身和 04:03 視圖／曲線編輯器配置；保留原有 11:14、12:14。展開原片說明確認 Jason Martinsen 與 2025-07-04 日期，不把官網文章的 2025-07-07 日期套給影片。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://www.youtube.com/watch?v=Oda0Au-gj4c&t=1924s",
+      "outcome": "實際看見 32:04 WALK FWD 的側面下半身與腿部，頭肩仍裁切；未納入本輪全身規劃樣本，也未由章節 Fixing Knee Pops 宣稱已看過修正過程。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://dma.edc.org/sites/default/files/MDD_ANIMATION_HANDOUTS.pdf",
+      "reason": "搜尋工具開啟舊 PDF 連結時重導至 https://edc.org/ 的 HTML 首頁，沒有取得 PDF。未擷取 PDF 頁面，未依快取摘要補寫分鏡觀察，未新增條目。"
+    }
+  ],
+  "metadataAdded": [
+    {
+      "field": "source.published",
+      "value": "2025-07-04",
+      "basis": "原始 YouTube 公開頁顯示日期；影片直接說明也確認講師身份。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 36 sources",
+    "indexBuild": "passed — 36 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples, 213s/243s added, 674s/734s retained; segments empty; timingBasis none",
+    "dedup": "passed — one canonical video entry including existing embed alias",
+    "firstSeen": "preserved — 2026-10-28T21:47:08.712Z",
+    "generatedLocator": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "本輪取得正面全身參考，但人物較小，仍未連續量測步態、滑步或重量感。04:03 部分視窗被選單遮擋，未補猜細節。",
+    "Maya 多視圖只作理解角色體積與姿勢的參考；不當成 Spine 已有同等視圖或已驗證轉換功能。",
+    "只更新 knowledge/animation/；未下載、擷取保存或重傳媒體，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到歐洲或日本的官方姿勢草稿／製作資料，優先可明確定位的全身或手腳接觸；舊 EDC PDF 在重新找到有效原站連結前維持未研讀。"
+}

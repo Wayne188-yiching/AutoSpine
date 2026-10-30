@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T19:59:23.612Z",
+  "startedAt": "2026-10-29T19:59:33Z",
+  "completedAt": "2026-10-29T20:04:53.571Z",
+  "result": "updated",
+  "focus": [
+    "歐洲官方角色參考",
+    "抬腳、張掌與前景／群體層次"
+  ],
+  "addedIds": [
+    "europe-aardman-shaun-bitzer-raised-leg-staging"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://shaunthesheep.com/about",
+      "outcome": "閱讀 Meet the Flock 與 The making of Shaun the Sheep，核對 Aardman Bristol studio 和 stop-frame 製作介紹；沒有把文字中的拍攝幀數當作本工具 FPS。"
+    },
+    {
+      "url": "https://shaunthesheep.com/media/1u4bewcs/farmer.jpg?height=496&rmode=crop&width=880",
+      "outcome": "實際檢視 880×496 群像：左側農夫前景、中央 Shaun／Bitzer 的抬腿與張掌、後方羊群與農舍。腳掌朝向可辨，但下緣有裁切，不推論接觸力或完整步態。"
+    },
+    {
+      "url": "https://shaunthesheep.com/shauns-glow-trail-privacy-policy",
+      "outcome": "只用於核對發布者：該站公開頁明列 Aardman Animations Limited、Bristol，以及 shaunthesheep.com 作為 branded website。未提交表單或個人資料。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://shaunthesheep.com/media/b03bwo4j/shaun2.jpg?height=496&rmode=crop&width=880",
+      "outcome": "實際看見 Shaun 頭胸與舉拇指近景；本輪選擇較能比較腿部、手掌及場景層次的 farmer.jpg，不另外增加相似頭胸來源。"
+    },
+    {
+      "url": "https://shaunthesheep.com/the-series/",
+      "outcome": "閱讀系列與角色分類頁；未檢視其中輪播角色原圖，未新增畫面分析。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 38 sources",
+    "indexBuild": "passed — 38 sources",
+    "defaultSearchAndEvidence": "passed — image-reviewed; samples/segments empty; timingBasis none",
+    "imageDedup": "passed — one image hostname/path, ignoring resize/crop query",
+    "classification": "passed — key-pose/scene-composition, acting only; no walk/run/contact/timing claim",
+    "generatedTitleAndLocator": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "單張圖片是否正片擷取或另拍宣傳圖未確認；媒材沿用官方作品的 stop-frame 說明，個別擺拍／攝影作者未知。",
+    "取得了較多身體與抬腳輪廓，但腳底有裁切，不聲稱已驗證重量、奔跑、預備或收勢。",
+    "只更新 knowledge/animation/；未下載、打包或重傳原圖，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "可補看既有歐洲或日本官方影片中可清楚辨認的主要 Pose；若研究節奏，必須確實連續觀看，否則維持離散樣本證據。"
+}

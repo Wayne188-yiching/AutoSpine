@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T12:46:16.831Z",
+  "startedAt": "2026-10-29T12:46:24Z",
+  "completedAt": "2026-10-29T12:49:40.801Z",
+  "result": "updated",
+  "focus": [
+    "日本官方預告的特效外觀與人物可讀性",
+    "補看既有來源，增加有效證據而不重複新增影片"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "japan-toho-jjk-pv3-focus"
+  ],
+  "evidence": {
+    "newReviewedSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=PKHQuQF1S8k",
+      "outcome": "重訪 TOHO animation 官方影片，暫停並核對播放器 00:42、00:52 的畫面；前者有斜向白色亮帶與疊置角色，後者有火焰前的暗色人物和前景遮擋。只比較明暗與層次，未連續觀看或分析動作節奏。展開說明核對 2023-08-24 首播、MAPPA 製作、作品官網及版權署名。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://www.youtube.com/watch?v=PKHQuQF1S8k&t=47s",
+      "outcome": "實際看過灰白角狀頭部與右側紅色前景的近景；本輪選取更適合特效明暗主題的 00:42 與 00:52，未為數量再加近景樣本。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://kinggnu.jp/news/2023/08/specialz-0824/",
+      "reason": "搜尋索引找到藝人官方公告及同影片 ID，但直接開啟回傳 503 Service Unavailable；未把原頁正文寫成已讀。官方發布者、日期與製作署名依可實際讀取的 TOHO 影片頁說明核對。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 33 sources",
+    "indexBuild": "passed — 33 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples, 5 total samples, 2 added; segments empty, timingBasis none",
+    "dedup": "passed — one canonical video ID; no new source created",
+    "firstSeen": "preserved — 2026-10-28T10:09:18+08:00",
+    "generatedTimecode": "passed — updated 00:52 locator in gallery",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "本輪時間碼依播放器顯示秒數，未做逐幀定位；同秒可能有不同畫格，不換算成動畫原始幀號。",
+    "斜帶的成因、火焰演算法、粒子速度與角色腳底支撐未確認；只記畫面可見輪廓、亮暗與遮擋。",
+    "只更新 knowledge/animation/；未下載、保存或重傳影片／截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到美國或歐洲，優先既有官方影片的重量／接觸或次要運動證據；若仍只能抽查，不升級成連續觀看。"
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "mode": "manual-library-refocus",
+  "recordedAt": "2026-10-30T07:17:39.782Z",
+  "result": "updated",
+  "request": "Spine 動態展示影片為主，其他 2D／3D 動畫影片為次；圖片與文字作輔助。",
+  "addedIds": [
+    "spine-unruly-heroes-gameplay",
+    "spine-return-monkey-island-showcase",
+    "spine-deponia-doomsday-showcase",
+    "spine-weight-mass-official-tutorial"
+  ],
+  "evidence": {
+    "visualSamplesAdded": 5,
+    "visualSampleSources": 3,
+    "metadataOnlyAdded": 1,
+    "continuousClipsReviewed": 0
+  },
+  "changes": [
+    "新增 topic 分類，未標示者沿用一般動畫；應用筆記提到 Spine 不等於來源使用 Spine。",
+    "首頁預設 Spine 影片，其他動畫影片、圖片教材、全部各有入口；搜尋與筆記收合，優先展示播放器。",
+    "每小時排程與 CURATION.md 改為 Spine 作品演出／遊戲實機／showreel 優先，製作教學搭配，一般動畫次要；保留原有每小時頻率與僅失敗通知。"
+  ],
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/spine-showcase",
+      "outcome": "官方頁面與瀏覽器嵌入影片核對原始發布者及使用 Spine 的團隊說明，三支成品只作列出時間碼的畫面抽查。"
+    },
+    {
+      "url": "https://en.esotericsoftware.com/blog/Weight-and-Mass-Animating-with-Spine-1",
+      "outcome": "核對官方發布文章與嵌入 ID TEXq8TCfQ9I；此手動整理完成時影片待觀看。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 48 entries",
+    "indexBuild": "passed",
+    "tests": "14 passed via node tests/animation-knowledge.test.mjs; node --test child-process runner was blocked by sandbox spawn EPERM",
+    "eslint": "passed",
+    "prettier": "passed",
+    "whitespace": "passed",
+    "browser": "passed — default 4 Spine, 15 other videos, 29 supporting references, 48 total; positive/empty search; actual YouTube iframe playback; hidden playback stops on category switch",
+    "automation": "persisted ACTIVE hourly heartbeat, failed_runs_only, same target thread",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged SHA-256"
+  },
+  "limits": [
+    "來源使用 Spine 不等於每個鏡頭、特效或背景均由 Spine 製作；實作及版本未確認。",
+    "沒有連續觀看或分析影片節奏；來源地區未查證者保留 unknown。",
+    "未提交／推送、安裝外掛、下載或重傳來源影片／截圖。"
+  ]
+}

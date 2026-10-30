@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T05:42:35.304Z",
+  "startedAt": "2026-10-29T05:42:46Z",
+  "completedAt": "2026-10-29T05:46:06.949Z",
+  "result": "updated",
+  "focus": [
+    "日本官方製作片段的補看",
+    "分辨主要 Pose、上色、背景與撮影工序的證據範圍"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "japan-kyoani-tsurune-masaki-staging"
+  ],
+  "evidence": {
+    "upgradedFromTextReviewed": 1,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=-uqfPNSMWrU",
+      "outcome": "本輪成功擷取並看清 0:07 ペイント、0:12 美術背景及 0:17 撮影畫面，核對實際時間。可見側臉／箭、獨立布幕背景及模糊手套局部，記錄各自限制；沒有連續觀看。"
+    },
+    {
+      "url": "https://tsurune.com/movie/special/making/",
+      "outcome": "重讀雅貴篇的構圖及風效分工文字。文字敘述與親看畫面分開保留，不把工序直接改名為 Layout／Blocking／Final。"
+    },
+    {
+      "url": "https://tsurune.com/movie/",
+      "outcome": "官方首頁的 2022-08-30 消息亦記載雅貴篇發布，與既有影片日期交叉確認。"
+    }
+  ],
+  "priorAccessIssueResolved": [
+    {
+      "runs": [
+        "2026-10-28T23-35-04Z.json",
+        "2026-10-29T00-35-36Z.json"
+      ],
+      "url": "https://www.youtube.com/watch?v=-uqfPNSMWrU",
+      "outcome": "這次正常背景瀏覽器可成功擷取畫面；舊失敗紀錄保持原樣，沒有補寫成先前已觀看。"
+    }
+  ],
+  "unreachableSources": [],
+  "excludedSamples": [
+    {
+      "seconds": 2,
+      "reason": "實際看見標示為「動画」的局部線稿，但整體構型不清楚，未把它當成主要 Pose 或原畫樣本。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 27 sources",
+    "indexBuild": "passed — 27 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples at 7s/12s/17s; no segments or timing claim",
+    "dedupAndFirstSeen": "passed — stable ID and firstSeen, no duplicate video",
+    "generatedSampleNotes": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "背景畫面沒有角色，模糊手套畫面不足以確認弓弦、手指或風向；沒有把這些圖當成完整動作 Pose。",
+    "只是抽查工序對照，未驗證整段取景順序、風效節奏、放箭速度、接觸力或弓道手法。",
+    "知識庫筆記只作可檢索參考與應用推論，不代表模型訓練、引擎功能或藝術品質已提升。",
+    "只更新 knowledge/animation/；沒有下載媒體或保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "換查不同的日本／美國動作參考或有用圖片；優先清楚的完整輪廓與支撐 Pose，不為數量把背景或局部圖硬標為完整姿勢。"
+}

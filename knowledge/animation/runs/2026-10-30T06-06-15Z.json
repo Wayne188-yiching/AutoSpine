@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T06:06:03.274Z",
+  "startedAt": "2026-10-30T06:06:15Z",
+  "completedAt": "2026-10-30T06:11:49.363Z",
+  "notSeparatelyExecutedTriggers": [
+    "2026-10-30T05:08:32.409Z"
+  ],
+  "result": "updated",
+  "focus": [
+    "日本官方主視覺中的伸拳 Pose 與透視",
+    "區分宣傳構圖、製作紙記號與真正動畫時序"
+  ],
+  "addedIds": [
+    "japan-onepiece-emotion-punch-perspective"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "referenceImagesViewed": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://one-piece.com/news/66312/index.html",
+      "outcome": "由官方來源搜尋找到主視覺發布新聞，正常背景瀏覽器讀到 2024/05/13、演出松實航、作画涂泳策與作品版權。核對原頁連到活動官網及東映公司資訊；未採用商品或展期資訊作目前活動建議。"
+    },
+    {
+      "url": "https://one-piece.com/img/news/0513_101725_00.jpg",
+      "outcome": "由原頁圖片 DOM 核對公開 URL，實際檢視 1200×855 圖：左側近景大拳頭與笑臉、中央屈臂抬膝人物、右側較小造型／線稿，以及標題遮擋和紅黑／白色圖形。只記靜態配置，不推定動作順序。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.onepiece-emotion.com/s/opem/news/detail/10002",
+      "reason": "網頁工具回報此頁無法存取；未讀取該頁原文或圖像，也未重試其他方式。改研究可正常存取且有作者署名的 ONE PIECE.com 官方新聞。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://www.onepiece-emotion.com/s/opem/news/detail/10002",
+      "reason": "not accessible via web tool; no content reviewed"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 44 sources",
+    "indexBuild": "passed — 44 sources",
+    "defaultSearchAndEvidence": "passed — 伸拳 retrieves image-reviewed entry; samples/segments empty, timingBasis none",
+    "sourceAndImageDedup": "passed — one canonical news URL and one image path",
+    "classification": "passed — key-pose/scene-composition; no pose-sequence/timing/contact claim",
+    "publicationAndCredits": "passed — 2024-05-13; 演出松實航／作画涂泳策",
+    "generatedEntryAndImage": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "只處理本輪實際研究，05:08 觸發未另行執行，不補造該時段的 run 或觀看內容。",
+    "部分身體受標題和邊界遮擋，本輪仍未取得完整腳底支撐或連續擊打證據；靜態 punch 分類不代表已看過打擊過程。",
+    "海報的 TIME、紙孔與線稿不是已確認的幀號或 timing chart，畫面中的不同人物尺度也不是動作時序。",
+    "只更新 knowledge/animation/；未下載、保存或重傳原圖／影片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "歐洲或日本既有公開動畫的清楚全身主 Pose／支撐關係，優先補看有明確畫面證據的來源；海報與近景只作其能支持的靜態參考。"
+}

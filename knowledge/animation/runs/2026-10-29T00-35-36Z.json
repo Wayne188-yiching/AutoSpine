@@ -6,8 +6,13 @@
   "startedAt": "2026-10-29T00:35:36Z",
   "completedAt": "2026-10-29T00:39:13.793Z",
   "result": "updated",
-  "focus": ["日本官方製作資料", "Layout 銜接與角色形體連續性的檢查依據"],
-  "addedIds": ["japan-bnp-layout-continuity-review"],
+  "focus": [
+    "日本官方製作資料",
+    "Layout 銜接與角色形體連續性的檢查依據"
+  ],
+  "addedIds": [
+    "japan-bnp-layout-continuity-review"
+  ],
   "updatedIds": [],
   "evidence": {
     "textReviewedAdded": 1,

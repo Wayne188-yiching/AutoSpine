@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T03:10:30.324Z",
+  "startedAt": "2026-10-30T03:10:40Z",
+  "completedAt": "2026-10-30T03:15:37.530Z",
+  "result": "updated",
+  "focus": [
+    "歐洲互動角色的主要 Pose 意圖",
+    "輸入提示剪影與角色演出之間的區別"
+  ],
+  "addedIds": [
+    "europe-aardman-morph-input-gesture-silhouettes"
+  ],
+  "updatedIds": [
+    "europe-aardman-morph-game-anticipation"
+  ],
+  "evidence": {
+    "newReviewedSources": 1,
+    "textReviewRevisit": 1,
+    "imageReviewedAdded": 1,
+    "referenceImagesViewed": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.aardman.com/latest-news/2023/august/behind-the-craft-morph-thingy-ma-bobstacle-course/",
+      "outcome": "搜尋並以正常公開背景瀏覽器重讀官方文章，拒絕非必要 cookies 後核對日期與正文。補讀玩家向 Morph 提出要求、原型 30 多種輸入收斂為四種的設計理由；保留 Inez Woldman 粗動畫與預備動作的原有文字證據。"
+    },
+    {
+      "url": "https://www.aardman.com/media/qq4d2arw/morph-gestures.jpg?width=1080&height=1080",
+      "outcome": "實際檢視 1080×1080 四個輸入提示的靜態 UI 圖：二乘二布局、胸前交叉、畫面左右伸臂與雙臂高舉，配以不同背景色；分類為 contact-sheet，不視為 Morph 全身或動作序列。原頁對應 The four gestures 圖說已核對。"
+    }
+  ],
+  "accessIssuesResolved": [
+    {
+      "url": "https://aardman.com/latest-news/2023/august/behind-the-craft-morph-thingy-ma-bobstacle-course/",
+      "outcome": "網頁工具直接讀取逾時（400 Timeout）；正常公開 www 官方頁可讀，沒有登入、付費牆、驗證挑戰或繞過限制。"
+    }
+  ],
+  "notReviewedMedia": [
+    "原頁列有 Morph 動作 playblast、boat transition、trip blockout、dodging 等 GIF；只核對來源網址及圖說，未連續觀看，也未新增其畫面或節奏觀察。"
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 42 sources",
+    "indexBuild": "passed — 42 sources",
+    "defaultSearchAndEvidence": "passed — 輸入手勢 retrieves the reviewed text and image entries",
+    "imageDedup": "passed — one canonical hostname/path ignoring resize query",
+    "classification": "passed — static contact-sheet, layout/pose/silhouette/staging; no pose-sequence/timing/contact claim",
+    "priorTextEvidence": "preserved — firstSeen 2026-10-28T19:43:23.680Z; text-reviewed and explicit-text retained",
+    "generatedImageAndEntry": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "本輪未取得新的全身動作證據；這張圖只支持簡化手勢與輸入提示設計，不能轉稱完整角色 Pose、手勢追蹤效能或動畫完成品質。",
+    "來源文字與 Spine 三階段應用推論分開；未實作輸入辨識、Unity 狀態或 Spine 程式。",
+    "只更新 knowledge/animation/；未下載、保存或重傳原圖／GIF／影片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替日本或美國完整全身姿勢／接觸教材，避免增加更多近似 UI 提示；若只取得 GIF 圖說或標題，仍保持未觀看，不推測節奏。"
+}

@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T13:29:27Z",
   "completedAt": "2026-10-28T13:33:51.093Z",
   "result": "updated",
-  "focus": ["日本／歐洲的動作與預備動作參考", "跳躍主要 Pose 及自動插值仍需動畫師控制的依據"],
-  "addedIds": ["japan-autodesk-production-keyposes"],
+  "focus": [
+    "日本／歐洲的動作與預備動作參考",
+    "跳躍主要 Pose 及自動插值仍需動畫師控制的依據"
+  ],
+  "addedIds": [
+    "japan-autodesk-production-keyposes"
+  ],
   "updatedIds": [],
   "evidence": {
     "textReviewed": 1,

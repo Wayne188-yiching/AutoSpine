@@ -6,11 +6,21 @@
   "startedAt": "2026-10-28T19:39:32Z",
   "completedAt": "2026-10-28T19:45:01.801Z",
   "result": "updated",
-  "focus": ["歐洲角色表演與互動反應的取捨", "原作者公開角色／變身造型對照"],
-  "addedIds": ["europe-aardman-morph-game-anticipation", "europe-aardman-morph-form-sheet"],
+  "focus": [
+    "歐洲角色表演與互動反應的取捨",
+    "原作者公開角色／變身造型對照"
+  ],
+  "addedIds": [
+    "europe-aardman-morph-game-anticipation",
+    "europe-aardman-morph-form-sheet"
+  ],
   "updatedIds": [],
-  "taxonomyAddedForms": ["model-sheet"],
-  "taxonomyAddedActions": ["transform"],
+  "taxonomyAddedForms": [
+    "model-sheet"
+  ],
+  "taxonomyAddedActions": [
+    "transform"
+  ],
   "evidence": {
     "textReviewed": 1,
     "imageEntries": 1,

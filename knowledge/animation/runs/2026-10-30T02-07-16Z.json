@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T02:06:59.327Z",
+  "startedAt": "2026-10-30T02:07:16Z",
+  "completedAt": "2026-10-30T02:12:24.329Z",
+  "result": "updated",
+  "focus": [
+    "美國官方教學的全身主要 Pose 補看",
+    "負空間、推牆配置與腳部控制的證據區分"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "us-animationmentor-pose-design-2026"
+  ],
+  "evidence": {
+    "newReviewedSources": 0,
+    "upgradedFrom": "text-reviewed",
+    "upgradedTo": "visual-samples",
+    "textReviewRevisit": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.animationmentor.com/blog/tutorial-building-appealing-character-poses-for-animation/",
+      "outcome": "搜尋並重讀官方姿勢教材，補核對力量主題與 Foot Roll／Foot Break 文字。原頁內嵌影片 ID J4Jzr3eAatg 與 Animation Mentor 發布者相符；未開啟文中其他附件連結。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=J4Jzr3eAatg",
+      "outcome": "正常公開頁核對 @animationmentor、影片日期 2026-04-05、片長 17:17；與文章日期 2026-04-07 分開記錄。依已確認的原頁內嵌關係，改以影片作主要來源、文章保留 alias，沿用既有 ID 與 firstSeen，不另增重複來源。"
+    },
+    {
+      "locator": "10:04（604s，播放器整秒）",
+      "outcome": "全螢幕實際看見教學展示的 Woody 全身靜態圖：一腿屈起、抬手與向外彎的另一臂，肢體間負空間可辨；沒有地面接觸或原作動畫關鍵幀證據。"
+    },
+    {
+      "locator": "15:33.63（933.629999s，DOM）",
+      "outcome": "鍵盤跳轉後核對 paused=true、片長 1037.401 秒；全螢幕實際檢視 Maya 推牆 Pose、前彎／後伸腿與控制線，右側可見 Foot Roll／Foot Break。沒有連續觀看或推力／步態量測，完成後還原非全螢幕。"
+    }
+  ],
+  "uiAdjustments": [
+    "搜尋滑桿未提供可直接設定數值的介面，改以正常播放器鍵盤跳轉並核對實際暫停時間；未用腳本修改播放器或下載影片。"
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 41 sources",
+    "indexBuild": "passed — 41 sources",
+    "defaultSearchAndEvidence": "passed — 推牆 retrieves upgraded entry; two visual samples, segments empty, timingBasis none",
+    "sourceDedup": "passed — one video ID and one article alias in the same entry",
+    "firstSeen": "preserved — 2026-10-28T06:24:26.829Z",
+    "sourceDatesAndAlias": "passed — video 2026-04-05 versus article 2026-04-07",
+    "generatedVideoAndLocators": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "背景初始播放到暫停的經過時間不算連續觀看；只有兩個實際看清的離散畫面，不能以文章動作敘述或字幕冒充親看節奏。",
+    "教學中展示的 Woody 圖像不是已確認的正片關鍵幀，教育官方發布者不等於電影發行者；不轉存圖像，也不推定原圖可重用授權。",
+    "Foot Roll／Foot Break 與角度屬原 rig 控制，不能直接當作 Spine 通用參數。",
+    "只更新 knowledge/animation/；未下載、保存或重傳影片／圖片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替歐洲官方資料，優先完整主 Pose、接觸或表演任務；可補強既有來源，不以來源數量或畫面計數代替動態證據。"
+}

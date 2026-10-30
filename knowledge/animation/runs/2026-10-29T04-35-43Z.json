@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T04:35:34.161Z",
+  "startedAt": "2026-10-29T04:35:43Z",
+  "completedAt": "2026-10-29T04:39:26.211Z",
+  "result": "updated",
+  "focus": [
+    "美國官方動畫的地面接觸與主要 Pose",
+    "物件角色及製作規劃圖的靜態參考"
+  ],
+  "addedIds": [
+    "us-pixar-luxo-archive-pose-planning"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=oKob7xbq1O4",
+      "outcome": "實際抽查 0:06、0:16、0:26，分開記錄燈具底座／地板構型、黃色手寫動作清單及多格姿勢草稿；未連續觀看或轉錄完整製作稿。以底座接觸補充物件角色參考，沒有冒稱找到人形足部支撐。"
+    },
+    {
+      "url": "https://www.pixar.com/",
+      "outcome": "核對官方首頁頁尾 YouTube 連結指向 youtube.com/pixar，與影片發布者 Pixar / @pixar 交叉確認；沒有只依驗證標記認定官方身份。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=oKob7xbq1O4",
+      "reason": "搜尋工具直接開啟為 cache miss；正常背景瀏覽器可公開觀看並成功擷取畫面。"
+    }
+  ],
+  "unreachableSources": [],
+  "declinedSources": [
+    {
+      "url": "https://www.youtube.com/watch?v=zmhZm5FRV4s",
+      "reason": "搜尋結果發布者不是 Pixar 官方，本輪未開啟或採用該整片轉載。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 27 sources",
+    "indexBuild": "passed — 27 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples at 6s/16s/26s; segments empty, timingBasis none",
+    "dedup": "passed — one canonical video ID",
+    "generatedTitle": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "清單與多格草稿是影片展示的靜態資料，沒有核對其原作者／日期或是否全部採用；不把格子或條目數當作幀數與速度。",
+    "沒有連續動作證據，不推算起跳、落地、接觸力或完整節奏，也不將不同 Pixar 影片的樣本連接成一段。",
+    "主要接觸觀察是燈具底座與地板構型，未量測支撐力、重量、重心或無滑動。",
+    "只更新 knowledge/animation/；未下載或重傳媒體／製作稿，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "日本官方動作資料或既有動畫的真正可見支撐／離地 Pose；若只看到局部、字幕或標題，保持證據限制，不硬加技法標籤。"
+}

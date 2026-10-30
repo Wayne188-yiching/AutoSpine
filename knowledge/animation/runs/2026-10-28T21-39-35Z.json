@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T21:39:35Z",
   "completedAt": "2026-10-28T21:48:11.058Z",
   "result": "updated",
-  "focus": ["走路支撐姿勢圖及官方教學影片", "篩選可使用的原始來源並維持研讀證據範圍"],
-  "addedIds": ["us-animationmentor-walk-video-queue"],
+  "focus": [
+    "走路支撐姿勢圖及官方教學影片",
+    "篩選可使用的原始來源並維持研讀證據範圍"
+  ],
+  "addedIds": [
+    "us-animationmentor-walk-video-queue"
+  ],
   "updatedIds": [],
   "evidence": {
     "metadataOnlyAdded": 1,

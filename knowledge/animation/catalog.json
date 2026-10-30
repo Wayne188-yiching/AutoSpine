@@ -1,7 +1,11 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-10-29T00:38:19.277Z",
+  "updatedAt": "2026-10-30T07:20:29.319Z",
   "taxonomy": {
+    "topics": {
+      "spine": "Spine動態",
+      "animation": "一般動畫"
+    },
     "regions": {
       "us": "美國",
       "europe": "歐洲",
@@ -57,7 +61,8 @@
       "storyboard": "分鏡圖",
       "timing-chart": "節拍／間距圖",
       "smear-frame": "拖影／過渡單格",
-      "model-sheet": "角色／變身造型表"
+      "model-sheet": "角色／變身造型表",
+      "scene-composition": "場景構圖／人物配置"
     },
     "actions": {
       "idle": "待機",
@@ -139,17 +144,20 @@
         "publisher": "TOHO animation",
         "platform": "YouTube",
         "official": true,
-        "verification": "實際影片頁面顯示 TOHO animation 驗證頻道；動畫製作署名 MAPPA。",
+        "verification": "重訪頁面顯示 TOHO animation／@TOHOanimation 發布；展開說明核對 2023-08-24 首播、制作：MAPPA、作品官網 jujutsukaisen.jp、TOHO 官方入口與版權署名。未把頻道驗證標記單獨當成轉載授權證據。",
         "published": "2023-08-24",
         "durationSeconds": 85,
-        "aliases": []
+        "aliases": [],
+        "kind": "video",
+        "creator": "動畫製作 MAPPA（影片說明署名）；本輪未確認這兩個鏡頭的個別原畫或特效作者。",
+        "rights": "影片說明標示 ©芥見下々／集英社・呪術廻戦製作委員会，未見開放授權；只保留官方影片與時間碼入口，未下載、擷取保存或重傳。"
       },
       "firstSeen": "2026-10-28T10:09:18+08:00",
-      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-29T12:49:00.369Z",
       "review": {
         "status": "visual-samples",
-        "method": "背景瀏覽器暫停並確認畫面及播放器時間碼。",
-        "locator": "影片 00:10、00:20、00:25",
+        "method": "背景瀏覽器暫停並核對播放器顯示時間及實際畫面；本輪補看 00:42、00:52，保留舊樣本。時間碼依播放器秒數顯示，未做逐幀定位，沒有連續觀看。",
+        "locator": "影片 00:10、00:20、00:25；本輪補看 00:42 街道與斜向亮帶、00:52 火焰前人物及遮擋。",
         "samples": [
           {
             "seconds": 10,
@@ -162,19 +170,30 @@
           {
             "seconds": 25,
             "note": "黑髮角色的俯斜近景、明確笑容；臉部由前景形狀框出。"
+          },
+          {
+            "seconds": 42,
+            "note": "街道仰視構圖中，多個角色／生物在右側與上方疊置；數道白色斜向亮帶橫過建築及角色，局部輪廓模糊。"
+          },
+          {
+            "seconds": 52,
+            "note": "中央偏左的深色人物位於橘黃火焰前，肩側與衣袖有暖色亮邊；深色前景形狀遮住下半身，畫面另有零散紅橘亮點。"
           }
         ],
         "segments": [],
         "timingBasis": "none"
       },
       "observations": [
-        "三個抽查鏡頭以取景大小、明暗對比與前景形狀改變注意焦點；25 秒畫面可清楚讀取眼睛與嘴角。"
+        "三個抽查鏡頭以取景大小、明暗對比與前景形狀改變注意焦點；25 秒畫面可清楚讀取眼睛與嘴角。",
+        "00:42 的白色斜帶與模糊輪廓分布在多個深度；00:52 則以明亮火焰襯出較暗人物和暖色邊緣。這是兩張不同取景的亮暗／前後層次比較，未建立同一動作的前後順序。"
       ],
       "application": [
-        "Layout 先決定臉與手的可讀範圍；Final 的光效不能蓋掉表情辨識。這是由構圖抽查推論的 Spine 應用。"
+        "Spine 應用推論：Layout 先 Key 主要 Pose，檢查角色、道具及前景的可讀範圍；Blocking 補姿勢轉折並以簡單形狀測試效果遮擋，Final 再調光效亮度與邊緣，避免蓋掉主要表情或輪廓。參考的是構圖與可見性，不複製這些鏡頭的動作或特效曲線。"
       ],
       "limits": [
-        "PV 有剪接，只作構圖／表情參考；不能由三張畫面聲稱已分析打鬥節奏、作畫曝光或速度。"
+        "PV 有剪接，這些暫停抽查畫面只作構圖、表情與特效外觀參考；未連續看過動作，不分析打鬥節奏、曝光、速度、火焰流向或固定 delay。",
+        "00:42 的斜向亮帶未核對成因；不把模糊當成速度測量或已知特效演算法。00:52 前景遮住下部，不能判定腳底接觸、重心或支撐力。",
+        "影片秒數顯示不等於原始作畫幀號；同一秒可能有不同畫格，抽查姿勢也不是已確認的作者關鍵幀。未下載、保存或重傳畫面。"
       ]
     },
     {
@@ -183,24 +202,27 @@
       "work": "Wolfwalkers",
       "region": "europe",
       "medium": "2d",
-      "stages": ["layout", "blocking"],
+      "stages": ["layout", "blocking", "final"],
       "techniques": ["silhouette", "staging", "pose", "acting"],
       "source": {
         "url": "https://www.youtube.com/watch?v=d_Z_tybgPgg",
         "publisher": "Apple TV",
         "platform": "YouTube",
         "official": true,
-        "verification": "Apple TV 驗證頻道的官方預告；另已閱讀製作方 Folivari 的作品頁，確認 Cartoon Saloon／Mélusine Productions 製作：https://folivari.com/en/production-en/wolfwalkers-production/",
-        "published": "2020-10-08",
+        "verification": "本輪重訪原片，發布者為 Apple TV／@AppleTV，展開說明顯示 2020-10-09。製作資料原見 https://folivari.com/en/production-en/wolfwalkers-production/；本輪另讀 https://fost.studio/portfolio/wolfwalkers/，列出 2D with TV Paint、上述導演及 Cartoon Saloon／Folivari／Mélusine Productions。日期僅依本輪頁面顯示，不宣稱 UTC 發布時刻。",
+        "published": "2020-10-09",
         "durationSeconds": 123,
-        "aliases": []
+        "aliases": [],
+        "kind": "video",
+        "creator": "Tomm Moore、Ross Stewart（導演，FOST 官方作品頁署名）；個別抽查鏡頭的原畫作者未確認。",
+        "rights": "FOST 作品頁標示 © 2021 CARTOON SALOON / MÉLUSINE PRODUCTIONS；未確認這支預告另有開放授權。僅保留官方連結與原創筆記，未下載、擷取保存或重傳畫面。"
       },
       "firstSeen": "2026-10-28T10:09:18+08:00",
-      "lastVerified": "2026-10-28T10:09:18+08:00",
+      "lastVerified": "2026-10-29T15:53:23.683Z",
       "review": {
         "status": "visual-samples",
-        "method": "在背景瀏覽器暫停於 15、20 秒，檢視實際畫面與時間碼。",
-        "locator": "影片 00:15、00:20",
+        "method": "背景瀏覽器暫停核對畫面及播放器顯示秒數。本輪補看 01:06、01:18，保留原有 00:15、00:20；未連續觀看或逐幀定位。",
+        "locator": "影片 00:15、00:20；新增 01:06 俯視林間狼群、01:18 明暗分組的寬幅狼群構圖。",
         "samples": [
           {
             "seconds": 15,
@@ -209,16 +231,33 @@
           {
             "seconds": 20,
             "note": "城鎮雙人互動，父親抱起女孩；兩旁人物形成側框，前後層次分明。"
+          },
+          {
+            "seconds": 66,
+            "note": "俯視的藍色林間通道中，中央較淺色狼形與後方深色狼形分開排列；中央角色的頭、背、尾與部分腿形可辨，下部局部被字幕／播放器區域遮住。"
+          },
+          {
+            "seconds": 78,
+            "note": "深藍林間的寬幅構圖中，上方中央較亮的狼形與下方成群深色狼形形成明暗對比；兩側樹形圍出通道，遠處有紅色縱向區域。"
           }
         ],
         "segments": [],
         "timingBasis": "none"
       },
-      "observations": ["15 秒以兜帽的深色外形襯托臉；20 秒用前後遮擋與側邊配角維持主角互動焦點。"],
-      "application": [
-        "Layout 將主體與裝飾的明暗、輪廓、遮擋一併檢查；Blocking 抱持 Pose 先確認支撐點，再處理衣物。"
+      "observations": [
+        "15 秒以兜帽的深色外形襯托臉；20 秒用前後遮擋與側邊配角維持主角互動焦點。",
+        "01:06 與 01:18 都讓較淺色的單一狼形和深色群體分開，並由林地形狀圍出通道；兩張都是取景與輪廓證據，未證明同一角色或同一段奔跑的連續性。"
       ],
-      "limits": ["只看兩個獨立畫面，沒有量測抱起過程或衣物延遲；不將預告轉場當角色運動。"]
+      "application": [
+        "Spine 應用推論：Layout 先 Key 主要人物／狼形 Pose，安排主體亮暗、輪廓與群體空隙；Blocking 對抱持檢查支撐點，對群體檢查遮擋；Final 才補衣物與毛尾細節。群體的步態、延遲與速度另需連續參考及專案預覽。"
+      ],
+      "limits": [
+        "只看獨立畫面，未量測抱起、奔跑或衣物延遲；不把預告剪接當成角色運動，也不由狼群位置推斷步頻或追逐順序。",
+        "新樣本中角色偏小、部分輪廓重疊或被字幕遮住；沒有可確認的逐腳接觸、負重或完整步態證據，不強加 contact／timing 標籤。",
+        "影片頁本輪顯示日期為 2020-10-09，與舊紀錄 2020-10-08 不同；本筆採實際頁面顯示日期，未核對差異原因或原始 UTC 發布時刻。",
+        "抽查 Pose 不是已確認的原作者關鍵幀；圖中景物、顏色和構圖不能直接轉成本工具的骨架比例或固定延遲。"
+      ],
+      "actions": ["acting", "creature"]
     },
     {
       "id": "japan-toei-key-drawing-workflow",
@@ -390,8 +429,8 @@
     },
     {
       "id": "us-animationmentor-pose-design-2026",
-      "title": "Animation Mentor｜有吸引力的角色 Pose",
-      "work": "Building Appealing Character Poses for Animation",
+      "title": "Animation Mentor｜全身 Pose：剪影與推牆支撐",
+      "work": "The Secret to Natural Character Poses: Weight Distribution and Balance",
       "region": "us",
       "medium": "production",
       "stages": ["layout", "blocking", "final"],
@@ -399,33 +438,54 @@
       "forms": ["key-pose"],
       "actions": ["acting"],
       "source": {
-        "kind": "document",
-        "url": "https://www.animationmentor.com/blog/tutorial-building-appealing-character-poses-for-animation/",
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=J4Jzr3eAatg",
         "publisher": "Animation Mentor",
-        "platform": "Official educational article",
+        "platform": "YouTube / linked official educational article",
         "official": true,
-        "published": "2026-04-07",
-        "verification": "已讀 Animation Mentor 官方文章主文與 Anthony Wong 講師介紹；未觀看內嵌教學影片。",
-        "aliases": []
+        "published": "2026-04-05",
+        "durationSeconds": 1037,
+        "creator": "Anthony Wong（官方教學講師）；10:04 的 Woody 圖像在講課畫面中作為範例，未逐一確認原圖創作者。",
+        "rights": "Animation Mentor 官方公開教學影片；未確認開放授權。講課中的 Woody 圖像及其他第三方素材不因此取得可重用授權。僅保存影片／文章連結與原創筆記，不下載或重傳。",
+        "verification": "本輪重讀 Animation Mentor 官方文章（頁面日期 2026-04-07），核對其 YouTube 內嵌 ID J4Jzr3eAatg 與 Animation Mentor 發布者。正常 YouTube 頁顯示 @animationmentor、影片日期 2026-04-05、片長 17:17；DOM 讀取片長 1037.401 秒。文章日期與影片日期分開保留，沒有推定時區換算。",
+        "aliases": [
+          "https://www.animationmentor.com/blog/tutorial-building-appealing-character-poses-for-animation/"
+        ]
       },
       "firstSeen": "2026-10-28T06:24:26.829Z",
-      "lastVerified": "2026-10-28T06:24:26.829Z",
+      "lastVerified": "2026-10-30T02:11:12.164Z",
       "review": {
-        "status": "text-reviewed",
-        "method": "閱讀文章主文中姿勢評判、負空間、重心、工作順序與控制器使用段落。",
-        "locator": "Four Elements to Judge Your Pose；Managing Complexity and Negative Space；Line of Action and Contrapposto；Using Bend Bow Controls Wisely",
-        "samples": [],
+        "status": "visual-samples",
+        "method": "保留先前文字教材證據並重讀文章；本輪在官方 YouTube 暫停抽查兩個畫面，全螢幕看清後還原。首樣本依播放器 10:04 整秒顯示；第二樣本用鍵盤跳轉後，讀取 paused=true、currentTime=933.629999。只有離散畫面，沒有連續觀看。",
+        "locator": "官方文章 https://www.animationmentor.com/blog/tutorial-building-appealing-character-poses-for-animation/ ：Four Elements to Judge Your Pose、Avoiding the Wrong Pose for the Right Theme、Using Bend Bow Controls Wisely、Foot Roll and Foot Break for Cleaner Contact。影片 10:04：講課中的 Woody 單腿屈起全身圖；15:33.63：Maya 推牆 Pose 與 Foot Roll／Foot Break 面板。",
+        "samples": [
+          {
+            "seconds": 604,
+            "note": "依播放器 10:04 整秒顯示；講課畫面展示 Woody 全身圖，一腿屈起、一手抬高，另一臂向外彎，手肘與軀幹間有空隙。這是講課中展示的靜態圖，沒有可確認的地面接觸。"
+          },
+          {
+            "seconds": 933.63,
+            "note": "DOM 暫停時刻 933.629999 秒；Maya 全身角色兩臂伸向左側牆面，一腿較彎、另一腿向後伸，兩腳位置不同，控制線可見；右側列有 Foot Roll／Foot Break。只看靜態 Pose，不解讀成已量測的推力或步態。"
+          }
+        ],
         "segments": [],
         "timingBasis": "none"
       },
       "observations": [
-        "文章將姿勢的意圖、剪影、動勢線與肩胯對位分開檢查，並提醒把過度複雜的肢體交錯簡化。彎曲修飾控制器應留在主要 Pose 成立後。"
+        "文章文字把意圖、剪影、動勢線與肩胯對位分開檢查，提醒簡化肢體交錯；力量主題應讀出施力意圖，不能只以帥氣平衡姿勢代替，肢體曲率控制留待主要 Pose 成立後。",
+        "10:04 畫面中的 Woody 全身圖有一腿屈起、抬手與向外彎的手臂；臂與軀幹之間保留空隙。它是教學展示的靜態圖，未確認為電影鏡頭或原作關鍵幀。",
+        "15:33.63 的 Maya 視窗有向牆面伸出的雙臂、前彎與後伸的兩腿，角色整體斜向牆面；右側有 Foot Roll／Foot Break 控制項。文章另以文字說明腳部樞軸控制，這不等於本輪看到其變化過程。"
       ],
       "application": [
-        "Layout 先讓情緒與主要線條可讀；Blocking 檢查支撐與負空間；Final 才細修肢體弧度。這些判準可輔助 Spine Pose 自評，不能直接代填關節座標。"
+        "Spine 應用推論：Layout 先 Key 清楚的表演意圖、主線條與支撐配置，從最終視角檢查手臂負空間；以推牆這類明確任務檢查主 Pose，避免只靠附加曲率裝飾。",
+        "Blocking 再檢查手與牆、腳與地面的相對位置及膝髖轉折；Final 才細修肢體弧度、手指與腳部細節。原文的腳部控制可啟發分離接觸意圖，但仍須以本角色骨架和連續預覽驗證。"
       ],
       "limits": [
-        "本筆只讀文字，不把文中影片的動作描述當成親看畫面的分析，也不套用 3D Rig 的控制參數到 Spine。"
+        "只有兩個離散樣本；沒有觀看完整教學、Woody 動作或推牆過程，不推導速度、承重、重心軌跡、步態、收勢、固定 delay 或動畫品質。",
+        "10:04 依播放器整秒顯示，未量測精確影格；15:33.63 是影片秒數而非 Maya 專案幀號。兩樣本不是連續動作的前後姿勢。",
+        "影片包含講師展示的圖片和編輯介面；官方教育發布者不等於 Woody 圖像的原始作者或電影官方發行者。控制線與文字數值不是 Spine 設定。",
+        "Foot Roll／Foot Break、RX 和原文角度屬該教學 rig 的控制語意；不把它們直接轉為所有骨架通用的角度、樞軸或接觸處方。",
+        "原文的動作敘述仍屬文字證據；本輪未依字幕或文章把未連續看過的片段升級為節奏分析。"
       ]
     },
     {
@@ -915,25 +975,27 @@
         "published": "2023-08-23",
         "creator": "Aardman 互動製作團隊；主文未辨識文章作者姓名，動畫師明確提到 Inez Woldman。",
         "rights": "官方公開製作文章，未見開放授權；只保存連結與短篇原創筆記，不複製來源圖像或影片。",
-        "verification": "已讀 Aardman 官方文章主文、日期及製作分工說明；歐洲分類依該英國製作團隊，不按 Morph 造型猜測。",
+        "verification": "本輪重讀正常公開 Aardman 文章的 Invasion of the body-trackers 及 From modelling clay to polygons 段落，核對 2023-08-23 日期、Inez Woldman 與製作說明。文字抓取逾時後以正常背景瀏覽器成功讀取；沒有播放／分析內嵌 GIF 的動作。",
         "aliases": []
       },
       "firstSeen": "2026-10-28T19:43:23.680Z",
-      "lastVerified": "2026-10-28T19:43:23.680Z",
+      "lastVerified": "2026-10-30T03:14:09.808Z",
       "review": {
         "status": "text-reviewed",
-        "method": "閱讀 From modelling clay to polygons 段落，核對粗動畫測試、全身預備及依遊戲威脅調整反應的說明；未播放內嵌動畫。",
-        "locator": "From modelling clay to polygons：Inez Woldman 的 blocked out animation；jump 全身表演；較短蓄勢及威脅程度影響播放部分的三段。",
+        "method": "保留前輪粗動畫與遊戲蓄勢的文字證據，本輪補讀玩家與角色的關係、輸入手勢篩選，以及 Inez Woldman 的製作段落；沒有連續看影片或 GIF。",
+        "locator": "Invasion of the body-trackers：玩家與 Morph 的關係、30 多種手勢縮減為四種；From modelling clay to polygons：blocked out animation、jump 全身表演、依威脅調整預備與移動部分。",
         "samples": [],
         "segments": [],
         "timingBasis": "explicit-text"
       },
       "observations": [
         "文章描述先以粗動畫確認角色表演及遊戲適用性，再完成細節；跳躍的預備包含膝、手臂與臉部共同表達出力。",
-        "遊戲保留較短的蓄勢，並依當下威脅調整播放：無急迫威脅時保留較多預備，需要立即移動時優先動作的移動部分。"
+        "遊戲保留較短的蓄勢，並依當下威脅調整播放：無急迫威脅時保留較多預備，需要立即移動時優先動作的移動部分。",
+        "本輪補讀文字：團隊希望玩家向 Morph 提出動作要求，而不是逐項複製玩家身體；原型的 30 多種輸入因此收斂為四種可理解的手勢，角色仍保留自己的演出意圖。"
       ],
       "application": [
-        "Layout 先 Key 蓄勢、主要動作與收勢 Pose；Blocking 同時檢查表演可讀性與操作反應，為互動演出規劃可縮短的預備段；Final 才細修臉部與次要動作。這是 Spine 應用推論，實際銜接需在本角色及使用情境預覽。"
+        "Layout 先 Key 蓄勢、主要動作與收勢 Pose；Blocking 同時檢查表演可讀性與操作反應，為互動演出規劃可縮短的預備段；Final 才細修臉部與次要動作。這是 Spine 應用推論，實際銜接需在本角色及使用情境預覽。",
+        "Spine 應用推論：規劃互動演出時，分開輸入訊號與角色主要 Pose 的意圖；先在 Layout 明確定義角色回應任務，再處理 Blocking 銜接，不直接把輸入者手勢當成角色的全部骨架座標。"
       ],
       "limits": [
         "只有製作文字證據，未觀看粗動畫或最終遊戲片段，不聲稱已量測節奏、輸入延遲或轉場品質。",
@@ -1036,8 +1098,8 @@
       "work": "Animation Mentor — Jason Martinsen walk tutorial",
       "region": "us",
       "medium": "production",
-      "stages": ["layout", "blocking"],
-      "techniques": ["pose", "contact", "breakdown"],
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "contact", "breakdown", "workflow"],
       "actions": ["walk"],
       "source": {
         "kind": "video",
@@ -1045,19 +1107,28 @@
         "publisher": "Animation Mentor",
         "platform": "YouTube",
         "official": true,
-        "creator": "Jason Martinsen（對應官方文章所列講師）；本輪未核對影片片尾製作名單。",
+        "creator": "Jason Martinsen（原始影片說明與對應官方文章均介紹為教學者）；未核對片尾完整名單。",
         "rights": "官方公開教學，未見開放授權；僅保存原始連結與來源資訊，不下載或重傳影片、截圖。",
         "durationSeconds": 2138,
-        "verification": "來自 https://www.animationmentor.com/blog/tutorial-animating-human-walk-cycle/ 的內嵌影片；正常影片頁顯示 Animation Mentor／@animationmentor 與標題，片長整秒顯示 35:38。影片發布日期未另核對。 本輪已在背景瀏覽器實際看清 11:14、12:14 兩張暫停畫面；未連續觀看動作。",
-        "aliases": ["https://www.youtube.com/embed/Oda0Au-gj4c?feature=oembed&start=1438"]
+        "verification": "來自 https://www.animationmentor.com/blog/tutorial-animating-human-walk-cycle/ 的內嵌影片；本輪重訪原片確認 Animation Mentor／@animationmentor、標題、35:38 片長及公開頁顯示的 2025-07-04 日期。直接影片說明介紹講師 Jason Martinsen；本輪補看 03:33、04:03，保留原有 11:14、12:14 抽查證據，未連續觀看。",
+        "aliases": ["https://www.youtube.com/embed/Oda0Au-gj4c?feature=oembed&start=1438"],
+        "published": "2025-07-04"
       },
       "firstSeen": "2026-10-28T21:47:08.712Z",
-      "lastVerified": "2026-10-28T22:41:16.832Z",
+      "lastVerified": "2026-10-29T17:58:18.490Z",
       "review": {
         "status": "visual-samples",
-        "method": "正常背景瀏覽器暫停並核對播放器整秒時間，實際檢視 11:14 與 12:14；只記離散畫面，不計背景播放經過時間。",
-        "locator": "11:14 側面腿腳接觸構型；12:14 畫面標示 BREAKDOWN POSES，前膝彎曲及前腳掌位置。",
+        "method": "背景瀏覽器暫停並核對播放器顯示時間。本輪補看 03:33 正面全身與 04:03 視圖配置；原有 11:14、12:14 腿腳樣本保留。只記離散畫面，沒有逐幀定位或連續步態觀察。",
+        "locator": "03:33 正面全身／KEY POSES；04:03 上方視圖與下方曲線編輯器；11:14 腿腳構型；12:14 BREAKDOWN POSES。",
         "samples": [
+          {
+            "seconds": 213,
+            "note": "畫面標示 KEY POSES；左側主視圖可見正面人物的頭、軀幹、雙臂到腳，外圍有大型控制曲線；右上另有角色選取面板。"
+          },
+          {
+            "seconds": 243,
+            "note": "KEY POSES 畫面分成上方視圖與下方曲線編輯器，左上人物側面前後腿拉開；右側視窗部分被選單遮住，沒有解讀其下細節。"
+          },
           {
             "seconds": 674,
             "note": "側面人物的前後腿拉開，前腳尖上翹、後腳跟抬起；本張人物頭肩未完整入鏡，只取腿腳輪廓。"
@@ -1071,15 +1142,17 @@
         "timingBasis": "none"
       },
       "observations": [
-        "11:14 與 12:14 的腿腳構型不同：前者前後腿展開並有腳尖／腳跟角度差，後者前膝彎曲、前腳掌更貼近平面。這是兩張編輯姿勢，不是連續步態量測。"
+        "11:14 與 12:14 的腿腳構型不同：前者前後腿展開並有腳尖／腳跟角度差，後者前膝彎曲、前腳掌更貼近平面。這是兩張編輯姿勢，不是連續步態量測。",
+        "03:33 可在同一正面視圖比較頭、胸、骨盆、手及腳的位置；04:03 另見側面跨步與曲線編輯區。這些是姿勢規劃／編輯畫面，不代表已完成完整步態或已驗證滑步。"
       ],
       "application": [
-        "Layout 可先 Key 接觸與屈膝支撐等主要 Pose，確認腳尖、腳跟及支撐腿輪廓；Blocking 再補離地與 passing 轉折，預覽根位移和腳的關係。這是 Spine 應用推論，仍需實際播放檢查滑步與重量感。"
+        "Spine 應用推論：Layout 先 Key 接觸、屈膝等主要 Pose，選符合素材視角的參考，確認頭胸、骨盆和腳的相對位置；Blocking 再補 passing 與離地轉折；Final 實際播放檢查根位移和腳的關係。正側面參考可輔助理解體積，實際 Spine 預覽仍依素材視角檢查。"
       ],
       "limits": [
-        "本輪只有兩張暫停畫面，未連續看過完整步態；不能推算節奏、spacing、受力、滑步或膝部跳動是否已修妥。",
-        "教學畫面屬製作過程，不把編輯中的 Pose 當作已驗收成片；第一張只取可見腿腳，不推論被裁切的頭肩姿態。",
-        "影片秒數不是角色專案幀號；既有文字教材的敘述與本輪畫面證據分開，沒有據此設定固定插值或延遲。"
+        "只有離散暫停畫面，未連續看過完整步態；不能推算節奏、spacing、受力、滑步或膝部跳動是否修妥。",
+        "教學屬製作過程；03:33 人物較小，04:03 右側視窗被選單遮擋，11:14 頭肩未完整入鏡，僅分析各樣本實際可見範圍。",
+        "影片秒數不是角色專案幀號；正文敘述、Maya 曲線與實際畫面證據分開，不據此設定固定插值或延遲。",
+        "Maya 多視圖與角色選取面板不等於 Spine 現有功能；未測試工具間轉換，也不把此示範當成已完成本工具的 Layout。"
       ]
     },
     {
@@ -1101,34 +1174,48 @@
         "durationSeconds": 21,
         "creator": "京都アニメーション；本段原畫師未在影片說明及對應製作介紹段落個別署名。",
         "rights": "©綾野ことこ・京都アニメーション/ツルネ製作委員会。官方公開的製作介紹，未見開放授權；僅保留官方影片連結及短篇原創筆記，未下載或重傳媒體。",
-        "verification": "已讀 https://tsurune.com/movie/special/making/ 的「雅貴 編」，核對該段內嵌影片 ID；官方 Cast/Staff 頁 https://tsurune.com/movie/caststaff/ 列動畫製作為京都アニメーション。YouTube 頁核對京アニチャンネル / @KyoaniChannel、標題、2022-08-30 發布日期及 0:21 片長。",
+        "verification": "已讀 https://tsurune.com/movie/special/making/ 的「雅貴 編」，核對該段內嵌影片 ID；官方 Cast/Staff 頁 https://tsurune.com/movie/caststaff/ 列動畫製作為京都アニメーション。YouTube 頁核對京アニチャンネル / @KyoaniChannel、標題、2022-08-30 發布日期及 0:21 片長。 本次重訪成功看清 0:07、0:12、0:17 暫停畫面與對應工序標示；官方首頁 https://tsurune.com/movie/ 的 2022-08-30 消息亦列出雅貴篇公開。",
         "aliases": [
           "https://www.youtube.com/embed/-uqfPNSMWrU",
           "https://tsurune.com/movie/special/making/"
         ]
       },
       "firstSeen": "2026-10-28T23:37:44.098Z",
-      "lastVerified": "2026-10-28T23:37:44.098Z",
+      "lastVerified": "2026-10-29T05:45:22.182Z",
       "review": {
-        "status": "text-reviewed",
-        "method": "閱讀電影官方製作介紹的「雅貴 編」及同內容的 YouTube 說明；影片暫停在 0:08，但兩次畫面擷取均逾時，未取得可見畫面。未連續觀看。",
-        "locator": "https://tsurune.com/movie/special/making/ → 雅貴 編：原畫／構圖及完成畫面的風效說明；YouTube 展開說明欄亦有同段文字。播放器 0:08 只代表嘗試定位，並非視覺樣本。",
-        "samples": [],
+        "status": "visual-samples",
+        "method": "重讀已核對的官方製作介紹，並在背景瀏覽器抽查三張暫停畫面，核對實際秒數及畫面上的工序名稱。前輪擷取失敗保留在舊 run 紀錄，沒有回填成先前已觀看。未連續觀看。",
+        "locator": "YouTube 0:07「ペイント」側臉與箭；0:12「美術背景」藍白布幕；0:17「撮影」手套局部近景。另看過 0:02「動画」局部線稿，但未辨清整體構型，不列為 Pose 樣本。",
+        "samples": [
+          {
+            "seconds": 7,
+            "note": "畫面標示「ペイント」；白底上有朝右側臉、肩頸及橫過下顎附近的箭，左緣只見部分手套，沒有完整手指或全身。"
+          },
+          {
+            "seconds": 12,
+            "note": "畫面標示「美術背景」；藍白直條布幕與部分綠色背景，沒有角色。這是背景工序對照，不是人物 Pose。"
+          },
+          {
+            "seconds": 17,
+            "note": "畫面標示「撮影」；灰白手套局部佔據畫面，邊緣模糊，未完整看清手指與弓弦。不能據此判斷放箭速度或風向。"
+          }
+        ],
         "segments": [],
         "timingBasis": "none"
       },
       "observations": [
-        "官方「雅貴 編」文字說明，構圖從箭尖特寫，轉到看見角色，再以放箭手部近景結束；這是製作方敘述，本輪未看見相應畫面。",
-        "同段把表演與動作設計歸於原畫，並說明完成畫面另加入風的表現；未提供風效的控制方法或精確時間。"
+        "實際抽查中，0:07 的角色與箭呈現在白底，0:12 另示背景，0:17 為手套局部近景；三張畫面明列不同工序，不能統稱為原畫或主要 Pose。",
+        "0:07 可看見視線朝向、側臉與箭的相對高度；完整手掌、手指與下半身不在畫面內，觀察只限可見區域。",
+        "官方「雅貴 編」文字仍提供箭尖→角色→放箭手部的構圖說明及另加風效的分工；本次抽查沒有驗證完整取景順序，也未觀察連續風效。"
       ],
       "application": [
-        "Layout 可先 Key 持弓與放箭的主要 Pose，安排箭尖、全身與手部三種取景的閱讀重點；Blocking 再確認手、弓和視線的關係與銜接，Final 才加入風效。這是 Spine 應用推論，需用實際階段預覽驗證，不能由文字假定 Pose 或構圖已完成。"
+        "Layout 可先 Key 頭胸、視線、持弓手臂與箭的主要關係，按預定取景檢查可讀性；Blocking 再補轉折並預覽手、箭與構圖的銜接；Final 才處理風效等細節。這是 Spine 應用推論，不能把本次的背景或模糊手套畫面當成完整主要 Pose 已通過檢查。"
       ],
       "limits": [
-        "本輪證據只有官方文字與來源資訊；沒有實際看見的 Pose、連續動作、節奏、弧線或速度資料，不能把本條目當成已看過影片的參考。",
-        "文字介紹的取景順序不等於本輪已確認的剪接、時間碼或鏡頭運動；沒有量測固定停頓、幀數或延遲。",
-        "未確認具體弓道手法及手指接觸，也未驗證風效由骨骼、變形、粒子或合成的哪一種方式實作；不以本條目取代弓道技術教材。",
-        "Layout → Blocking → Final 是本工具的工作安排，不把日本動畫的原畫、動画與撮影工種直接等同三階段。"
+        "只有三張暫停畫面與官方文字，沒有連續動作、節奏、弧線、固定停頓、幀數或延遲的量測。",
+        "0:12 沒有角色，0:17 手部細節模糊；未確認具體弓道手法、弓弦接觸或放箭受力，不以本條目取代弓道教材。",
+        "0:17 的模糊邊緣不證明風向或速度，也未驗證風效使用骨骼、變形、粒子或合成的實作方式。",
+        "Layout → Blocking → Final 是本工具的安排，不把原畫、動画、ペイント、美術背景與撮影工種直接等同三階段。"
       ]
     },
     {
@@ -1174,6 +1261,1267 @@
         "沒有實際看過本篇插圖或相關動畫；不據此填 Pose 描述、時間碼、節奏、幀數、固定 delay 或量測數值。",
         "角色形體變化可能是有意的變形，不能把受訪者談到的形體失控推成禁止擠壓伸展；需按表演目的判斷。",
         "此處 Layout 與原畫是來源的製作工序，Layout → Blocking → Final 是本工具的安排，兩者不是工種的一對一對應。"
+      ]
+    },
+    {
+      "id": "europe-blender-cat-purkour-pose-pass",
+      "title": "Blender Studio｜Cat Purkour：粗姿勢、遮擋與逐步細化",
+      "work": "Cat Purkour（以 Wing It! 貓角色為基礎的 2D／3D 測試）",
+      "region": "europe",
+      "medium": "production",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "silhouette", "staging", "workflow"],
+      "actions": ["run", "jump", "creature"],
+      "source": {
+        "kind": "document",
+        "url": "https://studio.blender.org/blog/cat-purkour-combining-2d-animation-in-a-3d-environment/",
+        "publisher": "Blender Studio",
+        "platform": "Official production article with embedded demonstrations",
+        "official": true,
+        "published": "2024-05-03",
+        "creator": "Rik Schutte（動畫流程）；Beau Gerbrands（環境、材質、燈光及合成與本文主作者），另有工作室團隊協助。",
+        "rights": "頁尾 cat_purkour.zip 標為 CC-BY，連到 CC BY 4.0；此授權標記對應專案下載檔，不自動推及頁面所有圖片、文章或第三方標記。本輪僅保留官方文章連結與原創觀察，未下載 ZIP、影片或圖片。",
+        "verification": "本輪原文與背景瀏覽器均可公開讀取，重新核對 3 May 2024、作者及 Sketching key poses. 章節；原有荷蘭工作室地域查證依 https://www.blender.org/about/ 保留。對同一播放器進行 UI 跳轉，以 Seek 與對應 HTML video 核對檔名 dd3867246d6017e241b08ed633234020.mp4、暫停狀態及秒數；不保存過期簽署網址。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T01:41:30.330Z",
+      "lastVerified": "2026-10-29T21:00:29.341Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "本輪在 Sketching key poses. 下方同一播放器以 UI 跳轉至 60%／80%，再核對實際 28.519999／38.026666 秒、47.533333 秒片長及 paused 狀態；進入全螢幕檢視完整畫面後還原。記錄秒數四捨五入至小數兩位，保留原有 2.41／19.01 秒樣本；未連續觀看。",
+        "locator": "原頁 #sketching-key-poses 下方 Blender 操作錄影，檔名 dd3867246d6017e241b08ed633234020.mp4；樣本 2.41、19.01、28.52、38.03 秒，只屬此示例，不是文章頂端成片或 Blender 專案幀號。",
+        "samples": [
+          {
+            "seconds": 2.41,
+            "note": "灰色塊面場景中有小型線稿貓，前景斜面遮住角色下部；畫面保留 Blender 編輯介面與時間軸，並非完成著色畫面。"
+          },
+          {
+            "seconds": 19.01,
+            "note": "線稿貓的臉、軀幹及向左右伸出的肢體較清楚，位於右側圓弧前景上方；軀幹仍有圓形構造線。未從輪廓重疊判定接觸或受力。"
+          },
+          {
+            "seconds": 28.52,
+            "note": "灰模管線與斜面之間可辨貓的頭臉、彎曲雙臂及軀幹線稿，下部被前景遮住；畫面含 Blender 編輯面板與多個圖層。"
+          },
+          {
+            "seconds": 38.03,
+            "note": "灰模場景中多個近似貓頭／肢體輪廓重疊，右側面板顯示 Keyframes Before／After 均為 1；未把所有重疊線條當作成片中的多個角色或拖影。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "文字的 Blocking animation with a 3d cat、Sketching key poses. 與 Refining and inbetweening 依序說明：用簡化頭身建立主要動作，再畫輪廓與透視，之後補中割、眼睛、尾巴及衣物細節。",
+        "同一示例約 2.41 秒的角色下部被前景塊面遮住較多；19.01 秒可較清楚辨認臉、軀幹與肢體線稿。這是兩張編輯畫面的空間／遮擋觀察，沒有連續節奏證據。",
+        "28.52 秒可見前景管線遮住貓的下部；38.03 秒則有多重貓形線條及 Keyframes Before／After 面板。這些是編輯狀態與遮擋證據，不能直接當成乾淨成片效果。"
+      ],
+      "application": [
+        "Layout 可先 Key 起跳與落點等主要 Pose，連同場景遮擋及取景檢查；Blocking 再補轉折並預覽體積與前景關係，Final 才細修眼、尾巴、衣物及明暗。這是 Spine 應用推論，不能直接搬用來源的 3D 透視或攝影機配置。",
+        "Spine 應用推論：用編輯錄影作 Pose 參考時，先分清單張繪圖與參考疊圖，再用專案純預覽檢查遮擋；不能把所有重疊輪廓直接製成角色動作或分身。"
+      ],
+      "limits": [
+        "沒有連續看過動作，不推算速度、spacing、支撐時機、幀率、固定延遲或循環品質。",
+        "示例含臉部細線與編輯圖層；正文提到的首輪不畫眼睛是流程文字，不能把 19.01 或 28.52 秒畫面直接稱為純 Layout。",
+        "這些離散樣本仍不足以驗證足部接觸或受力，未強加 contact 技法標籤。",
+        "38.03 秒的多重輪廓可能涉及洋蔥皮或其他編輯疊圖；未核對每條線是否成片內容，不據此新增 smear 或分身效果分析。",
+        "文章的鏡頭插值、特定幀號與 2024 年工具限制不當成本工具曲線／時長標準或目前 Blender 功能現況；未下載或執行專案。"
+      ]
+    },
+    {
+      "id": "europe-blender-snow-cup-contact-acting",
+      "title": "Blender Studio｜Snow 片頭：握杯、桌面接觸與對話 Pose",
+      "work": "Introducing Snow - Free Blender rig（片頭酒吧表演）",
+      "region": "europe",
+      "medium": "3d",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "contact", "acting", "staging", "facial"],
+      "actions": ["acting", "expression"],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=X7tNZNV2GBQ",
+        "publisher": "Blender Studio",
+        "platform": "YouTube",
+        "official": true,
+        "published": "2022-03-10",
+        "durationSeconds": 355,
+        "creator": "Blender Studio 團隊；導覽由 Rik Schutte 主持。本輪未核對片頭各鏡頭的完整個別製作署名。",
+        "rights": "官方影片說明對 Snow Rig 標示 CC-BY 並要求 Snow Rig © Blender Foundation | studio.blender.org 署名；該模型授權不自動推及本影片的所有表演、聲音與第三方內容。僅保留官方影片連結及原創觀察，未下載或重傳。",
+        "verification": "已由官方 https://studio.blender.org/blog/rendering-snow-parkour-animation-with-eevee/ 核對頂端內嵌 ID X7tNZNV2GBQ，並在 YouTube 核對 Blender Studio / @BlenderStudio、片名與 5:55 片長。發布日期 2022-03-10 由該官方 YouTube 搜尋結果的影片資料核對。Blender Studio 的歐洲地域沿用已查證的荷蘭工作室資料，非由畫風推定。",
+        "aliases": ["https://www.youtube-nocookie.com/embed/X7tNZNV2GBQ"]
+      },
+      "firstSeen": "2026-10-29T02:42:54.412Z",
+      "lastVerified": "2026-10-29T02:42:54.412Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器抽查片頭兩張暫停畫面，核對實際播放器秒數。另嘗試定位 0:16，當時時間顯示尚未同步且為標題卡，未列為樣本。未連續觀看，也未以自動字幕分析台詞或節奏。",
+        "locator": "YouTube 0:06、0:11 的酒吧對話畫面；記錄畫面左右方向，不推定未完整顯示的指節或接觸力。",
+        "samples": [
+          {
+            "seconds": 6,
+            "note": "畫面左側角色身體前傾，一手放在桌面，另一手在畫面右側握住矮杯；眼皮閉合、嘴部微張。右前景有另一角色的背部／手臂，形成對話取景。"
+          },
+          {
+            "seconds": 11,
+            "note": "同一桌邊角色的眼睛張開、嘴形不同，握杯手與桌面上的另一隻手仍可辨認；部分手指被字幕遮住，不逐指分析。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "兩張片頭畫面都能看清手、杯與桌面的相對位置，角色上半身前傾，右前景的對話對象背部提供視線與空間參照。",
+        "0:06 與 0:11 的眼皮開合及嘴形不同；僅能確認兩個靜態表情，不據此判斷表情轉換、口型同步或情緒節拍。"
+      ],
+      "application": [
+        "Layout 可先 Key 頭胸朝向、握杯與桌面接觸等主要 Pose；Blocking 在需要維持握杯的段落檢查手與杯的相對位置，再加表演轉折；Final 才細修眼口與手部細節。這是 Spine 應用推論，接觸關係與動作目的仍需依實際角色和階段預覽確認。"
+      ],
+      "limits": [
+        "未連續觀看，沒有杯重、握力、速度、停頓、幀數或固定延遲的量測；兩張靜態圖不能證明手部全段無滑動。",
+        "前傾與手放桌面是可見構型，不能由此量測桌面承重比例、重心或受力。",
+        "本次未取得足以判斷腳部支撐／離地的跑酷樣本；沒有用官方跑酷介紹或縮小封面補造腳部觀察。",
+        "3D 角色表情不能直接轉為 Spine 附件或變形資料；本條目未驗證任何自動口型、IK 或權重功能。",
+        "Layout → Blocking → Final 的改編是本工具的工作安排，並非聲稱影片有展示這三個製作階段。"
+      ]
+    },
+    {
+      "id": "us-pixar-luxo-archive-pose-planning",
+      "title": "Pixar｜Luxo Jr. 底座接觸與手繪 Pose 規劃",
+      "work": "The Creation of Luxo Jr | Pixar 40th",
+      "region": "us",
+      "medium": "production",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "contact", "workflow"],
+      "forms": ["pose-sequence"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=oKob7xbq1O4",
+        "publisher": "Pixar",
+        "platform": "YouTube",
+        "official": true,
+        "published": "2026-02-03",
+        "durationSeconds": 59,
+        "creator": "Pixar／Pixar Living Archives；本輪未確認片中手寫清單與姿勢稿的個別作者。",
+        "rights": "Pixar 官方公開回顧影片，未見開放授權；https://www.pixar.com/ 頁尾標示 © 1986-2026 Disney-Pixar。僅保留官方連結與原創觀察，未下載、保存或重傳影像／製作稿。",
+        "verification": "在正常背景瀏覽器核對 Pixar / @pixar、影片標題及 0:59 片長；2026-02-03 發布日期由官方 YouTube 搜尋資料核對。另讀取 https://www.pixar.com/，頁尾 YouTube 連結指向 https://www.youtube.com/pixar，交叉核對發布者，不只依驗證標記判斷。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T04:38:54.385Z",
+      "lastVerified": "2026-10-29T04:38:54.385Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "在背景瀏覽器實際抽查 0:06、0:16、0:26 三張暫停畫面，逐筆核對播放器秒數；跳轉後等待可讀畫面再記錄。未連續觀看，不使用自動字幕分析節奏。",
+        "locator": "0:06 下半部燈具底座／折臂；0:16 黃色手寫動作清單；0:26 多格燈具姿勢草稿。後兩者是影片中的靜態製作資料，格子不是已確認的影片幀號。",
+        "samples": [
+          {
+            "seconds": 6,
+            "note": "下半部小燈的底座位於木地板平面，折臂彎曲、燈罩朝畫面右側；上半部另有較大的燈罩與部分燈臂，未完整看見其底座。"
+          },
+          {
+            "seconds": 16,
+            "note": "黃色紙上以分行手寫條目列出動作；畫面及字幕裁切部分內容，只辨認規劃形式，不逐字轉錄或推算各項時長。"
+          },
+          {
+            "seconds": 26,
+            "note": "多格燈具線稿中，底座、折臂和燈罩構型各異，部分格子另有圓球；下方部分格子被字幕遮住，不解讀不清楚的細節。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "0:06 可同時辨認小燈的底座平面、彎曲折臂與燈罩朝向，能作為物件角色的整體姿勢參照；不由單張畫面判定下一步是起跳或落地。",
+        "0:16 的分行動作清單與 0:26 的多格姿勢稿顯示兩種規劃呈現方式。稿件格子的差異是靜態對照，尚未確認對應順序、時間或最終影片採用情況。"
+      ],
+      "application": [
+        "Layout 可先 Key 主要燈罩朝向、折臂壓低／伸展及底座支撐等 Pose，另寫動作目的；Blocking 再檢查轉折與底座相對地面的定位，Final 才補細部表現。這是 Spine 應用推論，必須用自己的階段預覽驗證，不能直接套用草稿格子作為幀號。"
+      ],
+      "limits": [
+        "沒有連續觀看，沒有跳躍速度、支撐時長、spacing、固定延遲、接觸力或完整節奏的證據。",
+        "單格底座與地面的構型不證明整段無滑動，也未量測重心、重量或物理正確性。",
+        "姿勢草稿是影片中展示的資料，未核對原稿名稱、日期或作者；不用知名動畫師姓名補猜署名，也不把它冒稱已完成的 Layout。",
+        "黃色清單與草稿是靜態證據，不以條目數、格數、圖上編號推定幀數或速度。",
+        "本條目與既有 Pixar in a Box 是不同官方影片，未把兩片同一角色的樣本誤併成連續動作。"
+      ]
+    },
+    {
+      "id": "us-wb-coyote-roadrunner-airborne-poses",
+      "title": "Looney Tunes｜懸空奔跑 Pose 與道具輪廓",
+      "work": "Looney Tuesdays | Iconic Duo: Wile E. Coyote & Road Runner",
+      "region": "us",
+      "medium": "2d",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "silhouette", "line-of-action", "staging"],
+      "actions": ["run", "creature"],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=Aewj-0wcMIo",
+        "publisher": "WB Kids",
+        "platform": "YouTube",
+        "official": true,
+        "published": "2020-03-31",
+        "durationSeconds": 1317,
+        "creator": "原片作者及各段動畫師未逐段核對；WB Kids 為合輯發布者，不將頻道當作個別畫師。",
+        "rights": "影片說明標示 All Warner Bros. related characters and elements © & ™ Warner Bros. Entertainment Inc. (s20)。未見開放授權；只保留官方來源連結與短篇原創筆記，未下載或重傳。",
+        "verification": "正常背景瀏覽器核對 WB Kids / @wbkids、片名、2020-03-31 日期與 21:57 片長，讀取展開說明及版權署名。說明連到 https://www.wbkidsgo.com/；開啟該站會重導至 YouTube 頻道 UC9trsD1jCTXXtN3xIOIU8gg，標題 WB Kids，作為發布者交叉核對，不只依驗證標記。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T06:44:43.251Z",
+      "lastVerified": "2026-10-29T06:44:43.251Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "在背景瀏覽器抽查 0:05、0:10 的兩張暫停畫面，核對實際時間；未連續觀看，也未看完 21:57 合輯。",
+        "locator": "0:05 Road Runner 角色介紹字樣前的全身 Pose；0:10 Coyote 手持刀叉、向右前傾的全身 Pose。兩張屬不同角色，不連接成一段動作。",
+        "samples": [
+          {
+            "seconds": 5,
+            "note": "Road Runner 的長頸、上彎尾羽與兩隻摺起的腳可完整辨認；腳掌和路面之間留有空間，下方有塵形，畫面另有角色介紹字樣。"
+          },
+          {
+            "seconds": 10,
+            "note": "Coyote 胸腹向右前傾，兩腿一後伸一彎曲，腳掌與路面有空間；高舉刀的手在左側、持叉手在右下方，手臂和道具分開成清楚輪廓。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "兩張樣本的全身輪廓均清楚，可辨認頭頸／軀幹、肢體與背景的空間；兩腳離開路面的構型可見，但未確認它們在奔跑循環中的相位。",
+        "0:10 的軀幹前傾、後伸腿與前方彎腿呈不對稱；高低不同的持物手把刀叉從身體輪廓分開，能作為動勢與道具可讀性的靜態參照。"
+      ],
+      "application": [
+        "Layout 可先 Key 軀幹前傾、前後腿方向與持物手的主要 Pose，縮小預覽檢查輪廓；Blocking 再補支撐／離地轉折並檢查道具是否遮住身體，Final 才細修表情與次要動作。這是 Spine 應用推論，支撐與節奏必須另用連續預覽驗證。"
+      ],
+      "limits": [
+        "只有兩張暫停畫面，未分析速度、步頻、停頓、spacing、固定延遲或完整奔跑循環；塵形不等於已量測速度。",
+        "0:05 含角色介紹字樣，不據此把畫面認定為真實時間的自然奔跑；兩角色的樣本亦不能互相補成連續動作。",
+        "腳掌懸空的構型不證明接下來如何落地、哪條腿承重或是否無滑步；沒有強加 contact 技法標籤。",
+        "未核對原作短片、各段作者或動畫師實際 Key 在哪些幀；抽查 Pose 不等於已確認原始關鍵幀。",
+        "卡通的誇張構型不是人體受力標準，應按角色比例和演出目的改編，不能直接複製成所有角色的步態。"
+      ]
+    },
+    {
+      "id": "japan-kyoani-violet-storyboard-acting",
+      "title": "京都動畫｜紫羅蘭永恆花園：頭肩表演分鏡",
+      "work": "劇場版 ヴァイオレット・エヴァーガーデン — Making",
+      "region": "japan",
+      "medium": "2d",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "staging", "acting", "facial"],
+      "forms": ["storyboard"],
+      "actions": ["acting", "expression"],
+      "source": {
+        "kind": "image",
+        "url": "https://violet-evergarden.jp/img/special/makingImg02.jpg",
+        "imageUrl": "https://violet-evergarden.jp/img/special/makingImg02.jpg",
+        "imageAlt": "官方分鏡紙的上下兩格：上格以水平線與右側直向結構安排場景，右下有頭髮局部；下格是人物頭肩、睜眼與張口表情，右側另有手寫文字欄。",
+        "publisher": "劇場版 ヴァイオレット・エヴァーガーデン 官方網站",
+        "platform": "Official making-of storyboard image",
+        "official": true,
+        "creator": "分鏡：石立太一；官方 Making 第 2 節說明本片全部分鏡由其製作。個別修正線與欄註的執筆者未另核對。",
+        "rights": "©暁佳奈・京都アニメーション／ヴァイオレット・エヴァーガーデン製作委員会。官方公開的製作介紹插圖，未見開放授權；僅保存官方原圖／來源連結與短篇原創觀察，未下載、打包或重傳。",
+        "verification": "重讀 https://violet-evergarden.jp/special/making/ 第 2 節「絵コンテ」與作者說明；本次在背景瀏覽器實際看清其 makingImg02.jpg，原圖 700×313。與既有 makingImg03.jpg 的 Layout 圖為不同圖片，依原圖 URL 去重。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T07:43:29.727Z",
+      "lastVerified": "2026-10-29T07:43:29.727Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "背景瀏覽器直接檢視官方 700×313 分鏡原圖；只記可辨認的格內構圖、表情及欄位，不播放或分析影片。",
+        "locator": "Making 第 2 節插圖 makingImg02.jpg：上格的場景與頭髮局部、下格的頭肩／張口表情、右側手寫欄位。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "上格左側有水平線，右側有直向場景結構及人物頭髮局部；下格較清楚呈現人物頭肩、睜眼與張口表情。不同構圖資訊在簡略線稿時已被畫出。",
+        "圖右側保留手寫文字、圈註與數字欄位，但解析度不足以完整辨讀；沒有逐字轉錄或把它們換算成動作時間。"
+      ],
+      "application": [
+        "Layout 可先 Key 頭肩主要 Pose、眼口方向及人物在畫面內的位置；Blocking 再補視線與頭部轉折並預覽可讀性，Final 才細修髮束與服飾。這是 Spine 應用推論，不能把單張分鏡圖當作已完成動畫或動作檢查。"
+      ],
+      "limits": [
+        "只有靜態分鏡圖，沒有連續動作；上下格不等於已確認的影片關鍵幀、獨立剪接鏡頭或已量測的轉頭過程。",
+        "圖上數字與註記的原稿規格未核對，不能推定幀數、速度、spacing、固定 delay 或完整節奏。",
+        "原圖解析度有限，不解讀模糊手寫內容或過細眼口線條，也未以畫風猜作者。",
+        "作品背景與製作地區分開；日本分類依京都動畫及官方製作來源，不因圖中場景推成歐洲作品。",
+        "與既有 Layout 圖是不同製作文件，保留各自來源及觀察，不宣稱兩張圖就證明 Layout → Blocking → Final 已完成。"
+      ]
+    },
+    {
+      "id": "europe-aardman-cooker-book-contact",
+      "title": "Aardman｜Cooker 持書、輪地與前景遮擋 Pose",
+      "work": "Wallace & Gromit: A Grand Day Out",
+      "region": "europe",
+      "medium": "stop-motion",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "contact", "acting", "silhouette", "staging"],
+      "forms": ["key-pose"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "image",
+        "url": "https://www.wallaceandgromit.com/media/dlglandt/gdo2.jpg",
+        "imageUrl": "https://www.wallaceandgromit.com/media/dlglandt/gdo2.jpg",
+        "imageAlt": "Cooker 機身居中，細長手臂與白手套在胸前持著攤開的書，左下可見輪子靠近地面，前景熱水瓶遮住部分下方結構。",
+        "publisher": "Wallace & Gromit 官方網站／Aardman",
+        "platform": "Official film gallery",
+        "official": true,
+        "creator": "作品創作者：Nick Park；此單張圖片的個別動畫、攝影與後製署名未核對。",
+        "rights": "官方電影相簿公開圖片，未見開放授權；單張圖片的完整權利署名未在圖上核對。僅保存原站來源／原圖連結及短篇原創觀察，未下載、打包或重傳。",
+        "verification": "已讀 https://www.aardman.com/film-tv-games/wallace-gromit/，頁面明列 Stop Motion 並連到 wallaceandgromit.com 的 Visit the fan site；官方 https://www.wallaceandgromit.com/films/a-grand-day-out 相簿 GDO2 連到本圖，並介紹角色 Cooker 與 Nick Park。實際在背景瀏覽器檢視 610×800 原圖。歐洲分類依英國 Aardman 製作來源，不按月面場景推定。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T08:42:09.711Z",
+      "lastVerified": "2026-10-29T08:42:09.711Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方製作公司及電影頁，直接檢視相簿 610×800 圖片。未播放影片，也未確認它是正片擷取或另拍的宣傳照。",
+        "locator": "電影頁相簿 GDO2／gdo2.jpg：胸前書本與雙手、機身左下輪子、前景熱水瓶及背景輪廓。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "Cooker 機身居中，兩側細長手臂伸向胸前攤開的書，白手套分別接近書的兩側；手、道具與機身的層次可辨認。",
+        "左下輪子輪緣靠近地面，下方部分結構被前景熱水瓶遮住；暖色機身在深藍背景前形成清楚外輪廓。這只是可見構型，不是整體支撐或受力驗證。"
+      ],
+      "application": [
+        "Layout 可先 Key 機身的持書主要 Pose、手與書的相對位置及輪地關係；Blocking 若改變機身或書本位置，再預覽抓握與前景遮擋是否清楚；Final 才細修天線等次要細節。這是 Spine 應用推論，不能由此圖推定物件角色的實際機構或運動方式。"
+      ],
+      "limits": [
+        "只有單張圖片，沒有連續動作、時間碼、幀數、速度、spacing 或固定延遲；不推論翻書順序、天線擺動或輪子轉速。",
+        "輪緣與地面接近的構型不證明無滑動、重量、重心或真實支撐力，亦未看清所有支撐部位。",
+        "key-pose 分類表示用作單張主要 Pose 參考，未確認原作者把這個畫面設定為動畫關鍵幀。",
+        "未核對這張圖是否直接出自成片或為宣傳攝影；停格媒材分類來自官方作品介紹，不聲稱已觀看停格製作過程。",
+        "角色有可見手臂和輪子，但本條目未驗證 Spine 綁骨、控制器、權重或自動化機構。"
+      ]
+    },
+    {
+      "id": "us-wdas-mini-maui-pose-models",
+      "title": "迪士尼動畫｜Mini Maui 粗稿 Pose 與全身表演",
+      "work": "Moana 2 — Mini Maui / Hand-Drawn Animation",
+      "region": "us",
+      "medium": "2d",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "silhouette", "line-of-action", "acting", "facial", "workflow"],
+      "forms": ["model-sheet", "contact-sheet"],
+      "actions": ["acting", "expression"],
+      "source": {
+        "kind": "image",
+        "url": "https://www.disneyanimation.com/process/hand-drawn-animation/",
+        "imageUrl": "https://cdn.disneyanimation.com/uploads/pipeline/hand-drawn-animation/MOANA2_Process_2DAnimation_02.jpg",
+        "imageAlt": "Mini Maui 線稿設定圖並排多種全身造型，包括高舉魚鉤、屈臂、抬腿與低垂頭肩持鉤；左上標示粗稿模型，沒有時間軸或動作順序。",
+        "publisher": "Walt Disney Animation Studios",
+        "platform": "Official filmmaking process page",
+        "official": true,
+        "creator": "Walt Disney Animation Studios；本圖個別設定稿畫師未在對應圖片與段落署名，未以角色或畫風猜作者。",
+        "rights": "原頁標示 © 2026 Disney Enterprises, Inc. All Rights Reserved，未見開放授權。僅保留官方頁／原圖連結及原創筆記，未下載、打包或重傳。",
+        "verification": "已讀官方 Hand-Drawn Animation 原頁的主要 Pose／表情、粗動畫、清稿及 Mini Maui 全身默劇說明；頁內 Maui Model Sheet 連到 cdn.disneyanimation.com 本圖。正常背景瀏覽器實際檢視 1920×804 原圖，左上可見 Mini Maui 與 Rough Models 字樣。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T09:43:04.010Z",
+      "lastVerified": "2026-10-29T09:43:04.010Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方原頁，並在背景瀏覽器直接檢視完整角色姿勢設定圖；未播放原頁影片，沒有連續動作或節奏觀察。",
+        "locator": "原頁 Maui Model Sheet／MOANA2_Process_2DAnimation_02.jpg：左側與中央高舉魚鉤／抬腿造型，右下低垂頭肩與向下持鉤造型；文字定位在主要 Pose、清稿與 Mini Maui 段落。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "圖中多個並排造型包含高舉魚鉤、屈臂和抬腿；右下造型的頭肩較低、手臂向下，魚鉤靠近下方。軀幹、肢體與道具方向提供明顯的姿勢對比。",
+        "多張造型的魚鉤與手臂伸出身體外輪廓，頭、胸、腰及腿的方向各異；圖上沒有可確認動作先後的時間軸。",
+        "官方正文說明以主要 Pose 與表情規劃角色表演，再處理粗動畫與清稿；Mini Maui 靠全身默劇表達。這是已讀製作文字，不是本輪看過動作節奏的證據。"
+      ],
+      "application": [
+        "Layout 先定表演目的，再 Key 頭胸方向、手腳與道具的主要 Pose，縮小預覽整體輪廓；Blocking 再補姿勢轉折並檢查道具可讀性，Final 才細修臉部與服飾等細節。這是 Spine 應用推論，設定圖的多種姿勢應按演出需要選用，不能直接排列成循環。"
+      ],
+      "limits": [
+        "這是粗稿模型／Pose 對照圖，不是已確認順序的連續姿勢圖、分鏡或逐幀動畫，不能推算幀數、速度、spacing 或固定 delay。",
+        "圖片含有抬腿和前傾構型，但沒有確認起跳、落地、受力或支撐時長，不據此添加 contact 或 timing 標籤。",
+        "未確認每個造型是否用於成片或原作者是否將其設為動畫關鍵幀；也不把粗稿設定圖當成已完成 Layout。",
+        "原頁的 24 fps 說明屬其手繪動畫介紹，不套用為本工具專案的固定幀率或本圖各姿勢的間隔。",
+        "原頁談到 2D Mini Maui 與 CG Maui 協作，本輪未觀看該協作片段，不能宣稱已驗證視線同步、貼圖或角色互動的實作。"
+      ]
+    },
+    {
+      "id": "japan-madhouse-frieren38-village-staging",
+      "title": "MADHOUSE｜芙莉蓮 #38：村落構圖與人物配置",
+      "work": "葬送のフリーレン 第2期 #38",
+      "region": "japan",
+      "medium": "2d",
+      "stages": ["layout", "blocking"],
+      "techniques": ["pose", "staging", "contact"],
+      "forms": ["scene-composition", "key-pose"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "image",
+        "url": "https://madhouse.co.jp/special/frieren-anime2/",
+        "imageUrl": "https://madhouse.co.jp/cms-data/images/special/3imnts7r17tnwb6ltj262pmuirggvk.jpg",
+        "imageAlt": "灰階村落背景與多組人物配置：右下持工具人物較大，左側人群集中，中央有較小人物及鳥形輪廓，屋簷、樓梯、建築與山線分出前後層次。",
+        "publisher": "株式会社マッドハウス（MADHOUSE）",
+        "platform": "Official production art gallery",
+        "official": true,
+        "creator": "瀬口 泉；官方 #38 圖片標示為「背景原図＋原画」，不是收藏者或轉載帳號署名。",
+        "rights": "© 山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会；官方頁亦標示 © MADHOUSE, Inc. All Rights Reserved。未見開放授權，僅保留原站／原圖連結及原創觀察，未下載、打包或重傳。",
+        "verification": "本輪在 MADHOUSE 官方第 2 期特集重讀原画紹介 #38，核對前三張皆標「背景原図＋原画：瀬口 泉さん」，並由可見圖片 DOM 核對各自公開 URL 與 1871×1323 尺寸。在正常背景瀏覽器直接逐張檢視三張原圖；主圖延用第一張，第二／三張連結列在 locator。同頁保留作品官方網站及版權署名。發布日期未明，不以 #38 當日期。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T10:45:24.378Z",
+      "lastVerified": "2026-10-29T22:02:59.289Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "背景瀏覽器逐張實際檢視三張 1871×1323 公開原圖：複核原有村落主圖，補看第二張桌邊群像與第三張石階群像。這是三張獨立製作圖比較，未播放影片，未宣稱它們是連續姿勢或前後鏡頭。",
+        "locator": "第 2 期特集 → 原画紹介 → #38 → 前三張「背景原図＋原画：瀬口 泉さん」。第一張主圖：右下人物、左側人群與中央空地。第二張桌邊群像：左側背向前景、中央持杯人物、右側坐／站人物與後方屋頂；公開原圖 https://madhouse.co.jp/cms-data/images/special/ub8gz2m5hgkagvlmxjsmranonu7c3a.jpg 。第三張石階群像：右下背向人物的雙靴與高低石階、上緣人物群；公開原圖 https://madhouse.co.jp/cms-data/images/special/17cgwvruajjso2p9p35oe9grfeqfdr.jpg 。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "灰階村落背景占畫面大部分；左上前景屋簷、右側樓梯／陽台、遠處屋頂與山線分出前後層次。人物使用較清楚的線條與局部藍色標記，與背景區分。",
+        "右下持工具人物較大，左側人群集中；中央有較小人物與鳥形輪廓，後方窗邊另有更小人物。角色大小、位置及前景邊界在同一張製作圖中可比較。",
+        "第二張桌邊圖：左側背向人物較大，中央人物正面持杯，身體下部受桌面遮擋；右側一站一坐，後方屋頂另有較小坐姿人物。可比較前景背部、桌緣、人物膝部及遠景的重疊關係。",
+        "第三張石階圖：右下背向人物的一條腿彎起，兩隻靴子分別貼近不同高度的階面；較上方有站立與蹲低人物，石牆、階梯和人物大小共同區分高低及遠近。這是靜態腳部配置的可見證據，沒有量測承重或動作。"
+      ],
+      "application": [
+        "Layout 先 Key 人物主要 Pose、畫面位置與前後層次，以簡單形體檢查前景人物、桌面或石牆是否遮住演出重點。三張獨立構圖提供配置比較，不據此串成角色移動路徑。",
+        "Spine 應用推論：Blocking 可先固定石階各自高度，檢查雙靴和階面的位置關係，再補膝髖轉折；桌邊坐姿也先確認座位、膝部與桌緣遮擋。Final 才細修衣褶與手部。這是由靜態畫面提出的實作計畫，尚未驗證骨架、IK、重量轉移或接觸穩定度。"
+      ],
+      "limits": [
+        "本輪合計看過三張獨立背景原圖＋原畫；不是已確認的連續姿勢、鏡頭順序、走路／上階動畫或節拍表，沒有速度、節奏、預備或收勢證據。",
+        "contact 標籤只指第三張靴子與階面的靜態配置；不能由腳的位置推算受力、重心軌跡、是否正在上階、踏步先後或防滑品質。",
+        "「場景構圖／人物配置」與「單張關鍵姿勢」描述可見用途，並非宣布官方工序等同本工具已完成 Layout／Blocking。",
+        "前景／小人物有裁切或遮擋，細小手指、眼口、杯握法與註記未逐項核對，也不猜角色姓名。",
+        "紅色框、符號及手寫註記的規格未確認，不能轉成鏡頭參數、幀數或固定 delay。",
+        "作者依官方各圖署名保留；作品為日本製作，不因村落建築外觀推成歐洲來源。未確認開放授權，僅保存原連結與原創筆記。"
+      ]
+    },
+    {
+      "id": "europe-aardman-battersea-animatic-effects",
+      "title": "Aardman｜雙塔投影：動態分鏡構圖與特效分工",
+      "work": "Wallace & Gromit: Shot On iPhone — Battersea Power Station",
+      "region": "europe",
+      "medium": "production",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "staging", "fx", "workflow"],
+      "forms": ["contact-sheet", "scene-composition"],
+      "actions": ["acting", "fx"],
+      "source": {
+        "kind": "image",
+        "url": "https://www.aardman.com/latest-news/2025/june/behind-the-craft-wallace-gromit-shot-on-iphone/",
+        "imageUrl": "https://www.aardman.com/media/o51hsk2k/storyboards.jpg?rmode=max&width=1100",
+        "imageAlt": "灰階動態分鏡拼圖：左側 Wallace 與 Gromit 分居兩座狹長塔形範圍，右側六格展示相同雙塔邊界中的不同人物、樹和道具配置。",
+        "publisher": "Aardman",
+        "platform": "Official Behind the Craft article",
+        "official": true,
+        "creator": "Aardman 製作；文章作者／導演 Gavin Strange，這張動態分鏡拼圖未個別署名繪者。",
+        "rights": "本頁未見開放授權；僅保留官方公開圖片與原文連結及原創筆記，未下載、重傳或打包。",
+        "published": "2025-06-09",
+        "verification": "已讀 Aardman 官方文章的 Animatic & Storyboard、Apple curtains 及 Compositing & VFX 章節；圖片由原頁 Frame grabs from the animatic 連結開啟，在背景瀏覽器實際檢視 1100×619 版本。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T11:51:40.492Z",
+      "lastVerified": "2026-10-29T11:51:40.492Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方製作文字並檢視動態分鏡拼圖；只看圖片，未播放文章內影片。",
+        "locator": "Animatic & Storyboard → Frame grabs from the animatic：左側大圖與右側二欄三列；特效文字位於 Apple curtains、Compositing & VFX。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "圖片左側把兩個角色分放在狹長塔形範圍內；Wallace 雙手位於腹胸前，Gromit 一爪靠近下顎。右側六格保留雙塔外形，人物、樹和道具配置各異。",
+        "已讀文字說明以塔形模板規劃動態分鏡和無聲表演；圖形動畫另在 After Effects 製作，合成階段處理支架移除、雪和冰等效果。這是製作文字證據，未親看特效運動。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先套最終顯示區域，Key 主要 Pose 並檢查手與道具是否被邊界裁切；Blocking 再檢查互動位置及特效事件，Final 細修光雪等效果，保留角色輪廓可讀性。"
+      ],
+      "limits": [
+        "這是動態分鏡擷取拼圖，未確認各格為原作者的關鍵幀；不是連續觀看，畫面計數與時間碼不轉成本專案幀率、速度或 spacing。",
+        "未看成片或特效拆解，不宣稱理解雪、冰或道具的運動節奏；文中的 Anticipation Meter 是圖形名稱，不作預備動作證據。",
+        "此處歸為製作教材；不把灰階分鏡圖當作停格拍攝證據。個別繪者未確認，圖片連結保留實際看過的官方縮放版本，同一路徑其他尺寸應合併去重。"
+      ]
+    },
+    {
+      "id": "us-animationmentor-pendulum-base-chain",
+      "title": "Animation Mentor｜擺錘與八字路徑：驅動端和鏈條修形",
+      "work": "Mastering Pendulum Overlap Action",
+      "region": "us",
+      "medium": "production",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "overlap", "follow-through", "arcs", "workflow"],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=KPqPcBN90fk",
+        "publisher": "Animation Mentor",
+        "platform": "YouTube / official educational article",
+        "official": true,
+        "creator": "Anthony Wong（影片說明及官網教材介紹的教學者）；文章署名 Animation Mentor。",
+        "rights": "教材頁尾標示 © 2024 Yellowbrick Animation Mentor LLC. All rights reserved。未確認影片另有開放授權；只保留官方入口及原創筆記，未下載、擷取保存或重傳。",
+        "published": "2026-04-26",
+        "durationSeconds": 900,
+        "verification": "官方 Animation Mentor 教材頁內嵌同一影片 ID KPqPcBN90fk；原始 YouTube 顯示 Animation Mentor／@animationmentor 發布、2026-04-26 日期與 Anthony Wong 介紹。文章日期為 2026-04-28，與影片分開核對。",
+        "aliases": [
+          "https://www.animationmentor.com/blog/tutorial-overlap-pendulum-motion-animation/"
+        ]
+      },
+      "firstSeen": "2026-10-29T13:47:08.706Z",
+      "lastVerified": "2026-10-29T13:47:08.706Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "閱讀官網對驅動端與鏈條修形的文字，再在背景瀏覽器暫停並核對 04:30、09:00 畫面。只抽查，未連續觀看。",
+        "locator": "04:30（Maya implementation）；09:00（Figure eight demo）。同課程文字：Figure-Eight Motion: Focus on the Base、Placing Keys for the First Joint、Customizing and Polishing the Shape。",
+        "samples": [
+          {
+            "seconds": 270,
+            "note": "Maya 畫面上方是多條帶黃色 Key 點的曲線；下方白色矩形控制框連接向右傾的多節鏈條，末端有綠色球形控制輪廓。"
+          },
+          {
+            "seconds": 540,
+            "note": "Maya 下方有橫向八字形路徑與數字標記，鏈條接近直立、位於路徑左側；上方仍顯示多條曲線與 Key 點。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "04:30 的斜鏈條與 09:00 的近直立鏈條可辨；09:00 同時顯示八字形路徑。畫面不提供本輪連續動作或速度量測。",
+        "已讀同課程文章強調先處理驅動端路徑，再依轉折規劃第一節，複製／錯開後仍須手動修形；這是文字說明，未親看完整操作過程。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 角色主動作和重要 Pose；Blocking 檢查驅動端路徑與轉折，再安排附屬鏈條 Pose；Final 依材質細修幅度、弧線與收勢。驅動端修改後重看相依細節，複製曲線只作起點。"
+      ],
+      "limits": [
+        "擺錘是局部反應練習，不等於已完成角色 Layout；未觀看完整 15 分鐘影片，也未證實停止後的實際節奏。",
+        "畫面路徑數字與 Maya Key 點不是影片秒數或可直接套用的 Spine 幀號。教材的示例 offset、重量與簡化模型不當成通用延遲、阻尼或物理常數。",
+        "此為 Maya 示範；未測試轉成 Spine 的控制器、約束或曲線行為，不能視為已驗證的引擎實作。"
+      ]
+    },
+    {
+      "id": "japan-mobpsycho-anniversary-tool-grip",
+      "title": "《路人超能100》十週年短片｜工具握持與雙臂構圖",
+      "work": "MOB PSYCHO 100 10th Anniversary Special Movie",
+      "region": "japan",
+      "medium": "2d",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "contact", "staging", "facial"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=OWSfQwwMcE4",
+        "publisher": "Warner Bros. Japan Anime",
+        "platform": "YouTube",
+        "official": true,
+        "creator": "立川 譲（監督・腳本・分鏡・演出）、亀田祥倫（作畫監督），依本片說明；個別鏡頭原畫作者未確認。",
+        "rights": "©ONE・小学館／「モブサイコ100 Ⅲ」製作委員会。官網明示禁止未經授權轉載；僅保存官方來源連結與原創觀察，未下載、保存或重傳影片／截圖。",
+        "published": "2026-07-12",
+        "durationSeconds": 127,
+        "verification": "從作品官網 https://mobpsycho100.com/movie/ 的「10周年記念特別映像」公開彈窗，核對實際顯示的 YouTube iframe ID OWSfQwwMcE4；原影片顯示 Warner Bros. Japan Anime／@wbj_anime 發布，展開說明確認日期、上述製作署名、官網反向連結與版權。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T14:54:58.156Z",
+      "lastVerified": "2026-10-29T14:54:58.156Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器暫停並以播放器顯示時間核對 01:03、01:08 的實際畫面；未連續觀看，也未做逐幀定位。",
+        "locator": "01:03：雙臂伸向鏡頭的人物；01:08：雙手、起子與五金件近景。",
+        "samples": [
+          {
+            "seconds": 63,
+            "note": "金髮人物的雙臂伸向鏡頭，前臂在前景占比很大；頭臉可見汗滴及不對稱眉眼，較小的黑髮人物部分被肩臂遮住，地磚和室內物件位於後方。"
+          },
+          {
+            "seconds": 68,
+            "note": "右手包住黑紅色起子握柄，金屬桿指向中央五金件；左手張開手指、靠近該件周圍。手掌、工具與五金件互相遮擋，前臂另有汗滴。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "01:03 藉靠近鏡頭的大前臂和後方較小人物形成前後層次，頭臉仍可辨；01:08 改成雙手與工具的局部構圖，握柄和手指關係更清楚。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 頭胸、雙臂和工具的主要 Pose；Blocking 再檢查手掌握柄、工具端點與前後遮擋；Final 才細修手指、眉眼及汗滴。構圖中的透視大小依素材和鏡頭選用，不能直接當骨骼比例。"
+      ],
+      "limits": [
+        "兩張樣本之間未連續觀看，不能由取景變化推算鎖緊動作、旋轉速度、手部節奏或力道。",
+        "01:03 並非完整全身與腳底接觸證據；01:08 工具握持可見，但不能確定螺絲深度、壓力或完整物件結構。",
+        "動畫中的主要姿勢不等於已確認的原畫 Key；本片作畫監督與個別鏡頭原畫作者分開記錄，未套用其他週年海報的作者署名。"
+      ]
+    },
+    {
+      "id": "us-dreamworks-panda4-chain-prop-poses",
+      "title": "《功夫熊貓4》官方短片｜角色、鐵鏈與長杖的構圖",
+      "work": "Kung Fu Panda 4 | Choreography",
+      "region": "us",
+      "medium": "3d",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "staging", "acting", "workflow"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=Txofj7FHFYA",
+        "publisher": "Universal Pictures",
+        "platform": "YouTube",
+        "official": true,
+        "creator": "電影導演 Mike Mitchell、共同導演 Stephanie Ma Stine，依官網與影片說明；個別鏡頭動畫師及特技協調員姓名未在本輪確認。",
+        "rights": "DreamWorks 官網頁尾標示 © 2026 DreamWorks Animation All Rights Reserved；未確認此短片另有開放授權。只保留官方來源連結與原創筆記，未下載、保存或重傳影片／截圖。",
+        "published": "2024-02-22",
+        "durationSeconds": 31,
+        "verification": "從 DreamWorks 官方電影頁 https://prod.dreamworks.com/movies/kung-fu-panda-4 的 Videos 清單選擇 Choreography，實際開啟播放器並核對原始影片 Txofj7FHFYA；發布者為 Universal Pictures／@UniversalPictures，展開說明確認 2024-02-22 日期及電影導演署名。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T16:51:01.037Z",
+      "lastVerified": "2026-10-29T16:51:01.037Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "閱讀官方電影頁及影片說明，在背景瀏覽器暫停並核對播放器 00:15、00:25 的實際畫面。未連續觀看或逐幀定位。",
+        "locator": "00:15：熊貓角色腹前的雙爪與鐵鏈；00:25：狐狸形角色、綠色長杖、鐵鏈與石柱。",
+        "samples": [
+          {
+            "seconds": 15,
+            "note": "熊貓角色正面站在室內，雙爪與環狀鐵鏈在腹前重疊，嘴張開、視線向上；下部有字幕，腳底未完整可辨。"
+          },
+          {
+            "seconds": 25,
+            "note": "狐狸形角色位於石柱間，身前有橫過的鏈條，手臂靠近綠色長杖；身體和尾部局部模糊，右側較大石柱占據前景。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "兩個樣本都讓角色和鐵鏈／道具在近似腹胸高度形成重疊，頭臉仍可辨；00:25 的前景石柱遮去部分身體。",
+        "00:15 畫面字幕提到團隊請特技協調員演出動作場景；這是已讀字幕，沒有親看真人參考到動畫的完整轉換過程。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 主角軀幹、雙臂與道具位置，檢查輪廓和頭臉可讀性；Blocking 再核對鏈條、手腕及道具的遮擋；Final 才細修手指與鏈條。真人表演參考需依角色體積和素材調整。"
+      ],
+      "limits": [
+        "此為約半分鐘的宣傳短片，含訪談與剪接，不是完整動作編排教材；兩張樣本不能證明出招、鏈條張力、速度或停頓。",
+        "沒有取得清楚的逐腳接觸或完整全身支撐證據；重疊不等於已確認握點或受力，未強加 contact／timing 標籤。",
+        "未測試鏈條約束、碰撞或真人動作轉換，不能把成片構圖當成已驗證的 Spine 實作；抽查畫面也不是已確認的原作者 Key。"
+      ]
+    },
+    {
+      "id": "japan-toei-key-inbetween-expression-gesture",
+      "title": "東映動畫｜原畫與動画的表情／手勢對照",
+      "work": "東映動畫採用網站：原画・動画工序示例",
+      "region": "japan",
+      "medium": "2d",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "facial", "workflow"],
+      "forms": ["key-pose"],
+      "actions": ["acting", "expression"],
+      "source": {
+        "kind": "image",
+        "url": "https://recruit.toei-anim.co.jp/recruit_grad/production/",
+        "imageUrl": "https://recruit.toei-anim.co.jp/recruit_grad/production/img/production-anime-parts1.jpg",
+        "imageAlt": "原畫示例的少女頭胸近景，張口、大眼，畫面右側有向前伸出的較大手形；線條帶有多種顏色與製作註記。",
+        "publisher": "東映アニメーション",
+        "platform": "Official recruitment / production process page",
+        "official": true,
+        "creator": "東映動畫公開的製作工序圖；頁中對應圖片未見個別繪者署名，未猜角色作品名稱。",
+        "rights": "官方公開製作圖，未確認個別繪者與開放授權；僅保留原站／公開圖片連結與原創筆記，未下載、打包或重傳。",
+        "verification": "已讀公司採用頁「アニメーターのポイント」的原画／動画段落，並在正常背景瀏覽器直接檢視兩張 280×200 圖：原画為 production-anime-parts1.jpg，動画為同頁連結的 production-anime-parts2.jpg。工序名稱依原頁標示，並非依畫風猜測。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T19:01:02.038Z",
+      "lastVerified": "2026-10-29T19:01:02.038Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方工序文字，實際檢視原画圖與對照動画圖；未播放影片，也未把兩圖當作連續動作。",
+        "locator": "原頁 Job Types → アニメーターのポイント → 原画／動画。主圖：production-anime-parts1.jpg；對照圖公開連結：https://recruit.toei-anim.co.jp/recruit_grad/production/img/production-anime-parts2.jpg",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "原画圖中，少女頭胸與張口、大眼表情可辨，畫面右側有前伸的大手形，並帶有多種色線和註記。",
+        "對照動画圖的臉與手勢相近，以輪廓線為主，眼部及部分區域仍有色線。兩圖只支持工序外觀比較，沒有可確認的動作先後或時長。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 主要表情與手勢 Pose，檢查前伸手形和臉的遮擋；Blocking 補手臂及表情轉折；Final 才細修手指、眉眼與形變，維持臉部可讀性。"
+      ],
+      "limits": [
+        "兩圖均為 280×200，細小註記不清楚，未解讀符號、編號或口型細節；也沒有全身或腳底接觸證據。",
+        "此處「動画」是手繪製作工序名稱，不代表本輪看過影片；兩張相近工序圖不是連續姿勢圖、曝光表或 timing chart。",
+        "官方原画／動画分工不等同本工具 Layout／Blocking／Final 的逐字定義；未確認這張原畫的原始時間位置，也未驗證可直接用於 Spine 的骨架或素材。"
+      ]
+    },
+    {
+      "id": "europe-aardman-shaun-bitzer-raised-leg-staging",
+      "title": "Shaun the Sheep｜抬腳、張掌與群像構圖",
+      "work": "Shaun the Sheep — Meet the Flock",
+      "region": "europe",
+      "medium": "stop-motion",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "silhouette", "staging"],
+      "forms": ["key-pose", "scene-composition"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "image",
+        "url": "https://shaunthesheep.com/about",
+        "imageUrl": "https://shaunthesheep.com/media/1u4bewcs/farmer.jpg?height=496&rmode=crop&width=880",
+        "imageAlt": "農夫占左前景，中央 Shaun 與 Bitzer 抬起一腿；Bitzer 張開雙掌，抬起腳掌朝向鏡頭，後方羊群與農舍分出層次。",
+        "publisher": "Aardman / Shaun the Sheep official website",
+        "platform": "Official character gallery",
+        "official": true,
+        "creator": "Aardman 公開角色群像；單張動畫師、擺拍者或攝影作者未在對應圖片旁署名。",
+        "rights": "官方公開圖片，未確認開放授權；僅保存原站與實際檢視的公開縮放圖片連結及原創觀察，未下載、打包或重傳。",
+        "verification": "已讀官方 About 的 Meet the Flock 與 The making of Shaun the Sheep，介紹作品在 Aardman Bristol studio 以 stop-frame 製作；同站 https://shaunthesheep.com/shauns-glow-trail-privacy-policy 明列 Aardman Animations Limited 及其 branded websites。由原頁圖片連結直接檢視 880×496 farmer.jpg。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T20:03:50.473Z",
+      "lastVerified": "2026-10-29T20:03:50.473Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方作品與發布者資訊，在背景瀏覽器實際檢視單張群像；未觀看動畫片段。",
+        "locator": "About → Meet the Flock → farmer.jpg：左側農夫前景、中央 Shaun／Bitzer 的手腿、後方羊群與農舍。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "農夫在左側占很大面積，中央 Shaun 和 Bitzer 較小，後方另有羊群與農舍；大小、遮擋和位置分出三層。",
+        "中央角色各有一腿抬起；Bitzer 的抬起腳掌朝向鏡頭，雙手張掌伸出軀幹兩側。這些手腳形狀可分辨，但部分下緣靠近裁切邊界。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 主要角色的位置、抬腿和張掌 Pose，檢查手腳是否與軀幹分開；Blocking 再檢查前景人物遮擋與群體層次；Final 才細修耳、毛邊及手腳形變。腳底朝向可作縮短透視參考，仍依素材視角預覽。"
+      ],
+      "limits": [
+        "單張群像不是步態、預備或收勢的連續證據；沒有確認跑步、重心移動、踩地力道或速度，未強加 walk／run／contact／timing 標籤。",
+        "媒材按官方作品的 stop-frame 說明分類；此圖是否正片擷取或另拍宣傳合照未確認。key-pose 是本庫的單張姿勢分類，不聲稱為原作者動畫關鍵幀。",
+        "圖片保留實際看過的 880×496 裁切版本；腳底接觸有部分裁切限制，同一路徑不同尺寸應合併去重。官網提到的拍攝幀數不套為本工具專案 FPS。"
+      ]
+    },
+    {
+      "id": "us-wdas-frozen-wind-planning",
+      "title": "Disney Animation｜Frozen 風向、陣風與布髮演出規劃",
+      "work": "Simulating Wind Effects on Cloth and Hair in Disney’s Frozen（SIGGRAPH 2014）",
+      "region": "us",
+      "medium": "production",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["workflow", "timing", "fx"],
+      "actions": ["fx"],
+      "source": {
+        "kind": "document",
+        "url": "https://disneyanimation.com/publications/simulating-wind-effects-on-cloth-and-hair-in-disneys-frozen/",
+        "publisher": "Walt Disney Animation Studios",
+        "platform": "Official SIGGRAPH talk publication / one-page PDF",
+        "official": true,
+        "creator": "Keith Wilson、Aleka McAdams、Hubert Leo、Maryann Simmons；官方出版頁與 PDF 署名一致。",
+        "rights": "官方出版頁標示 Disney Enterprises, Inc. All Rights Reserved；未確認 PDF 開放授權。僅保留原始連結及原創摘要，未保存或重傳 PDF／圖像。",
+        "verification": "已讀官方出版頁的 SIGGRAPH 2014、作者及摘要，點開其 PDF 連結核對至 media.disneyanimation.com 的單頁原文，閱讀第 1–5 節。只確認會議年份，不補造發布月日；未將圖說或搜尋摘要當成實際看圖。",
+        "aliases": [
+          "https://media.disneyanimation.com/uploads/production/publication_asset/115/asset/cloth_hair_wind.pdf"
+        ]
+      },
+      "firstSeen": "2026-10-29T23:02:20.944Z",
+      "lastVerified": "2026-10-29T23:02:20.944Z",
+      "review": {
+        "status": "text-reviewed",
+        "method": "閱讀官方出版介紹及單頁 PDF 全文；沒有觀看影片。PDF 截圖請求未返回可見像素，本輪不記 Figure 1 畫面觀察。",
+        "locator": "官方出版頁 → PDF；PDF 第 1 頁，§2 Improved Lift and Drag Model、§3 Wind Field Authoring Tools、§4 Windicator and Gust Rigs、§5 Shot Simulation Wind Workflow。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "explicit-text"
+      },
+      "observations": [
+        "§2–3 描述以相對速度影響升力／阻力，將兩者分開控制，並提供可編輯與可視化的風場。",
+        "§4 明確描述先用方向箭頭與可動畫化的風強度控制傳達風的演出，再用陣風 rig 協調角色表演與風的時機，早於布料、頭髮模擬。",
+        "§5 先核對風向／速度的連貫性及一般風行為，再細調升力、阻力和場參數；這是作者的製作流程說明，未量測任何成片節奏。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 主要身體 Pose，同時記錄風向、強弱與陣風事件的演出意圖；Blocking 用少量頭髮／披風主要形狀確認輪廓及固定端關係。",
+        "Final 才補局部拖曳、收勢與穿插修正；主要 Pose 或風向改動時回到對應階段檢查相依細節。可借用可視化控制與先大後小的思路，仍需用自己的素材預覽驗證。"
+      ],
+      "limits": [
+        "文字明確談陣風時機，因此 timingBasis 為 explicit-text；沒有影片或連續觀看證據，不提供 FPS、秒數、固定 delay、阻尼或可直接套用的曲線。",
+        "此為 2014 年三維布料／頭髮模擬製作經驗；求解器公式、SeExpr 與原廠 rig 不等於 Spine 骨架功能，也未查證其目前軟體狀態或可直接移植性。",
+        "文中的 Layout、Technical Animation、Effects 是原廠工序；本工具 Layout → Blocking → Final 的對應是實作推論。風的規劃不能取代主要身體 Pose 的先行檢查。",
+        "只讀文字與圖說，未檢視 Figure 1 像素；不將風場圖解稱為已觀察到的頭髮、布料運動或姿勢。"
+      ]
+    },
+    {
+      "id": "europe-aardman-rocket-look-up-poses",
+      "title": "Aardman｜火箭旁的抬頭 Pose 與俯視構圖",
+      "work": "Wallace & Gromit: A Grand Day Out",
+      "region": "europe",
+      "medium": "stop-motion",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "silhouette", "staging"],
+      "forms": ["key-pose", "scene-composition"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "image",
+        "url": "https://www.wallaceandgromit.com/media/uippfqsp/gdo6.jpg",
+        "imageUrl": "https://www.wallaceandgromit.com/media/uippfqsp/gdo6.jpg",
+        "imageAlt": "俯視地下室構圖：右側大面積橘色火箭，左下 Wallace 穿工作服、一手靠腰並抬頭，旁邊 Gromit 的前肢朝下；兩者與地磚及工具環境形成大小層次。",
+        "publisher": "Aardman / Wallace & Gromit official site",
+        "platform": "Official film image gallery",
+        "official": true,
+        "creator": "Aardman 官方電影頁公開圖片；Nick Park 為作品創作者，這張圖片的個別動畫師、擺拍或攝影作者未署名。",
+        "rights": "官方頁尾標示 © 2026 AARDMAN ANIMATIONS LTD；未見本圖開放授權。僅保留公開原圖與原頁連結及原創觀察，未下載、打包或重傳。",
+        "verification": "本輪讀取官方 A Grand Day Out 電影頁，從 GDO6 圖片的可見 DOM 核對公開原圖 URL 與 610×800 尺寸，再於背景瀏覽器直接實際看圖。同頁連到 Aardman studio 網站，頁尾列 Aardman 與 Bristol；官方劇情文字、Nick Park 介紹和先前確認的作品停格媒材分開使用，不由單張圖判斷拍攝流程。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-29T23:59:07.995Z",
+      "lastVerified": "2026-10-29T23:59:07.995Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方電影頁並直接檢視 610×800 的 GDO6 原圖；只看單張圖片，未播放影片或當成連續動作。",
+        "locator": "官方電影頁 https://www.wallaceandgromit.com/films/a-grand-day-out → 圖片 GDO6；圖中右側橘色火箭、左下 Wallace 的頭頸／手肘與雙靴，以及 Gromit 前肢。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "單張俯視圖中，右側橘色火箭占很大面積；Wallace 與 Gromit 位於左下，頭部朝畫面上方／右方抬起，與火箭外緣、地磚及陰影共同形成前後和大小層次。",
+        "Wallace 一手靠腰、兩側手肘離開軀幹，另一手靠近橘色物件；雙腿與靴子輪廓可辨。Gromit 前肢向下、前爪靠近地面，部分身體與後肢被自身角度遮住。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 抬頭、手靠腰等主要 Pose 與最終畫面配置，檢查頭頸朝向及手肘和軀幹間的空隙是否足以表達關注目標。",
+        "Blocking 再檢查手臂、腳部與地面投影的關係，Final 才細修眉眼、手指及衣物。俯視透視需由本工具自己的素材與鏡頭條件預覽確認，不能直接搬用圖中的二維座標。"
+      ],
+      "limits": [
+        "只有單張圖；未確認是正片擷取或另拍宣傳圖，也未確認原作關鍵幀號、看向目標的先後、節奏、預備或收勢。",
+        "陰影與俯視角度不足以推算承重、重心軌跡或 Gromit 的完整後肢配置；不標記走路、奔跑或動態接觸品質。",
+        "小尺寸下不解讀細微手指、器具用途或眼口變化；Nick Park 的作品署名不等同此圖個別製作者署名。",
+        "stop-motion 沿用作品已查證的製作媒材，不以這張靜態圖聲稱已驗證逐格拍攝或可直接轉成 Spine 骨架。"
+      ]
+    },
+    {
+      "id": "japan-madhouse-frieren38-hair-face-effects",
+      "title": "MADHOUSE｜芙莉蓮 #38：表情、長束髮與曲帶配置",
+      "work": "葬送のフリーレン 第2期 #38",
+      "region": "japan",
+      "medium": "2d",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "facial", "staging", "fx"],
+      "forms": ["key-pose"],
+      "actions": ["acting", "expression", "fx"],
+      "source": {
+        "kind": "image",
+        "url": "https://madhouse.co.jp/cms-data/images/special/avzw0p8mi8vudpxvzt03eb1a7ot0kb.jpg",
+        "imageUrl": "https://madhouse.co.jp/cms-data/images/special/avzw0p8mi8vudpxvzt03eb1a7ot0kb.jpg",
+        "imageAlt": "尖耳角色雙臂屈近頭側、眼線收閉，長束髮輪廓向左側及左上延展；右上有展翼鳥形，淺藍寬弧跨過畫面。",
+        "publisher": "株式会社マッドハウス（MADHOUSE）",
+        "platform": "Official production art gallery",
+        "official": true,
+        "creator": "山脇僚太；官方第 38 話末兩張圖片均標「原画：山脇僚太さん」。",
+        "rights": "© 山田鐘人・アベツカサ／小学館／「葬送のフリーレン」製作委員会；官方網站另標 MADHOUSE All Rights Reserved。未見開放授權，只保留原頁／公開原圖連結及原創筆記，未下載、打包或重傳。",
+        "verification": "本輪讀取 MADHOUSE 官方第 2 期特集，核對 #38 末兩張的作者與原画工序標示，並由頁面圖片 DOM 取得公開 URL；兩張均在正常背景瀏覽器直接開啟並實際檢視，原圖標示 1872×1322。同頁連到作品官方網站並列作品版權。沒有查到圖片發布月日，不以集數當日期。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-30T01:07:53.863Z",
+      "lastVerified": "2026-10-30T01:07:53.863Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "實際看過同作者的兩張獨立原畫：主圖為屈臂頭側與淺藍曲帶構圖，對照圖為睜眼頭胸近景；未播放影片，未依圖片排列建立動作先後。",
+        "locator": "原頁 https://madhouse.co.jp/special/frieren-anime2/ → 原画紹介 → #38 → 末兩張「原画：山脇僚太さん」。主圖：臉與頭側雙臂、左側長束髮、右上展翼鳥形與淺藍曲帶。對照原圖 https://madhouse.co.jp/cms-data/images/special/rnkqxb0z3lriewq83v50z8vxhfqmh1.jpg ：中央睜眼臉部、兩側髮束與畫外裁切。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "主圖中，角色眼線收閉、雙臂屈近頭側，長束髮輪廓延向左側與左上；右上展翼鳥形較小，淺藍寬弧在角色周圍跨過畫面。臉、臂與曲帶可分別辨認。",
+        "對照圖是較近的頭胸構圖，雙眼張開、嘴形較小；長束髮分布在臉兩側，綠色與淺藍色區仍保留製作圖外觀，畫面上緣及兩側有裁切。這是兩張圖的外觀比較，沒有觀察到轉換過程。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 各自先 Key 頭頸、手臂與主要表情 Pose，檢查臉是否仍能從大髮束和圖形帶中讀出；兩張圖可作不同表情與構圖選擇，不直接串成動作。",
+        "Blocking 才安排髮束的大形與圖形區域的遮擋，Final 再細修髮尾、眼口和局部效果；必須另用連續預覽檢查反應與時機，不能先堆滿細節而略過主要 Pose。"
+      ],
+      "limits": [
+        "沒有全身或腳底接觸證據；未確認原作幀號、圖片先後、曝光時長或同鏡頭連續性，不能由髮束彎曲推算速度、延遲、風向或受力。",
+        "fx 分類只表示主圖中可見的淺藍曲帶造型參考；未核對該色線的確切製作用途，不宣稱已看過成片風效、模擬或拖影，也不使用 smear／overlap／timing 標籤。",
+        "原画署名不等同已完成本工具 Layout／Blocking；圖中符號、框線和色區規格未確認，不轉成骨架參數或幀數。",
+        "沒有檢視 #36 同作者的其他圖片；也未驗證本圖的透視、素材拆分或髮束形狀可直接移植到 Spine。"
+      ]
+    },
+    {
+      "id": "europe-aardman-morph-input-gesture-silhouettes",
+      "title": "Aardman｜四種輸入手勢的剪影對照",
+      "work": "Morph Thingy-Ma-Bobstacle Course — input gesture graphics",
+      "region": "europe",
+      "medium": "production",
+      "stages": ["layout"],
+      "techniques": ["pose", "silhouette", "staging"],
+      "forms": ["contact-sheet"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "image",
+        "url": "https://www.aardman.com/media/qq4d2arw/morph-gestures.jpg?width=1080&height=1080",
+        "imageUrl": "https://www.aardman.com/media/qq4d2arw/morph-gestures.jpg?width=1080&height=1080",
+        "imageAlt": "四個圓形紙感介面圖示排列為二乘二：胸前交叉形狀、朝畫面左方伸臂、朝畫面右方伸臂，以及雙臂高舉；頭臉造型相同，背景分別為黃、青、紅、橘。",
+        "publisher": "Aardman",
+        "platform": "Official game production article / gesture UI graphic",
+        "official": true,
+        "creator": "Aardman 官方文章公開的遊戲手勢 UI 圖；此圖未見個別設計者署名，不把文章中其他美術分工直接指定為本圖作者。",
+        "rights": "官方公開製作圖，未見本圖開放授權；僅保存原圖／原文連結與原創觀察，不下載、打包或重傳。",
+        "verification": "在官方文章 Invasion of the body-trackers 段落讀到四種手勢與 UI 圖說，從頁面圖片 DOM 核對公開 URL，並在正常背景瀏覽器實際檢視 1080×1080 圖。文章標示 2023-08-23，未把它當作圖片個別發布日期。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-30T03:14:09.808Z",
+      "lastVerified": "2026-10-30T03:14:09.808Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "直接檢視單張 1080×1080 靜態 UI 圖，另讀原頁手勢對應說明；沒有觀看手勢辨識、角色動畫或動作轉換。",
+        "locator": "原頁 https://www.aardman.com/latest-news/2023/august/behind-the-craft-morph-thingy-ma-bobstacle-course/ → Invasion of the body-trackers → The four gestures 圖說；圖中左上胸前交叉、右上朝畫面左方伸臂、左下朝畫面右方伸臂、右下雙臂高舉。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "圖中四個圖示以二乘二排列，使用相同圓頭與簡化臉部；四種手臂配置配上黃、青、紅、橘背景，位置和伸展方向可直接比較。",
+        "交叉、單側伸臂與雙臂高舉主要由大形區分；人物下半身均被圓形構圖截斷。這是輸入提示 UI，並非 Morph 的全身動畫姿勢。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 可先比較主要 Pose 的手臂方向與剪影差異，減少臉部和服裝細節後檢查任務是否仍清楚；本圖可輔助意圖區分，不能直接充當角色動作或人體比例。"
+      ],
+      "limits": [
+        "這是四種獨立輸入提示的對照，沒有時間先後；不分類為連續姿勢圖、分鏡、節拍表或動畫關鍵幀序列。",
+        "沒有腿部、全身支撐或重心證據，不推論承重、速度、反應時間或手勢辨識成功率。",
+        "圖示的畫面左右不直接等同玩家解剖左右或鏡像顯示規則；精確映射應依正式互動規格另行確認。",
+        "僅有平面 UI 設計用途，不能當成已觀察到 Morph 的跳躍、翻滾或停格拍攝；未修改輸入系統、引擎或角色素材。"
+      ]
+    },
+    {
+      "id": "us-animschool-murray-shape-posing",
+      "title": "AnimSchool｜Murray 的花瓶大形與屈臂 Pose",
+      "work": "Hotel Transylvania｜Murray（教學圖例）",
+      "region": "us",
+      "medium": "3d",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "line-of-action", "silhouette", "squash-stretch"],
+      "forms": ["key-pose"],
+      "actions": ["acting"],
+      "source": {
+        "kind": "image",
+        "url": "https://blog.animschool.edu/2024/04/08/crafting-the-perfect-animated-pose/",
+        "imageUrl": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj6vJo3zX_9x1d1YbXeL2wYWD1SN721VxwBgjGJn_HaehfPJxk8fICCJsO8lWiZroe3iA1l3BseXgkbWOyqtRDPxlrfXqHViQIym_Ornheny6oVX-Aie9eXYSYNgFpVstsdrdoeIr7Xmz4QLgOXpoOhj0bmkEDW63oWvy76dkX3Cb7VPee-vFsnEaQXKT4/w313-h354/Screenshot%202024-03-29%20111641.png",
+        "imageAlt": "Murray 張大嘴、雙臂屈起的身體近景，軀幹上窄下寬，覆有粉紅色輪廓及弧線示意；下半身有裁切。",
+        "publisher": "AnimSchool",
+        "platform": "Official educational blog / lecture illustration",
+        "official": true,
+        "creator": "Aleksander Kolev 為文章介紹的教學講師；文字表示他參與該 Murray 示例鏡頭，未另外確認兩張覆畫圖及原始畫面的逐項作者。",
+        "rights": "AnimSchool 官方公開教材；未確認插圖或 Hotel Transylvania 畫面的開放授權。教育發布者不等同電影官方發行者，只保留原文／公開圖片連結與原創筆記，未下載、打包或重傳。",
+        "verification": "本輪讀取官方文章的 Asymmetry、Shapes、Line of Action、Silhouettes，從 Shapes 段落對應的圖片 DOM 核對兩張公開圖，並在背景瀏覽器直接實際檢視 313×354 與 320×312 版本。另讀 https://www.animschool.edu/Contact （Contact.aspx 正常轉址）確認機構位於 Provo, Utah；美國分類依教育機構，不推定講師國籍。未把 URL 或截圖檔名中的日期當成圖片發布日。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-30T04:13:56.436Z",
+      "lastVerified": "2026-10-30T04:13:56.436Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方教學文字，實際檢視 Shapes 段落兩張獨立的靜態覆畫示例；未播放文章內影片，也未將兩張圖視為已確認的動作先後。",
+        "locator": "原文 Shapes 段落：主圖 Screenshot 2024-03-29 111641.png（313×354），臉、屈臂、軀幹外緣粉紅畫線；對照圖 https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgnsfUFBR0rE_iieD_8Wm0G5LI2QT4KRP3PMQnMiZ-kf2_eAUoGdqig8QcPIgS6OPV8LTwF8YBv9YmUHmpQRXKw90Cd-al_nDyCyiUetGpDSPRnJkp4XRojivy3CcpPXhUtTOM5LgoAAhf_rU0RmGYXTnHKgMKMZY4ieiRNmAFN7sr8qRCGjOQX-YOkxMk/s320/Screenshot%202024-03-29%20111545.png （320×312），上方粉紅外框草圖與下方角色頭肩／軀幹輪廓。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "主圖中，Murray 張大嘴，兩臂屈起位於身體兩側；軀幹輪廓上窄下寬，粉紅畫線沿臉部、手臂與外側大形分布。下半身受圖片邊界裁切。",
+        "對照圖中，頭部較低、雙臂靠近頭頂兩側，身體底部同樣被裁切；圖上方另有多個粉紅外框草圖。這些是可見造型與教學畫線，未確認它們代表動作路徑。",
+        "Shapes 文字說明以花瓶般的大形與手臂配置設計角色伸縮及造型流向；本文也提醒檢查剪影和重疊切線。這是教材文字證據，沒有親看舞蹈節奏。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 主要身體大形、頭部位置和手臂方向，檢查張嘴與屈臂是否仍清楚；Blocking 再安排大形轉折與肢體空隙。",
+        "Final 才評估網格形變或替換圖來修飾伸縮，保持臉與手的辨識；需另用本角色連續預覽檢查變形與轉換，不能由兩張靜態圖直接擬合速度或跳過主 Pose。"
+      ],
+      "limits": [
+        "兩張圖尺寸較小且下半身裁切，沒有完整雙腳、支撐、承重或舞蹈全身證據；不解讀細微手指、圖中文字或未核對的製作符號。",
+        "未看教學影片或電影連續片段；不能由圖片差異推算幀數、動作先後、速度、曝光、伸縮比或體積變化量。",
+        "粉紅覆畫是教學示意，不是已確認的骨骼、運動路徑、關鍵幀標記或 Spine 控制器；花瓶類比不是人體結構或物理模擬規格。",
+        "官方教育頁是已核對的發布來源，不表示電影畫面可任意重用；未推定是哪一集電影、原作幀號或每張原圖作者。"
+      ]
+    },
+    {
+      "id": "japan-onepiece-emotion-punch-perspective",
+      "title": "ONE PIECE EMOTION｜伸拳透視與前後層次",
+      "work": "ONE PIECE EMOTION — TV 動畫 25 週年活動主視覺",
+      "region": "japan",
+      "medium": "2d",
+      "stages": ["layout", "blocking", "final"],
+      "techniques": ["pose", "silhouette", "staging", "fx"],
+      "forms": ["key-pose", "scene-composition"],
+      "actions": ["punch", "fx"],
+      "source": {
+        "kind": "image",
+        "url": "https://one-piece.com/news/66312/index.html",
+        "imageUrl": "https://one-piece.com/img/news/0513_101725_00.jpg",
+        "imageAlt": "多個路飛造型組成的活動主視覺：左側巨大近景拳頭與白髮笑臉、中央紅衣屈臂抬膝人物、右側較小人物及線稿，白色捲曲形與紅黑色圖形分層，中央標題遮住部分身體。",
+        "publisher": "ONE PIECE.com（東映動畫作品官方資訊站）",
+        "platform": "Official news / exhibition key visual",
+        "official": true,
+        "published": "2024-05-13",
+        "creator": "演出：松實航；作画：涂泳策。官方新聞明列本主視覺的分工，不將漫畫原作者或收藏帳號代作本圖作畫署名。",
+        "rights": "© 尾田栄一郎／集英社・フジテレビ・東映アニメーション；未見本圖開放授權。僅保留原站／公開圖連結及原創筆記，未下載、打包或重傳。",
+        "verification": "本輪讀取 ONE PIECE.com 官方新聞的 2024/05/13 日期、主視覺發布文字與演出／作畫署名；頁尾連到東映動畫公司資訊並保留作品版權。由頁面圖片 DOM 核對公開網址，在正常背景瀏覽器實際看過 1200×855 主視覺。日本分類依作品製作來源，不推定個別作者國籍。",
+        "aliases": []
+      },
+      "firstSeen": "2026-10-30T06:10:38.129Z",
+      "lastVerified": "2026-10-30T06:10:38.129Z",
+      "review": {
+        "status": "image-reviewed",
+        "method": "閱讀官方新聞並直接檢視單張 1200×855 主視覺；沒有觀看動畫影片，也沒有將畫面中多個造型或線稿當作連續姿勢。",
+        "locator": "官方新聞主視覺 0513_101725_00.jpg；左側巨大拳頭與笑臉、中央紅衣人物的屈臂與抬膝、右側小人物／線稿、中央標題及上方 TIME 字樣。",
+        "samples": [],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "左側拳頭在畫面中占很大比例，臉與另一隻屈起的手較小；白色捲曲大形圍繞頭部。中央紅衣人物有屈臂、握拳與抬膝，右側另外安排更小的角色造型及線稿，形成不同尺度層次。",
+        "中央黑字標題遮住部分腹部和腿部，部分拳頭、髮形與圖形也被畫面裁切；紅黑色斜帶和白色曲形穿插於人物與字標周圍。上方有類似作畫紙記號和 TIME 字樣，但這些標示的實際製作規格未核對。"
+      ],
+      "application": [
+        "Spine 應用推論：Layout 先 Key 主要伸拳 Pose，決定拳頭與臉的尺度、朝向及畫面焦點；以簡單形狀檢查前景拳頭是否遮掉表情或重要肢體。",
+        "Blocking 再檢查圖層、前後遮擋及屈臂空隙，Final 才補白色曲形、色帶與局部效果。透視誇張需以本角色素材與鏡頭條件預覽，不能直接將海報二維座標當成骨架參數。"
+      ],
+      "limits": [
+        "這是活動宣傳主視覺，不是已確認的原作關鍵幀、分鏡、曝光表或連續姿勢圖；不同造型的大小與排列不代表動作先後、角色位移或速度。",
+        "部分身體被標題與邊界遮擋，沒有完整腳底支撐、承重或連續擊打證據；punch 分類只指可用作伸拳 Pose 的靜態造型，不聲稱親看打擊過程。",
+        "TIME 文字、紙孔、線稿與其他標記不轉成本專案 FPS、幀號、時長或固定 delay；白色曲形及紅黑色帶僅作靜態圖形參考，不推論成片風效、拖影或粒子運動。",
+        "作者分工依官方新聞保留；未追認每一個較小造型是否擷取自既有作畫，也未檢視同頁其他展示圖或商品圖片。"
+      ]
+    },
+    {
+      "id": "spine-unruly-heroes-gameplay",
+      "title": "Spine 作品展示｜Unruly Heroes 遊戲實機",
+      "work": "Unruly Heroes",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking"
+      ],
+      "techniques": [
+        "pose",
+        "staging"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=3JAfFrvLShY",
+        "publisher": "Magic Design Studios",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "Spine 官方 showcase（https://en.esotericsoftware.com/spine-showcase）收錄本作及此影片；頁面引述製作團隊使用 Spine 的說明。背景瀏覽器核對嵌入影片 ID 與原始頻道。此證據確認作品採用 Spine，不代表每個鏡頭、背景或特效均出自 Spine。",
+        "durationSeconds": 107.061,
+        "aliases": [],
+        "rights": "影片權利屬原製作團隊／發布者；僅保存公開來源、播放器入口與原創短篇筆記，不下載重傳影片或截圖。"
+      },
+      "firstSeen": "2026-10-30T06:43:19.686Z",
+      "lastVerified": "2026-10-30T06:43:19.686Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音、暫停並跳轉，逐張核對畫面與播放器時間；本輪未連續觀看動作過程。",
+        "locator": "53.5 秒、74.9 秒",
+        "samples": [
+          {
+            "seconds": 53.5,
+            "note": "藍色場景中的持長兵器角色，兵器向左上方伸出；右側三個低矮敵方輪廓沿地面排列。"
+          },
+          {
+            "seconds": 74.9,
+            "note": "大型斜向造型前，左側圓身角色、右上長身角色與右下發光形體分散在不同高度。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "53.50 秒：長兵器與身體形成向左伸出的輪廓，角色和低矮敵人的尺度、高度有明顯差異。",
+        "74.90 秒：多個角色與光效在不同高度分組；明亮橘色區域從偏暗背景中突出。"
+      ],
+      "application": [
+        "Layout 先用全身與兵器端點的主要 Pose 確認攻擊方向、負空間與敵我高度差，再進 Blocking 檢查銜接。",
+        "多角色演出先配置各自的高度與輪廓；Final 才加入光效細節，另以實際連續預覽驗證可讀性。"
+      ],
+      "limits": [
+        "抽查畫面有前後景、光效與遮擋，不能把所有可見變形直接認定為 Spine mesh 或 smear。",
+        "僅抽查列出的畫面，未分析連續節奏、速度、插值、幀數或動作銜接；影片秒數不是專案幀號。",
+        "本輪未核對製作地區與 Spine 專案版本；不可由成品反推實際骨架、網格、約束或逐格技法。"
+      ]
+    },
+    {
+      "id": "spine-return-monkey-island-showcase",
+      "title": "Spine 作品展示｜Return to Monkey Island 角色演出",
+      "work": "Return to Monkey Island",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking"
+      ],
+      "techniques": [
+        "pose",
+        "staging"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=LtngAFw91Uk",
+        "publisher": "DevolverDigital",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "Spine 官方 showcase（https://en.esotericsoftware.com/spine-showcase）收錄本作及此影片；頁面引述製作團隊使用 Spine 的說明。背景瀏覽器核對嵌入影片 ID 與原始頻道。此證據確認作品採用 Spine，不代表每個鏡頭、背景或特效均出自 Spine。",
+        "durationSeconds": 65.861,
+        "aliases": [],
+        "rights": "影片權利屬原製作團隊／發布者；僅保存公開來源、播放器入口與原創短篇筆記，不下載重傳影片或截圖。"
+      },
+      "firstSeen": "2026-10-30T06:43:19.686Z",
+      "lastVerified": "2026-10-30T06:43:19.686Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音、暫停並跳轉，逐張核對畫面與播放器時間；本輪未連續觀看動作過程。",
+        "locator": "19.75 秒、32.92 秒",
+        "samples": [
+          {
+            "seconds": 19.75,
+            "note": "森林中兩人位於中景；右側人物的臉與手較亮，左側人物部分被前景樹幹遮住。"
+          },
+          {
+            "seconds": 32.92,
+            "note": "覆冰建築前的小比例人物位於下方，入口兩側火光與大型門窗形成主要環境形狀。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "19.75 秒：人物的面部、手部與明暗對比集中在畫面中段，前景深色樹幹造成角色遮擋。",
+        "32.92 秒：角色相對建築很小，人物位置、入口和兩側火光共同構成觀看線索。"
+      ],
+      "application": [
+        "Layout 同時安排角色表演 Pose 與前景遮擋，先確認頭、手的讀取區域，再補 Blocking。",
+        "遠景演出先以實際遊戲顯示尺寸檢查全身剪影；Final 的面部細節需要依鏡頭大小調整。"
+      ],
+      "limits": [
+        "本輪樣本以構圖及角色可讀性為主，不足以判定口型、肢體動作節奏或完整表演。",
+        "僅抽查列出的畫面，未分析連續節奏、速度、插值、幀數或動作銜接；影片秒數不是專案幀號。",
+        "本輪未核對製作地區與 Spine 專案版本；不可由成品反推實際骨架、網格、約束或逐格技法。"
+      ]
+    },
+    {
+      "id": "spine-deponia-doomsday-showcase",
+      "title": "Spine 作品展示｜Deponia Doomsday 角色互動",
+      "work": "Deponia Doomsday",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking"
+      ],
+      "techniques": [
+        "pose",
+        "staging"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=WYCc176Hl_4",
+        "publisher": "Daedalic Entertainment",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "Spine 官方 showcase（https://en.esotericsoftware.com/spine-showcase）收錄本作及此影片；頁面引述製作團隊使用 Spine 的說明。背景瀏覽器核對嵌入影片 ID 與原始頻道。此證據確認作品採用 Spine，不代表每個鏡頭、背景或特效均出自 Spine。",
+        "durationSeconds": 93.441,
+        "aliases": [],
+        "rights": "影片權利屬原製作團隊／發布者；僅保存公開來源、播放器入口與原創短篇筆記，不下載重傳影片或截圖。"
+      },
+      "firstSeen": "2026-10-30T06:43:19.686Z",
+      "lastVerified": "2026-10-30T06:43:19.686Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音、暫停並跳轉，逐張核對畫面與播放器時間；本輪未連續觀看動作過程。",
+        "locator": "56.02 秒",
+        "samples": [
+          {
+            "seconds": 56.02,
+            "note": "機械房內四人分處前後層；綠衣人物背向觀眾，右側人物靠近發光裝置，左側兩人分別在前景與後方門口。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "56.02 秒：四個角色有正面、側向及背向的不同朝向，前後層與間距使同場人物分組。",
+        "56.02 秒：右側裝置以紫色亮點聚焦，角色輪廓與管線有局部交疊。"
+      ],
+      "application": [
+        "多人 Layout 先定主次角色、頭部朝向與站位，再做 Blocking；先避免手臂與背景管線混成同一輪廓。",
+        "可為背向與正向角色分別規劃主要 Pose；是否需要換附件或額外骨架須依自己的素材判斷。"
+      ],
+      "limits": [
+        "只有一張多人構圖樣本，尚未觀看對話手勢、走位或群體動作過程。",
+        "僅抽查列出的畫面，未分析連續節奏、速度、插值、幀數或動作銜接；影片秒數不是專案幀號。",
+        "本輪未核對製作地區與 Spine 專案版本；不可由成品反推實際骨架、網格、約束或逐格技法。"
+      ]
+    },
+    {
+      "id": "spine-weight-mass-official-tutorial",
+      "title": "Spine 官方教學｜Weight and Mass 重量與質量",
+      "work": "Animating with Spine #1",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "production",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "staging",
+        "workflow"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=TEXq8TCfQ9I",
+        "publisher": "Esoteric Software",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "官方文章 https://en.esotericsoftware.com/blog/Weight-and-Mass-Animating-with-Spine-1 連到原始影片 TEXq8TCfQ9I；背景瀏覽器確認 Esoteric Software 頻道、24:30 片長與實際 Spine 編輯器畫面。",
+        "aliases": [
+          "https://en.esotericsoftware.com/blog/Weight-and-Mass-Animating-with-Spine-1"
+        ],
+        "rights": "影片權利屬原製作團隊／發布者；僅保存公開來源、播放器入口與原創短篇筆記，不下載重傳影片或截圖。",
+        "durationSeconds": 1470.901
+      },
+      "firstSeen": "2026-10-30T06:43:19.686Z",
+      "lastVerified": "2026-10-30T07:20:29.319Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音，暫停並跳轉後核對正片、畫面及實際時間；本輪只看兩張畫面，不把播放經過時間當成連續觀看。",
+        "locator": "10:35.14 與 17:09.61，Spine 編輯器視窗。",
+        "samples": [
+          {
+            "seconds": 635.14,
+            "note": "Spine Animate 視窗由左至右並列大型彩色沙灘球、紅球、藍球、灰色紋理球，各自下方有橢圓暗影；右側樹狀列表與下方 Dopesheet 可見。"
+          },
+          {
+            "seconds": 1029.61,
+            "note": "藍球處於選取狀態，畫布左側仍排列四個不同大小的球；右側 Graph 顯示曲線與多個控制點，下方 Dopesheet 也有多個 Key。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "635.14 秒：四個球以大小、色彩與表面紋理區分，排列於同一編輯畫布，底下各有獨立橢圓陰影。",
+        "1029.61 秒：同一視窗同時呈現球體、Graph 與 Dopesheet，可看到藍球的選取控制與多個 Key；這張圖只證明編輯器配置及靜態曲線形狀。"
+      ],
+      "application": [
+        "Layout 先定各物件尺寸、地面基準，以及接觸／最高點等主要 Pose，再在 Blocking 預覽自己的重量感；此步驟是實作規劃，不是本輪量測所得的影片節奏。",
+        "主要 Pose 通過後，Final 再用 Graph 檢查曲線並調整細節；不可直接以教學畫面上的密集 Key 取代 Layout 與 Blocking。"
+      ],
+      "limits": [
+        "只檢視兩張暫停畫面，沒有連續觀看彈跳，也沒有根據影片量測速度、停頓、間距、幀數或材質的動力參數。",
+        "未確認教學的 Spine 版本；Graph 與骨架操作需另核對 AutoSpine 的 Spine 4.0，不以畫面斷言較新功能可用。",
+        "影片中的球體紋理、名字與大小不構成對真實質量、彈性或地面接觸的物理驗證；製作地區未核對。"
       ]
     }
   ]

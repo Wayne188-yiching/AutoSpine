@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T08:38:08.201Z",
+  "startedAt": "2026-10-29T08:38:15Z",
+  "completedAt": "2026-10-29T08:43:09.216Z",
+  "result": "updated",
+  "focus": [
+    "歐洲停格動畫的物件角色",
+    "完整機身持物姿勢、輪地構型與前景遮擋"
+  ],
+  "addedIds": [
+    "europe-aardman-cooker-book-contact"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.aardman.com/film-tv-games/wallace-gromit/",
+      "outcome": "核對作品列為 Stop Motion、Nick Park 創作背景，以及 Visit the fan site 實際指向 wallaceandgromit.com。"
+    },
+    {
+      "url": "https://www.wallaceandgromit.com/films/a-grand-day-out",
+      "outcome": "讀取官方電影頁及 Cooker 介紹，由相簿取得原圖 URL；沒有把故事文字當成已看過影片。"
+    },
+    {
+      "url": "https://www.wallaceandgromit.com/media/dlglandt/gdo2.jpg",
+      "outcome": "實際看清 610×800 原圖的整體機身、雙手持書、左下輪緣及前景熱水瓶遮擋，將可見構型與支撐力／運動推論分開。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://www.wallaceandgromit.com/media/ho1dnzux/gdo1.jpg",
+      "outcome": "實際看見 Wallace 持餅乾和餐盤的頭胸近景；本輪選擇較完整、不同角色類型的 Cooker 圖，不為數量同時新增相似持物近景。"
+    },
+    {
+      "url": "https://www.wallaceandgromit.com/media/gqdcmn0u/gdo3.jpg",
+      "outcome": "只找到原圖連結，未看像素；未新增觀察或條目。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 30 sources",
+    "indexBuild": "passed — 30 sources",
+    "defaultSearchAndEvidence": "passed — image-reviewed; samples/segments empty, timingBasis none",
+    "imageDedup": "passed — one original image URL",
+    "generatedTitle": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "照片是否正片擷取或另拍宣傳照未核對；媒材採官方作品的 Stop Motion 分類，未宣稱觀看製作過程。",
+    "沒有翻書、輪轉、天線運動或受力的連續證據；前景遮住部分下方結構，不補猜所有支撐點。",
+    "作品創作者與單張動畫／攝影作者分開記錄，未見開放授權；僅保留官方原圖與來源連結。",
+    "只更新 knowledge/animation/；未下載、重傳或打包來源圖片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到日本或美國的表演、預備或收勢參考；也可補看既有短片，但只有實際連續看過才分析節奏。"
+}

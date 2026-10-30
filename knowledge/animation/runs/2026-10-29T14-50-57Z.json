@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T14:50:48.792Z",
+  "startedAt": "2026-10-29T14:50:57Z",
+  "completedAt": "2026-10-29T14:56:17.032Z",
+  "result": "updated",
+  "focus": [
+    "日本官方短片的手部持物接觸",
+    "大前臂構圖、握柄和道具遮擋"
+  ],
+  "addedIds": [
+    "japan-mobpsycho-anniversary-tool-grip"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://mobpsycho100.com/news/post-39",
+      "outcome": "讀到週年公告與海報署名，再由官方 MOVIE 入口尋找短片。未檢視公告圖片，未把海報原畫署名套用到短片鏡頭。"
+    },
+    {
+      "url": "https://mobpsycho100.com/movie/",
+      "outcome": "開啟「10周年記念特別映像」彈窗並實際見到播放器；由可見 iframe 核對公開影片 ID OWSfQwwMcE4。原頁有 BONES、Warner Bros. 官網連結和禁止未授權轉載的版權告知。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=OWSfQwwMcE4",
+      "outcome": "原片顯示 Warner Bros. Japan Anime／@wbj_anime 發布；展開說明核對 2026-07-12 日期、立川譲的導演／腳本／分鏡／演出與亀田祥倫的作畫監督署名。實際暫停檢視 01:03 雙臂構圖與 01:08 起子握持，沒有連續觀看或分析旋轉節奏。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://www.youtube.com/watch?v=OWSfQwwMcE4&t=38s",
+      "outcome": "實際看見金髮人物背對窗的頭肩近景；本輪選擇較有手部接觸價值的 01:03、01:08，不為數量增加相似頭肩樣本。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://mobpsycho100.com/movie/",
+      "reason": "點開影片後 AX 樹未立即反映彈窗，正常截圖確認播放器已顯示，再核對可見 iframe 來源；未以缺少 AX 更新判斷影片受阻。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 35 sources",
+    "indexBuild": "passed — 35 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples at 63s/68s, segments empty, timingBasis none",
+    "dedup": "passed — one canonical video ID",
+    "generatedTitleAndLocator": "passed",
+    "classification": "passed — hand/tool contact only; no timing or foot-support claims",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "兩張樣本不能證明鎖緊速度、力道、螺絲深度或完整身體支撐；不把字幕或取景變化補成動作證據。",
+    "個別鏡頭原畫作者未確認；官網、影片及週年海報的日期／署名分開核對。",
+    "只更新 knowledge/animation/；未下載、保存或重傳來源媒體，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替至歐洲既有來源的完整姿勢或接觸，優先補看有價值的範圍，避免一直增加近景與相似教材。"
+}

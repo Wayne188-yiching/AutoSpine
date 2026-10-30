@@ -62,7 +62,7 @@ export function validateCatalog(data) {
   for (const group of ["regions", "mediums", "stages", "techniques", "statuses"])
     if (!object(data.taxonomy[group]) || !Object.values(data.taxonomy[group]).every(nonblank))
       errors.push(`Invalid taxonomy: ${group}`);
-  for (const group of ["actions", "forms"])
+  for (const group of ["actions", "forms", "topics"])
     if (
       data.taxonomy[group] !== undefined &&
       (!object(data.taxonomy[group]) || !Object.values(data.taxonomy[group]).every(nonblank))
@@ -85,6 +85,8 @@ export function validateCatalog(data) {
       !ids.has(entry.id), "invalid or duplicate id");
     ids.add(entry.id);
     for (const key of ["title", "work"]) require(nonblank(entry[key]), `${key} required`);
+    if (entry.topic !== undefined)
+      require(Object.hasOwn(data.taxonomy.topics ?? {}, entry.topic), "unknown topic");
     for (const [field, group] of [
       ["region", "regions"],
       ["medium", "mediums"],
@@ -236,6 +238,8 @@ export function searchEntries(data, query = "", includeQueue = false) {
       entry.work,
       entry.region,
       entry.medium,
+      entry.topic ?? "animation",
+      data.taxonomy.topics?.[entry.topic ?? "animation"] ?? "",
       entry.source.publisher,
       entry.source.platform,
       entry.review.status,

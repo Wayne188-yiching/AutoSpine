@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T20:55:54.472Z",
+  "startedAt": "2026-10-29T20:56:05Z",
+  "completedAt": "2026-10-29T21:01:38.752Z",
+  "result": "updated",
+  "focus": [
+    "歐洲既有官方製作示例補看",
+    "角色與管線遮擋，以及編輯疊圖和成片效果的區別"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "europe-blender-cat-purkour-pose-pass"
+  ],
+  "evidence": {
+    "newReviewedSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://studio.blender.org/blog/cat-purkour-combining-2d-animation-in-a-3d-environment/",
+      "outcome": "重讀公開文章、作者及相關章節。在 Sketching key poses. 的同一播放器用正常 UI 跳轉至 60%／80%，核對對應 video 檔名 dd3867246d6017e241b08ed633234020.mp4、片長 47.533333 秒，以及暫停時刻 28.519999／38.026666 秒。未保存過期簽署 URL。"
+    },
+    {
+      "locator": "同一內嵌示例 28.52s／38.03s",
+      "outcome": "進入全螢幕實際檢視完整畫面後還原。28.52 秒可辨貓頭臉、雙臂和前景管線遮擋；38.03 秒有多重貓形輪廓與 Keyframes Before／After 面板，不將編輯疊圖直接當成成片拖影或多個角色。保留原有 2.41／19.01 秒，未連續觀看。"
+    }
+  ],
+  "accessIssuesResolved": [
+    {
+      "url": "https://studio.blender.org/blog/cat-purkour-combining-2d-animation-in-a-3d-environment/",
+      "outcome": "早期紀錄的搜尋工具 402 問題本輪未重現；原文搜尋內容與正常公開背景瀏覽器均可讀取，不需登入或訂閱。條目驗證說明已更新為本輪實際存取狀態。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 38 sources",
+    "indexBuild": "passed — 38 sources",
+    "defaultSearchAndEvidence": "passed — 4 total visual samples; 28.52s/38.03s added; segments empty, timingBasis none",
+    "dedup": "passed — one existing article and matching embedded media filename; no new source created",
+    "firstSeen": "preserved — 2026-10-29T01:41:30.330Z",
+    "generatedLocator": "passed",
+    "classification": "passed — no contact/smear claim from incomplete contact or ambiguous editing overlays",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "播放器曾短暫載入播放，不當作連續觀看；以暫停狀態、實際秒數和完整可見畫面記錄。",
+    "操作錄影時間與原專案幀號不同；沒有量測角色步頻、受力、速度或動畫完成品質。",
+    "只更新 knowledge/animation/；未下載、保存或重傳影片、圖片或專案，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到日本官方姿勢或分鏡資料，優先清楚的主 Pose 和支撐關係；編輯錄影若含洋蔥皮／疊圖，持續保留與乾淨成片的區別。"
+}

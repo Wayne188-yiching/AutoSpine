@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T22:00:55.435Z",
+  "startedAt": "2026-10-29T22:01:03Z",
+  "completedAt": "2026-10-29T22:03:44.654Z",
+  "result": "updated",
+  "focus": [
+    "日本官方背景原圖＋原畫補看",
+    "桌邊遮擋、石階高低與主要人物 Pose"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "japan-madhouse-frieren38-village-staging"
+  ],
+  "evidence": {
+    "newReviewedSources": 0,
+    "referenceImagesViewed": 3,
+    "newReferenceImagesReviewed": 2,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://madhouse.co.jp/special/frieren-anime2/",
+      "outcome": "搜尋並重讀官方原画紹介 #38；正常背景瀏覽器可見前三張相同作者／工序署名，核對公開原圖 URL 與三張均為 1871×1323。作品版權和官方網站入口可見。"
+    },
+    {
+      "url": "https://madhouse.co.jp/cms-data/images/special/3imnts7r17tnwb6ltj262pmuirggvk.jpg",
+      "outcome": "實際複核既有主圖，保留村落、前景屋簷、右下人物與中央空地的既有觀察。"
+    },
+    {
+      "url": "https://madhouse.co.jp/cms-data/images/special/ub8gz2m5hgkagvlmxjsmranonu7c3a.jpg",
+      "outcome": "實際看見左側背向大人物、中央持杯人物被桌面遮住下半身、右側坐／站人物及屋頂較小坐姿；集中在既有條目保留比較連結。"
+    },
+    {
+      "url": "https://madhouse.co.jp/cms-data/images/special/17cgwvruajjso2p9p35oe9grfeqfdr.jpg",
+      "outcome": "實際看見前景背向人物的彎腿和位於不同高度階面的雙靴，以及較上方站立／蹲低人物。只分析靜態配置，新增 Blocking 和靜態 contact 用途，不推導上階時序、重量轉移或受力。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://madhouse.co.jp/special/frieren-anime2/",
+      "reason": "網頁工具直接開啟的文字抽取僅有頁尾，搜尋摘要可見工序清單；正常公開背景瀏覽器完整顯示正文、圖片署名及原圖，無需登入或繞過限制。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 38 sources",
+    "indexBuild": "passed — 38 sources",
+    "defaultSearchAndEvidence": "passed — 石階 retrieves reviewed entry; samples/segments empty, timingBasis none",
+    "imageDedup": "passed — two comparison image filenames each occur in only this entry; no new source added",
+    "firstSeen": "preserved — 2026-10-29T10:45:24.378Z",
+    "generatedComparisonLinks": "passed",
+    "classification": "passed — independent scene compositions/key poses; contact limited to static boot/stair placement; no walk/timing labels",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "三張圖不是已確認的連續動作、鏡頭順序或時長；未看影片，未推論步頻、速度、固定延遲或承重品質。",
+    "官方背景原図＋原画工序與本工具 Layout／Blocking／Final 用途分開；未確認角色骨架、IK 或素材可直接移植。",
+    "只更新 knowledge/animation/；未下載、打包或重傳原圖，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替美國官方全身主要 Pose 或次要運動教材；優先補強既有來源證據，只有確實連續觀看才分析動態接觸與節奏。"
+}

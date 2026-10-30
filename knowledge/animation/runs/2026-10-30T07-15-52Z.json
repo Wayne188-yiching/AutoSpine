@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T07:15:04.882Z",
+  "startedAt": "2026-10-30T07:15:52Z",
+  "completedAt": "2026-10-30T07:21:58.709Z",
+  "result": "updated",
+  "focus": [
+    "依新優先順序補看既有 Spine 影片",
+    "官方 Weight and Mass：畫布物件對照與 Graph／Dopesheet 的實作畫面"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-weight-mass-official-tutorial"
+  ],
+  "evidence": {
+    "visualSamplesAdded": 2,
+    "existingMetadataSourceReviewed": 1,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=TEXq8TCfQ9I",
+      "outcome": "在背景瀏覽器核對 Esoteric Software 正片，暫停檢視 635.14 秒與 1029.61 秒；保存原創觀察、獨立 Spine 應用推論及時間碼，未保存原片或截圖。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 48 entries",
+    "indexBuild": "passed — 4 Spine videos, 15 general animation videos, 29 supporting references",
+    "tests": "14 passed via direct node test module",
+    "browser": "default Spine tab shows 4 visual-samples entries; advanced filters closed",
+    "evidence": "samples length 2; segments empty; timingBasis none; firstSeen preserved; duration checked in original player"
+  },
+  "limits": [
+    "本輪只看暫停畫面；不把背景播放、時間經過或靜態 Graph 當成連續觀看及動畫節奏分析。",
+    "新影片優先規則已由前一手動整理更新，本輪只修改 knowledge/animation/ 及本執行紀錄；原始工具與測試檔的既有修改不屬此排程。",
+    "本輪未修改引擎、角色、安裝快取，未 Commit／Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "優先補 Spine 角色動作集或完成演出，選能直接看到走跑、攻擊或待機的原創公開影片；有能力實際連續觀看才補動作節奏，否則保持畫面抽查。"
+}

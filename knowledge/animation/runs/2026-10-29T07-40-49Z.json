@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T07:40:37.281Z",
+  "startedAt": "2026-10-29T07:40:49Z",
+  "completedAt": "2026-10-29T07:44:18.757Z",
+  "result": "updated",
+  "focus": [
+    "日本官方表演分鏡圖片",
+    "把構圖／表情規劃與實際動作時間分開"
+  ],
+  "addedIds": [
+    "japan-kyoani-violet-storyboard-acting"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://violet-evergarden.jp/special/making/",
+      "outcome": "重讀第 2 節「絵コンテ」及本片全分鏡由石立太一製作的說明，核對來源與作者範圍。"
+    },
+    {
+      "url": "https://violet-evergarden.jp/img/special/makingImg02.jpg",
+      "outcome": "本輪成功看清 700×313 原圖：上格的場景／頭髮局部，下格的頭肩與張口表情，以及右側文字欄位。以 storyboard、acting／expression 分類，沒有讀取模糊邊註或推算節奏。"
+    }
+  ],
+  "priorAccessIssueResolved": [
+    {
+      "run": "2026-10-29T00-35-36Z.json",
+      "url": "https://violet-evergarden.jp/img/special/makingImg02.jpg",
+      "outcome": "當時只找到圖片但擷取失敗；本輪正常背景瀏覽器成功看見像素，沒有回填先前紀錄或宣稱以前已看過。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 29 sources",
+    "indexBuild": "passed — 29 sources",
+    "defaultSearchAndEvidence": "passed — image-reviewed with no samples/segments or timing claim",
+    "imageDedup": "passed — distinct from existing makingImg03.jpg Layout image",
+    "generatedTitle": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "上下兩格是靜態製作圖，沒有確認對應幀號、時間、鏡頭切換或完整動作；不把數字欄位轉成幀數與速度。",
+    "作者依官方第 2 節的明文說明，個別修正與邊註不另猜執筆者。",
+    "來源為日本製作，沒有依背景或畫風推定國家；這次補的是表演分鏡，沒有為原先接觸研究方向硬加 contact 標籤。",
+    "只更新 knowledge/animation/；未下載、打包或重傳原圖，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "歐洲停格動畫的完整 Pose、接觸或表演圖片／官方短片，輪替媒材，避免持續堆疊同類頭肩近景。"
+}

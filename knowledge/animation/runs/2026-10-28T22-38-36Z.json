@@ -6,9 +6,14 @@
   "startedAt": "2026-10-28T22:38:36Z",
   "completedAt": "2026-10-28T22:42:08.532Z",
   "result": "updated",
-  "focus": ["重訪已核對的官方走路影片", "補真正可見的接觸／屈膝支撐 Pose"],
+  "focus": [
+    "重訪已核對的官方走路影片",
+    "補真正可見的接觸／屈膝支撐 Pose"
+  ],
   "addedIds": [],
-  "updatedIds": ["us-animationmentor-walk-video-queue"],
+  "updatedIds": [
+    "us-animationmentor-walk-video-queue"
+  ],
   "evidence": {
     "upgradedFromMetadataOnly": 1,
     "visualSamplesAdded": 2,

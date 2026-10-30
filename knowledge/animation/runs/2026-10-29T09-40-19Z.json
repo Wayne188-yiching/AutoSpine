@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T09:40:09.191Z",
+  "startedAt": "2026-10-29T09:40:19Z",
+  "completedAt": "2026-10-29T09:43:43.489Z",
+  "result": "updated",
+  "focus": [
+    "美國官方的全身表演與主要 Pose",
+    "角色設定圖和動作順序／節奏的區別"
+  ],
+  "addedIds": [
+    "us-wdas-mini-maui-pose-models"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.disneyanimation.com/process/hand-drawn-animation/",
+      "outcome": "讀取 Walt Disney Animation Studios 官方製作頁，整理主要 Pose／表情、粗動畫到清稿的說明，以及 Mini Maui 以全身默劇表達的文字。未觀看內嵌影片。"
+    },
+    {
+      "url": "https://cdn.disneyanimation.com/uploads/pipeline/hand-drawn-animation/MOANA2_Process_2DAnimation_02.jpg",
+      "outcome": "正常背景瀏覽器實際看清 1920×804 原圖，多種高舉魚鉤、屈臂、抬腿及低垂頭肩造型可比較。依圖上粗稿模型標示和無時間軸的呈現，分類 model-sheet／contact-sheet，不分類為連續動作。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://cdn.disneyanimation.com/uploads/pipeline/hand-drawn-animation/MOANA2_Process_2DAnimation_02.jpg",
+      "reason": "搜尋工具開啟官方原圖連結回傳 Internal Error；正常背景瀏覽器可公開開啟並成功擷取，未繞過限制。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 31 sources",
+    "indexBuild": "passed — 31 sources",
+    "defaultSearchAndEvidence": "passed — image-reviewed, no video samples/segments or timing claim",
+    "imageDedup": "passed — one original image URL",
+    "classification": "passed — model-sheet/contact-sheet; no contact/timing tags",
+    "generatedTitle": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "多種姿勢同紙並排，不等於動作先後或可直接編成循環，也未確認原作者的動畫 Key。",
+    "原頁提及的幀率與 2D／CG 協作不當成實際看過的動作、視線同步或本工具的固定設定。",
+    "本次補的是表演與造型，沒有為原先預備／收勢的搜尋方向硬加 anticipation／follow-through 標籤。",
+    "只更新 knowledge/animation/；未下載、打包或重傳來源圖片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到日本或歐洲的表演、預備或收勢參考；若可補看既有影片，只按真正看到的範圍升級證據，不以播放經過時間代表已觀看。"
+}

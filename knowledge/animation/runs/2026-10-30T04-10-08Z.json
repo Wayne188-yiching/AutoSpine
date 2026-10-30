@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T04:10:01.535Z",
+  "startedAt": "2026-10-30T04:10:08Z",
+  "completedAt": "2026-10-30T04:15:01.401Z",
+  "result": "updated",
+  "focus": [
+    "美國動畫教學中的角色大形設計",
+    "Murray 的屈臂、張嘴與花瓶大形類比"
+  ],
+  "addedIds": [
+    "us-animschool-murray-shape-posing"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "referenceImagesViewed": 2,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://blog.animschool.edu/2024/04/08/crafting-the-perfect-animated-pose/",
+      "outcome": "搜尋並閱讀官方 AnimSchool 文章的 Asymmetry、Shapes、Line of Action、Silhouettes。核對 Aleksander Kolev 講師及 Murray 示例說明；從 Shapes 段落可見圖片 DOM 取得兩個公開連結，未開啟不相關的 blogger 編輯頁。"
+    },
+    {
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj6vJo3zX_9x1d1YbXeL2wYWD1SN721VxwBgjGJn_HaehfPJxk8fICCJsO8lWiZroe3iA1l3BseXgkbWOyqtRDPxlrfXqHViQIym_Ornheny6oVX-Aie9eXYSYNgFpVstsdrdoeIr7Xmz4QLgOXpoOhj0bmkEDW63oWvy76dkX3Cb7VPee-vFsnEaQXKT4/w313-h354/Screenshot%202024-03-29%20111641.png",
+      "outcome": "實際檢視 313×354 靜態圖：張大嘴、兩側屈臂、上窄下寬軀幹，粉紅覆畫沿頭、臂及外緣；下半身裁切。"
+    },
+    {
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgnsfUFBR0rE_iieD_8Wm0G5LI2QT4KRP3PMQnMiZ-kf2_eAUoGdqig8QcPIgS6OPV8LTwF8YBv9YmUHmpQRXKw90Cd-al_nDyCyiUetGpDSPRnJkp4XRojivy3CcpPXhUtTOM5LgoAAhf_rU0RmGYXTnHKgMKMZY4ieiRNmAFN7sr8qRCGjOQX-YOkxMk/s320/Screenshot%202024-03-29%20111545.png",
+      "outcome": "實際檢視 320×312 對照圖：較低的頭部、頭頂兩側的手臂、上方粉紅外框草圖；沒有依兩圖排列建立動作順序或路徑。"
+    },
+    {
+      "url": "https://www.animschool.edu/Contact",
+      "outcome": "由官方 Contact.aspx 正常轉址至 Contact，讀取 Provo, Utah 地點。只用於發布機構地域分類，未使用第三方名錄或推定講師國籍。"
+    }
+  ],
+  "notReviewedMedia": [
+    "原頁其他插圖及內嵌講課影片未檢視，不新增其畫面、正片身份或節奏觀察。"
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 43 sources",
+    "indexBuild": "passed — 43 sources",
+    "defaultSearchAndEvidence": "passed — 花瓶 retrieves reviewed image entry; samples/segments empty, timingBasis none",
+    "articleAndImageDedup": "passed — one article entry, both viewed image filenames occur only in that entry",
+    "classification": "passed — static key-pose and body-shape reference; no pose-sequence/timing/contact claim",
+    "publicationDate": "not invented — URL and screenshot filenames are not treated as individual image publication dates",
+    "generatedEntryAndLinks": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "本輪找到身體大形例子，但圖片下半身裁切，沒有完整全身／雙腳或動態接觸證據；不稱為已完成原先優先尋找的完整全身參考。",
+    "官方教育發布來源與電影發行者、原圖作者及素材授權分開；未推定電影集數、原作幀號或覆畫線的作者。",
+    "只更新 knowledge/animation/；未下載、保存或重傳原圖／影片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "優先補足日本或歐洲完整全身、腳底支撐或清楚主動作的官方公開資料；身體大形的靜態差異不可替代連續觀看證據。"
+}

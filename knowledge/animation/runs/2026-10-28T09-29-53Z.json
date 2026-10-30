@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T09:29:53Z",
   "completedAt": "2026-10-28T09:33:20.359Z",
   "result": "updated",
-  "focus": ["補足日本官方製作參考", "Layout 圖中的構圖與表情，以及先表演後細節的工作順序"],
-  "addedIds": ["japan-kyoani-violet-layout-example"],
+  "focus": [
+    "補足日本官方製作參考",
+    "Layout 圖中的構圖與表情，以及先表演後細節的工作順序"
+  ],
+  "addedIds": [
+    "japan-kyoani-violet-layout-example"
+  ],
   "updatedIds": [],
   "evidence": {
     "imageEntries": 1,

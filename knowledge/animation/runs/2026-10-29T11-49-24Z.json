@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T11:46:15.868Z",
+  "startedAt": "2026-10-29T11:49:24Z",
+  "completedAt": "2026-10-29T11:52:30.642Z",
+  "result": "updated",
+  "focus": [
+    "歐洲官方製作參考",
+    "特殊顯示區域下的主要姿勢、構圖與特效分工"
+  ],
+  "addedIds": [
+    "europe-aardman-battersea-animatic-effects"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.aardman.com/latest-news/2025/june/behind-the-craft-wallace-gromit-shot-on-iphone/",
+      "outcome": "核對官方頁、Gavin Strange 作者／導演署名與 2025-06-09 日期；讀動態分鏡、圖形動畫與合成特效章節。將已讀文字與已見圖片觀察分開。"
+    },
+    {
+      "url": "https://www.aardman.com/media/o51hsk2k/storyboards.jpg?rmode=max&width=1100",
+      "outcome": "從官方 Frame grabs from the animatic 連結實際檢視 1100×619 圖：左側雙塔人物構圖、右側六格配置。以 contact-sheet／scene-composition 分類，沒有由畫面計數或時間碼推算動作節奏。"
+    }
+  ],
+  "unreachableSources": [],
+  "priorRunRecovery": {
+    "run": "2026-10-29T10-41-51Z.json",
+    "outcome": "本輪先收尾上一輪已完成的資料工作：進程建立已恢復，確認 32 筆來源的搜尋、圖片去重與網頁分類文字後，使用實際 11:50 完成時間存下先前缺少的執行紀錄；沒有虛構中間研究時段。"
+  },
+  "validation": {
+    "catalog": "passed — 33 sources",
+    "indexBuild": "passed — 33 sources",
+    "defaultSearchAndEvidence": "passed — image-reviewed; samples/segments empty; timingBasis none",
+    "imageDedup": "passed — one image host/path, ignoring size query",
+    "generatedTitle": "passed",
+    "classification": "passed — Anticipation Meter graphic name does not add anticipation tag",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes at 11:50; subsequent writes confined to catalogue, generated index and run log",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "製作文字提及的雪、冰及圖形動畫不是本輪親看特效運動；未播放成片，未建立連續觀看或節奏分析。",
+    "動態分鏡圖片未個別署名繪者，不將文章導演當作每格作者；只保留官方縮放圖片連結，其他尺寸依路徑合併。",
+    "只更新 knowledge/animation/；未下載、打包或重傳圖片，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "優先補看既有官方影片中尚缺的接觸或 FX 畫面；若只能抽查，維持 visual-samples，不以播放器經過時間代表連續看過。"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T23:00:26.407Z",
+  "startedAt": "2026-10-29T23:00:33Z",
+  "completedAt": "2026-10-29T23:03:16.233Z",
+  "result": "updated",
+  "focus": [
+    "美國官方布料／頭髮演出教材",
+    "先規劃風向、強度與陣風時機，再細修次要運動"
+  ],
+  "addedIds": [
+    "us-wdas-frozen-wind-planning"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "textReviewedAdded": 1,
+    "referenceImagesViewed": 0,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.disneyanimation.com/process/technical-animation/",
+      "outcome": "搜尋官方 Technical Animation／Character Effects 介紹，轉向有具體控制設計及章節可回查的 Frozen 風場技術摘要。未分析該頁圖片或影片。"
+    },
+    {
+      "url": "https://disneyanimation.com/publications/simulating-wind-effects-on-cloth-and-hair-in-disneys-frozen/",
+      "outcome": "讀取官方出版標題、SIGGRAPH 2014、四位作者與摘要；點開其 PDF 連結核對原始單頁文件。未補造發布月日。"
+    },
+    {
+      "url": "https://media.disneyanimation.com/uploads/production/publication_asset/115/asset/cloth_hair_wind.pdf",
+      "outcome": "實際閱讀第 1 頁 §1–5；記錄相對速度與分離升力／阻力、方向／強度參考控制、陣風與表演時機，以及先核對連貫性再細調場參數。PDF 與出版介紹集中一筆，保留 alias，不重複計數。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://media.disneyanimation.com/uploads/production/publication_asset/115/asset/cloth_hair_wind.pdf",
+      "reason": "PDF 截圖工具請求只回傳來源參照，沒有可見像素；全文文字可讀。本輪維持 text-reviewed，不分析 Figure 1 影像，也未聲稱看過影片。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 39 sources",
+    "indexBuild": "passed — 39 sources",
+    "defaultSearchAndEvidence": "passed — 陣風 retrieves reviewed entry; explicit-text, samples/segments empty",
+    "sourceDedup": "passed — canonical publication URL and linked PDF map to one entry, ignoring www/trailing slash",
+    "classification": "passed — production/workflow/timing/fx; no image URL or visual claim",
+    "generatedEntry": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "SIGGRAPH 2014 文字說明不等於目前 Disney 工具狀態或可直接移植的 Spine 求解器；未移植公式或承諾模擬品質。",
+    "風向與陣風意圖可在 Layout 規劃，主要身體 Pose 仍先 Key；Blocking／Final 對應是本工具實作推論。",
+    "只更新 knowledge/animation/；未下載、保存或重傳原 PDF、圖片或影片，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "歐洲或日本既有官方動畫的全身主 Pose、次要運動或 FX 對照；若未能真正連續觀看，繼續明確區分文字教材、靜態畫面與節奏證據。"
+}

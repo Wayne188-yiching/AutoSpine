@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T01:04:58.277Z",
+  "startedAt": "2026-10-30T01:05:09Z",
+  "completedAt": "2026-10-30T01:08:38.397Z",
+  "result": "updated",
+  "focus": [
+    "日本官方原畫中的表情與髮束輪廓",
+    "主 Pose、圖形區域與臉部辨識的分層觀察"
+  ],
+  "addedIds": [
+    "japan-madhouse-frieren38-hair-face-effects"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "referenceImagesViewed": 2,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://madhouse.co.jp/special/frieren-anime2/",
+      "outcome": "搜尋官方原畫特集，正常背景頁面起初尚未顯示正文，等待原画紹介標題可見後成功讀取。核對 #38 末兩張皆標原画：山脇僚太さん，並從圖片 DOM 取得原始公開網址；#36 同作者圖片未看。"
+    },
+    {
+      "url": "https://madhouse.co.jp/cms-data/images/special/avzw0p8mi8vudpxvzt03eb1a7ot0kb.jpg",
+      "outcome": "實際檢視 1872×1322 原圖：角色屈臂近頭側、眼線收閉，長束髮輪廓、右上展翼鳥形與淺藍寬弧。只記構圖與靜態形狀，未推算風向或動作。"
+    },
+    {
+      "url": "https://madhouse.co.jp/cms-data/images/special/rnkqxb0z3lriewq83v50z8vxhfqmh1.jpg",
+      "outcome": "實際檢視 1872×1322 對照原圖：睜眼頭胸近景、較小嘴形、臉旁髮束與色區。保留於同一條目的 locator，不把不同圖片排列當成動作先後或影片證據。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 41 sources",
+    "indexBuild": "passed — 41 sources",
+    "defaultSearchAndEvidence": "passed — 曲帶 retrieves reviewed entry; samples/segments empty, timingBasis none",
+    "imageDedup": "passed — primary and comparison filenames each occur in only this entry",
+    "classification": "passed — key-pose; no pose-sequence/timing/smear/overlap/contact claims; fx limited to visible graphic shapes",
+    "generatedEntryAndLinks": "passed",
+    "priorVillageEntry": "unchanged — lastVerified retained at 2026-10-29T22:02:59.289Z",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "無全身／腳底接觸、連續觀看、速度或延遲證據；未解讀原作符號及幀號，不把製作色線當成已確認的成片風效。",
+    "本輪未重試先前被自動審核拒絕的 Blender Studio 頁面，改研究正常公開的日本官方資料。",
+    "只更新 knowledge/animation/；未下載、保存或重傳原圖，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替歐洲或美國，優先有價值的全身主要 Pose、接觸或動作教材；避免繼續堆疊相近的表情近景，節奏分析仍須有連續觀看或明確文字證據。"
+}

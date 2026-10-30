@@ -6,10 +6,19 @@
   "startedAt": "2026-10-28T16:37:02Z",
   "completedAt": "2026-10-28T16:40:46.106Z",
   "result": "updated",
-  "focus": ["重訪上輪待研讀的拖影示例", "補足日本擠壓伸展與預備動作教材"],
-  "addedIds": ["japan-autodesk-squash-stretch-basics"],
-  "updatedIds": ["europe-blender-sprite-smear-shapes"],
-  "taxonomyAddedForms": ["smear-frame"],
+  "focus": [
+    "重訪上輪待研讀的拖影示例",
+    "補足日本擠壓伸展與預備動作教材"
+  ],
+  "addedIds": [
+    "japan-autodesk-squash-stretch-basics"
+  ],
+  "updatedIds": [
+    "europe-blender-sprite-smear-shapes"
+  ],
+  "taxonomyAddedForms": [
+    "smear-frame"
+  ],
   "evidence": {
     "textReviewed": 1,
     "imageReviewedUpgrade": 1,

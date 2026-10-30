@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T06:40:06.309Z",
+  "startedAt": "2026-10-29T06:40:18Z",
+  "completedAt": "2026-10-29T06:45:27.180Z",
+  "result": "updated",
+  "focus": [
+    "不同美國官方角色的完整 Pose",
+    "懸空構型、軀幹動勢與道具輪廓可讀性"
+  ],
+  "addedIds": [
+    "us-wb-coyote-roadrunner-airborne-poses"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=Aewj-0wcMIo",
+      "outcome": "實際看清 0:05 Road Runner 與 0:10 Coyote 全身構型，核對腳掌與路面的空間、軀幹前傾及刀叉分開的輪廓；沒有連續觀看或分析步頻。展開說明確認 2020-03-31 與版權署名。"
+    },
+    {
+      "url": "https://www.wbkidsgo.com/",
+      "outcome": "影片說明指向的站點重導至 YouTube 頻道 UC9trsD1jCTXXtN3xIOIU8gg，標題 WB Kids；與本片 WB Kids / @wbkids 發布者交叉核對。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://www.looneytunes.com/",
+      "reason": "搜尋工具開啟逾時，沒有取得該頁內容；使用另一路可存取的 WB Kids 站點重導及影片說明核對發布者，未把失敗頁寫成已讀。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 28 sources",
+    "indexBuild": "passed — 28 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples at 5s/10s, no segments or timing claim",
+    "dedup": "passed — one canonical video ID",
+    "generatedTitle": "passed",
+    "classification": "passed — no contact/timing claims from airborne poses",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "兩張樣本分屬不同角色，第一張另有角色介紹字樣；不視為同一角色的連續步態或原始關鍵幀證據。",
+    "腳掌與地面分開是可見構型，不代表已理解落地、支撐、受力或無滑步；沒有為補足接觸主題強加標籤。",
+    "沒有看完 21:57 合輯，也未推算影片速度、步頻、spacing、停頓或固定延遲。",
+    "只更新 knowledge/animation/；沒有下載媒體或保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "歐洲或日本的完整姿勢圖／官方片段，輪替到接觸或表演；可選既有已研讀來源補看，避免同一合輯持續累加相似姿勢。"
+}

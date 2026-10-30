@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T18:37:30Z",
   "completedAt": "2026-10-28T18:43:06.735Z",
   "result": "updated",
-  "focus": ["補足美國原始教材與角色造型參考", "擠壓伸展的材質表達及主動跳躍意圖"],
-  "addedIds": ["us-pixar-khan-squash-acting"],
+  "focus": [
+    "補足美國原始教材與角色造型參考",
+    "擠壓伸展的材質表達及主動跳躍意圖"
+  ],
+  "addedIds": [
+    "us-pixar-khan-squash-acting"
+  ],
   "updatedIds": [],
   "evidence": {
     "videoEntries": 1,

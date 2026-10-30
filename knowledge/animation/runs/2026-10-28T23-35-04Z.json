@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T23:35:04Z",
   "completedAt": "2026-10-28T23:38:14.268Z",
   "result": "updated",
-  "focus": ["日本官方製作片段", "弓道表演的構圖與原畫／風效分工"],
-  "addedIds": ["japan-kyoani-tsurune-masaki-staging"],
+  "focus": [
+    "日本官方製作片段",
+    "弓道表演的構圖與原畫／風效分工"
+  ],
+  "addedIds": [
+    "japan-kyoani-tsurune-masaki-staging"
+  ],
   "updatedIds": [],
   "taxonomyAdded": {
     "actions": {

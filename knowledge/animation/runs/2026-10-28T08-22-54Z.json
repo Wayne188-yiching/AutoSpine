@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T08:22:54Z",
   "completedAt": "2026-10-28T08:27:11.234Z",
   "result": "updated",
-  "focus": ["歐洲角色表情與 Pose 對照圖片", "有原始官方出處及可核對授權的圖片"],
-  "addedIds": ["europe-blender-sprite-expression-library"],
+  "focus": [
+    "歐洲角色表情與 Pose 對照圖片",
+    "有原始官方出處及可核對授權的圖片"
+  ],
+  "addedIds": [
+    "europe-blender-sprite-expression-library"
+  ],
   "updatedIds": [],
   "evidence": {
     "imageEntries": 1,

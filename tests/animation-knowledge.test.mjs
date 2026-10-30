@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { URL } from "node:url";
 import { request as httpRequest } from "node:http";
-import { youTubeVideoId } from "../tools/animation-library-view.mjs";
+import { youTubeVideoId, referenceCollection } from "../tools/animation-library-view.mjs";
 import {
   canonicalizeSourceUrl,
   validateCatalog,
@@ -52,7 +52,17 @@ test("rejects duplicate videos across independent entries", () => {
 });
 test("metadata and isolated stills cannot claim reviewed motion timing", () => {
   const data = copy(),
-    entry = data.entries.find((item) => item.review.status === "metadata-only");
+    entry = data.entries[0];
+  entry.review = {
+    status: "metadata-only",
+    method: "Source only",
+    locator: "Title",
+    samples: [],
+    segments: [],
+    timingBasis: "none",
+  };
+  entry.observations = [];
+  entry.application = [];
   entry.observations.push("Unwatched motion claim");
   assert.ok(validateCatalog(data).some((error) => error.includes("metadata-only cannot claim")));
   const sampled = data.entries.find((item) => item.review.status === "visual-samples");
@@ -166,7 +176,7 @@ test("image references retain attribution, action and form categories without cl
   assert.ok(entry);
   assert.ok(searchEntries(catalog, "踢擊 連續姿勢圖").some((item) => item.id === entry.id));
   const html = renderIndex(catalog);
-  assert.ok(html.includes('data-kind-filter="image"'));
+  assert.ok(html.includes('data-collection-filter="support"'));
   assert.ok(html.includes('data-form="pose-sequence"'));
   assert.ok(html.includes('data-action="dodge tumble kick"'));
   assert.ok(html.includes("原作者未確認"));
@@ -174,6 +184,39 @@ test("image references retain attribution, action and form categories without cl
   const data = copy();
   data.entries.find((item) => item.id === entry.id).review.timingBasis = "continuous-video";
   assert.ok(validateCatalog(data).some((error) => error.includes("still images cannot claim")));
+});
+
+test("Spine videos require an explicit topic, not an application note mentioning Spine", () => {
+  const entry = clone(catalog.entries[0]);
+  entry.topic = "animation";
+  entry.application = ["Use Spine for the layout adaptation"];
+  assert.equal(referenceCollection(entry), "animation");
+  delete entry.topic;
+  assert.equal(referenceCollection(entry), "animation");
+  entry.topic = "spine";
+  assert.equal(referenceCollection(entry), "spine");
+  entry.source.url = "https://example.com/spine-article";
+  assert.equal(referenceCollection(entry), "support");
+  const data = copy();
+  data.entries[0].topic = "invented-topic";
+  assert.ok(validateCatalog(data).some((error) => error.includes("unknown topic")));
+  const reviewedSpine = searchEntries(catalog, "Spine動態");
+  assert.ok(reviewedSpine.length > 0);
+  assert.ok(reviewedSpine.every((item) => item.topic === "spine"));
+});
+
+test("the gallery starts with only Spine videos visible and keeps other references accessible", () => {
+  const html = renderIndex(catalog);
+  assert.ok(html.includes('data-collection-filter="spine" aria-pressed="true"'));
+  assert.ok(html.includes('data-collection-filter="animation" aria-pressed="false"'));
+  assert.ok(html.includes('data-collection-filter="support" aria-pressed="false"'));
+  assert.ok(html.includes('data-collection-filter="" aria-pressed="false"'));
+  const articles = [...html.matchAll(/<article class="case"[^>]+>/g)].map((match) => match[0]);
+  assert.equal(articles.length, catalog.entries.length);
+  assert.ok(articles[0].includes('data-collection="spine"'));
+  for (const article of articles)
+    assert.equal(article.includes(" hidden"), !article.includes('data-collection="spine"'));
+  assert.ok(!html.includes("<iframe"), "players load only after a click");
 });
 
 test("image collection rejects unknown categories, unsafe URLs and resized duplicates", () => {

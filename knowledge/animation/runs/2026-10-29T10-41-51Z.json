@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T10:41:40.186Z",
+  "startedAt": "2026-10-29T10:41:51Z",
+  "completedAt": "2026-10-29T11:50:07.010Z",
+  "result": "updated",
+  "focus": [
+    "日本官方原畫資料",
+    "村落場景中的人物比例、配置與前後層次"
+  ],
+  "addedIds": [
+    "japan-madhouse-frieren38-village-staging"
+  ],
+  "updatedIds": [],
+  "taxonomyAdded": {
+    "forms": {
+      "scene-composition": "場景構圖／人物配置"
+    }
+  },
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://madhouse.co.jp/special/frieren-anime2/",
+      "outcome": "正常背景瀏覽器讀到原画紹介 #38、圖片署名「背景原図＋原画：瀬口 泉さん」、官方作品連結與版權署名。"
+    },
+    {
+      "url": "https://madhouse.co.jp/cms-data/images/special/3imnts7r17tnwb6ltj262pmuirggvk.jpg",
+      "outcome": "核對公開原圖 URL，實際檢視 1871×1323 原圖的村落層次、右下大人物、左側人群與中央較小輪廓；沒有連續動作證據。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://madhouse.co.jp/special/frieren-anime2/",
+      "reason": "搜尋工具只擷取到網頁框架；正常背景瀏覽器可公開呈現完整特集。彈窗擷取尚在淡入，改開同一官方原圖後才記可辨認觀察。"
+    }
+  ],
+  "executionIssues": [
+    {
+      "phase": "final validation and run log",
+      "reason": "10:45 後完成資料驗證及建置，但最後進程建立回報 OpenDesktopW failed: 624，執行紀錄尚未寫入。11:49 恢復後完成剩餘檢查並補存此實際已執行輪次；不宣稱間隔期間持續研究，也未新增漏掉時段的虛構紀錄。",
+      "resolved": true
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 32 sources",
+    "indexBuild": "passed — 32 sources",
+    "defaultSearchAndEvidence": "passed — image-reviewed, no samples/segments, timingBasis none",
+    "imageDedup": "passed — one original image URL",
+    "generatedTitleAndForm": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed before log write"
+  },
+  "limits": [
+    "本輪補的是場景構圖與人物配置，沒有硬加 anticipation、follow-through、timing 或 contact 標籤。",
+    "圖內人物較小，未辨認細微眼口、接觸力或姓名；未換算紅框、編號和手寫註記。",
+    "保留官方背景原図＋原画工序，不宣稱圖已通過本工具 Layout 檢查。",
+    "只更新 knowledge/animation/；未下載、打包或重傳原圖，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到歐洲或美國的表演／特效參考，避免只因圖片多而持續增加同站相似條目。"
+}

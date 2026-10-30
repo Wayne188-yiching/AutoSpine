@@ -6,9 +6,16 @@
   "startedAt": "2026-10-28T12:26:57Z",
   "completedAt": "2026-10-28T12:32:37.751Z",
   "result": "updated",
-  "focus": ["補足跟隨、重疊與次要動作技法", "提升既有待研讀官方影片的畫面證據"],
-  "addedIds": ["us-animationmentor-overlap-follow-through"],
-  "updatedIds": ["us-disney-frozen-snowman-queue"],
+  "focus": [
+    "補足跟隨、重疊與次要動作技法",
+    "提升既有待研讀官方影片的畫面證據"
+  ],
+  "addedIds": [
+    "us-animationmentor-overlap-follow-through"
+  ],
+  "updatedIds": [
+    "us-disney-frozen-snowman-queue"
+  ],
   "evidence": {
     "textReviewed": 1,
     "upgradedFromMetadataOnly": 1,

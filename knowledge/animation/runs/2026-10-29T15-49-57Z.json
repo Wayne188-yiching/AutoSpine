@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T15:49:49.672Z",
+  "startedAt": "2026-10-29T15:49:57Z",
+  "completedAt": "2026-10-29T15:54:15.834Z",
+  "result": "updated",
+  "focus": [
+    "歐洲既有官方來源補看",
+    "狼形主體和群體的明暗分組、輪廓與遮擋"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "europe-wolfwalkers-composition"
+  ],
+  "evidence": {
+    "newReviewedSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=d_Z_tybgPgg",
+      "outcome": "重訪 Apple TV／@AppleTV 原始官方預告，實際暫停核對 01:06 林間狼群與 01:18 寬幅狼群構圖；只記錄可見輪廓、明暗和遮擋。保留原有 00:15、00:20，沒有連續觀看或推導步態。"
+    },
+    {
+      "url": "https://fost.studio/portfolio/wolfwalkers/",
+      "outcome": "閱讀參與製作方的官方作品頁，核對 2D with TV Paint、導演 Tomm Moore／Ross Stewart、Cartoon Saloon／Folivari／Mélusine Productions 及版權署名；未由公司層級署名猜個別鏡頭作者。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://www.youtube.com/watch?v=d_Z_tybgPgg&t=61s",
+      "outcome": "實際看到藍底與黑色弧形的極近景；不適合本輪群體 Pose 目標，未加樣本。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=d_Z_tybgPgg&t=73s",
+      "outcome": "實際看到葉片圍出兩張臉的近景；本輪選擇能補足狼形群體構圖的 01:06、01:18，未為數量再增近景。"
+    }
+  ],
+  "metadataChanges": [
+    {
+      "field": "source.published",
+      "before": "2020-10-08",
+      "after": "2020-10-09",
+      "basis": "展開原始 YouTube 說明，本輪公開頁顯示 2020年10月9日。依實際可見來源記錄，同時在條目保留與舊紀錄差一天的限制；未核對差異原因或原始 UTC 發布時刻。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 35 sources",
+    "indexBuild": "passed — 35 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples, 4 total samples; 66s/78s added; segments empty, timingBasis none",
+    "dedup": "passed — one canonical video ID; no new source created",
+    "firstSeen": "preserved — 2026-10-28T10:09:18+08:00",
+    "generatedLocator": "passed",
+    "classification": "passed — creature/acting; no forced contact or timing tag",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "沒有補到可量測重量或逐腳接觸的證據；角色偏小或被字幕遮擋，不因原定研究方向強加接觸標籤。",
+    "兩張狼群構圖不是連續步態、主角身份或動作順序證據；不把畫面位置轉成速度、delay 或骨架比例。",
+    "只更新 knowledge/animation/；未下載、保存或重傳來源媒體，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "優先官方角色全身的清楚接觸／重量參考，避開遠距群像；可輪替至美國喜劇或日本動作，依真正可見的範圍記錄。"
+}

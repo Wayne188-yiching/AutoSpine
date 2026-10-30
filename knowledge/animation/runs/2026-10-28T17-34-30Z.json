@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T17:34:30Z",
   "completedAt": "2026-10-28T17:40:18.192Z",
   "result": "updated",
-  "focus": ["日本官方擠壓伸展影片的視覺證據", "區分製作中的待修狀態與完成示範"],
-  "addedIds": ["japan-autodesk-squash-stretch-video-samples"],
+  "focus": [
+    "日本官方擠壓伸展影片的視覺證據",
+    "區分製作中的待修狀態與完成示範"
+  ],
+  "addedIds": [
+    "japan-autodesk-squash-stretch-video-samples"
+  ],
   "updatedIds": [],
   "evidence": {
     "videoEntries": 1,

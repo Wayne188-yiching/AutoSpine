@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T07:25:24Z",
   "completedAt": "2026-10-28T07:30:21.626Z",
   "result": "updated",
-  "focus": ["補足歐洲官方教材", "重量、接觸與慢抬／接住下沉的文字節奏證據"],
-  "addedIds": ["europe-aardman-heavy-lift-diary"],
+  "focus": [
+    "補足歐洲官方教材",
+    "重量、接觸與慢抬／接住下沉的文字節奏證據"
+  ],
+  "addedIds": [
+    "europe-aardman-heavy-lift-diary"
+  ],
   "updatedIds": [],
   "evidence": {
     "textReviewed": 1,

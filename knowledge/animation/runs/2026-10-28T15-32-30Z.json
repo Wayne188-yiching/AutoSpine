@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T15:32:30Z",
   "completedAt": "2026-10-28T15:38:41.255Z",
   "result": "updated",
-  "focus": ["補足拖影與變形技法", "保留文字解說與實際視覺證據的差異"],
-  "addedIds": ["europe-blender-sprite-smear-shapes"],
+  "focus": [
+    "補足拖影與變形技法",
+    "保留文字解說與實際視覺證據的差異"
+  ],
+  "addedIds": [
+    "europe-blender-sprite-smear-shapes"
+  ],
   "updatedIds": [],
   "evidence": {
     "textReviewed": 1,

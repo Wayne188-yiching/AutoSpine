@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T01:37:01.194Z",
+  "startedAt": "2026-10-29T01:37:12Z",
+  "completedAt": "2026-10-29T01:42:12.048Z",
+  "result": "updated",
+  "focus": [
+    "歐洲動作參考的主要姿勢及場景遮擋",
+    "補足實際可見畫面，避免反覆嘗試前輪失敗播放器"
+  ],
+  "addedIds": [
+    "europe-blender-cat-purkour-pose-pass"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "visualSamplesAdded": 2,
+    "textAndSamplesReviewedSources": 1,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://studio.blender.org/blog/cat-purkour-combining-2d-animation-in-a-3d-environment/",
+      "outcome": "成功在正常背景瀏覽器讀取完整公開原頁；核對作者、日期及章節，實際抽查 Sketching key poses. 下方同一編輯錄影約 2.41／19.01 秒兩張暫停畫面。第一張前景遮擋較多，第二張可見臉、軀幹構造線和肢體，未量測受力或節奏。"
+    },
+    {
+      "url": "https://studio.blender.org/projects/",
+      "outcome": "搜尋結果確認 Cat Purkour 列為官方製作專案文章；未把其他未研讀的項目新增到佇列。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://studio.blender.org/blog/cat-purkour-combining-2d-animation-in-a-3d-environment/",
+      "reason": "搜尋工具直接開啟原頁回傳 402；正常背景瀏覽器無需登入、訂閱或付款即呈現完整公開文章，使用該公開頁完成研讀，未繞過平台限制。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 25 sources",
+    "indexBuild": "passed — 25 sources",
+    "dedupAndEvidence": "passed — two samples, segments empty, timingBasis none",
+    "generatedTitle": "passed",
+    "noExpiringSignedUrlStored": "passed",
+    "defaultSearch": "passed",
+    "preexistingNonKnowledgeEdits": "five modified tracked files unchanged by hash during library update",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "同頁有多個播放器；已記錄實際抽查章節、媒體檔名及該播放器秒數，未把時間套用到頂端成片或專案時間軸。",
+    "沒有連續觀看，播放按鈕與等待經過時間未當成已看過動作的證據。錄影含編輯過程，不能稱為完成品質樣片。",
+    "原本想補接觸參考，但本輪畫面不足以驗證足部支撐；沒有強加 contact 標籤。",
+    "專案 ZIP 的 CC-BY 4.0 標記與頁面／影片的權利範圍分開記錄；未下載任何媒體或專案，未保存瀏覽器截圖。",
+    "只更新 knowledge/animation/，未修改引擎、角色素材、外掛快取或其他既有變更；未 Commit、Push、付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "可重訪已能擷取的歐洲示例，選真正能辨識支撐／離地的畫面，或查看不同官方動作參考；連續播放而未親看仍不升級為 clip-reviewed。"
+}

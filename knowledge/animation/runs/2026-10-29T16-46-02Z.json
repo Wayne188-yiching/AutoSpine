@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T16:45:50.649Z",
+  "startedAt": "2026-10-29T16:46:02Z",
+  "completedAt": "2026-10-29T16:52:05.979Z",
+  "result": "updated",
+  "focus": [
+    "美國官方喜劇動作來源",
+    "角色與鏈條／道具的 Pose 及遮擋"
+  ],
+  "addedIds": [
+    "us-dreamworks-panda4-chain-prop-poses"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://prod.dreamworks.com/movies/kung-fu-panda-4",
+      "outcome": "讀取官方電影製作介紹、導演署名及版權。正常背景瀏覽器進入 Videos，選 Choreography 並開啟可見播放器，核對 Universal Pictures 與 Txofj7FHFYA 影片連結。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Txofj7FHFYA",
+      "outcome": "原片顯示 Universal Pictures／@UniversalPictures 發布；展開說明核對 2024-02-22 日期與導演署名。實際暫停檢視 00:15 熊貓腹前雙爪／鐵鏈、00:25 狐狸形角色／長杖／鏈條／石柱。字幕提及特技協調員，只記已讀文字，未聲稱完整看過真人參考或動作轉換。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://www.youtube.com/watch?v=Txofj7FHFYA&t=9s",
+      "outcome": "實際看見真人訪談頭胸近景，未納入角色 Pose 樣本。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Txofj7FHFYA&t=20s",
+      "outcome": "實際看見局部模糊的狐狸形角色與前景石柱，輪廓較難辨認，未補猜接觸或動作過程。"
+    }
+  ],
+  "unreviewedCandidates": [
+    {
+      "url": "https://dma.edc.org/sites/default/files/MDD_ANIMATION_HANDOUTS.pdf",
+      "outcome": "只從搜尋找到教材及分鏡摘要，未開 PDF 或檢視頁面，不新增畫面分析；可作下輪文件研究候選。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://prod.dreamworks.com/movies/kung-fu-panda-4",
+      "reason": "搜尋工具原頁擷取未含動態影片清單；正常背景瀏覽器可呈現清單及播放器，未登入或繞過限制。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 36 sources",
+    "indexBuild": "passed — 36 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples at 15s/25s, segments empty, timingBasis none",
+    "dedup": "passed — one canonical video ID",
+    "generatedTitleAndLocator": "passed",
+    "classification": "passed — no forced contact/timing tag from obscured body/chain overlap",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "沒有取得清楚的完整全身與逐腳接觸證據，仍按可見姿勢／遮擋記錄，不因搜尋方向增加重量或接觸主張。",
+    "Choreography 是約半分鐘的宣傳片標題，不代表已觀看完整教學；未分析鏈條張力、碰撞、速度或真人轉換算法。",
+    "只更新 knowledge/animation/；未下載、保存或重傳媒體，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "優先補看既有步態教材的清楚全身畫面，或研究可逐頁檢視的官方／教育機構分鏡，避免一直以宣傳剪接尋找逐腳接觸。"
+}

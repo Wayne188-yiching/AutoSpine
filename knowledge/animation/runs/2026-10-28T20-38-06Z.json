@@ -6,8 +6,13 @@
   "startedAt": "2026-10-28T20:38:06Z",
   "completedAt": "2026-10-28T20:42:05.999Z",
   "result": "updated",
-  "focus": ["補足走路的接觸、passing 與重量轉移", "原地循環、根位移及滑步檢查的文字依據"],
-  "addedIds": ["us-animationmentor-human-walk-support"],
+  "focus": [
+    "補足走路的接觸、passing 與重量轉移",
+    "原地循環、根位移及滑步檢查的文字依據"
+  ],
+  "addedIds": [
+    "us-animationmentor-human-walk-support"
+  ],
   "updatedIds": [],
   "evidence": {
     "textReviewed": 1,

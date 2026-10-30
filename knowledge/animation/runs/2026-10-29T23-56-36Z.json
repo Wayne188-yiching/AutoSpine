@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T23:56:27.305Z",
+  "startedAt": "2026-10-29T23:56:36Z",
+  "completedAt": "2026-10-30T00:00:00.488Z",
+  "result": "updated",
+  "focus": [
+    "歐洲官方主要 Pose 與俯視構圖",
+    "優先尋找公開可檢視資料，保留視覺證據界線"
+  ],
+  "addedIds": [
+    "europe-aardman-rocket-look-up-poses"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "imageReviewedAdded": 1,
+    "referenceImagesViewed": 2,
+    "visualSamplesAdded": 0,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.wallaceandgromit.com/films/a-grand-day-out",
+      "outcome": "搜尋並讀取官方劇情、Fact File 與頁尾身份，核對 GDO6 公開圖片、610×800 尺寸、Aardman studio 入口與 Bristol。沒有把劇情當作親看動作。"
+    },
+    {
+      "url": "https://www.wallaceandgromit.com/media/uippfqsp/gdo6.jpg",
+      "outcome": "背景瀏覽器實際看見俯視地下室、右側大型橘色火箭、左下 Wallace 抬頭和手靠腰、Gromit 的前肢配置。記錄為單張主要 Pose／場景構圖，不推算接觸力或完整動作。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://www.wallaceandgromit.com/media/gqdcmn0u/gdo3.jpg",
+      "outcome": "實際檢視 610×800 的 Wallace 讀雜誌近景，臉部及持頁手形可見；與既有讀物／道具主題相近，本輪選較能補全身與鏡頭層次的 GDO6，不另增近景。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://studio.blender.org/blog/sprite-fright-the-illusion-of-simplicity/",
+      "reason": "網頁工具直接請求回傳 HTTP 402，僅有搜尋摘要，沒有讀到原文或圖像。未將該摘要新增為已研讀條目。"
+    }
+  ],
+  "policyBlocks": [
+    {
+      "url": "https://studio.blender.org/blog/sprite-fright-the-illusion-of-simplicity/",
+      "action": "open in background browser",
+      "rejectedBy": "automatic approval review",
+      "reason": "自動審核認定該特定頁面已回應 402，改用瀏覽器存取可能繞過付費或存取限制。這是自動審核拒絕，不是使用者手動拒絕，也未證實實際付費內容範圍。",
+      "resolution": "停止該來源，不透過其他瀏覽器、下載、鏡像或間接方式重試；改用不同網站的 Aardman 官方公開電影頁，完成安全替代研究，沒有需要使用者處理的剩餘工作。"
+    }
+  ],
+  "unreachableSources": [
+    {
+      "url": "https://studio.blender.org/blog/sprite-fright-the-illusion-of-simplicity/",
+      "reason": "402 且瀏覽器動作被自動審核拒絕；未讀原文／看圖，未繞過。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 40 sources",
+    "indexBuild": "passed — 40 sources",
+    "defaultSearchAndEvidence": "passed — 抬頭 retrieves new reviewed entry; samples/segments empty, timingBasis none",
+    "imageDedup": "passed — one canonical hostname/path ignoring resize query",
+    "classification": "passed — key-pose/scene-composition, acting; no walk/run/timing/contact quality claim",
+    "generatedImageAndEntry": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "GDO6 是靜態參考，未確認是否正片擷取、擺拍、原作關鍵幀或個別圖像作者；作品媒材沿用已查證的停格製作資訊。",
+    "俯視角度、陰影與自身遮擋不足以推算步態、承重或 Gromit 後肢配置。",
+    "只更新 knowledge/animation/；未下載、保存或重傳原圖，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替日本官方製作圖或既有主要 Pose 的補看；本輪被拒絕的 Blender Studio 頁面維持未研讀，不以其他入口重試受阻內容。"
+}

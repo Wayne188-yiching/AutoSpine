@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T02:38:02.197Z",
+  "startedAt": "2026-10-29T02:38:13Z",
+  "coalescedTriggers": [
+    "2026-10-29T03:36:03.194Z"
+  ],
+  "resumedAt": "2026-10-29T03:36:34Z",
+  "completedAt": "2026-10-29T03:37:35.505Z",
+  "result": "updated",
+  "timingNote": "參考條目及首次 check/build 已於 02:42:54Z 後完成；尚未寫入 run 紀錄時收到 03:36 新觸發，接續讀取規則、核對資料並完成驗證及此紀錄。兩次觸發合併記錄；02:42:54Z 之後到接續前沒有新增研究證據，不宣稱該時段持續研究，也不回填獨立的虛構執行。",
+  "focus": [
+    "歐洲官方動作與接觸參考",
+    "改收可清楚看見的握杯／桌面接觸及表演姿勢"
+  ],
+  "addedIds": [
+    "europe-blender-snow-cup-contact-acting"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=X7tNZNV2GBQ",
+      "outcome": "實際看清 0:06、0:11 的兩張片頭酒吧畫面，核對手、杯、桌面與對話取景，分開記錄眼皮和嘴形的靜態差異。未連續觀看或使用字幕分析節奏。"
+    },
+    {
+      "url": "https://studio.blender.org/blog/rendering-snow-parkour-animation-with-eevee/",
+      "outcome": "正常背景瀏覽器讀到公開製作介紹與頂端 YouTube 內嵌 ID，核對官方來源。亦抽查 Introduction 下方早期灰模與 shot 0040 的局部畫面，但不夠判讀腳部支撐，未另增來源條目或腳部觀察。"
+    },
+    {
+      "url": "https://studio.blender.org/characters/snow/showcase/6/",
+      "outcome": "原頁可讀並實際看見環境比較封面；角色過小，不用它判斷腳部支撐。發布者、團隊與 CC-BY 標記只作來源背景查證，未下載資產。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://studio.blender.org/characters/snow/showcase/6/",
+      "reason": "搜尋工具直接開啟回傳 402；正常背景瀏覽器可公開讀取，不需登入或訂閱。"
+    },
+    {
+      "url": "https://studio.blender.org/blog/introducing-snow/",
+      "reason": "搜尋工具直接開啟回傳 402；未繞過限制，改由已可公開讀取的另一官方製作頁核對影片 ID。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 26 sources",
+    "indexBuild": "passed — 26 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples at 6s/11s, no segments or timing claim",
+    "dedup": "passed — one canonical video ID",
+    "generatedTitleAndFirstSeen": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "0:16 定位時畫面為標題卡且 UI 時間一度未同步，未把它列為 Pose 樣本；實際保留的是已核對的 0:06 和 0:11。",
+    "未量測握力、杯重、桌面承重、重心、無滑動或腳部接觸；不以標題、縮圖或拍到上半身代替完整支撐證據。",
+    "Snow 模型的授權與整支影片的聲音、表演及其他內容分開記錄；沒有下載或重傳來源媒體，也沒有保存瀏覽器截圖。",
+    "接續階段沒有重新宣稱看過影片或改動 lastVerified，既有觀察保留實際查證時間。",
+    "只更新 knowledge/animation/；未修改引擎、角色素材、安裝快取或其他既有變更，未 Commit、Push、付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "轉查不同日本或美國官方動作參考，優先可清楚辨識足部與地面的畫面；避免持續堆疊同一角色或只看到上半身卻分析全身受力。"
+}

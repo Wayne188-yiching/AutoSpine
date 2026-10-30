@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-29T13:43:17.673Z",
+  "startedAt": "2026-10-29T13:43:25Z",
+  "completedAt": "2026-10-29T13:47:58.061Z",
+  "result": "updated",
+  "focus": [
+    "美國官方動畫教材的次要運動",
+    "先處理驅動端，再檢查鏈條 Pose 與手動修形"
+  ],
+  "addedIds": [
+    "us-animationmentor-pendulum-base-chain"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newReviewedSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://www.animationmentor.com/blog/tutorial-overlap-pendulum-motion-animation/",
+      "outcome": "正常背景瀏覽器讀取官方教材的作者、2026-04-28 日期、驅動端路徑與鏈條修形說明，並確認內嵌 KPqPcBN90fk。只挑選可明確支持的工作流程，不把簡化模型或示例 offset 當作通用物理規格。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=KPqPcBN90fk",
+      "outcome": "影片發布者為 Animation Mentor／@animationmentor；展開說明核對 Anthony Wong 介紹與 2026-04-26 日期，和文章日期分開。實際暫停檢視 04:30 的傾斜鏈條／曲線及 09:00 的八字路徑／近直立鏈條，未連續看過動作。"
+    }
+  ],
+  "comparedNotAdded": [
+    {
+      "url": "https://disneyanimation.com/process/technical-animation/",
+      "outcome": "搜尋摘要找到 Technical Animation & Character Effects；未開原頁或檢視圖片／影片，沒有增加條目或畫面觀察。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.animationmentor.com/blog/tutorial-overlap-pendulum-motion-animation/",
+      "reason": "搜尋工具直接開啟逾時；正常公開背景瀏覽器可讀完整文章與內嵌影片，未登入或繞過限制。"
+    }
+  ],
+  "unreachableSources": [],
+  "validation": {
+    "catalog": "passed — 34 sources",
+    "indexBuild": "passed — 34 sources",
+    "defaultSearchAndEvidence": "passed — visual-samples at 270s/540s; segments empty; timingBasis none",
+    "dedup": "passed — one canonical video ID and one associated article URL consolidated in the same lesson entry",
+    "generatedTitleAndLocator": "passed",
+    "preexistingNonKnowledgeEdits": "five previously modified tracked files retained with unchanged hashes",
+    "whitespace": "passed"
+  },
+  "limits": [
+    "只看兩張暫停畫面，不聲稱已理解完整停止／收勢過程、速度、阻尼或自然度。",
+    "角色主動作的 Layout 與局部擺錘練習分開；沒有把 Maya 圖表數字當成影片時間或可直接套用的 Spine 幀數。",
+    "只更新 knowledge/animation/；未下載、擷取保存或重傳媒體，未保存瀏覽器截圖，未修改引擎、角色素材或安裝快取，未 Commit、Push、付費模型調用或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到日本或歐洲的重量／接觸、完整主要姿勢參考；也可補看既有來源，不為增加來源數堆疊同類教材。"
+}
