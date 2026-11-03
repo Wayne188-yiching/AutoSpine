@@ -115,6 +115,22 @@ node packages/cli/dist/index.js reduce-keys "D:\素材\角色\角色.spine" "D:\
 
 精簡後若在 Spine 改過，又想再精簡一次，加 `--baseline=<上次 source 資料夾裡的 JSON>`：沒改過的動畫會從原檔重算（結果相同，不會累積誤差），改過的動畫以目前內容為準。用方案建置時，可在方案 `motion.keyReduction` 指定模式，之後每次重建都會自動精簡。
 
+## 交給遊戲程式（Cocos、Unity）
+
+要直接進遊戲的檔案，交付時加上目標環境（`--target=cocos`、`unity` 或 `unity-4.1`）和類型（例如 `--kind=character`、`symbol-high`、`bigwin`）：
+
+- 用該環境的 Spine 版本交付（Cocos 3.8.99、Unity 4.0.56、Unity 4.1 為 4.1.24）。
+- 在 root 下自動加一根 `Actor` 骨，所有骨頭都掛在它下面，畫面不變。
+- 依交付規範檢查名稱、root、混合模式與 `_Add`、遮罩、權重、語系文字、動畫第 0 幀、循環頭尾、骨頭數與三角面上限，結果附在交付報告裡；有問題只列出來，不會擋住交付。
+
+美術自己做好的檔案也能單獨檢查（`.spine` 需要本機有 Spine；`--export` 一併檢查匯出的 `.skel`、`.atlas`）：
+
+```bash
+node packages/cli/dist/index.js check-delivery "D:\素材\Wild\Wild.spine" --target=cocos --kind=wild --export="D:\素材\Wild\Export"
+```
+
+規則、上限表與工具查不到、要人工確認的項目（遮罩內面數、動畫高峰面數、實際 draw call、貼圖容量、圖片本身）見 [交付規範](../skills/autospine/references/delivery-conventions.md)。
+
 ## 檔案保留與限制
 
 - 原檔使用副本處理，不會直接修改。

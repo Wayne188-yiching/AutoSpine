@@ -9327,19 +9327,19 @@ var require_descriptor = __commonJS({
       for (let j = 0; j < keyList.length; j++) {
         const key = keyList[j];
         const { time: { denominator, numerator }, selected, animKey } = key;
-        const time = { numerator, denominator };
+        const time2 = { numerator, denominator };
         const interpolation = exports.animInterpStyleEnum.decode(key.animInterpStyle);
         switch (animKey.Type) {
           case "keyType.Opct":
-            keys.push({ interpolation, time, selected, type: "opacity", value: parsePercent(animKey.Opct) });
+            keys.push({ interpolation, time: time2, selected, type: "opacity", value: parsePercent(animKey.Opct) });
             break;
           case "keyType.Pstn":
-            keys.push({ interpolation, time, selected, type: "position", x: animKey.Hrzn, y: animKey.Vrtc });
+            keys.push({ interpolation, time: time2, selected, type: "position", x: animKey.Hrzn, y: animKey.Vrtc });
             break;
           case "keyType.Trnf":
             keys.push({
               interpolation,
-              time,
+              time: time2,
               selected,
               type: "transform",
               scale: horzVrtcToXY(animKey["Scl "]),
@@ -9349,7 +9349,7 @@ var require_descriptor = __commonJS({
             });
             break;
           case "keyType.sheetStyle": {
-            const key2 = { interpolation, time, selected, type: "style" };
+            const key2 = { interpolation, time: time2, selected, type: "style" };
             if (animKey.sheetStyle.Lefx)
               key2.style = parseEffects(animKey.sheetStyle.Lefx, logMissingFeatures);
             keys.push(key2);
@@ -9358,7 +9358,7 @@ var require_descriptor = __commonJS({
           case "keyType.globalLighting": {
             keys.push({
               interpolation,
-              time,
+              time: time2,
               selected,
               type: "globalLighting",
               globalAngle: animKey.gblA,
@@ -9376,7 +9376,7 @@ var require_descriptor = __commonJS({
       const keyList = [];
       for (let j = 0; j < keys.length; j++) {
         const key = keys[j];
-        const { time, selected = false, interpolation } = key;
+        const { time: time2, selected = false, interpolation } = key;
         const animInterpStyle = exports.animInterpStyleEnum.encode(interpolation);
         let animKey;
         switch (key.type) {
@@ -9401,7 +9401,7 @@ var require_descriptor = __commonJS({
           default:
             throw new Error(`Unsupported keyType value`);
         }
-        keyList.push({ Vrsn: 1, animInterpStyle, time, animKey, selected });
+        keyList.push({ Vrsn: 1, animInterpStyle, time: time2, animKey, selected });
       }
       return keyList;
     }
@@ -16931,13 +16931,13 @@ var require_additionalInfo = __commonJS({
               relPath: (_h = (_g = file.linkedFile) === null || _g === void 0 ? void 0 : _g.relativePath) !== null && _h !== void 0 ? _h : ""
             };
             (0, descriptor_1.writeVersionAndDescriptor)(writer, "", "ExternalFileLink", desc);
-            const time = file.time ? new Date(file.time) : /* @__PURE__ */ new Date();
-            (0, psdWriter_1.writeInt32)(writer, time.getUTCFullYear());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCMonth());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCDate());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCHours());
-            (0, psdWriter_1.writeUint8)(writer, time.getUTCMinutes());
-            (0, psdWriter_1.writeFloat64)(writer, time.getUTCSeconds() + time.getUTCMilliseconds() / 1e3);
+            const time2 = file.time ? new Date(file.time) : /* @__PURE__ */ new Date();
+            (0, psdWriter_1.writeInt32)(writer, time2.getUTCFullYear());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCMonth());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCDate());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCHours());
+            (0, psdWriter_1.writeUint8)(writer, time2.getUTCMinutes());
+            (0, psdWriter_1.writeFloat64)(writer, time2.getUTCSeconds() + time2.getUTCMilliseconds() / 1e3);
           }
           if (file.data) {
             (0, psdWriter_1.writeBytes)(writer, file.data);
@@ -27502,8 +27502,8 @@ function earcut(data, holeIndices, dim2 = 2) {
   const outerLen = hasHoles ? holeIndices[0] * dim2 : data.length;
   if (steiners.size) steiners.clear();
   let outerNode = linkedList(data, 0, outerLen, dim2, true);
-  const triangles = [];
-  if (!outerNode || outerNode.next === outerNode.prev) return triangles;
+  const triangles2 = [];
+  if (!outerNode || outerNode.next === outerNode.prev) return triangles2;
   let minX = 0, minY = 0, invSize = 0;
   if (hasHoles) outerNode = eliminateHoles(data, holeIndices, outerNode, dim2);
   if (data.length > 80 * dim2) {
@@ -27522,8 +27522,8 @@ function earcut(data, holeIndices, dim2 = 2) {
     invSize = Math.max(maxX - minX, maxY - minY);
     invSize = invSize !== 0 ? 32767 / invSize : 0;
   }
-  earcutLinked(outerNode, triangles, minX, minY, invSize);
-  return triangles;
+  earcutLinked(outerNode, triangles2, minX, minY, invSize);
+  return triangles2;
 }
 function linkedList(data, start, end, dim2, clockwise) {
   let last = null;
@@ -27556,14 +27556,14 @@ function filterPoints(start, end = start) {
   } while (again || p !== end);
   return end;
 }
-function earcutLinked(ear, triangles, minX, minY, invSize) {
+function earcutLinked(ear, triangles2, minX, minY, invSize) {
   if (invSize) indexCurve(ear, minX, minY, invSize);
   let stop = ear, cured = false;
   while (ear.prev !== ear.next) {
     const prev = ear.prev;
     const next = ear.next;
     if (area(prev, ear, next) < 0 && (invSize ? isEarHashed(ear, minX, minY, invSize) : isEar(ear))) {
-      triangles.push(prev.i, ear.i, next.i);
+      triangles2.push(prev.i, ear.i, next.i);
       removeNode(ear);
       ear = next;
       stop = next;
@@ -27578,12 +27578,12 @@ function earcutLinked(ear, triangles, minX, minY, invSize) {
         continue;
       }
       if (!cured) {
-        ear = cureLocalIntersections(ear, triangles);
+        ear = cureLocalIntersections(ear, triangles2);
         stop = ear;
         cured = true;
         continue;
       }
-      splitEarcut(ear, triangles, minX, minY, invSize);
+      splitEarcut(ear, triangles2, minX, minY, invSize);
       break;
     }
   }
@@ -27611,13 +27611,13 @@ function isEarHashed(ear, minX, minY, invSize) {
   }
   return true;
 }
-function cureLocalIntersections(start, triangles) {
+function cureLocalIntersections(start, triangles2) {
   let p = start;
   let cured = false;
   do {
     const a = p.prev, b = p.next.next;
     if (intersects(a, p, p.next, b, false) && locallyInside(a, b) && locallyInside(b, a)) {
-      triangles.push(a.i, p.i, b.i);
+      triangles2.push(a.i, p.i, b.i);
       removeNode(p);
       removeNode(p.next);
       p = start = b;
@@ -27627,7 +27627,7 @@ function cureLocalIntersections(start, triangles) {
   } while (p !== start);
   return cured ? filterPoints(p) : p;
 }
-function splitEarcut(start, triangles, minX, minY, invSize) {
+function splitEarcut(start, triangles2, minX, minY, invSize) {
   let a = start;
   do {
     let b = a.next.next;
@@ -27636,8 +27636,8 @@ function splitEarcut(start, triangles, minX, minY, invSize) {
         let c = splitPolygon(a, b);
         a = filterPoints(a, a.next);
         c = filterPoints(c, c.next);
-        earcutLinked(a, triangles, minX, minY, invSize);
-        earcutLinked(c, triangles, minX, minY, invSize);
+        earcutLinked(a, triangles2, minX, minY, invSize);
+        earcutLinked(c, triangles2, minX, minY, invSize);
         return;
       }
       b = b.next;
@@ -28874,7 +28874,7 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
       );
     })
   );
-  const triangles = [];
+  const triangles2 = [];
   for (let r = 0; r < rows.length - 1; r++)
     for (let c = 0; c < 2; c++) {
       const a = cells[r][c], b = cells[r][c + 1], d = cells[r + 1][c], e = cells[r + 1][c + 1];
@@ -28890,7 +28890,7 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
         const area3 = cross4(points[x], points[y], points[z]);
         if (Math.abs(area3) < 1e-9)
           failMesh("STRIP_DEGENERATE", "Strip contains a degenerate triangle");
-        triangles.push(...area3 > 0 ? [x, y, z] : [x, z, y]);
+        triangles2.push(...area3 > 0 ? [x, y, z] : [x, z, y]);
       }
     }
   const manualEdges = [];
@@ -28910,7 +28910,7 @@ function generateStripMesh(part, alpha, width, height, referenceVertices, refere
     ]),
     uvs: points.map(([x, y]) => [x / width, y / height]),
     hull,
-    triangles,
+    triangles: triangles2,
     manualEdges
   };
   const validation = validateMeshSpec(mesh2);
@@ -29104,10 +29104,10 @@ function minimumAngle(points, [a, b, c]) {
     )
   );
 }
-function improveTriangulation(points, triangles) {
+function improveTriangulation(points, triangles2) {
   for (let pass = 0; pass < 50; pass++) {
     const edges = /* @__PURE__ */ new Map();
-    triangles.forEach(([a, b, c], triangle) => {
+    triangles2.forEach(([a, b, c], triangle) => {
       for (const [from, to, opposite] of [
         [a, b, c],
         [b, c, a],
@@ -29131,11 +29131,11 @@ function improveTriangulation(points, triangles) {
       const orient = (x, y, z) => cross2(points[x], points[y], points[z]) > 0 ? [x, y, z] : [x, z, y];
       const nextA = orient(c, d, a);
       const nextB = orient(d, c, b);
-      const before = Math.min(...uses.map((use) => minimumAngle(points, triangles[use.triangle])));
+      const before = Math.min(...uses.map((use) => minimumAngle(points, triangles2[use.triangle])));
       const after = Math.min(minimumAngle(points, nextA), minimumAngle(points, nextB));
       if (after <= before + 1e-7) continue;
-      triangles[uses[0].triangle] = nextA;
-      triangles[uses[1].triangle] = nextB;
+      triangles2[uses[0].triangle] = nextA;
+      triangles2[uses[1].triangle] = nextB;
       touched.add(uses[0].triangle);
       touched.add(uses[1].triangle);
       flips++;
@@ -29143,20 +29143,20 @@ function improveTriangulation(points, triangles) {
     if (flips === 0) break;
   }
 }
-function splitAtCentroid(points, triangles, target) {
-  const [a, b, c] = triangles[target];
+function splitAtCentroid(points, triangles2, target) {
+  const [a, b, c] = triangles2[target];
   const index = points.length;
   points.push([
     (points[a][0] + points[b][0] + points[c][0]) / 3,
     (points[a][1] + points[b][1] + points[c][1]) / 3
   ]);
-  triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+  triangles2.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
 }
-function subdivideOversized(points, triangles, maxArea) {
+function subdivideOversized(points, triangles2, maxArea) {
   while (true) {
     let target = -1, largestArea = maxArea;
-    for (let index = 0; index < triangles.length; index++) {
-      const [a, b, c] = triangles[index];
+    for (let index = 0; index < triangles2.length; index++) {
+      const [a, b, c] = triangles2[index];
       const area3 = cross2(points[a], points[b], points[c]) / 2;
       if (area3 > largestArea) {
         largestArea = area3;
@@ -29165,7 +29165,7 @@ function subdivideOversized(points, triangles, maxArea) {
     }
     if (target < 0) break;
     if (points.length >= 2560) failMesh("MESH_COMPLEXITY", "Mesh exceeds vertex budget");
-    splitAtCentroid(points, triangles, target);
+    splitAtCentroid(points, triangles2, target);
   }
 }
 function generateMesh(part, alpha, options = {}) {
@@ -29243,15 +29243,15 @@ function generateMesh(part, alpha, options = {}) {
   const raw = earcut(flat);
   if (raw.length < 3 || raw.length % 3 !== 0 || raw.length !== (outline.length - 2) * 3)
     failMesh("TRIANGULATION", "Outer polygon could not be fully triangulated");
-  const triangles = [];
+  const triangles2 = [];
   for (let index = 0; index < raw.length; index += 3) {
     const triangle = [raw[index], raw[index + 1], raw[index + 2]];
     if (cross2(points[triangle[0]], points[triangle[1]], points[triangle[2]]) < 0)
       [triangle[1], triangle[2]] = [triangle[2], triangle[1]];
-    triangles.push(triangle);
+    triangles2.push(triangle);
   }
   if (Math.abs(
-    triangles.reduce((sum, [a, b, c]) => sum + cross2(points[a], points[b], points[c]), 0) - signedArea2(outline)
+    triangles2.reduce((sum, [a, b, c]) => sum + cross2(points[a], points[b], points[c]), 0) - signedArea2(outline)
   ) > 1e-8)
     failMesh("TRIANGULATION", "Triangulation area differs from contour area");
   const foreground = alpha.reduce((count, value) => count + Number(value > 0), 0);
@@ -29316,8 +29316,8 @@ function generateMesh(part, alpha, options = {}) {
     if (!strictlyInside(point3, outline) || alpha[Math.floor(point3[1]) * width + Math.floor(point3[0])] === 0)
       continue;
     let target = -1;
-    for (let index2 = 0; index2 < triangles.length; index2++) {
-      const [a2, b2, c2] = triangles[index2];
+    for (let index2 = 0; index2 < triangles2.length; index2++) {
+      const [a2, b2, c2] = triangles2[index2];
       const ab = cross2(points[a2], points[b2], point3);
       const bc = cross2(points[b2], points[c2], point3);
       const ca = cross2(points[c2], points[a2], point3);
@@ -29329,28 +29329,28 @@ function generateMesh(part, alpha, options = {}) {
     if (target < 0) continue;
     const index = points.length;
     points.push(point3);
-    const [a, b, c] = triangles[target];
-    triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+    const [a, b, c] = triangles2[target];
+    triangles2.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
   }
   if (intent !== "rigid" && !reference && points.length === outline.length && foreground > 4) {
-    const target = triangles.reduce(
+    const target = triangles2.reduce(
       (best, triangle, index) => cross2(points[triangle[0]], points[triangle[1]], points[triangle[2]]) > cross2(
-        points[triangles[best][0]],
-        points[triangles[best][1]],
-        points[triangles[best][2]]
+        points[triangles2[best][0]],
+        points[triangles2[best][1]],
+        points[triangles2[best][2]]
       ) ? index : best,
       0
     );
-    splitAtCentroid(points, triangles, target);
+    splitAtCentroid(points, triangles2, target);
   }
   const maxArea = lowPoly ? foreground / 6 : 512;
-  if (intent !== "rigid" && !reference) subdivideOversized(points, triangles, maxArea);
-  improveTriangulation(points, triangles);
+  if (intent !== "rigid" && !reference) subdivideOversized(points, triangles2, maxArea);
+  improveTriangulation(points, triangles2);
   if (referenceRectangle && points.length === 4) {
-    triangles.splice(0, triangles.length, [0, 1, 3], [1, 2, 3]);
+    triangles2.splice(0, triangles2.length, [0, 1, 3], [1, 2, 3]);
   }
-  if (intent !== "rigid" && !reference) subdivideOversized(points, triangles, maxArea);
-  const ordered = triangles.map(canonicalTriangle).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+  if (intent !== "rigid" && !reference) subdivideOversized(points, triangles2, maxArea);
+  const ordered = triangles2.map(canonicalTriangle).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
   const mesh2 = {
     schemaVersion: "0.1",
     kind: "mesh",
@@ -29393,19 +29393,19 @@ function generateMesh(part, alpha, options = {}) {
       const reduced = raster.filter((_, j) => j !== index);
       const raw2 = earcut(reduced.flat());
       if (raw2.length !== (reduced.length - 2) * 3) continue;
-      const triangles2 = [];
+      const triangles3 = [];
       for (let j = 0; j < raw2.length; j += 3) {
         const a = raw2[j], b = raw2[j + 1], c = raw2[j + 2];
-        triangles2.push(cross2(reduced[a], reduced[b], reduced[c]) > 0 ? [a, b, c] : [a, c, b]);
+        triangles3.push(cross2(reduced[a], reduced[b], reduced[c]) > 0 ? [a, b, c] : [a, c, b]);
       }
-      improveTriangulation(reduced, triangles2);
+      improveTriangulation(reduced, triangles3);
       const retained = current.hull.filter((_, j) => j !== index);
       const candidate = {
         ...current,
         vertices: retained.map((j) => current.vertices[j]),
         uvs: retained.map((j) => current.uvs[j]),
         hull: retained.map((_, j) => j),
-        triangles: triangles2.map(canonicalTriangle).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]).flat()
+        triangles: triangles3.map(canonicalTriangle).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]).flat()
       };
       if (validateMeshSpec(candidate).status !== "passed") continue;
       try {
@@ -29434,12 +29434,12 @@ function generateMesh(part, alpha, options = {}) {
         const reduced = retained.map((j) => j === index ? midpoint : raster[j]);
         const raw2 = earcut(reduced.flat());
         if (raw2.length !== (reduced.length - 2) * 3) continue;
-        const triangles2 = [];
+        const triangles3 = [];
         for (let j = 0; j < raw2.length; j += 3) {
           const a = raw2[j], b = raw2[j + 1], c = raw2[j + 2];
-          triangles2.push(cross2(reduced[a], reduced[b], reduced[c]) > 0 ? [a, b, c] : [a, c, b]);
+          triangles3.push(cross2(reduced[a], reduced[b], reduced[c]) > 0 ? [a, b, c] : [a, c, b]);
         }
-        improveTriangulation(reduced, triangles2);
+        improveTriangulation(reduced, triangles3);
         const candidate = {
           ...current,
           vertices: retained.map(
@@ -29452,7 +29452,7 @@ function generateMesh(part, alpha, options = {}) {
             (j) => j === index ? [midpoint[0] / width, midpoint[1] / height] : current.uvs[current.hull[j]]
           ),
           hull: retained.map((_, j) => j),
-          triangles: triangles2.map(canonicalTriangle).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]).flat()
+          triangles: triangles3.map(canonicalTriangle).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]).flat()
         };
         if (validateMeshSpec(candidate).status !== "passed") continue;
         try {
@@ -29475,7 +29475,7 @@ function generateSurfaceMesh(part, columns = 6, rows = 6) {
   const { x, y, width, height } = part.bounds;
   if (![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0 || !Number.isInteger(columns) || !Number.isInteger(rows) || columns < 2 || rows < 2 || columns > 32 || rows > 32)
     failMesh("SURFACE_INPUT", "Finite positive bounds and 2..32 surface subdivisions required");
-  const vertices = [], uvs = [], triangles = [];
+  const vertices = [], uvs = [], triangles2 = [];
   for (let j = 0; j <= rows; j++)
     for (let i = 0; i <= columns; i++) {
       uvs.push([i / columns, j / rows]);
@@ -29485,7 +29485,7 @@ function generateSurfaceMesh(part, columns = 6, rows = 6) {
   for (let j = 0; j < rows; j++)
     for (let i = 0; i < columns; i++) {
       const a = j * stride + i, b = a + 1, c = a + stride, d = c + 1;
-      triangles.push(a, b, c, b, d, c);
+      triangles2.push(a, b, c, b, d, c);
     }
   const hull = [
     ...Array.from({ length: columns + 1 }, (_, i) => i),
@@ -29506,7 +29506,7 @@ function generateSurfaceMesh(part, columns = 6, rows = 6) {
     sourcePartId: part.id,
     vertices,
     uvs,
-    triangles,
+    triangles: triangles2,
     hull,
     manualEdges
   };
@@ -29817,15 +29817,15 @@ function jointRows(bones, outer) {
 var PAD = 1;
 var LONG_BONE = 2;
 var SHORT_EDGE = 0.5;
-function splitEdge(triangles, u, v, w) {
-  for (let t = triangles.length - 1; t >= 0; t--) {
-    const tri = triangles[t], k = [0, 1, 2].find((i) => {
+function splitEdge(triangles2, u, v, w) {
+  for (let t = triangles2.length - 1; t >= 0; t--) {
+    const tri = triangles2[t], k = [0, 1, 2].find((i) => {
       const p2 = tri[i], q2 = tri[(i + 1) % 3];
       return p2 === u && q2 === v || p2 === v && q2 === u;
     });
     if (k === void 0) continue;
     const p = tri[k], q = tri[(k + 1) % 3], r = tri[(k + 2) % 3];
-    triangles.splice(t, 1, [p, w, r], [w, q, r]);
+    triangles2.splice(t, 1, [p, w, r], [w, q, r]);
   }
 }
 function inside(p, polygon) {
@@ -29868,10 +29868,10 @@ function minimumAngle2(points, [a, b, c]) {
     angle(points[c], points[a], points[b])
   );
 }
-function improve(points, triangles, locked) {
+function improve(points, triangles2, locked) {
   for (let pass = 0; pass < 100; pass++) {
     const edges = /* @__PURE__ */ new Map();
-    triangles.forEach(([a, b, c], triangle) => {
+    triangles2.forEach(([a, b, c], triangle) => {
       for (const [from, to, opposite] of [
         [a, b, c],
         [b, c, a],
@@ -29891,11 +29891,11 @@ function improve(points, triangles, locked) {
         continue;
       const orient = (x, y, z) => cross3(points[x], points[y], points[z]) > 0 ? [x, y, z] : [x, z, y];
       const nextA = orient(c, d, a), nextB = orient(d, c, b);
-      const before = Math.min(...uses.map((u) => minimumAngle2(points, triangles[u.triangle])));
+      const before = Math.min(...uses.map((u) => minimumAngle2(points, triangles2[u.triangle])));
       if (Math.min(minimumAngle2(points, nextA), minimumAngle2(points, nextB)) <= before + 1e-7)
         continue;
-      triangles[uses[0].triangle] = nextA;
-      triangles[uses[1].triangle] = nextB;
+      triangles2[uses[0].triangle] = nextA;
+      triangles2[uses[1].triangle] = nextB;
       touched.add(uses[0].triangle).add(uses[1].triangle);
       flips++;
     }
@@ -29975,11 +29975,11 @@ function generateFeatureMesh(part, alpha, options = {}) {
     points.push(...ring);
     return ring.map((_, k) => start + k);
   });
-  const triangles = [];
+  const triangles2 = [];
   const pushTriangles = (indices, map3) => {
     for (let t = 0; t < indices.length; t += 3) {
       const [a, b, c] = [map3(indices[t]), map3(indices[t + 1]), map3(indices[t + 2])];
-      triangles.push(cross3(points[a], points[b], points[c]) > 0 ? [a, b, c] : [a, c, b]);
+      triangles2.push(cross3(points[a], points[b], points[c]) > 0 ? [a, b, c] : [a, c, b]);
     }
   };
   pushTriangles(
@@ -29991,13 +29991,13 @@ function generateFeatureMesh(part, alpha, options = {}) {
     (i) => i
   );
   ringIndices.forEach((indices, k) => pushTriangles(earcut(rings[k].flat()), (i) => indices[i]));
-  const used = new Set(triangles.flat()), size = outer.length;
+  const used = new Set(triangles2.flat()), size = outer.length;
   outer.forEach((_, i) => {
     if (used.has(i)) return;
     let a = i - 1, b = i + 1;
     while (!used.has((a + size) % size)) a--;
     while (!used.has(b % size)) b++;
-    splitEdge(triangles, (a + size) % size, b % size, i);
+    splitEdge(triangles2, (a + size) % size, b % size, i);
     used.add(i);
   });
   const refine = (loop2) => loop2.flatMap((a, i) => {
@@ -30005,7 +30005,7 @@ function generateFeatureMesh(part, alpha, options = {}) {
     const added = [];
     for (let k = 1, previous = a; k < n; k++) {
       const w = points.push([pa[0] + (pb[0] - pa[0]) * k / n, pa[1] + (pb[1] - pa[1]) * k / n]) - 1;
-      splitEdge(triangles, previous, b, w);
+      splitEdge(triangles2, previous, b, w);
       added.push(w);
       previous = w;
     }
@@ -30054,9 +30054,9 @@ function generateFeatureMesh(part, alpha, options = {}) {
       [t[1], t[2]],
       [t[2], t[0]]
     ];
-    for (const t of triangles)
+    for (const t of triangles2)
       for (const [u, v] of sides(t)) uses.set(edgeKey(u, v), (uses.get(edgeKey(u, v)) ?? 0) + 1);
-    for (const t of triangles)
+    for (const t of triangles2)
       for (const [u, v] of sides(t)) {
         const a = points[u], b = points[v], l2 = (b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2, along = (p[0] - a[0]) * (b[0] - a[0]) + (p[1] - a[1]) * (b[1] - a[1]);
         if (Math.abs(cross3(a, b, p)) > 1e-9 * l2 || along <= 0 || along >= l2) continue;
@@ -30064,21 +30064,21 @@ function generateFeatureMesh(part, alpha, options = {}) {
       }
   };
   for (const p of grid) {
-    const index = points.length, target = triangles.findIndex(
+    const index = points.length, target = triangles2.findIndex(
       ([a, b, c]) => cross3(points[a], points[b], p) > 1e-9 && cross3(points[b], points[c], p) > 1e-9 && cross3(points[c], points[a], p) > 1e-9
     );
     if (target >= 0) {
-      const [a, b, c] = triangles[target];
+      const [a, b, c] = triangles2[target];
       points.push(p);
-      triangles.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
+      triangles2.splice(target, 1, [a, b, index], [b, c, index], [c, a, index]);
       continue;
     }
     const edge = edgeThrough(p);
     if (!edge) continue;
     points.push(p);
-    splitEdge(triangles, edge[0], edge[1], index);
+    splitEdge(triangles2, edge[0], edge[1], index);
   }
-  improve(points, triangles, locked);
+  improve(points, triangles2, locked);
   const canonical = (t) => {
     const k = t.indexOf(Math.min(...t));
     return [t[k], t[(k + 1) % 3], t[(k + 2) % 3]];
@@ -30094,7 +30094,7 @@ function generateFeatureMesh(part, alpha, options = {}) {
       part.bounds.y + y * part.bounds.height / height
     ]),
     uvs: points.map(([x, y]) => [x / width, y / height]),
-    triangles: triangles.map(canonical).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]).flat(),
+    triangles: triangles2.map(canonical).sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]).flat(),
     hull,
     ...locked.size ? {
       manualEdges: ringIndices.flatMap(
@@ -30203,20 +30203,20 @@ function checkKeys(keys, duration) {
 }
 
 // packages/motion/src/sampling.ts
-function segment(keys, time) {
+function segment(keys, time2) {
   let i = 1;
-  while (i < keys.length - 1 && keys[i].time < time) i++;
+  while (i < keys.length - 1 && keys[i].time < time2) i++;
   const a = keys[i - 1] ?? keys[0], b = keys[i] ?? a;
-  return [a, b, b.time === a.time ? 0 : keyFraction(a.curve, (time - a.time) / (b.time - a.time))];
+  return [a, b, b.time === a.time ? 0 : keyFraction(a.curve, (time2 - a.time) / (b.time - a.time))];
 }
-function sampleAnimation(animation, rig, time) {
+function sampleAnimation(animation, rig, time2) {
   validateAnimation(animation, rig);
-  if (!Number.isFinite(time) || time < 0 || time > animation.duration)
+  if (!Number.isFinite(time2) || time2 < 0 || time2 > animation.duration)
     failStage("animation", "ANIMATION_TIME", "Sample time must be within the duration");
   const rotations = /* @__PURE__ */ Object.create(null), translations = /* @__PURE__ */ Object.create(null), scales = /* @__PURE__ */ Object.create(null), deforms = /* @__PURE__ */ Object.create(null);
   const lerp2 = (a, b, t) => a * (1 - t) + b * t;
   for (const timeline of animation.rotationTimelines ?? []) {
-    const [a, b, t] = segment(timeline.keys, time);
+    const [a, b, t] = segment(timeline.keys, time2);
     rotations[timeline.boneId] = lerp2(a.degrees, b.degrees, t);
   }
   for (const [timelines, target] of [
@@ -30224,11 +30224,11 @@ function sampleAnimation(animation, rig, time) {
     [animation.scaleTimelines ?? [], scales]
   ])
     for (const timeline of timelines) {
-      const [a, b, t] = segment(timeline.keys, time);
+      const [a, b, t] = segment(timeline.keys, time2);
       target[timeline.boneId] = [lerp2(a.x, b.x, t), lerp2(a.y, b.y, t)];
     }
   for (const timeline of animation.deformTimelines ?? []) {
-    const [a, b, t] = segment(timeline.keys, time);
+    const [a, b, t] = segment(timeline.keys, time2);
     deforms[timeline.meshId] = a.offsets.map((p, i) => [
       lerp2(p[0], b.offsets[i][0], t),
       lerp2(p[1], b.offsets[i][1], t)
@@ -30672,12 +30672,12 @@ function buildKeyposeAnimation(rig, spec) {
     if (c.channel === "rotate")
       timelines.rotate.push({
         boneId: c.boneId,
-        keys: keys.map(({ time, v, ...rest }) => ({ time, degrees: v[0], ...rest }))
+        keys: keys.map(({ time: time2, v, ...rest }) => ({ time: time2, degrees: v[0], ...rest }))
       });
     else
       timelines[c.channel].push({
         boneId: c.boneId,
-        keys: keys.map(({ time, v, ...rest }) => ({ time, x: v[0], y: v[1], ...rest }))
+        keys: keys.map(({ time: time2, v, ...rest }) => ({ time: time2, x: v[0], y: v[1], ...rest }))
       });
   }
   const animation = {
@@ -31489,7 +31489,7 @@ function simplifyAnimation(animation, fps, tolerance) {
     t.keys = simplifyKeys(
       t.keys,
       (k) => [k.degrees],
-      (time, [degrees], curve) => ({ time, degrees, ...curve ? { curve } : {} }),
+      (time2, [degrees], curve) => ({ time: time2, degrees, ...curve ? { curve } : {} }),
       d,
       fps,
       tolerance
@@ -31502,7 +31502,7 @@ function simplifyAnimation(animation, fps, tolerance) {
       t.keys = simplifyKeys(
         t.keys,
         (k) => [k.x, k.y],
-        (time, [x, y], curve) => ({ time, x, y, ...curve ? { curve } : {} }),
+        (time2, [x, y], curve) => ({ time: time2, x, y, ...curve ? { curve } : {} }),
         d,
         fps,
         scale
@@ -31536,9 +31536,9 @@ function generateWave(rig, wave) {
     })
   };
 }
-function rotationsAt(animation, time) {
+function rotationsAt(animation, time2) {
   const result2 = {};
-  const t = Math.max(0, Math.min(animation.duration, time));
+  const t = Math.max(0, Math.min(animation.duration, time2));
   for (const timeline of animation.rotationTimelines ?? []) {
     const keys = timeline.keys;
     let i = 1;
@@ -32805,12 +32805,12 @@ function compileCharacterSpine40(input) {
       imagesPath: input.imagesPath
     })
   );
-  const attachments = {};
+  const attachments2 = {};
   for (const slot of slots) {
     name(slot.boneId);
     if (!unique(slot.attachments.map((a) => a.name)) || slot.attachment !== void 0 && !slot.attachments.some((a) => a.name === slot.attachment))
       fail5("Unique attachments and valid setup selection required");
-    attachments[slot.name] = {};
+    attachments2[slot.name] = {};
     for (const a of slot.attachments) {
       if (a.kind === "clipping") {
         if (a.boneId !== slot.boneId || !slots.some((s2) => s2.name === a.endSlotName))
@@ -32836,7 +32836,7 @@ function compileCharacterSpine40(input) {
             if (side(p, q, r) * side(p, q, s2) <= 0 && side(r, s2, p) * side(r, s2, q) <= 0)
               fail5("Clipping mask must be simple, without crossing edges");
           }
-        attachments[slot.name][a.name] = {
+        attachments2[slot.name][a.name] = {
           type: "clipping",
           end: a.endSlotName,
           vertexCount: points.length,
@@ -32851,7 +32851,7 @@ function compileCharacterSpine40(input) {
           animation: animations[0],
           imagesPath: input.imagesPath
         });
-        attachments[slot.name][a.name] = {
+        attachments2[slot.name][a.name] = {
           ...doc.skins[0].attachments.image.image,
           path: a.path,
           ...a.color === void 0 ? {} : { color: a.color }
@@ -32864,7 +32864,7 @@ function compileCharacterSpine40(input) {
         );
         if (Math.abs(local[0] * local[3] - local[1] * local[2]) < 1e-12) {
           if (![local[4], local[5]].every(Number.isFinite)) fail5("Region position must be finite");
-          attachments[slot.name][a.name] = {
+          attachments2[slot.name][a.name] = {
             path: a.path,
             x: local[4],
             y: -local[5],
@@ -32882,7 +32882,7 @@ function compileCharacterSpine40(input) {
         const sy = (local[0] * local[3] - local[1] * local[2]) / sx;
         if (Math.abs(local[0] * local[2] + local[1] * local[3]) > 1e-7 * sx * Math.hypot(local[2], local[3]))
           fail5("A sheared region requires a mesh or explicit attachment bone");
-        attachments[slot.name][a.name] = {
+        attachments2[slot.name][a.name] = {
           path: a.path,
           x: local[4],
           y: -local[5],
@@ -32990,7 +32990,7 @@ function compileCharacterSpine40(input) {
     })),
     ...ik.length ? { ik } : {},
     ...transform.length ? { transform } : {},
-    skins: [{ name: "default", attachments }],
+    skins: [{ name: "default", attachments: attachments2 }],
     animations: animationDocuments
   };
 }
@@ -33075,6 +33075,371 @@ function readImagesOnlyLayout(document2) {
     }
   });
   return layout;
+}
+
+// packages/spine/src/delivery-check.ts
+var DELIVERY_TARGETS = {
+  /** Cocos Creator runtime: Spine 3.8. */
+  cocos: {
+    editor: "3.8.99",
+    skeleton: ".skel",
+    atlas: ".atlas",
+    names: /^[A-Za-z0-9_]+$/,
+    clipping: 1,
+    squareAtlas: false
+  },
+  /** Unity runtime, Spine 4.0: no clipping masks. */
+  unity: {
+    editor: "4.0.56",
+    skeleton: ".skel.bytes",
+    atlas: ".atlas.txt",
+    names: /^[A-Za-z0-9_-]+$/,
+    clipping: 0,
+    squareAtlas: true
+  },
+  /** Unity runtime, Spine 4.1. */
+  "unity-4.1": {
+    editor: "4.1.24",
+    skeleton: ".skel.bytes",
+    atlas: ".atlas.txt",
+    names: /^[A-Za-z0-9_-]+$/,
+    clipping: 0,
+    squareAtlas: true
+  }
+};
+var DELIVERY_LIMITS = {
+  "symbol-low": [10, 10, 0, 2, 256],
+  "symbol-mid": [20, 100, 0, 3, 256],
+  "symbol-high": [30, 150, 100, 4, 512],
+  wild: [30, 150, 100, 4, 512],
+  scatter: [60, 250, 250, 6, 512],
+  feature: [60, 250, 150, 6, 512],
+  "symbol-fx": [20, 60, 0, 2, 256],
+  intro: [350, 1700, 0, 10, 2048],
+  nearwin: [60, 100, 0, 2, 512],
+  "ui-fx": [80, 300, 200, 10, 512],
+  "reel-fx": [80, 300, 0, 2, 512],
+  bigwin: [150, 400, 0, 5, 1024],
+  popup: [200, 500, 0, 10, 1024],
+  character: [250, 1e3, 0, 6, 1024],
+  "bg-main": [100, 100, 0, 2, 1024],
+  "bg-feature": [100, 200, 0, 4, 1024],
+  "screen-fx": [100, 200, 0, 2, 512]
+};
+var DELIVERY_LIMITS_LARGE_BOARD = {
+  "symbol-low": [10, 10, 0, 1, 256],
+  "symbol-mid": [20, 30, 0, 1, 256],
+  "symbol-high": [30, 80, 0, 2, 512],
+  wild: [30, 80, 0, 2, 512],
+  scatter: [60, 250, 250, 5, 512],
+  feature: [60, 250, 150, 3, 512],
+  "symbol-fx": [20, 30, 0, 1, 256]
+};
+var DELIVERY_KINDS = [
+  ...Object.keys(DELIVERY_LIMITS),
+  "loading",
+  "other"
+];
+var WIN_TIERS = [
+  "YouWin",
+  "BigWin",
+  "MegaWin",
+  "SuperWin",
+  "GoldenWin",
+  "MarvelousWin",
+  "LegendaryWin"
+];
+var SLOT_STATE_TIMELINES = /* @__PURE__ */ new Set([
+  "attachment",
+  "color",
+  "twoColor",
+  "rgba",
+  "rgb",
+  "alpha",
+  "rgba2",
+  "rgb2"
+]);
+var TRANSFORM_DEFAULTS = {
+  x: 0,
+  y: 0,
+  rotation: 0,
+  scaleX: 1,
+  scaleY: 1,
+  shearX: 0,
+  shearY: 0
+};
+function isTextOrNumber(name) {
+  return name.split(/[/_]/).some((part) => /^(TEXT|NUM)\d*$/i.test(part));
+}
+function attachments(doc) {
+  let skins = doc.skins;
+  if (skins && !Array.isArray(skins))
+    skins = Object.entries(skins).map(([name, attachments2]) => ({ name, attachments: attachments2 }));
+  const out = [];
+  for (const skin of skins ?? [])
+    for (const [slot, list] of Object.entries(skin.attachments ?? {}))
+      for (const [name, a] of Object.entries(list))
+        out.push([String(skin.name), slot, name, a]);
+  return out;
+}
+function triangles(a) {
+  const type = a.type ?? "region";
+  if (type === "region") return 2;
+  if (type === "mesh") return (a.triangles?.length ?? 0) / 3;
+  return 0;
+}
+function weightBones(a) {
+  const v = a.vertices;
+  if (!v) return 0;
+  const plain = a.type === "mesh" ? a.uvs.length : Number(a.vertexCount ?? v.length / 2) * 2;
+  if (v.length === plain) return 0;
+  let most = 0;
+  for (let i = 0; i < v.length; i += 1 + v[i] * 4) most = Math.max(most, v[i]);
+  return most;
+}
+var time = (k) => Number(k.time ?? 0);
+function sameValues(a, b) {
+  for (const key of /* @__PURE__ */ new Set([...Object.keys(a), ...Object.keys(b)])) {
+    if (["time", "curve", "c2", "c3", "c4"].includes(key)) continue;
+    const x = a[key], y = b[key];
+    if (typeof x === "number" || typeof y === "number") {
+      if (Math.abs(Number(x ?? 0) - Number(y ?? 0)) > 1e-3) return false;
+    } else if (JSON.stringify(x) !== JSON.stringify(y)) return false;
+  }
+  return true;
+}
+function checkDelivery(doc, target, options = {}) {
+  const spec = DELIVERY_TARGETS[target];
+  const kind = options.kind ?? "other";
+  const rows = [];
+  const seen = /* @__PURE__ */ new Set();
+  const add = (row) => {
+    const key = `${row.id} ${row.level} ${row.message}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    rows.push(row);
+  };
+  const error = (id, message) => add({ id, level: "error", message });
+  const warn = (id, message) => add({ id, level: "warning", message });
+  const version = options.version === false ? void 0 : options.version ?? String(doc.skeleton?.spine ?? "");
+  if (version !== void 0 && version !== spec.editor) {
+    const [a, b] = version.split("."), [c, d] = spec.editor.split(".");
+    if (a !== c || b !== d)
+      error("V1", `made in Spine ${version || "?"}; the ${target} runtime reads ${spec.editor}`);
+    else
+      warn("V1", `made in Spine ${version}; the ${target} runtime is checked with ${spec.editor}`);
+  }
+  const bones = doc.bones ?? [];
+  const slots = doc.slots ?? [];
+  const anims = doc.animations ?? {};
+  const all = attachments(doc);
+  const bad = /* @__PURE__ */ new Set();
+  const ok = (name, folders = false) => (folders ? name.split("/") : [name]).every((part) => spec.names.test(part));
+  for (const b of bones) if (!ok(String(b.name))) bad.add(`bone ${String(b.name)}`);
+  for (const s2 of slots) if (!ok(String(s2.name))) bad.add(`slot ${String(s2.name)}`);
+  for (const a of Object.keys(anims)) if (!ok(a)) bad.add(`animation ${a}`);
+  for (const [skin, , name, a] of all) {
+    if (!ok(skin, true)) bad.add(`skin ${skin}`);
+    const path = String(a.path ?? name);
+    if (!ok(path, true)) bad.add(`attachment ${path}`);
+  }
+  for (const b of [...bad].sort())
+    error("N1", `${b}: only letters, digits and _${target === "cocos" ? "" : " or -"}`);
+  const root = bones[0] ?? {};
+  const rootName = String(root.name ?? "root");
+  const moved = Object.entries(TRANSFORM_DEFAULTS).filter(
+    ([k, v]) => root[k] !== void 0 && Number(root[k]) !== v
+  );
+  if (moved.length)
+    error(
+      "R1",
+      `${rootName} is transformed (${moved.map(([k]) => k).join(", ")}); move it to Actor`
+    );
+  for (const [name, a] of Object.entries(anims))
+    if ((a.bones ?? {})[rootName]) error("R2", `${name} keys ${rootName}; key Actor`);
+  const top = bones.filter((b) => b.parent === rootName && !String(b.name).startsWith("_")).map((b) => String(b.name));
+  if (kind === "loading") {
+    const pages = top.filter((b) => /^Page_\d\d$/.test(b));
+    if (!pages.length) error("R3", `no Page_01, Page_02 ... bones under ${rootName}`);
+  } else if (top.length !== 1 || top[0] !== "Actor")
+    error(
+      "R3",
+      `${rootName} should hold only the Actor bone (reference bones start with _); it holds ${top.join(", ") || "nothing"}`
+    );
+  for (const s2 of slots) {
+    const blend = String(s2.blend ?? "normal"), name = String(s2.name);
+    if (blend !== "normal" && blend !== "additive")
+      error("S1", `slot ${name} blends ${blend}; use normal or additive`);
+    if (blend === "additive" && !name.includes("_Add"))
+      error("S2", `additive slot ${name} needs _Add in its name`);
+    if (blend !== "additive" && name.includes("_Add"))
+      warn("S2", `slot ${name} has _Add but blends ${blend}`);
+  }
+  const setup = new Map(slots.map((s2) => [String(s2.name), s2.attachment]));
+  const slotBone = new Map(slots.map((s2) => [String(s2.name), String(s2.bone)]));
+  const used = /* @__PURE__ */ new Set();
+  const clips = [];
+  let setupTriangles = 0, allTriangles = 0, maxWeightBones = 0;
+  for (const [skin, slot, name, a] of all) {
+    used.add(slot);
+    const type = String(a.type ?? "region");
+    if (type === "point") error("S3", `point attachment ${slot}/${name}; points are not used`);
+    if (type === "clipping")
+      clips.push([slot, name, Number(a.vertexCount ?? a.vertices.length / 2)]);
+    const t = triangles(a);
+    allTriangles += t;
+    if (skin === "default" && setup.get(slot) === name) setupTriangles += t;
+    const w = weightBones(a);
+    maxWeightBones = Math.max(maxWeightBones, w);
+    if (w > 5) error("W1", `${slot}/${name} binds a vertex to ${w} bones (5 at most; Prune)`);
+    if (isTextOrNumber(name) || isTextOrNumber(String(a.path ?? ""))) {
+      const file = String(a.path ?? name).split("/").at(-1);
+      if (!file.startsWith("_")) error("T1", `text or number ${slot}/${name} should start with _`);
+      const tf = Object.entries(TRANSFORM_DEFAULTS).filter(
+        ([k, v]) => a[k] !== void 0 && Number(a[k]) !== v
+      );
+      if (tf.length)
+        error(
+          "T1",
+          `text or number ${slot}/${name} is moved (${tf.map(([k]) => k).join(", ")}); move its bone`
+        );
+    } else if (slotBone.get(slot)?.startsWith("HP_") && type !== "clipping")
+      error(
+        "T1",
+        `${slotBone.get(slot)} holds ${slot}/${name}; HP_ bones hold only text and numbers`
+      );
+  }
+  for (const s2 of slots)
+    if (!used.has(String(s2.name))) warn("S5", `slot ${String(s2.name)} is empty; delete it`);
+  if (clips.length > spec.clipping)
+    error(
+      "S4",
+      spec.clipping ? `${clips.length} clipping masks; one skeleton uses ${spec.clipping} at most` : `${clips.length} clipping masks; the ${target} runtime takes none`
+    );
+  for (const [slot, name, n] of clips)
+    if (n > 8) error("S4", `clipping ${slot}/${name} has ${n} points (4, at most 8)`);
+    else if (n > 4) warn("S4", `clipping ${slot}/${name} has ${n} points (4 is best)`);
+  const shown = slots.filter((s2) => s2.attachment);
+  if (target !== "cocos") {
+    if (!shown.length) error("U1", "the setup pose shows no image");
+    else if (shown.every((s2) => s2.blend === "additive"))
+      error("U1", "the setup pose shows only additive images");
+  }
+  const blends = shown.map((s2) => String(s2.blend ?? "normal"));
+  const drawCalls = blends.length ? 1 + blends.slice(1).filter((b, i) => b !== blends[i]).length : 0;
+  const table = options.largeBoard && kind in DELIVERY_LIMITS_LARGE_BOARD ? DELIVERY_LIMITS_LARGE_BOARD : DELIVERY_LIMITS;
+  const limit2 = table[kind];
+  if (limit2) {
+    if (bones.length > limit2[0]) error("L1", `${bones.length} bones (${kind} limit ${limit2[0]})`);
+    if (setupTriangles > limit2[1])
+      error("L2", `${setupTriangles} triangles in the setup pose (${kind} limit ${limit2[1]})`);
+    if (drawCalls > limit2[3])
+      error("L3", `about ${drawCalls} draw calls by blend changes (${kind} limit ${limit2[3]})`);
+  }
+  for (const [name, a] of Object.entries(anims)) {
+    for (const [slot, timelines] of Object.entries(a.slots ?? {}))
+      for (const [type, keys] of Object.entries(timelines)) {
+        if (!SLOT_STATE_TIMELINES.has(type) || !keys.length) continue;
+        if (time(keys[0]) > 0) warn("A1", `${name}: ${slot} ${type} has no key on frame 0`);
+        if (type === "attachment") {
+          const names = [setup.get(slot), ...keys.map((k) => k.name)];
+          if (names.some((n) => n && isTextOrNumber(n)))
+            error(
+              "T1",
+              `${name}: text or number slot ${slot} is shown by alpha, not by attachment keys`
+            );
+        }
+      }
+    if (/loop|idle/i.test(name)) {
+      const timelines = [
+        ...Object.entries(a.bones ?? {}).flatMap(
+          ([bone, t]) => Object.entries(t).map(([type, keys]) => [`${bone} ${type}`, keys])
+        ),
+        ...Object.entries(a.slots ?? {}).flatMap(
+          ([slot, t]) => Object.entries(t).map(([type, keys]) => [`${slot} ${type}`, keys])
+        )
+      ];
+      const end = Math.max(0, ...timelines.flatMap(([, keys]) => keys.map(time)));
+      for (const [label, keys] of timelines)
+        if (keys.length > 1 && time(keys.at(-1)) === end && !sameValues(keys[0], keys.at(-1)))
+          warn("A2", `${name}: ${label} ends unlike it starts; the loop jumps`);
+    }
+  }
+  const groups = /* @__PURE__ */ new Map();
+  for (const [name, a] of Object.entries(anims)) {
+    const group = name.replace(/_?(In|Loop|Out|Start|End|Idle)$/i, "");
+    if (group === name) continue;
+    const keyed = /* @__PURE__ */ new Set();
+    for (const [part, t] of [
+      ...Object.entries(a.bones ?? {}),
+      ...Object.entries(a.slots ?? {})
+    ])
+      for (const type of Object.keys(t)) keyed.add(`${part} ${type}`);
+    groups.set(group, [...groups.get(group) ?? [], [name, keyed]]);
+  }
+  for (const parts of groups.values()) {
+    if (parts.length < 2) continue;
+    const every = new Set(parts.flatMap(([, k]) => [...k]));
+    for (const [name, keyed] of parts) {
+      const missing = [...every].filter((k) => !keyed.has(k)).sort();
+      if (missing.length)
+        warn(
+          "A3",
+          `${name} does not key ${missing.slice(0, 6).join(", ")}${missing.length > 6 ? ` and ${missing.length - 6} more` : ""}, which the animations it plays after key`
+        );
+    }
+  }
+  if (kind === "bigwin") {
+    const names = new Set(Object.keys(anims));
+    const tiers = WIN_TIERS.filter((t) => names.has(`${t}_Start`) || names.has(`${t}_End`));
+    if (!tiers.length) error("K1", "no <tier>_Start / <tier>_End animations (BigWin_Start ...)");
+    for (const t of tiers)
+      for (const phase of ["Start", "End"])
+        if (!names.has(`${t}_${phase}`)) error("K1", `${t}_${phase} is missing`);
+    const known2 = new Set(WIN_TIERS.flatMap((t) => [`${t}_Start`, `${t}_End`]));
+    const other = [...names].filter((n) => !known2.has(n));
+    if (other.length) warn("K1", `animations outside the tier names: ${other.join(", ")}`);
+  }
+  if (kind === "loading") {
+    for (const name of Object.keys(anims))
+      if (!/^Page_\d\d$/.test(name))
+        warn("K1", `loading animation ${name}: name pages Page_01, Page_02 ...`);
+    const byName = new Map(bones.map((b) => [String(b.name), b]));
+    for (const need of ["WIN_UP_TO", "Text", "Num"])
+      if (!byName.has(need)) warn("K1", `no ${need} bone (the max-win page template)`);
+    for (const need of ["Text", "Num"]) {
+      const b = byName.get(need);
+      if (b && Number(b.rotation ?? 0) !== 5)
+        error(
+          "K1",
+          `${need} keeps the template's 5 degree rotation (it is ${Number(b.rotation ?? 0)})`
+        );
+    }
+  }
+  const errors = rows.filter((r) => r.level === "error").length;
+  return {
+    target,
+    kind,
+    pass: errors === 0,
+    errors,
+    warnings: rows.length - errors,
+    counts: {
+      bones: bones.length,
+      setupTriangles,
+      allTriangles,
+      drawCalls,
+      clipping: clips.length,
+      maxWeightBones
+    },
+    limits: limit2 ? {
+      bones: limit2[0],
+      setupTriangles: limit2[1],
+      maskTriangles: limit2[2],
+      drawCalls: limit2[3],
+      atlasPage: limit2[4]
+    } : null,
+    rows
+  };
 }
 
 // packages/cli/src/preview.ts
@@ -33217,7 +33582,7 @@ async function buildJobFile(jobPath) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.22";
+var AUTOSPINE_VERSION = "0.5.23";
 
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
@@ -33814,7 +34179,7 @@ function planAttachments(plan, index, rigged, regionBone) {
     if (!b) failStage("weights", "PLAN_BONE", `Weights reference unknown bone ${id}`);
     return b.length;
   };
-  const weightBones = (w) => {
+  const weightBones2 = (w) => {
     switch (w.type) {
       case "chain":
         return w.bones ?? (w.chain ? rigged.chains[w.chain] ?? [] : []);
@@ -33909,7 +34274,7 @@ function planAttachments(plan, index, rigged, regionBone) {
     const p = index.part(m.part);
     if (meshes.has(m.part))
       failStage("mesh", "PLAN_MESH_DUPLICATE", `Part ${m.part} has two mesh plans`);
-    const built = shape(m.mesh, p, weightBones(m.weights));
+    const built = shape(m.mesh, p, weightBones2(m.weights));
     let weights;
     const w = m.weights;
     switch (w.type) {
@@ -34717,10 +35082,10 @@ function buildAttachmentTimelines(motion, slots, durations) {
       const timeline = [];
       if (keys[0].frame > 0) timeline.push({ time: 0, name: start });
       for (const k of keys) {
-        const time = Math.min(duration, k.frame / fps);
+        const time2 = Math.min(duration, k.frame / fps);
         const last = timeline.at(-1);
-        if (last && Math.abs(last.time - time) < 1e-9) last.name = k.attachment;
-        else timeline.push({ time, name: k.attachment });
+        if (last && Math.abs(last.time - time2) < 1e-9) last.name = k.attachment;
+        else timeline.push({ time: time2, name: k.attachment });
       }
       if (timeline.at(-1).time < duration - 1e-9)
         timeline.push({
@@ -35641,7 +36006,7 @@ function measureSeams(rigging, animations) {
   const out = [];
   for (const anim of animations) {
     const t = qa.at?.[anim.name] ?? anim.duration / 2;
-    const channels = (time) => sampleAnimation(anim, rigging.rigged.rig, time);
+    const channels = (time2) => sampleAnimation(anim, rigging.rigged.rig, time2);
     const rest = channels(0), now = channels(t);
     const seamBand = 0.04 * (rigging.motion.faceParallax?.unit ?? 500);
     for (const [a, b] of qa.seams) {
@@ -36268,13 +36633,13 @@ function loadSkeleton(document2) {
 function frameTime(f, frames, duration, fps) {
   return f >= frames ? Math.max(0, duration - 1e-6) : Math.min(duration - 1e-6, f / fps + 1e-6);
 }
-function pose(sk, animation, time) {
+function pose(sk, animation, time2) {
   const spine = spineRuntime();
   sk.skeleton.setToSetupPose();
   if (animation) {
     const a = sk.data.findAnimation(animation);
     if (!a) throw new Error(`REFERENCE_ANIMATION: no animation ${animation}`);
-    a.apply(sk.skeleton, 0, time, true, [], 1, spine.MixBlend.setup, spine.MixDirection.mixIn);
+    a.apply(sk.skeleton, 0, time2, true, [], 1, spine.MixBlend.setup, spine.MixDirection.mixIn);
   }
   sk.skeleton.updateWorldTransform();
 }
@@ -38249,8 +38614,8 @@ function fitRestPose(document2, animation, reference, image, options) {
     if (value !== void 0 && (!Number.isFinite(value) || value < 0))
       throw new Error(`POSE_OPTIONS: ${name} must be finite and nonnegative`);
   const sk = loadSkeleton(document2);
-  const view = options.view, scale = reference.width / view.width, maxRotate = options.maxRotate ?? 30, window = options.window ?? 0.3 * Math.max(view.width, view.height), minScore = options.minScore ?? 0.35, time = options.time ?? 0;
-  pose(sk, animation, time);
+  const view = options.view, scale = reference.width / view.width, maxRotate = options.maxRotate ?? 30, window = options.window ?? 0.3 * Math.max(view.width, view.height), minScore = options.minScore ?? 0.35, time2 = options.time ?? 0;
+  pose(sk, animation, time2);
   const drawn = [];
   for (const slot of sk.skeleton.drawOrder) {
     const att = slot.getAttachment();
@@ -38658,7 +39023,7 @@ function fitRestPose(document2, animation, reference, image, options) {
       b.data.y = setup[i][1] + o[i][1];
       b.data.rotation = setup[i][2] + o[i][2];
     });
-    pose(sk, animation, time);
+    pose(sk, animation, time2);
     const now2 = worldVertices(sk, used);
     const r2 = [];
     for (const slot of used) {
@@ -39871,8 +40236,8 @@ function writeKeys(doc, tl, keys) {
     }
     const template = tl.keys[k.source ?? k.state ?? 0] ?? {};
     const out = {};
-    const time = k.source !== void 0 ? keyTime(tl.keys[k.source]) : round2(k.time, 4);
-    if (time !== 0) out.time = time;
+    const time2 = k.source !== void 0 ? keyTime(tl.keys[k.source]) : round2(k.time, 4);
+    if (time2 !== 0) out.time = time2;
     Object.assign(out, codec.write(k.values, template));
     for (const d of codec.discrete) if (template[d] !== void 0) out[d] = template[d];
     if (!last && k.curve) {
@@ -39920,9 +40285,9 @@ function setTimelineKeys(anim, tl, keys) {
 }
 
 // packages/reference/src/keys-world.ts
-function samplePose(sk, animation, time) {
+function samplePose(sk, animation, time2) {
   const spine = spineRuntime();
-  pose(sk, animation, time);
+  pose(sk, animation, time2);
   const slots = sk.skeleton.slots;
   const atts = new Array(slots.length).fill(null);
   const verts = new Array(slots.length).fill(null);
@@ -43763,6 +44128,13 @@ var toolSchemas = {
     track: Type.Optional(Type.Boolean()),
     lag: Type.Optional(Type.Boolean())
   }, strict5),
+  // Delivery conventions (ADR-053): the JSON part of `autospine check-delivery`.
+  autospine_check_delivery: Type.Object({
+    skeletonPath: WorkspacePath,
+    target: Type.Union(Object.keys(DELIVERY_TARGETS).map((t) => Type.Literal(t))),
+    kind: Type.Optional(Type.Union(DELIVERY_KINDS.map((k) => Type.Literal(k)))),
+    largeBoard: Type.Optional(Type.Boolean())
+  }, strict5),
   // Key reduction (ADR-044): the same file-level step as `autospine reduce-keys`.
   autospine_reduce_keys: Type.Object({
     inputPath: WorkspacePath,
@@ -43791,6 +44163,7 @@ var toolSchemas = {
   }, strict5)
 };
 var descriptions = {
+  autospine_check_delivery: "Check a workspace-local Spine JSON (3.8 or 4.x) against a game runtime's delivery conventions (ADR-053; target cocos = Spine 3.8.99, unity = 4.0.56, unity-4.1 = 4.1.24): editor version, names, an untouched and unkeyed root with one Actor bone, normal/additive blends with _Add on additive slots, no point attachments, clipping masks (one with 4-8 points for cocos, none for unity), at most 5 bones per weighted vertex, language text and number images, first keys on frame 0, loop seams, matching keyed timelines across Start/Loop/End parts, and the bone, setup triangle and draw-call limits of `kind`. Read-only; the runtime export folder (.skel/.atlas) and .spine projects are checked by the CLI `autospine check-delivery`. Peak triangles while animating, triangles inside a mask and real draw calls need Spine's Metrics view.",
   autospine_reduce_keys: "Reduce the keys of a workspace-local Spine 4.0 JSON (ADR-044) into a NEW workspace-local directory, in `fidelity` (fewest keys within the limit, refitted Spine Bezier curves) and/or `posable` (shared pose frames for main bones on whole frames, follow parts on their own turns) mode, each with its own world-vertex limit (px; default by mode from the skeleton size; never widened to reach a ratio). Every result is played on the official runtime against the untouched source (hierarchy, weights, IK/transform/path, deform): max and RMS vertex error, worst time and part, pose nodes, contact slide, follow lag, loop seam, discrete states; keys are added where it is off and timelines fall back to the original past the budget. Writes per mode <name>.json and key-report.json, plus summary.json and key-reduction-report.html/.md. The Spine editor import/export check runs only from the CLI (`autospine reduce-keys`); `video: true` renders original | modes with ffmpeg and the images. Not an artist approval.",
   autospine_compile_character: "Compile explicit multi-part engine IR, bone/attachment/rgba/deform timelines, convex clipping and native IK/Transform to Spine 4.0 JSON in memory; no automatic anatomy or artist approval.",
   autospine_build_keypose_animation: "Compile a pose table (beats) plus follow/saccade/settle/cycle timing rules into a sparse AnimationSpec with per-key curves (ADR-011); beat timing is the caller's input.",
@@ -44235,6 +44608,21 @@ var AutoSpineMcpServer = class {
               report: relative4(root, a.report)
             })),
             outputDir: relative4(root, output),
+            artistQualityAccepted: false
+          });
+        }
+        case "autospine_check_delivery": {
+          if (!value_exports2.Check(toolSchemas.autospine_check_delivery, args))
+            break;
+          const root = await realpath2(resolve6(this.workspace));
+          const input = await guardFile(root, args.skeletonPath, 256 * 1024 * 1024);
+          const doc = JSON.parse(await readFile5(input, "utf8"));
+          return result({
+            skeletonPath: relative4(root, input),
+            ...checkDelivery(doc, args.target, {
+              ...args.kind ? { kind: args.kind } : {},
+              ...args.largeBoard ? { largeBoard: true } : {}
+            }),
             artistQualityAccepted: false
           });
         }

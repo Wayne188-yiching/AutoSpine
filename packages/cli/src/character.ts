@@ -17,7 +17,16 @@ import { PNG } from "pngjs";
 import { pngThroughIend } from "@autospine/assets";
 import { Value } from "@sinclair/typebox/value";
 import { CharacterPlanSchema, type CharacterPlan, type KeyposeEase } from "@autospine/schemas";
-import { forEditorVersion, readImagesOnlyLayout } from "@autospine/spine";
+import {
+  DELIVERY_TARGETS,
+  checkDelivery,
+  forEditorVersion,
+  readImagesOnlyLayout,
+  withActorBone,
+  type DeliveryCheck,
+  type DeliveryKind,
+  type DeliveryTarget,
+} from "@autospine/spine";
 import {
   buildCharacter,
   addKeyposes,
@@ -1081,6 +1090,15 @@ export interface DeliverOptions {
   video?: boolean;
   /** Compare with the plan's reference videos (default true; ADR-034). */
   reference?: boolean;
+  /**
+   * The game runtime the project goes to (ADR-053): its editor version unless `spineVersion` is
+   * given, an `Actor` bone under the root, and the delivery conventions checked (reported only).
+   */
+  target?: DeliveryTarget;
+  /** The kind of asset, for the limits (with `target`). */
+  kind?: DeliveryKind;
+  /** More than 25 symbols on the board (with `target`). */
+  largeBoard?: boolean;
 }
 /**
  * deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>]: the project folder gets only
@@ -1099,7 +1117,9 @@ export async function deliverFiles(
   opts: DeliverOptions = {},
 ) {
   // Checked first: a wrong version would otherwise surface after the fit and the videos.
-  const spineVersion = spineVersionArg(opts.spineVersion);
+  const spineVersion = spineVersionArg(
+    opts.spineVersion ?? (opts.target ? DELIVERY_TARGETS[opts.target].editor : undefined),
+  );
   // An animation whose reference says "fit" (ADR-036) takes its motion from the video first, one
   // animation after another; the best round of the last fit is what is delivered. A fit that
   // cannot run is reported, and the build as given is delivered.
@@ -1132,10 +1152,21 @@ export async function deliverFiles(
   const name = safeFileName(opts.name ?? plan.id);
   const images = resolve(opts.images ?? planPaths(planPath, plan).images);
   if (!(await exists(images))) throw new Error(`CLI_DELIVER_IMAGES: ${images} not found`);
-  const document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as {
+  let document = JSON.parse(await readFile(join(buildDir, `${plan.id}.json`), "utf8")) as {
     skeleton: Record<string, unknown>;
     skins?: unknown;
   };
+  // For a game runtime (ADR-053): everything under one Actor bone, then the conventions checked.
+  // The check reports; it never blocks delivery. Reviews and comparisons play the build as built.
+  let check: DeliveryCheck | undefined;
+  if (opts.target) {
+    document = withActorBone(document);
+    check = checkDelivery(document, opts.target, {
+      version: spineVersion,
+      ...(opts.kind ? { kind: opts.kind } : {}),
+      ...(opts.largeBoard ? { largeBoard: true } : {}),
+    });
+  }
   // Only the images the project draws travel with it, not the rest of the art folder (thumbnails,
   // archives, other skeletons' images).
   const used = imagePaths(document);
@@ -1245,6 +1276,8 @@ export async function deliverFiles(
     referenceError?: string;
     fitted?: typeof fitted;
     fitError?: string;
+    /** The delivery conventions of `target` (ADR-053). */
+    check?: DeliveryCheck;
     stray?: string[];
   } = {
     spine: null,
@@ -1320,6 +1353,7 @@ export async function deliverFiles(
   if (referenceError) result.referenceError = referenceError;
   if (fitted.length) result.fitted = fitted;
   if (fitError) result.fitError = fitError;
+  if (check) result.check = check;
   // Anything else at the top level belongs in _work/ (reported, never moved by the engine), and
   // images the project does not draw were left by an earlier delivery (reported, never removed).
   result.stray = strayEntries(await readdir(out));

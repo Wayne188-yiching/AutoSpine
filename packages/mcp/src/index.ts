@@ -46,7 +46,15 @@ import {
 } from "@autospine/cli/character";
 import { reduceKeysFiles } from "@autospine/cli/keys";
 import { lintCharacterPlan } from "@autospine/character";
-import { CharacterSpineInputSchema, compileCharacterSpine40 } from "@autospine/spine";
+import {
+  CharacterSpineInputSchema,
+  DELIVERY_KINDS,
+  DELIVERY_TARGETS,
+  checkDelivery,
+  compileCharacterSpine40,
+  type DeliveryKind,
+  type DeliveryTarget,
+} from "@autospine/spine";
 import {
   PlannerProposalSchema,
   ReviewEvidenceSchema,
@@ -336,6 +344,16 @@ const toolSchemas = {
     },
     strict,
   ),
+  // Delivery conventions (ADR-053): the JSON part of `autospine check-delivery`.
+  autospine_check_delivery: Type.Object(
+    {
+      skeletonPath: WorkspacePath,
+      target: Type.Union(Object.keys(DELIVERY_TARGETS).map((t) => Type.Literal(t))),
+      kind: Type.Optional(Type.Union(DELIVERY_KINDS.map((k) => Type.Literal(k)))),
+      largeBoard: Type.Optional(Type.Boolean()),
+    },
+    strict,
+  ),
   // Key reduction (ADR-044): the same file-level step as `autospine reduce-keys`.
   autospine_reduce_keys: Type.Object(
     {
@@ -395,6 +413,8 @@ const toolSchemas = {
   ),
 };
 const descriptions: Record<keyof typeof toolSchemas, string> = {
+  autospine_check_delivery:
+    "Check a workspace-local Spine JSON (3.8 or 4.x) against a game runtime's delivery conventions (ADR-053; target cocos = Spine 3.8.99, unity = 4.0.56, unity-4.1 = 4.1.24): editor version, names, an untouched and unkeyed root with one Actor bone, normal/additive blends with _Add on additive slots, no point attachments, clipping masks (one with 4-8 points for cocos, none for unity), at most 5 bones per weighted vertex, language text and number images, first keys on frame 0, loop seams, matching keyed timelines across Start/Loop/End parts, and the bone, setup triangle and draw-call limits of `kind`. Read-only; the runtime export folder (.skel/.atlas) and .spine projects are checked by the CLI `autospine check-delivery`. Peak triangles while animating, triangles inside a mask and real draw calls need Spine's Metrics view.",
   autospine_reduce_keys:
     "Reduce the keys of a workspace-local Spine 4.0 JSON (ADR-044) into a NEW workspace-local directory, in `fidelity` (fewest keys within the limit, refitted Spine Bezier curves) and/or `posable` (shared pose frames for main bones on whole frames, follow parts on their own turns) mode, each with its own world-vertex limit (px; default by mode from the skeleton size; never widened to reach a ratio). Every result is played on the official runtime against the untouched source (hierarchy, weights, IK/transform/path, deform): max and RMS vertex error, worst time and part, pose nodes, contact slide, follow lag, loop seam, discrete states; keys are added where it is off and timelines fall back to the original past the budget. Writes per mode <name>.json and key-report.json, plus summary.json and key-reduction-report.html/.md. The Spine editor import/export check runs only from the CLI (`autospine reduce-keys`); `video: true` renders original | modes with ffmpeg and the images. Not an artist approval.",
   autospine_compile_character:
@@ -888,6 +908,20 @@ export class AutoSpineMcpServer {
               report: relative(root, a.report),
             })),
             outputDir: relative(root, output),
+            artistQualityAccepted: false,
+          });
+        }
+        case "autospine_check_delivery": {
+          if (!Value.Check(toolSchemas.autospine_check_delivery, args)) break;
+          const root = await realpath(resolve(this.workspace));
+          const input = await guardFile(root, args.skeletonPath, 256 * 1024 * 1024);
+          const doc = JSON.parse(await readFile(input, "utf8")) as Record<string, unknown>;
+          return result({
+            skeletonPath: relative(root, input),
+            ...checkDelivery(doc, args.target as DeliveryTarget, {
+              ...(args.kind ? { kind: args.kind as DeliveryKind } : {}),
+              ...(args.largeBoard ? { largeBoard: true } : {}),
+            }),
             artistQualityAccepted: false,
           });
         }
