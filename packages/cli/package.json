@@ -22,6 +22,10 @@
     "./keys": {
       "types": "./dist/keys.d.ts",
       "import": "./dist/keys.js"
+    },
+    "./delivery": {
+      "types": "./dist/delivery.d.ts",
+      "import": "./dist/delivery.js"
     }
   },
   "scripts": {

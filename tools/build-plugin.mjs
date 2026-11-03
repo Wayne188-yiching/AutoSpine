@@ -36,6 +36,7 @@ const copies = new Map([
   ["skills/autospine/references/rig-deformation.md", "references/rig-deformation.md"],
   ["skills/autospine/references/controls-animation.md", "references/controls-animation.md"],
   ["skills/autospine/references/pose-first-workflow.md", "references/pose-first-workflow.md"],
+  ["skills/autospine/references/delivery-conventions.md", "references/delivery-conventions.md"],
   ["knowledge/animation/README.md", "references/animation-knowledge.md"],
   ["knowledge/animation/CURATION.md", "references/animation-curation.md"],
   ["knowledge/animation/catalog.json", "references/animation-catalog.json"],

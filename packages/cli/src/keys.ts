@@ -63,7 +63,7 @@ const EXPORT_SETTINGS = {
 };
 
 /** Exports a .spine project to JSON with the editor; returns the JSON path. */
-async function exportProject(exe: string, version: string, project: string, outDir: string) {
+export async function exportProject(exe: string, version: string, project: string, outDir: string) {
   await mkdir(outDir, { recursive: true });
   const settings = join(outDir, ".autospine-export.json");
   await writeFile(settings, JSON.stringify(EXPORT_SETTINGS));

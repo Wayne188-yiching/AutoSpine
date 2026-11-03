@@ -20,6 +20,13 @@ import {
 import { AUTOSPINE_VERSION } from "./version.js";
 import { prepareRigFile, applyRigMotionFile } from "./rig.js";
 import { reduceKeysFiles, type ReduceKeysFileOptions } from "./keys.js";
+import { checkDeliveryFiles } from "./delivery.js";
+import {
+  DELIVERY_KINDS,
+  DELIVERY_TARGETS,
+  type DeliveryKind,
+  type DeliveryTarget,
+} from "@autospine/spine";
 import type { KeyLock, KeyReductionMode } from "@autospine/reference";
 import {
   AssetParseError,
@@ -103,8 +110,34 @@ const characterUsage = `Character commands (ADR-017):
   autospine compare-video <plan.json> <build-dir> <new-output-dir> [--animation=name] [--video=file] [--start=s] [--font=file]
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
   autospine check-video-fit <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--ignore=slot,...]
-  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference]
+  autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference] [--target=cocos|unity|unity-4.1] [--kind=type] [--large-board]
+  autospine check-delivery <skeleton.json|project.spine> --target=cocos|unity|unity-4.1 [--kind=type] [--large-board] [--export=dir] [--spine=exe]
   autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
+/** --target, --kind and --large-board of deliver and check-delivery (ADR-053). */
+function deliveryFlags(
+  flags: Map<string, string>,
+  required: boolean,
+): { target?: DeliveryTarget; kind?: DeliveryKind; largeBoard?: boolean } {
+  const target = flags.get("target") || undefined;
+  if (!target && required)
+    throw new Error(`--target is needed
+${characterUsage}`);
+  if (target && !(target in DELIVERY_TARGETS))
+    throw new Error(`--target is ${Object.keys(DELIVERY_TARGETS).join(", ")}
+${characterUsage}`);
+  const kind = flags.get("kind") || undefined;
+  if (kind && !DELIVERY_KINDS.includes(kind as DeliveryKind))
+    throw new Error(`--kind is ${DELIVERY_KINDS.join(", ")}
+${characterUsage}`);
+  if ((kind || flags.has("large-board")) && !target)
+    throw new Error(`--kind and --large-board need --target
+${characterUsage}`);
+  return {
+    ...(target ? { target: target as DeliveryTarget } : {}),
+    ...(kind ? { kind: kind as DeliveryKind } : {}),
+    ...(flags.has("large-board") ? { largeBoard: true } : {}),
+  };
+}
 async function characterCommand(args: string[]): Promise<boolean> {
   const flags = new Map(
     args
@@ -326,8 +359,12 @@ async function characterCommand(args: string[]): Promise<boolean> {
         "force",
         "no-video",
         "no-reference",
+        "target",
+        "kind",
+        "large-board",
       );
       const opts = {
+        ...deliveryFlags(flags, false),
         name: flags.get("name") || undefined,
         images: flags.get("images") || undefined,
         spine: flags.get("spine") || undefined,
@@ -338,6 +375,30 @@ async function characterCommand(args: string[]): Promise<boolean> {
         reference: !flags.has("no-reference"),
       };
       console.log(JSON.stringify(await deliverFiles(p[1]!, p[2]!, p[3]!, p[4], opts)));
+      return true;
+    }
+    case "check-delivery": {
+      if (p.length !== 2) throw new Error(characterUsage);
+      known("target", "kind", "large-board", "export", "spine");
+      const check = await checkDeliveryFiles(p[1]!, deliveryFlags(flags, true).target!, {
+        ...deliveryFlags(flags, true),
+        ...(flags.get("export") ? { exportDir: flags.get("export")! } : {}),
+        ...(flags.get("spine") ? { spine: flags.get("spine")! } : {}),
+      });
+      const c = check.counts,
+        l = check.limits;
+      console.log(
+        `${check.target}, ${check.kind}: ${c.bones}${l ? `/${l.bones}` : ""} bones, ${c.setupTriangles}${l ? `/${l.setupTriangles}` : ""} setup triangles (${c.allTriangles} in all attachments), about ${c.drawCalls}${l ? `/${l.drawCalls}` : ""} draw calls, ${c.clipping} clipping`,
+      );
+      for (const r of check.rows)
+        console.log(`${r.level === "error" ? "FAIL" : "WARN"} ${r.id}  ${r.message}`);
+      if (l?.maskTriangles)
+        console.log(
+          `  - triangles inside the mask: ${l.maskTriangles} at most; read them in Spine's Metrics view`,
+        );
+      console.log(`  - peak triangles while animating and real draw calls: Spine's Metrics view`);
+      console.log(check.pass ? "MEETS THE DELIVERY CONVENTIONS" : "NOT PASSED");
+      if (!check.pass) process.exitCode = 2;
       return true;
     }
     case "reduce-keys": {
