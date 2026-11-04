@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T13:14:50.496Z",
+  "startedAt": "2026-11-04T13:14:59Z",
+  "completedAt": "2026-11-04T13:20:35.360Z",
+  "result": "updated",
+  "focus": [
+    "原作者完成遊戲實機",
+    "小比例非人形角色、空中位置、球及背景分層"
+  ],
+  "addedIds": [
+    "spine-squishy-sports-gameplay-reel"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      23.5,
+      38.5
+    ]
+  },
+  "research": [
+    {
+      "url": "https://www.mattlawsonhall.com/projects-8",
+      "outcome": "原作者明示 Squishy Sports 的圖像在 Illustrator 製作、綁骨與動畫使用 Spine、整合到 Unity；足以確認此專案 topic: spine，未按畫風猜工具。"
+    },
+    {
+      "url": "https://www.mattlawsonhall.com/squishy-sports",
+      "outcome": "確認原作者 gameplay trailer 與 Vimeo 嵌入 ID 758418688；作者列出美術與動畫製作責任、Chris Jeffrey 的遊戲設計與程式角色。未另收錄角色海報或靜態畫廊。"
+    },
+    {
+      "url": "https://vimeo.com/758418688",
+      "outcome": "核對 2D Animation Demo Reel (Squishy Sports)、Matthew Lawson-Hall 原作者與署名非商業授權標示，未確認具體 CC 版本。媒體初始估計片長 64.700003，載入後為 64.746666 秒，記錄後者。看過 25.361690 秒局部畫面；暫停並把完整播放器捲回視窗後，實際採用 38.503949 及 23.500000 秒完整樣本。進度條操作一度開始播放，沒有把這段背景經過時間算成連續觀看。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://tr.linkedin.com/posts/yigitumutklc_warbot-httpslnkding68yfe2g-bu-projede-activity-7418054323491971072-RTeO",
+      "reason": "文字網頁工具 cache miss；只有搜尋標題與描述，未觀看 Warbot、未新增已研讀條目，改研究另一位可存取的原作者。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 55 sources",
+    "indexBuild": "passed — 11 Spine video entries (including the original Vimeo source)",
+    "sourceDedup": "passed — Vimeo ID 758418688 plus unique original project URL",
+    "evidence": "visual-samples; two timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "未連續觀看起跳、飛行或落地，不推論速度、碰撞、幀率、彈性或節奏。",
+    "Unity 遊戲物理不等於 Spine 物理約束；版本、製作地與每個素材的授權範圍未核對。",
+    "未下載重傳媒體或瀏覽器截圖；未修改引擎、角色或快取、未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "繼續優先完成角色演出／動作集，補待機與次要運動；保持完整播放器可視範圍，實際看過動作過程後才寫 timing 分析。"
+}

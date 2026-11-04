@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T12:23:03.083Z",
+  "updatedAt": "2026-11-04T13:19:51.807Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -2974,6 +2974,75 @@
         "697 秒附近的頭部局部超出原編輯畫布，該樣本只用於身體及曲線介面；完整全身 Pose 以 497.48 秒為準。",
         "未核對 Spine 版本、素材下載授權、製作地或原始專案；舊版介面與曲線不代表可直接套用至 Spine 4.0，也未推定腳底鎖定或約束實作。",
         "論壇自動回覆是搜尋線索，不能取代原始影片的實際畫面與發布者查證；本條目並未研讀全片。"
+      ]
+    },
+    {
+      "id": "spine-squishy-sports-gameplay-reel",
+      "title": "Spine 遊戲實機｜Squishy Sports 空中角色與球的分層",
+      "work": "2D Animation Demo Reel (Squishy Sports)",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging"
+      ],
+      "actions": [
+        "creature"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/758418688",
+        "publisher": "Matthew Lawson-Hall（Vimeo）",
+        "creator": "Matt Lawson Hall／Matthew Lawson-Hall；遊戲設計與程式為 Chris Jeffrey",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "作者作品集 https://www.mattlawsonhall.com/projects-8 的 2D Animation - Squishy Sports 段落明確說明圖像使用 Illustrator、綁骨與動畫使用 Spine，再整合到 Unity；不是由抽象 2D 外觀猜測。專案頁 https://www.mattlawsonhall.com/squishy-sports 嵌入此 Vimeo ID，原影片署名 Matthew Lawson-Hall，說明美術、動畫、VFX 與預告剪輯由本人製作。此為原作者公開來源，不是 Esoteric Software 自製影片。",
+        "durationSeconds": 64.746666,
+        "aliases": [
+          "https://www.mattlawsonhall.com/squishy-sports"
+        ],
+        "rights": "Vimeo 頁面顯示署名－非商業性使用的授權標示，但本輪未確認具體 CC 版本或每個素材的權利範圍，不能當成所有遊戲資產的通用重用授權。本條目只連結影片及保存原創筆記，未下載或重傳媒體。"
+      },
+      "firstSeen": "2026-11-04T13:19:51.807Z",
+      "lastVerified": "2026-11-04T13:19:51.807Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器從原作者專案頁找到嵌入影片，開啟原始 Vimeo 頁，靜音、暫停後用進度條按鍵抽查；每次確認播放器完整在視窗內並核對實際秒數。沒有連續觀看動作過程。",
+        "locator": "00:23.50 太空佈景足球場；00:38.50 城堡佈景籃球場。",
+        "samples": [
+          {
+            "seconds": 23.5,
+            "note": "太空／月亮佈景的木地板球場，左上單眼角色和足球位於較高處，右下藍白裝甲形角色位於較低處；兩側有球門，背景星球、月亮與星形物件相當明亮。"
+          },
+          {
+            "seconds": 38.5,
+            "note": "城堡與綠龍佈景的籃球場，兩個小型圓身角色在畫面偏右的不同高度，籃球在它們上方；前景有深色觀眾剪影，兩側籃框分處左右。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "23.50 秒：足球、左上單眼角色與右下角色在垂直方向分開，球門與木地板保留清楚場地界線；亮背景下仍需同時檢查小角色和球的輪廓。",
+        "38.50 秒：角色與籃球分成高低不同的位置，城堡、綠龍和前景觀眾提供多層形狀；這張畫面只能作空中位置與構圖參考，不能判定起跳、下降或球的運動方向。"
+      ],
+      "application": [
+        "Layout 先 Key 自有角色主要 Pose 及球的位置，以實際遊戲比例檢查角色、球與目標的間隙；空中姿勢先把身體方向、腳與球的相對位置畫清楚，再做 Blocking。",
+        "Blocking 另外設計起跳、空中與落地的連接，並在自己的 Spine 4.0／引擎預覽中確認接觸；這兩張不同模式樣本不能提供完整跳躍軌跡或 timing。",
+        "Final 加入背景演出及觀眾前，先確認亮背景和大型形狀不會淹沒球與小比例角色；遊戲碰撞／物理須在自有引擎驗證，不從畫面套用 Spine 物理功能。"
+      ],
+      "limits": [
+        "兩個時間碼屬不同球類及背景的獨立抽查，未連續觀看動作；不推論跳高、球速、幀率、接觸幀、彈性或固定延遲。",
+        "角色造型與高度不能證明使用哪一種 mesh、骨架或變形方法；Spine 版本及製作地未確認。",
+        "作者說明遊戲在 Unity 中使用物理，不代表成品由 Spine 的物理約束產生；不可把較新版本功能套到 Spine 4.0。",
+        "僅確認作者明示此專案使用 Spine，不把背景的每一層、所有 VFX 或遊戲邏輯都歸入 Spine。"
       ]
     }
   ]
