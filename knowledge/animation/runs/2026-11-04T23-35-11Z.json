@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T23:35:00.464Z",
+  "startedAt": "2026-11-04T23:35:11Z",
+  "completedAt": "2026-11-04T23:38:50.026Z",
+  "result": "updated",
+  "focus": [
+    "原作者步行製作示範補看",
+    "局部體積修整與全身動作檢查的區別"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-anton-armored-walk-timelapse"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 1,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      273
+    ],
+    "newWholeBodyPoses": 0
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/21206-spine-animations",
+      "outcome": "原作者 Anton／booboogaga 列出完成平台角色與步行製作縮時，重新核對本人來源，不把片名的 Esoteric Software 當發布者。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=tZRSz4lEOJc",
+      "outcome": "優先嘗試論壇直接列為 Spine 製作的完成平台角色影片 IMG 3574；正常瀏覽器顯示無法播放媒體，未看過、未收錄該片觀察。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=d2qRLw0GzG8",
+      "outcome": "改補看已收錄作者縮時，確認 IxIXIOoIXIxI 頻道與 390.041 秒片長。實際抽查 351、322、376、273、234 秒，主要是局部編輯而非新的完整步行 Pose。只採用 273 秒的局部畫面與原作字幕：作者自述在步行基本可用後再補部位體積感；明確區分作者自評和本輪觀察。不把局部修整或字幕當作已確認完整步行品質。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=tZRSz4lEOJc",
+      "issue": "文字瀏覽擷取失敗，正常背景瀏覽器亦顯示無法播放媒體。",
+      "resolution": "不繞過限制，不為該片造觀察；改補看另一個可用的原作者來源。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 61 sources",
+    "indexBuild": "passed — 17 Spine video entries",
+    "sourceDedup": "existing canonical YouTube ID d2qRLw0GzG8 updated in place; firstSeen preserved; inaccessible clip not added",
+    "evidence": "visual-samples; one added partial-frame sample with attributed production caption; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "previousPublication": {
+    "commit": "6f1699bdc8804068e5e07938e5eb9b5f8c5efd59",
+    "pagesRun": 41927203063,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "本輪沒有新增完整步行 Pose 或連續循環證據；新增價值是可回查的作者修整順序與應用限制。",
+    "縮時倍率、步頻、Spine 版本、rig、逐項素材授權與製作地區仍未知。",
+    "未下載重傳影片、原圖或瀏覽器截圖，未修改引擎／角色／快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "回到原作者或官方的完成走跑／待機角色動作集，優先完整全身鏡頭；不要繼續以局部 rig 編輯近景代替完成演出。"
+}
