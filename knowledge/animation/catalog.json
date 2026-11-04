@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T21:40:31.496Z",
+  "updatedAt": "2026-11-04T22:38:51.554Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3426,6 +3426,83 @@
         "Spine 版本、rig、mesh、權重、槍械控制方式及遊戲相機／場景的具體實作未知；不由官方網站目前版本介紹推定此影片使用同版本。",
         "Kido 的案例說明是使用 Spine 的直接來源，但未逐層核對所有遊戲效果的實作；本輪沒有觀察清楚的射擊 FX 過程。",
         "製作地區及個別角色美術作者未核實，region 保持 unknown；不因角色風格、名稱或語言猜測地區。"
+      ]
+    },
+    {
+      "id": "spine-code-hardcore-mech-fx-showcase",
+      "title": "Spine 遊戲展示｜Code: HARDCORE 機甲主要 Pose 與戰鬥 FX",
+      "work": "Code: HARDCORE — RocketPunch official Spine showcase video01",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "fx"
+      ],
+      "actions": [
+        "attack",
+        "shoot",
+        "fx"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://en.esotericsoftware.com/showcase/rocketpunch/video01.mp4",
+        "publisher": "Esoteric Software（官方 showcase 網站託管）",
+        "creator": "RocketPunch；案例署名 Louiky Mu（CEO／Producer／Art Director），個別動畫師與特效作者未確認",
+        "platform": "Esoteric Software 官方網站",
+        "official": true,
+        "verification": "實際開啟 https://en.esotericsoftware.com/spine-showcase-all 的 RocketPunch 案例。Louiky Mu 的案例說明直接提到 Code: HARDCORE 使用 Spine 製作 2D 動畫、特效、動畫測試與互動過場，並連到 RocketPunch。頁面 #rocketpunch 的 video src 為 /showcase/rocketpunch/video01.mp4；以同一官方 MP4 在瀏覽器檢視，片長 133.866667 秒，內容包含 Spine 編輯器中的機甲及遊戲戰鬥。分類依作品案例，並非由機甲外觀推測工具；未逐層確認每個煙火效果的實作。",
+        "durationSeconds": 133.866667,
+        "aliases": [
+          "https://en.esotericsoftware.com/spine-showcase-all#rocketpunch"
+        ],
+        "rights": "官方網站公開案例不代表影片、機甲美術、遊戲與各特效素材可重用；本輪未找到逐項重用授權。只保留公開原始連結與原創短篇筆記，不下載重傳影片、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-04T22:38:51.554Z",
+      "lastVerified": "2026-11-04T22:38:51.554Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "在背景瀏覽器核對官方案例與嵌入 video src，開啟該官方 MP4 的原生播放器；暫停與鍵盤跳轉後分開核對實際時間及穩定解碼畫面。採用 8.197677、80.485566、88.517633 秒三個完整可見樣本。41.664266 與 61.744333 秒的角色介紹版面未採用。沒有連續觀看動作或 FX 過程。",
+        "locator": "00:08.20 編輯器主要 Pose；01:20.49 戰鬥場景與煙塵；01:28.52 火球、煙霧與遮擋。畫面內遊戲倒數不是影片時間碼。",
+        "samples": [
+          {
+            "seconds": 8.197677,
+            "note": "Spine 編輯器棋盤格中的紅橙機甲完整全身，雙拳抬在身體兩側，雙膝彎、雙腳分開，胸前橙色 X 形亮部突出；右側可見部件樹，下方有工具列與 Key。"
+          },
+          {
+            "seconds": 80.485566,
+            "note": "橘色工業場景中，藍橙機甲低身持長槍朝右，左後有履帶車，右側亦有機甲；大面積黃褐煙塵位於中央偏右，上方有飛行機械，下方零星火焰貼近平台。"
+          },
+          {
+            "seconds": 88.517633,
+            "note": "戰鬥畫面左中與下方有橘黃亮火球，灰黑煙霧遮住中部大部分機甲；上中仍可見部分機體，中央有藍白色折線亮部，畫面邊緣呈紅橘色。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "8.197677 秒：雙拳、膝和腳形成寬而不對稱的全身姿勢，胸前亮色 X 與暗灰關節區分出主要體塊；編輯器 Key 可見，但不足以推導作者的 Pose 設計順序或節奏。",
+        "80.485566 秒：低身機甲與長槍形成朝右的方向，煙塵的大色塊位於機體後側及右方，前方持槍輪廓仍可辨認；只能說明這張戰鬥畫面的配置，不能確認射擊、爆炸或煙塵的先後。",
+        "88.517633 秒：亮火球、暗煙和藍白折線形成不同明度及顏色層次；煙火大幅遮住人物，這是檢查 FX 覆蓋與角色可讀性的單格參考，不是對效果好壞或完整演出的判定。"
+      ],
+      "application": [
+        "Layout 先 Key 自有機甲的骨盆、胸頭、雙拳／持槍手與雙腳，用大體塊和剪影確認重心及武器方向；先保留清楚主要 Pose，再規劃特效覆蓋區域。",
+        "Blocking 自行安排出力、接觸和收勢等主要轉折，將機體、目標、煙塵與火球的範圍放回實際遊戲尺度檢查；這三個不同畫面不能提供原作動作時長或效果觸發點。",
+        "Final 在主要 Pose 通過後才調整煙火形狀、明暗及前後遮擋，連續預覽是否在需要辨識機甲的時刻遮住武器與姿勢。這是對自有 Spine 4.0 專案的應用推論；依實際輸出方式另外驗證，不從成品猜原作約束或粒子系統。"
+      ],
+      "limits": [
+        "三個獨立靜態樣本，沒有連續看過動作；不能分析攻擊速度、射速、FX 壽命、spacing、延遲、幀率或連續命中節奏。",
+        "80.485566 與 88.517633 秒的煙火不能僅由亮度或外形判定生成方法；官方案例自述使用 Spine 處理特效，不等於每個可見效果都已逐層證實。",
+        "Spine 版本、rig、權重、網格及遊戲 runtime 的具體實作未知；不把較新版本的物理功能直接套用到 Spine 4.0。",
+        "製作地區與個別動畫／特效作者未逐一核對，region 保持 unknown；角色介紹版面的靜態大圖未作本輪收錄主體。"
       ]
     }
   ]

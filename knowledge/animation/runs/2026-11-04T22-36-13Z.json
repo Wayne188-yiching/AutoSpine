@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T22:35:59.497Z",
+  "startedAt": "2026-11-04T22:36:13Z",
+  "completedAt": "2026-11-04T22:39:17.539Z",
+  "result": "updated",
+  "focus": [
+    "官方完成機甲演出與戰鬥 FX",
+    "主要 Pose、煙火覆蓋及明暗層次"
+  ],
+  "addedIds": [
+    "spine-code-hardcore-mech-fx-showcase"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      8.197677,
+      80.485566,
+      88.517633
+    ]
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/spine-showcase-all#rocketpunch",
+      "outcome": "實際核對官方 RocketPunch 案例，Louiky Mu 的說明直接提到 Code: HARDCORE 使用 Spine 製作角色動畫、FX、測試與互動過場。頁面 #rocketpunch 的 video src 指向官方 /showcase/rocketpunch/video01.mp4，未以 2D 外觀猜工具。"
+    },
+    {
+      "url": "https://en.esotericsoftware.com/showcase/rocketpunch/video01.mp4",
+      "outcome": "背景瀏覽器正常開啟官方託管 MP4，核對片長 133.866667 秒。暫停後逐張檢視 8.197677、41.664266、88.517633、61.744333、80.485566 秒；採用全身編輯器 Pose 與兩張實際戰鬥煙火畫面，41.664266 和 61.744333 秒角色介紹版面未採用。每次跳轉後另取穩定解碼畫面，未把背景播放或遊戲內倒數當成連續觀看證據。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 61 sources",
+    "indexBuild": "passed — 17 Spine video entries",
+    "sourceDedup": "new official MP4 URL and RocketPunch case alias; no existing matching URL",
+    "evidence": "visual-samples; three timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "previousPublication": {
+    "commit": "69b4a8b9fddd975ad3daabec5f3c0acb8ce26a69",
+    "pagesRun": 41918396872,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "僅抽查單格，不分析攻擊節奏、煙火壽命、命中順序或次要運動延遲。",
+    "官方案例確認作品使用 Spine，但沒有逐層確認煙火生成方法；版本、rig、runtime、逐項作者／權利及製作地區未知。",
+    "未下載重傳原圖、影片或瀏覽器截圖，未修改引擎／角色／快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "輪替到走跑、待機或次要運動的完成動作集；以全身主要 Pose 和配件可讀性為先，連續節奏分析仍等待真正看過動作過程。"
+}
