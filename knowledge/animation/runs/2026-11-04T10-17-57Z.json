@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T10:17:47.826Z",
+  "startedAt": "2026-11-04T10:17:57Z",
+  "completedAt": "2026-11-04T10:21:37.361Z",
+  "result": "updated",
+  "focus": [
+    "尋找原作者 Spine 走跑循環",
+    "來源受阻後補看既有遊戲的全身低姿勢與離地 Pose"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-unruly-heroes-gameplay"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      32.1,
+      37.1
+    ]
+  },
+  "research": [
+    {
+      "url": "https://zh.esotericsoftware.com/forum/d/21436-character-animator/3",
+      "outcome": "讀到原作者 David Monteiro 列出自己的 Spine Pro walk cycle 與 Squirrel Spine run cycle 連結，只有來源／標題資料，未把它們當成已觀看作品。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=3JAfFrvLShY",
+      "outcome": "重新核對 Magic Design Studios 發布者、原始遊戲實機標題與 107.061 秒片長。實際看過 26.758330、32.102069、37.102069、10.700690 秒；採用 32.10 秒低軀幹長棍 Pose 與 37.10 秒離地位置樣本，另兩張角色較局部／小，不加入動作分析。"
+    },
+    {
+      "url": "https://esotericsoftware.com/spine-showcase",
+      "outcome": "再次查閱官方展示頁；本輪沿用既有條目及前輪已核對的 Unruly Heroes 官方展示證據，不把隨機排列的其他作品或普通 2D 骨骼動畫當成新 Spine 來源。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=wfO46czayU0",
+      "reason": "網頁文字工具 cache miss；一般背景瀏覽器回覆無法播放媒體，未取得有效片長或畫面。不猜測是刪除、地區限制或永久失效，未加入已研讀條目。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=588zadeLmzs",
+      "reason": "網頁文字工具 cache miss；一般背景瀏覽器同樣顯示無法播放媒體，未取得觀看證據。改補看另一個可用公開影片，未繞過限制。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 52 sources",
+    "indexBuild": "passed — 8 Spine videos",
+    "sourceDedup": "existing original video entry updated; no duplicate source added",
+    "evidence": "visual-samples; two additional actual timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful reply and Git-local receipt establish the verified remote commit."
+  },
+  "limits": [
+    "沒有取得走跑循環觀看證據，沒有將不可播放影片標成已研讀。",
+    "離地單格不確認跳躍階段、重力或技能機制；兩個不同畫面不能分析銜接與 timing。",
+    "未下載重傳媒體／截圖，未修改引擎、角色素材或已安裝快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "優先尋找其他可播放的原作者或官方 Spine 走跑與跳躍全身示範；不要反覆以 FX 樣本替代尚未取得的下肢動作證據。"
+}
