@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T16:30:49.341Z",
+  "updatedAt": "2026-11-04T17:32:18.667Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3184,6 +3184,82 @@
         "只看過兩個獨立正片樣本，未連續觀看整段連擊；不能分析 timing、spacing、刀速、幀率、碰撞或固定延遲，也未將片長視為單次攻擊週期。",
         "2.215044 秒的刀刃左端在來源深灰畫面邊界外，不能確認完整端點或由此重建運動弧線；播放器完整在視窗內，該限制不是頁面捲動造成。",
         "原始骨架、網格、權重、Spine 版本與製作地未確認；不把靜態圖當成原作 IK、物理約束或可直接重用的 Spine 4.0 rig。"
+      ]
+    },
+    {
+      "id": "spine-julio-duque-2017-demo-reel",
+      "title": "Spine 角色動作集｜Julio Duque Montero 2017 Demo Reel",
+      "work": "Spine Demo Reel - 2D Skeletal Animation - Julio Duque Montero - 2017",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "line-of-action",
+        "staging"
+      ],
+      "actions": [
+        "run",
+        "acting"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=PgkEeiFz3lY",
+        "publisher": "J（@user-ev7sr6fg2n）",
+        "platform": "YouTube",
+        "official": true,
+        "creator": "Julio Duque Montero（Spine Forum：JulioD；動畫與 rig）；插畫作者逐項未確認",
+        "verification": "原作者 JulioD 在 https://en.esotericsoftware.com/forum/d/21145-2d-animator 直接提供相同影片 ID 並自述 Spine 動畫經驗；影片標題署名 Julio Duque Montero，發布頻道目前顯示 J，描述直接聲明此 reel 使用 Spine，並連到其 ArtStation julioduque。抽查畫面可見 Spine PRO 編輯器。這是原動畫師公開作品集，不是 Esoteric Software 製作的官方影片；不能把論壇其他人的動作需求當成影片內容。",
+        "durationSeconds": 177.981,
+        "aliases": [
+          "https://en.esotericsoftware.com/forum/d/21145-2d-animator"
+        ],
+        "rights": "公開播放不等於素材可重用授權；未找到影片及角色素材的明確重用許可。作者於 https://en.esotericsoftware.com/forum/d/21680-hey-there 將 demo reel 的插畫歸功於朋友 dcaballero（ArtStation），但未逐一核對片中每個角色的權利人。只保存連結與原創短篇觀察，不下載、重傳影片或截圖。"
+      },
+      "firstSeen": "2026-11-04T17:32:18.667Z",
+      "lastVerified": "2026-11-04T17:32:18.667Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器暫停原始 YouTube 影片，以播放器鍵盤跳轉逐張檢視；捲回並確認完整播放器可見。採用 17.796666、35.593333、53.39 秒的獨立全身樣本。106.78 秒另看見近景網格展示，本輪未採用。沒有連續觀看動作過程。",
+        "locator": "00:17.80、00:35.59、00:53.39；不同角色的獨立 Pose 樣本。",
+        "samples": [
+          {
+            "seconds": 17.796666,
+            "note": "棕色管狀頭身角色全身，頂端有大型藍色橢圓開口；嘴張開、身體傾斜，藍色手持物朝右下，手臂交疊於腹前。"
+          },
+          {
+            "seconds": 35.593333,
+            "note": "黑色兜帽／面罩、紫色面部與藍衣角色全身，身體斜向右上，一隻手抬高持有紫色端頭物件，另一手靠腰，雙腿一屈一伸；編輯器左下顯示 Run0。"
+          },
+          {
+            "seconds": 53.39,
+            "note": "綠色哥布林樣角色全身，棕色裝備、背後箭袋，雙手在胸腹前持弩狀武器朝右；兩腳前後分開，後腿屈起，角色下方有橢圓陰影。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "17.796666 秒：大型頭頂開口與右下方小開口構成兩個不同尺度的方向，手臂和手持物集中在身體前下方；此單格只支持姿勢與輪廓觀察。",
+        "35.593333 秒：抬高手臂與傾斜頭身拉出向右上的動勢，藍衣和黑色手臂／靴子分出肢體區塊。Run0 是可讀的原作動畫名稱，不足以證明完整跑步週期或跳躍。",
+        "53.39 秒：持弩手臂向右，前後腿形成分離的剪影，背部箭袋仍露在頭肩外；同時保留手持物方向與雙腿姿勢，適合作為帶武器移動的 Layout 參考。"
+      ],
+      "application": [
+        "Layout 先 Key 腳、骨盆、軀幹傾斜及持物手，縮小畫面檢查手持武器是否與身體混成一團；可借用前後腿分離與裝備外輪廓的設計原則，不複製角色素材。",
+        "Blocking 在自有動作中另行設計接觸、離地和交換腿的主要 Pose，逐個核對重心與持物方向；這三張不同角色樣本不能拼成同一角色的連續動作。",
+        "Final 才安排背部裝備、衣物或面部的次要運動；這是對 Spine 4.0 製作流程的應用推論，並非原作骨架、權重、插值或延遲的確認。"
+      ],
+      "limits": [
+        "僅三個不同角色的暫停單格；沒有連續觀看，不能分析節奏、速度、spacing、跑步週期、起跳／落地或固定延遲。",
+        "35.593333 秒與 53.39 秒不能僅憑腿部單格確定腳掌接觸地面或是否騰空；陰影不等於已確認接觸點。",
+        "Spine 版本、角色 rig 與具體功能使用未知，不把片中可見網格或較新版本功能直接套用到 Spine 4.0。",
+        "原作者及插畫作者的製作地區未核實，region 保持 unknown。"
       ]
     }
   ]

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T17:27:24.622Z",
+  "startedAt": "2026-11-04T17:27:42Z",
+  "completedAt": "2026-11-04T17:32:47.159Z",
+  "result": "updated",
+  "focus": [
+    "原動畫師公開 Spine 角色動作集",
+    "持物移動 Pose、全身剪影；跳躍證據仍待補足"
+  ],
+  "addedIds": [
+    "spine-julio-duque-2017-demo-reel"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      17.796666,
+      35.593333,
+      53.39
+    ]
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/21547-spine-animations",
+      "outcome": "搜尋找到 JulioD 的原作者 Spine 作品集線索；未把他人動作需求列表當成影片觀察。"
+    },
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/21145-2d-animator",
+      "outcome": "原作者直接提供 PgkEeiFz3lY 並自述 Spine 經驗；用來核對作者與影片，不收錄洽詢或聯絡資料。"
+    },
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/21680-hey-there",
+      "outcome": "作者自述負責 rig 與動畫，並將插畫歸功於 dcaballero；逐項素材權利仍未核實。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=PgkEeiFz3lY",
+      "outcome": "核對標題署名、J 頻道與描述的 Spine 聲明，片長 177.981 秒。暫停跳轉抽查 53.39、106.78、35.593333、17.796666 秒；採用三個全身角色單格，未採用 106.78 秒近景網格展示。53.39 秒首次畫面受頁面捲動裁切，捲回完整播放器後才記錄構圖；其他採用單格亦確認完整播放器可見。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 58 sources",
+    "indexBuild": "passed — 14 Spine video entries",
+    "sourceDedup": "new canonical YouTube ID PgkEeiFz3lY; no matching existing ID or URL",
+    "evidence": "visual-samples; three independent timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record",
+    "diagnostics": "Post-write optional git subprocess inspection hit sandbox EPERM; data write had completed and check/build passed. No Git mutation attempted by that diagnostic; publication uses the authorized publisher."
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "沒有連續觀看動作；不能分析節奏、跑步週期或宣稱看過起跳／落地。",
+    "Spine 版本、具體 rig、插畫逐項權利與製作地區未核實。",
+    "未下載重傳媒體或截圖，未修改引擎／角色／快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "優先找原作者明確標示的 jump／land 完成演出；以實際完整動作過程為目標，不把抬腿單格當成跳躍或連續觀看。"
+}
