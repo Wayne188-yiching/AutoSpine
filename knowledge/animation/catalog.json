@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T17:32:18.667Z",
+  "updatedAt": "2026-11-04T18:34:39.012Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3260,6 +3260,76 @@
         "35.593333 秒與 53.39 秒不能僅憑腿部單格確定腳掌接觸地面或是否騰空；陰影不等於已確認接觸點。",
         "Spine 版本、角色 rig 與具體功能使用未知，不把片中可見網格或較新版本功能直接套用到 Spine 4.0。",
         "原作者及插畫作者的製作地區未核實，region 保持 unknown。"
+      ]
+    },
+    {
+      "id": "spine-zhan-nikolaienko-character-showreel",
+      "title": "Spine 角色動作集｜Zhan Nikolaienko 盾兵 jump／idle Pose",
+      "work": "Spine 2D Animation Showreel - Zhan Nikolaienko.mp4",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "line-of-action",
+        "staging"
+      ],
+      "actions": [
+        "jump",
+        "idle"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/562136717",
+        "publisher": "Жан Ніколаєнко（Vimeo user92895749）",
+        "creator": "Zhan Nikolaienko／Жан Ніколаєнко（動畫與 rig 自述）；個別角色美術作者未確認",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "原始 Vimeo 影片標題署名 Zhan Nikolaienko，發布帳號為 Жан Ніколаєнко；作者直接自述此 reel 以 Spine 動畫製作，另列 Photoshop、Spine 2D、After Effects。抽查的盾兵鏡頭實際顯示動畫清單，29.301968 秒選中 jump，34.333333 秒選中 idle。這是原動畫師公開的作品集，不是 Esoteric Software 自製示範，也不表示片中每一層或合成皆出自 Spine。",
+        "durationSeconds": 84.96667,
+        "aliases": [],
+        "rights": "本輪未找到角色素材或影片可重用的明確授權；動畫、插畫及可能的客戶素材權利範圍未逐項核對。只保存原始連結和短篇原創觀察，不下載重傳影片、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-04T18:34:39.012Z",
+      "lastVerified": "2026-11-04T18:34:39.012Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器以正常 Vimeo 播放器跳轉並暫停，讀取實際時間；捲回完整播放器後逐張檢視。29.301968 秒另在控制列消失後看過完整腿腳；34.333333 秒控制列遮住足部，因此只採用上身、盾與持物的觀察。播放期間未連續看過動作，不能把背景播放時間當觀看證據。",
+        "locator": "00:29.30（原作 jump 選中）、00:34.33（原作 idle 選中）；兩個分開的暫停單格。",
+        "samples": [
+          {
+            "seconds": 29.301968,
+            "note": "盔甲骷髏盾兵全身位於棋盤背景，頭向右上、上身後傾，一手持長柄物斜向左後，另一手把長方盾抬至頭前上方；雙膝彎曲、雙腳前後分開。右上動畫清單選中 jump。"
+          },
+          {
+            "seconds": 34.333333,
+            "note": "同一盾兵頭與胸向右前方俯，長方盾較接近直立，長柄物從腰側向左上伸出；右上動畫清單選中 idle。播放器控制列遮住足部，未用此格判斷接地。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "29.301968 秒：盾面斜擋在頭前上方，頭胸後傾，長柄物向左後伸出；盾與手持物分列身體兩側，形成清楚方向差異。原作清單的 jump 標籤可確認該動畫名稱，不能從一格確認起跳、最高點或落地階段。",
+        "34.333333 秒：原作 idle 選中時，頭胸更朝向盾面，盾的長邊接近垂直，長柄物仍向後方伸出。此格足部被播放控制列遮住，只能比較上半身與持物配置。",
+        "兩張樣本來自不同的已命名動畫，不能把五秒時間差當作同一跳躍的時長或中間轉折。"
+      ],
+      "application": [
+        "Layout 可先 Key 自有盾兵的骨盆、胸頭方向、握盾手與長柄物端點，先看武器和盾牌是否遮住頭胸；把舉盾與俯身兩種主要 Pose 作為不同動作設計的參考。",
+        "Blocking 另行建立自有跳躍的預備、蹬地、騰空與落地 Pose，連續預覽足部及重心，再安排盾和長柄物的過渡；本來源的兩張單格不能提供這些階段或節奏。",
+        "Final 在主要 Pose 通過後才加入裝備跟隨、手部微調與材質亮暗細節；若使用 Spine 4.0，依自有骨架驗證，這是流程應用推論，不是原作約束或權重的確認。"
+      ],
+      "limits": [
+        "沒有連續觀看動作過程，review 保持 visual-samples、timingBasis none；不能分析速度、spacing、循環、延遲、幀率或跳躍時長。",
+        "jump／idle 分類有原作動畫清單佐證，但沒有觀察完整起跳落地或待機循環。29.301968 秒的腳位不能單獨證明實際接地狀態，34.333333 秒足部被控制列遮住。",
+        "Spine 版本、rig、mesh、權重及 After Effects 的具體用途未知；不由成品推導 Spine 4.0 可直接重建的功能。",
+        "作者的名稱與文字語言不等於作品製作地；地區與個別角色插畫作者未核實，region 保持 unknown。"
       ]
     }
   ]
