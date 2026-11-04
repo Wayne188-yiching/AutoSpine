@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T09:15:16.846Z",
+  "startedAt": "2026-11-04T09:15:25Z",
+  "completedAt": "2026-11-04T09:19:22.055Z",
+  "result": "updated",
+  "focus": [
+    "Spine 官方展示影片與遊戲成品",
+    "近戰亮帶、儀式場景 FX 與怪物口部主要 Pose"
+  ],
+  "addedIds": [
+    "spine-cult-lamb-showcase"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      13.96,
+      34.89,
+      48.85
+    ]
+  },
+  "research": [
+    {
+      "url": "https://esotericsoftware.com/spine-showcase",
+      "outcome": "讀取官方案例頁，並在背景瀏覽器實際看到轉到中文頁的 Massive Monster 案例、相同 YouTube 影片及 James Pearmain 的 Spine 使用說明；沒有把全遊戲層都視為 Spine。"
+    },
+    {
+      "url": "https://zh.esotericsoftware.com/spine-showcase",
+      "outcome": "Massive Monster 區塊嵌入 M4J6LAmsV7A，發布者 Esoteric Software；逐筆核對新片 ID，不與既有 Unruly Heroes、Monkey Island 等展示重複。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=M4J6LAmsV7A",
+      "outcome": "核對 Cult of the Lamb - Spine showcase、官方頻道與 courtesy of Massive Monster 描述；正常略過廣告後讀取正片 69.821 秒。實際逐張看過 13.957276、34.893191、48.850468 秒，三張均保留為獨立畫面樣本。"
+    },
+    {
+      "url": "https://esotericsoftware.com/spine-examples",
+      "outcome": "文字頁只有通用範例與篩選說明，未取得新影片，不新增文字教材充數。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 52 sources",
+    "indexBuild": "passed — 8 Spine videos",
+    "sourceDedup": "passed — canonical YouTube ID M4J6LAmsV7A",
+    "evidence": "visual-samples; three timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after this saved record; tool reply and Git-local receipt provide authoritative remote commit verification."
+  },
+  "limits": [
+    "未連續觀看動作，未分析攻擊節奏或閃光出現順序。",
+    "儀式鏡頭上端被截切，口部與白帶只作形狀／構圖參考；不猜原作骨架、Spine 版本或製作地。",
+    "只保留連結與原創短篇觀察；未下載重傳媒體、未存瀏覽器截圖、未修改引擎／角色／已安裝快取、未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "繼續優先 Spine 完成角色動作，補走跑、跳躍／落地的清楚全身鏡頭；若無連續觀看能力則保留 visual-samples，避免再以一般 FX 場景取代下肢動作證據。"
+}

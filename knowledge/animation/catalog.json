@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T08:14:04.344Z",
+  "updatedAt": "2026-11-04T09:18:44.749Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -2743,6 +2743,80 @@
         "角色與地面、HUD 的局部重疊不能證明足底鎖定、碰撞或接地品質；未知此刻是否移動，不能由瞄準方向推導行進方向。",
         "影片所用 Spine 版本、骨架、網格與實際混合方式未確認，不把目前專案版本或較新功能套回歷史影片，也不直接套用至 Spine 4.0。",
         "個別原作者與製作地區未確認，保持 region: unknown。"
+      ]
+    },
+    {
+      "id": "spine-cult-lamb-showcase",
+      "title": "Spine 遊戲展示｜Cult of the Lamb 亮色 FX 與怪物口部 Pose",
+      "work": "Cult of the Lamb - Spine showcase",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "fx"
+      ],
+      "actions": [
+        "creature",
+        "fx"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=M4J6LAmsV7A",
+        "publisher": "Esoteric Software（@EsotericSoftware）",
+        "creator": "Massive Monster；個別鏡頭動畫師未確認，官方案例引述美術總監 James Pearmain",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "原始影片由 Esoteric Software 發布，標題 Cult of the Lamb - Spine showcase，描述註明影片由 Massive Monster 提供。實際讀取 https://zh.esotericsoftware.com/spine-showcase 的 massive-monster 案例：嵌入相同影片 ID，並引述美術總監 James Pearmain 使用 Spine 製作角色動畫。48.85 秒也實際看到動畫編輯器中的怪物與時間軸；不由此推定整個遊戲、每層特效都使用 Spine。",
+        "durationSeconds": 69.821,
+        "aliases": [],
+        "rights": "影片註明由 Massive Monster 提供給官方展示，不等於角色素材或影片取得可重用授權；個別作者、音樂及各素材權利未逐一核對。僅保留原始公開連結及短篇原創觀察，不下載、重傳影片或畫面。"
+      },
+      "firstSeen": "2026-11-04T09:18:44.749Z",
+      "lastVerified": "2026-11-04T09:18:44.749Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "一般背景瀏覽器核對發布者、描述及正片片長；正常略過廣告，暫停後以播放器按鍵跳轉，逐張檢視並讀取實際秒數。沒有連續觀看動作過程。",
+        "locator": "00:13.96 遊戲白色寬帶；00:34.89 儀式場景；00:48.85 編輯器中的綠色怪物。",
+        "samples": [
+          {
+            "seconds": 13.96,
+            "note": "角色黑色輪廓位於左中，右側出現大面積白色彎曲寬帶與紅色小生物；亮帶外側仍可見暖色地面、植物及骨骸形狀。"
+          },
+          {
+            "seconds": 34.89,
+            "note": "俯視圓形圖案中央有直立長袍角色，上端被畫面邊緣截切；多道白色分叉亮帶向周圍展開，外圍小型黑色兜帽形體分散在不同方位。"
+          },
+          {
+            "seconds": 48.85,
+            "note": "動畫編輯器棋盤格背景前的綠色植物怪物，中央深色大口周圍排列多層尖牙，外輪廓有葉片與枝狀突起；下方時間軸可見多列 Key，右側樹狀面板可見。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "13.96 秒：白色寬帶佔據角色前方較大面積，角色黑色輪廓、紅色小生物和白帶之間有明暗對比；單格只支持攻擊畫面的形狀與可讀性參考。",
+        "34.89 秒：圓形地面圖案把注意力集中在中央長袍形體，分叉白帶與周邊小型兜帽形體建立中心和外圍的層次；此樣本不能確認閃光出現順序。",
+        "48.85 秒：怪物大口以深色空腔和多層尖牙為主要形狀，葉片與枝條形成不規則外輪廓；編輯器的密集 Key 不足以說明作者如何規劃主要 Pose 或每個部件的時間關係。"
+      ],
+      "application": [
+        "Layout 先 Key 自有怪物的頭部、口腔開合輪廓與主要枝條，保持深色口腔和齒列可讀；Blocking 再補口部與軀幹的轉折 Pose，Final 才加葉片、枝條細節。這是對 Spine 製作的應用推論，不是原作 rig 規格。",
+        "規劃近戰效果時，Layout 同時放入攻擊者、目標與寬帶覆蓋區域，先檢查主 Pose 的剪影；Blocking 確認自己的動作過程後，Final 再調亮度、覆蓋與消失，不能從單張展示決定效果幀數。",
+        "圓形場景可先以中心主要 Pose 和外圍角色位置建立層次，Final 再加分叉亮帶；須連續預覽確認閃光沒有淹沒臉部與動作方向。"
+      ],
+      "limits": [
+        "三個時間碼為不同鏡頭的靜態抽查，不能當成一次連續攻擊、變身或死亡過程；沒有分析節奏、速度、幀率、spacing 或固定延遲。",
+        "未核對影片使用的 Spine 版本、原作骨架、網格、約束或特效實作；不把編輯器中的 Key 密度當成 Layout 起手方式，不把較新版本功能套到 Spine 4.0。",
+        "34.89 秒中央角色上端被截切，不能用來分析全身或完整表情；13.96 秒的白帶也可能遮住局部肢體。",
+        "製作地與各鏡頭動畫師未確認，地區保持 unknown；官方案例能確認遊戲使用 Spine，不能證明所有畫面層都由 Spine 製作。"
       ]
     }
   ]
