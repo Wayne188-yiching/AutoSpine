@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T16:27:23.689Z",
+  "startedAt": "2026-11-04T16:27:40Z",
+  "completedAt": "2026-11-04T16:31:21.384Z",
+  "result": "updated",
+  "focus": [
+    "既有原作者完整角色演出補看",
+    "站姿表演、持物手高度與配件輪廓"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-mousedeer-character-showreel"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      9.362686,
+      18.725373
+    ]
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/26084-spine-animator",
+      "outcome": "本輪搜尋主要回到已收錄原作者 showreel 與一般教學，沒有把重複結果算成新來源；改對既有 MouseDeer 條目補看全身鏡頭。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=SLvl3nJSgVo",
+      "outcome": "重新核對 MouseDeer 發布者、Spine Animation Showreel、93.641 秒片長及描述 Animations for games made in Spine。實際看過 9.362686 秒、37.450746 秒與 18.725373 秒；捲回完整播放器後複核前兩個全身人物樣本，採用 9.362686 與 18.725373 秒。37.450746 秒偏機械物件，本輪未追加該樣本，以完整角色為重點。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 57 sources",
+    "indexBuild": "passed — 13 Spine video entries",
+    "sourceDedup": "existing canonical ID SLvl3nJSgVo updated in place; firstSeen preserved",
+    "evidence": "visual-samples; two added timestamps; five total independent samples; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "沒有連續觀看角色動作，不能把站姿單格當成待機／轉身、也不能分析配件延遲或節奏。",
+    "兩個新樣本是不同人物，不是同一角色的前後動作；Spine 版本與原作 rig 未確認。",
+    "未下載重傳媒體或截圖、未修改引擎／角色／快取、未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "繼續優先原作者或官方的完成動作集；補跳躍／落地時，找明確標示且能看到完整身體的鏡頭，不以一般站姿或工具教學代替已觀察的跳躍證據。"
+}
