@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T08:10:45.846Z",
+  "startedAt": "2026-11-04T08:11:00Z",
+  "completedAt": "2026-11-04T08:14:28.606Z",
+  "result": "updated",
+  "focus": [
+    "補看官方 Super Spineboy 遊戲實機",
+    "完整全身持槍 Pose 與敵群／散件 FX 可讀性"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-super-spineboy-gameplay"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      21.02,
+      52.27
+    ]
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=zAZ_PxxEgDI",
+      "outcome": "一般背景瀏覽器重新核對官方頻道與使用 Spine 的描述、210.241 秒正片。逐張看過實際 21.023333、26.023333、31.023333、52.272937、63.069999 秒；只採用 21.02 秒清楚全身與 52.27 秒敵群／灰色片形構圖，其他樣本角色被前景遮擋，未拿來分析下肢或運動。"
+    },
+    {
+      "url": "https://esotericsoftware.com/spine-documentation",
+      "outcome": "搜尋結果再次列出 Super Spineboy 為 Spine 範例平台遊戲；沿用已核對過的官方來源，不新增重複條目。"
+    }
+  ],
+  "accessIssues": [],
+  "environmentNote": "本輪查詢可用瀏覽器清單後，在目前的背景瀏覽器建立研究分頁，正常略過廣告並檢視正片；前輪舊瀏覽器代號不可用的情況未再阻礙抽查。不保存或上傳瀏覽器全畫面截圖。",
+  "validation": {
+    "catalog": "passed — 51 sources",
+    "indexBuild": "passed — 7 Spine videos",
+    "sourceDedup": "existing canonical entry updated; no new URL or video ID",
+    "evidence": "visual-samples; two added timestamps; segments empty; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; publication reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "未連續觀看動作，不能將背景播放經過時間或分散抽查當 timing 證據。",
+    "全身靜態樣本不表示走跑或待機狀態；灰色片形不證明死亡散件、物理或 Spine 功能。",
+    "版本、原作骨架與素材重用授權範圍沿用條目限制；未下載影片、未調用付費模型、未修改製作資產或引擎。"
+  ],
+  "nextFocus": "優先補官方或原作者清楚走跑、跳躍／落地的完成動作影片；若仍只能逐張抽查，持續明確使用 visual-samples，不增加沒有觀看證據的節奏分析。"
+}
