@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T11:17:18.636Z",
+  "startedAt": "2026-11-04T11:17:28Z",
+  "completedAt": "2026-11-04T11:23:35.935Z",
+  "result": "updated",
+  "focus": [
+    "原作者 Spine 步行製作示範",
+    "全身抬膝／分腿 Pose、盾牌與劍的輪廓",
+    "播放器可視範圍複核"
+  ],
+  "addedIds": [
+    "spine-anton-armored-walk-timelapse"
+  ],
+  "updatedIds": [
+    "spine-cult-lamb-showcase"
+  ],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 3,
+    "visualSamplesCorrected": 1,
+    "continuousClipsReviewed": 0
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/21206-spine-animations",
+      "outcome": "原作者 booboogaga 署名 Anton，將 d2qRLw0GzG8 列為自己製作的雙足走路循環縮時；沒有把片名中的軟體廠商當成影片發布者。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=d2qRLw0GzG8",
+      "outcome": "核對發布者 IxIXIOoIXIxI（相同 handle）及 390.041 秒片長。最初抽查 312、351、376、273、156 秒；發現頁面 scrollY 171 讓播放器上端不在視窗內後，捲回完整播放器，重新檢視 156、312 並追加 317 秒。採用 156 秒局部上身、312 秒全身抬膝、317 秒全身前後分腿，其他局部畫面不另加分析。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=M4J6LAmsV7A",
+      "outcome": "另在完整播放器複核實際 34.884884 秒，確認中央角色頭部可見；先前 34.893191 秒的「上端截切」來自頁面捲動造成的可視範圍，不能歸因於來源鏡頭構圖。本輪將樣本更正為 34.88 秒與完整畫面描述，移除不成立的來源截切限制。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 53 sources",
+    "indexBuild": "passed — 9 Spine videos",
+    "sourceDedup": "passed — new canonical ID d2qRLw0GzG8; prior Cult entry corrected in place",
+    "evidence": "visual-samples; three new samples plus one corrected sample; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; publication reply and Git-local receipt provide verified remote commit."
+  },
+  "limits": [
+    "步行影片是製作縮時，312 與 317 秒之差不是步行週期；未觀看連續動作或推論 timing。",
+    "156 秒依然是影片內的局部上身編輯畫面；312 與 317 秒在完整播放器中確認全身。",
+    "未下載重傳影片或截圖，未付費調用模型、未修改引擎／角色／快取、未上傳私有資料。"
+  ],
+  "nextFocus": "優先找完成的走跑／跳躍示範；每次先確認播放器整個邊界都在視窗內，避免把瀏覽器捲動造成的遮擋誤當成來源剪裁。取得實際連續觀看過程後才分析節奏。"
+}
