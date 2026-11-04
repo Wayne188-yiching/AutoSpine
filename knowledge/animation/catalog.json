@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T11:23:09.111Z",
+  "updatedAt": "2026-11-04T12:23:03.083Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -2902,6 +2902,78 @@
         "312 與 317 秒之間包含編輯及設計調整，不能把兩張圖直接當成連續動作關鍵幀。",
         "未確認製作地區、Spine 版本、實際權重／約束；編輯器導線不證明 IK 鎖腳、接地品質或可直接套用 Spine 4.0 的 rig。",
         "156 秒為局部上身樣本，僅支援持物關係觀察；本片是作者製作示範，不是 Esoteric Software 自製教學。"
+      ]
+    },
+    {
+      "id": "spine-soren-run-key-poses-tutorial",
+      "title": "Spine 跑步示範｜Søren Juul Øllgaard 的主要 Pose 與曲線編輯",
+      "work": "Spine - Run animation tutorial",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "workflow"
+      ],
+      "actions": [
+        "run"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=_3REunBvteU",
+        "publisher": "Søren Juul Øllgaard（@Nipsting）",
+        "creator": "Søren Juul Øllgaard；示例 Spineboy 素材個別作者及權利未另行核對",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "原始影片由 Søren Juul Øllgaard 的 @Nipsting 頻道發布，標題與描述均明示在 Spine 製作跑步動畫，實際抽查可見 Spine PRO Animate 編輯器與跑步主要 Pose。https://esotericsoftware.com/forum/d/29572-basic-animation-cycle 中的 Spinebot 回覆僅作發現此連結的線索，不作影片實作或作者身份的證明。本項為原始作者發布的教學，不因論壇連結便宣稱是 Esoteric Software 自製影片。",
+        "durationSeconds": 995.021,
+        "aliases": [],
+        "rights": "影片說明提供素材下載入口，但本輪沒有下載或核對其授權條款；不因此認定角色、教學影片或圖像可自由重用。僅保存公開連結與原創短篇觀察，不重傳媒體或角色素材。"
+      },
+      "firstSeen": "2026-11-04T12:23:03.083Z",
+      "lastVerified": "2026-11-04T12:23:03.083Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器靜音暫停、跳轉後核對實際秒數；將完整播放器捲回視窗內，確認邊界後逐張檢視。僅抽查製作畫面，不把背景播放或不同時間碼當成連續跑步過程。",
+        "locator": "06:37.98 初始直立 Pose；08:17.48 跑步分腿 Pose；11:36.47 曲線與傾斜身體。",
+        "samples": [
+          {
+            "seconds": 397.98,
+            "note": "Spine Animate 畫布中，Spineboy 全身直立、手槍朝右下，雙腳靠近；可見多段選取骨骼與下方 Dopesheet。"
+          },
+          {
+            "seconds": 497.48,
+            "note": "完整全身跑步形狀：軀幹前傾，前腿朝右下伸、後腿向左後折起，前方手持槍、另一手臂向後，兩腿間有清楚空隙。播放器章節標示 Creating key poses。"
+          },
+          {
+            "seconds": 696.47,
+            "note": "Spineboy 身體向右前傾，腿與手臂收在身體附近；畫布上端未完整容納頭頂，下方可見 hip 的 Rotate／Translate 軌道，以及 Curve 的曲線控制點。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "397.98 與 497.48 秒是製作過程的不同抽查：由直立配置到前傾、前伸腿／後折腿的主要形狀，手槍與背向手臂也產生不同輪廓；不把相隔時間當動作耗時。",
+        "497.48 秒：頭部、握槍手與前腳朝右，後折腿和向後的手臂提供反向形狀；雙腿的負空間讓跑步 Pose 在小比例下仍有辨識線索。",
+        "696.47 秒：編輯介面同時顯示骨盆相關軌道及曲線控制點；單張曲線畫面不足以判定完整跑步的加減速、腳底接觸或循環品質。"
+      ],
+      "application": [
+        "Layout 先 Key 自有角色的分腿、收腿等主要跑步 Pose，檢查骨盆、膝腳與持槍手的方向及負空間；先用完整全身 Pose 通過可讀性檢查，再補細節。",
+        "Blocking 再安排交替腿、身體傾斜及接觸姿勢的連接，連續預覽檢查滑步與重心；這是給 Spine 4.0 專案的應用推論，不沿用影片秒數作循環長度。",
+        "Final 在主要 Pose 穩定後才調曲線、持物穩定及次要跟隨；修改曲線後應回看全循環，不以編輯器曲線形狀或 Key 數量代替實際動作檢查。"
+      ],
+      "limits": [
+        "未連續觀看跑步動作，未確認實際 FPS、循環幀數或播放倍率，不能從時間軸或零散字幕推導步頻、spacing、固定延遲。",
+        "697 秒附近的頭部局部超出原編輯畫布，該樣本只用於身體及曲線介面；完整全身 Pose 以 497.48 秒為準。",
+        "未核對 Spine 版本、素材下載授權、製作地或原始專案；舊版介面與曲線不代表可直接套用至 Spine 4.0，也未推定腳底鎖定或約束實作。",
+        "論壇自動回覆是搜尋線索，不能取代原始影片的實際畫面與發布者查證；本條目並未研讀全片。"
       ]
     }
   ]
