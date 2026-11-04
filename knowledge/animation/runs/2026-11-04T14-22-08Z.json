@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T14:21:51.534Z",
+  "startedAt": "2026-11-04T14:22:08Z",
+  "completedAt": "2026-11-04T14:27:55.924Z",
+  "result": "updated",
+  "focus": [
+    "完成待機動作的主要 Pose",
+    "持刀、寬支撐形狀及次要部件負空間"
+  ],
+  "addedIds": [
+    "spine-twins-samurai-idle"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "visualSamplesAdded": 1,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      1.53
+    ]
+  },
+  "research": [
+    {
+      "url": "https://tdgamestudio.com/portfolio/monster-legends",
+      "outcome": "正常背景瀏覽器讀到工作室明示此案使用 Spine 2D，主要提供瀏覽器即時範例。本輪沒有觀看／分析其動作，也沒有把即時案例頁硬列為影片，沿頁面可見的相關作品進入 Boss Animation。"
+    },
+    {
+      "url": "https://tdgamestudio.com/portfolio/boss-animation",
+      "outcome": "案例標題明示 The Twins · Spine 2D Reels，文字列出 Boss Samurai 與作者動畫責任，嵌入原始 Vimeo 751087093（Idle）及其他短片。只研究 Idle，沒有把其他短片的背景播放算成觀看。"
+    },
+    {
+      "url": "https://vimeo.com/751087093",
+      "outcome": "核對 Idle、Toan Dang／toan1874 及 1.999999 秒片長。初次進度條跳轉後短片播放完並自動切到推薦，未記錄推薦作品觀察；回原片後一次操作內跳轉、暫停，於完整播放器中實際檢視 1.53 秒，保存一張樣本。"
+    },
+    {
+      "url": "https://de.esotericsoftware.com/forum/d/21263-experienced-spine-animator",
+      "outcome": "文字回應提到作者的待機與動作集，但未取得影片播放證據，未新增條目；未開啟回覆中的製作檔連結。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://tdgamestudio.com/portfolio/monster-legends",
+      "reason": "文字網頁工具 cache miss；一般背景瀏覽器可正常讀取，已由原始案例頁核對，不屬未解決的存取阻礙。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 56 sources",
+    "indexBuild": "passed — 12 Spine video entries",
+    "sourceDedup": "passed — original Vimeo ID 751087093; no duplicate case-page entry",
+    "evidence": "visual-samples; one actual timestamp; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "只看過 1.53 秒正片的靜態 Pose，不把兩秒片長或背景重播當呼吸週期／連續觀看證據。",
+    "靜態飾物位置不能證明次要運動，版本、rig、製作地與角色素材重用授權未核對。",
+    "未下載重傳媒體或截圖、未修改引擎／角色／快取、未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "優先補同一原作者已公開完成動作的另一個主要 Pose 或待機循環的可驗證過程；短片需先防止自動跳到推薦，不能將鄰近影片當同一來源。"
+}

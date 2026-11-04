@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T13:19:51.807Z",
+  "updatedAt": "2026-11-04T14:27:11.944Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3043,6 +3043,68 @@
         "角色造型與高度不能證明使用哪一種 mesh、骨架或變形方法；Spine 版本及製作地未確認。",
         "作者說明遊戲在 Unity 中使用物理，不代表成品由 Spine 的物理約束產生；不可把較新版本功能套到 Spine 4.0。",
         "僅確認作者明示此專案使用 Spine，不把背景的每一層、所有 VFX 或遊戲邏輯都歸入 Spine。"
+      ]
+    },
+    {
+      "id": "spine-twins-samurai-idle",
+      "title": "Spine 完成動作｜The Twins Samurai 待機持刀 Pose",
+      "work": "Idle — Boss Samurai / The Twins",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging"
+      ],
+      "actions": [
+        "idle"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/751087093",
+        "publisher": "Toan Dang（Vimeo／toan1874）",
+        "creator": "Toan Dang（影片發布者）；TD Games 案例列 Boss Samurai 動畫由作者製作，角色美術及遊戲權利人未逐一核對",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "原創工作室案例 https://tdgamestudio.com/portfolio/boss-animation 明確標示 The Twins · Spine 2D Reels，列出 Boss Samurai 動畫並直接嵌入此 Vimeo ID。原始影片標題 Idle，發布者 Toan Dang／toan1874，實際畫面為完整持刀武士角色；分類依該特定作品的 Spine 說明，不因 2D 外觀猜工具。此為公開作品集原片，不是 Esoteric Software 自製示範。",
+        "durationSeconds": 1.999999,
+        "aliases": [],
+        "rights": "公開影片與工作室案例未提供本輪可確認的角色素材重用授權；美術、遊戲、影片等權利範圍未逐一核對。只保留原始連結與原創短篇觀察，不下載或重傳影片、角色圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-04T14:27:11.944Z",
+      "lastVerified": "2026-11-04T14:27:11.944Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器核對工作室作品頁與原始 Vimeo 影片；在進度條跳轉後立即暫停，讀取實際 1.53 秒，並把播放器完整捲回視窗中檢視。沒有連續觀看整個待機循環；初次播放結束自動跳到無關推薦，未將推薦畫面作來源證據。",
+        "locator": "00:01.53，深灰背景上的完整 Samurai 全身。",
+        "samples": [
+          {
+            "seconds": 1.53,
+            "note": "綠色皮膚武士雙腳分開、膝略彎，一手把長刀扛在肩部，刀刃向畫面右側伸出；柄端左下懸掛小型飾物，紅色面具／角飾、黑髮、肩甲、腰布與護臂各有分離輪廓。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "1.53 秒：雙腳形成較寬的支撐形狀，肩上的長刀與上半身構成橫向延伸，另一手靠近腰側；本樣本只支持待機主要 Pose 的輪廓與持物配置。",
+        "同一畫面的柄端懸掛物、髮束與腰布位於主要身體形狀之外，適合檢查角色小比例顯示時的負空間；單格不能說明這些物件是否擺動或彼此的延遲。"
+      ],
+      "application": [
+        "Layout 先 Key 自有角色的雙腳、骨盆、胸頭方向與肩部握刀關係，以完整剪影檢查刀刃端點和身體是否可讀；不要用次要擺動代替主要待機 Pose。",
+        "Blocking 再安排自己待機循環的主要重心變化與返回姿勢，實際連續預覽持刀手及接地穩定；本片的一張樣本不能提供呼吸週期或原作重心節奏。",
+        "Final 在主要 Pose 通過後才設計髮束、腰布與懸掛飾物的次要運動；若用 Spine 4.0，按自有骨架手動驗證，不從成品反推物理約束或指定固定延遲。"
+      ],
+      "limits": [
+        "只有 1.53 秒的一張實際正片樣本，未連續觀看循環；片長約兩秒不等於已確認的呼吸／擺動週期，也不能推論幀率、速度或 loop 接縫。",
+        "未核對角色骨架、mesh、權重、Spine 版本或個別作者製作地，region 保持 unknown；工作室目前地址不等於此片製作地。",
+        "柄端小物、髮與腰布的靜態位置不能證明 secondary motion、follow-through 或原作技術；給自有專案的次要運動安排屬應用推論。"
       ]
     }
   ]
