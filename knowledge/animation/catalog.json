@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T14:27:11.944Z",
+  "updatedAt": "2026-11-04T15:29:50.948Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -65,6 +65,7 @@
       "scene-composition": "場景構圖／人物配置"
     },
     "actions": {
+      "attack": "攻擊／揮擊",
       "idle": "待機",
       "walk": "走路",
       "run": "跑步",
@@ -3105,6 +3106,73 @@
         "只有 1.53 秒的一張實際正片樣本，未連續觀看循環；片長約兩秒不等於已確認的呼吸／擺動週期，也不能推論幀率、速度或 loop 接縫。",
         "未核對角色骨架、mesh、權重、Spine 版本或個別作者製作地，region 保持 unknown；工作室目前地址不等於此片製作地。",
         "柄端小物、髮與腰布的靜態位置不能證明 secondary motion、follow-through 或原作技術；給自有專案的次要運動安排屬應用推論。"
+      ]
+    },
+    {
+      "id": "spine-twins-samurai-combo1",
+      "title": "Spine 完成動作｜The Twins Samurai 持刀與低身揮擊 Pose",
+      "work": "Combo1.mp4 — Boss Samurai / The Twins",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging"
+      ],
+      "actions": [
+        "attack"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/751086993",
+        "publisher": "Toan Dang（Vimeo／toan1874）",
+        "creator": "Toan Dang（影片發布者）；TD Games 案例列 Boss Samurai 動畫由作者製作，角色美術及遊戲權利人未逐一核對",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "沿用 2026-11-04 已實際核對的原創工作室案例 https://tdgamestudio.com/portfolio/boss-animation：標題為 The Twins · Spine 2D Reels，Boss Samurai 動畫區直接嵌入此 Vimeo ID。本輪打開原始 Vimeo，重新核對 Combo1.mp4、Toan Dang／toan1874 與實際同一武士全身畫面。分類依特定作品的 Spine 說明，不把一般 2D 武器動畫直接當 Spine；此為原作者作品集，不是 Esoteric Software 自製影片。",
+        "durationSeconds": 5.013333,
+        "aliases": [],
+        "rights": "原影片與工作室案例未提供本輪可確認的角色素材或影片重用授權；權利範圍未逐一核對。只保留公開連結與原創短篇觀察，不下載或重傳影片、角色圖及瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-04T15:29:50.948Z",
+      "lastVerified": "2026-11-04T15:29:50.948Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器核對原始影片，使用進度條跳轉並暫停，逐張讀取實際秒數；在完整播放器邊界可見時檢視。只保留非零正片樣本 0.19 與 2.215044 秒，未連續觀看整段連擊。",
+        "locator": "00:00.19 肩扛長刀；00:02.215 低身、刀刃往左近水平伸出。",
+        "samples": [
+          {
+            "seconds": 0.19,
+            "note": "綠色皮膚武士完整全身，雙腳分開，長刀扛在肩部、刀刃向右；柄端小型垂飾位於身體左側，紅角飾與黑髮在頭頂形成分離形狀。"
+          },
+          {
+            "seconds": 2.215044,
+            "note": "角色軀幹降低並朝左傾，雙手握點靠近身體左下，長刀沿低處向左伸出，刀刃最左段超出深灰畫面邊界；右側後伸腿與低身軀幹形成較長的橫向姿勢。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "0.19 秒：肩扛長刀的上半身形狀和寬站姿接近待機配置，持物向右延伸；與同作者 Idle 片的相似造型不等於兩片具有已驗證的無縫銜接。",
+        "2.215044 秒：骨盆及軀幹位置較低，刀刃在身體左下形成近水平長線，後伸腿向右延展；此樣本可作揮擊低姿勢的形狀參考。",
+        "兩個抽查畫面中，手部握點、頭部與刀刃所佔位置有明顯差異，但沒有看過它們之間的動作過程，不能決定預備、出刀與收勢的順序長度。"
+      ],
+      "application": [
+        "Layout 先 Key 自有角色的持刀基準姿勢與低身揮擊等主要 Pose，明確放置握點、骨盆、膝腳及刀刃端點，並檢查完整武器不被預覽範圍裁掉。",
+        "Blocking 另外設計預備、出刀及返回姿勢，連續預覽核對刀刃路徑與接地；這是給 Spine 4.0 專案的規劃推論，不能沿用本片兩個時間碼的差值作攻擊時間。",
+        "Final 才加頭髮、柄端飾物與腰布的次要運動；如果主動作或握刀位置改變，應先回頭修正 Layout／Blocking，不能用細小擺動掩蓋主要 Pose。"
+      ],
+      "limits": [
+        "只看過兩個獨立正片樣本，未連續觀看整段連擊；不能分析 timing、spacing、刀速、幀率、碰撞或固定延遲，也未將片長視為單次攻擊週期。",
+        "2.215044 秒的刀刃左端在來源深灰畫面邊界外，不能確認完整端點或由此重建運動弧線；播放器完整在視窗內，該限制不是頁面捲動造成。",
+        "原始骨架、網格、權重、Spine 版本與製作地未確認；不把靜態圖當成原作 IK、物理約束或可直接重用的 Spine 4.0 rig。"
       ]
     }
   ]
