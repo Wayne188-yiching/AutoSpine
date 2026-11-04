@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T20:41:50.496Z",
+  "updatedAt": "2026-11-04T21:40:31.496Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3349,6 +3349,83 @@
         "jump／idle 分類有原作動畫清單佐證，但沒有觀察完整起跳落地或待機循環。26.6 與 29.301968 秒的腳位不能單獨證明實際接地、最高點或動作階段，34.333333 秒足部被控制列遮住。",
         "Spine 版本、rig、mesh、權重及 After Effects 的具體用途未知；不由成品推導 Spine 4.0 可直接重建的功能。",
         "作者的名稱與文字語言不等於作品製作地；地區與個別角色插畫作者未核實，region 保持 unknown。"
+      ]
+    },
+    {
+      "id": "spine-gunner-chan-official-showcase",
+      "title": "Spine 遊戲展示｜Gunner-chan! 持槍方向與角色表情 Pose",
+      "work": "Gunner-chan! — Esoteric Software showcase video01",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "facial"
+      ],
+      "actions": [
+        "shoot",
+        "acting",
+        "expression"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://zh.esotericsoftware.com/showcase/gunner-chan/video01.mp4",
+        "publisher": "Esoteric Software（官方 showcase 網站託管）",
+        "creator": "Kido／kido（遊戲製作者，官方案例署名）；個別美術與動畫師未確認",
+        "platform": "Esoteric Software 官方網站",
+        "official": true,
+        "verification": "實際開啟 https://zh.esotericsoftware.com/spine-showcase 的 Gunner-chan! 案例；Kido 的案例說明明確列出角色、槍械、物件和背景使用 Spine，並連到原遊戲 Steam 頁。頁面 #gunner-chan 的 video src 為 /showcase/gunner-chan/video01.mp4，直接在瀏覽器開啟相同官方 MP4，核對 42.112 秒片長。原片包含遊戲畫面與 Spine 編輯器中的角色展示，並非從 2D 外觀猜測工具。未找到此相同片段的官方 YouTube 原始入口，保留官方託管影片連結。",
+        "durationSeconds": 42.112,
+        "aliases": [
+          "https://zh.esotericsoftware.com/spine-showcase#gunner-chan"
+        ],
+        "rights": "官方案例公開播放不代表取得影片、角色素材或遊戲資產可重用授權；逐項素材權利未核實。只保留官方原始網址及短篇原創觀察，不下載、重傳影片、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-04T21:40:31.496Z",
+      "lastVerified": "2026-11-04T21:40:31.496Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器核對官方案例與嵌入 video src；網站播放器在暫停時有中央播放圖示遮住人物，因此改用同一官方 MP4 的原生瀏覽器播放器，暫停及鍵盤跳轉後等待解碼畫面穩定，實際讀取並逐張檢視 13.75336、18.38563、27.22912 秒。畫面完整可見；沒有連續觀看，播放經過的時間不列為證據。",
+        "locator": "00:13.75、00:18.39 遊戲持槍方向；00:27.23 棋盤格背景中的表情與全身 Pose。",
+        "samples": [
+          {
+            "seconds": 13.75336,
+            "note": "俯視斜角遊戲場景中央的金髮藍衣角色持槍朝左，左方有白色圓形準星；左側堆疊箱體、右側單箱與地板十字形成場景位置參照。"
+          },
+          {
+            "seconds": 18.38563,
+            "note": "同類遊戲場景中的金髮角色持槍朝右，角色身體位於地板格線交會附近；左側箱堆和右側單箱仍可見，下方顯示 Handgun 及彈量數字。"
+          },
+          {
+            "seconds": 27.22912,
+            "note": "棋盤格編輯器背景前的完整金髮藍衣角色朝左，眼睛呈擠壓折線形、嘴張開，身體略蜷、一腳抬起，馬尾和髮帶向右伸出；底部可見 Spine 編輯工具。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "13.75336 與 18.38563 秒：兩張遊戲單格的槍械分別朝左、朝右，角色與周圍箱體的距離留出可讀空間；鏡頭與畫面位置也不同，不能據此判斷轉身路徑或槍口移動速度。",
+        "27.22912 秒：折線形眼睛、張口、屈身與抬腳一起構成誇張表情 Pose；馬尾向右，與臉朝左的方向分離，單格不能證明髮尾的延遲或物理效果。",
+        "遊戲畫面中的角色較小，編輯器展示能看清臉部與肢體形狀；兩種顯示尺度適合分別檢查持物方向和表情可讀性，不能當成同一動作的連續前後格。"
+      ],
+      "application": [
+        "Layout 先 Key 自有角色的骨盆、胸頭、握槍手與槍口方向，按實際遊戲尺寸檢查左向／右向主要 Pose，再放回箱體與地板等環境中看遮擋；不要僅旋轉槍械就當成整體轉向已完成。",
+        "Blocking 自行建立瞄準、換向和反應動作的主要轉折，連續檢查手槍與身體的關係；表情 Layout 可先建立眼形、口形與身體壓縮的整體差異，再補中間 Pose。",
+        "Final 在主要 Pose 通過後才處理髮帶、馬尾和衣角的跟隨，以及必要的射擊 FX；這是對自有 Spine 4.0 專案的流程推論，不是原作約束、權重、timing 或物理功能的確認。"
+      ],
+      "limits": [
+        "三個獨立時間碼，沒有連續看過動作；不能分析射速、跑步週期、轉向速度、spacing、表情節奏或次要運動延遲。",
+        "Spine 版本、rig、mesh、權重、槍械控制方式及遊戲相機／場景的具體實作未知；不由官方網站目前版本介紹推定此影片使用同版本。",
+        "Kido 的案例說明是使用 Spine 的直接來源，但未逐層核對所有遊戲效果的實作；本輪沒有觀察清楚的射擊 FX 過程。",
+        "製作地區及個別角色美術作者未核實，region 保持 unknown；不因角色風格、名稱或語言猜測地區。"
       ]
     }
   ]

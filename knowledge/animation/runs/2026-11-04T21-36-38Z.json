@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-04T21:36:28.548Z",
+  "startedAt": "2026-11-04T21:36:38Z",
+  "completedAt": "2026-11-04T21:40:57.660Z",
+  "result": "updated",
+  "focus": [
+    "官方完成遊戲演出與角色展示",
+    "持槍方向、表情與實際遊戲顯示尺度"
+  ],
+  "addedIds": [
+    "spine-gunner-chan-official-showcase"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      13.75336,
+      18.38563,
+      27.22912
+    ]
+  },
+  "research": [
+    {
+      "url": "https://zh.esotericsoftware.com/spine-showcase#gunner-chan",
+      "outcome": "搜尋 Gunner-chan! 官方 Spine 案例；實際頁面 Kido 的說明明確列出 Spine 用於角色、槍械、物件與背景，播放器 video src 指向官方託管的 /showcase/gunner-chan/video01.mp4。未將第三方商品頁、轉載或海報當作動作證據。"
+    },
+    {
+      "url": "https://zh.esotericsoftware.com/showcase/gunner-chan/video01.mp4",
+      "outcome": "在正常背景瀏覽器直接播放已觀察到的官方來源 URL，片長 42.112 秒。暫停與鍵盤跳轉後分開讀取實際時間及穩定解碼畫面，採用 13.75336、18.38563、27.22912 秒三個完整樣本；另看過 11.62499、17.96448、26.38686 等操作樣本，未追加近似 Pose。網站內嵌播放器暫停的中央播放圖示會遮人物，所以改用相同 MP4 的瀏覽器原生播放介面，沒有下載影片或繞過限制。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 60 sources",
+    "indexBuild": "passed — 16 Spine video entries",
+    "sourceDedup": "new official MP4 URL; canonical source and case-page alias checked against existing catalog",
+    "evidence": "visual-samples; three timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "previousPublication": {
+    "commit": "f7bc090320c6f9efd2a736802a686211a3da8fbf",
+    "pagesRun": 41909172032,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "播放經過時間不等於連續觀看證據，沒有分析射速、轉向、表情或髮尾節奏。",
+    "未看到清楚的射擊 FX 過程；本輪採用持槍與表情主要 Pose，不補造特效觀察。",
+    "Spine 版本、rig、逐項素材作者／授權及製作地區未核實。",
+    "未下載重傳媒體或截圖，未修改引擎／角色／快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "輪替官方或原動畫師的次要運動／FX 演出；如仍只能抽查，記錄效果形狀與主要 Pose 的關係，不以靜態髮尾位置推論延遲。"
+}
