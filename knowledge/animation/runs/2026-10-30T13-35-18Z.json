@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-10-30T13:35:10.567Z",
+  "startedAt": "2026-10-30T13:35:18Z",
+  "resumedAt": "2026-11-04T07:12:51Z",
+  "latestTriggerAt": "2026-11-04T07:10:14.952Z",
+  "completedAt": "2026-11-04T07:14:51.186Z",
+  "result": "updated",
+  "executionNote": "前輪研究中斷後跨越多次喚醒才完成，未達十分鐘牆鐘時間目標。本紀錄只代表一次實際研究與接續整理；中間沒有獨立完成的每小時紀錄，不補造執行或觀看。",
+  "unrecordedInterval": {
+    "afterLastCompletedAt": "2026-10-30T12:42:51.721Z",
+    "throughTriggerAt": "2026-11-04T07:10:14.952Z",
+    "handling": "只保留已完成的單次研究；未將其間排程喚醒另列為完成輪次。"
+  },
+  "focus": [
+    "Spine 官方遊戲實機",
+    "瞄準主要 Pose、敵群構圖及射擊 FX 可讀性"
+  ],
+  "addedIds": [
+    "spine-super-spineboy-gameplay"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "visualSamplesAdded": 1,
+    "continuousClipsReviewed": 0,
+    "sampleViewedDate": "2026-10-30",
+    "textReverifiedDate": "2026-11-04"
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=zAZ_PxxEgDI",
+      "outcome": "前輪已實際檢視 28.376305 秒並核對原頻道與 210.241 秒片長，保存為 28.38 秒單張樣本；未新增連續觀看或其他畫面。"
+    },
+    {
+      "url": "https://esotericsoftware.com/spine-documentation",
+      "outcome": "本次重讀官方 Super Spineboy 範例入口，明示範例遊戲使用 Spine。"
+    },
+    {
+      "url": "https://esotericsoftware.com/forum/d/2481-super-spineboy-example-game",
+      "outcome": "本次重讀 Nate 的原始介紹及歷史圖片授權回覆，保留其歷史性質。"
+    },
+    {
+      "url": "https://github.com/EsotericSoftware/spine-superspineboy",
+      "outcome": "本次讀取官方專案 README，明示 Spine 與 spine-libgdx；LICENSE 為 Spine Runtimes License Agreement，標示 2024-02-20 更新。未下載程式、資產或媒體。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=zAZ_PxxEgDI",
+      "reason": "前輪文字網頁工具 cache miss，已由一般瀏覽器取得實際單張畫面。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=zAZ_PxxEgDI",
+      "reason": "本次接續時 CUA 回覆 Browser is not available: iab，未能追加抽查；只使用前輪確實看過的 28.38 秒，不假定舊分頁仍播放或產生新觀看證據。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 51 sources",
+    "indexBuild": "passed — 7 Spine videos",
+    "sourceDedup": "passed — canonical YouTube ID and unique original forum/repository aliases",
+    "evidence": "visual-samples; one actual timestamp; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; the tool reply and Git-local autospine-animation-publish.json receipt establish the remote commit verification."
+  },
+  "limits": [
+    "未觀看連續動作，不分析走跑、跳躍、射速或節奏。",
+    "Spine 版本、個別作者與製作地未確認。",
+    "未下載重傳來源媒體、未修改引擎或角色素材、未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "取得可用的公開影片檢視環境後，優先補 Spine 官方走跑／跳躍動作的實際連續觀看；來源受阻時誠實保留證據限制。"
+}
