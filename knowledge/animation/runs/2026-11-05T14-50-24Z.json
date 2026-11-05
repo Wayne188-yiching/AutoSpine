@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T14:50:15.790Z",
+  "startedAt": "2026-11-05T14:50:24Z",
+  "completedAt": "2026-11-05T14:58:22.951Z",
+  "result": "updated",
+  "focus": [
+    "官方落地製作示範補足",
+    "腳趾／腿部局部修形與完整角色構圖"
+  ],
+  "addedIds": [
+    "spine-erika-parrot-landing-splash-tutorial"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      7087.694567,
+      7100.092058,
+      17956.155683
+    ]
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/spine-twitch#video-5T7YwFE3N_k",
+      "outcome": "官方索引直接連結鸚鵡與標誌示範；讀取此條目的章節定位，確認落地第一批 Key 在 1:51:43、腿部無 IK 在 1:58:00、完成結果在 4:59:11，時間為小時:分鐘:秒。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=5T7YwFE3N_k",
+      "outcome": "核對 Esoteric Software 發布者、Erika 與 Funtyx 專案說明、2018-09-21 日期及正片 18246.681 秒。採用 7087.694567、7100.092058 秒腿部局部，17956.155683 秒完整角色與字母構圖。6732.439477 秒縮小視圖、7298.653333 秒角色離開主畫布未採用；跳轉後自動播放不計觀看。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=5T7YwFE3N_k",
+      "issue": "正常頁初始廣告與章節跳轉自動播放；時間連結的可及性名稱為中文時間而非可見字串。",
+      "resolution": "使用可見略過按鈕進入正片，按實際 DOM 章節 href 跳轉，重新辨識暫停按鈕；逐張核對實際暫停秒數與完整播放器。沒有繞過限制或採用廣告畫面。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 72 sources",
+    "indexBuild": "passed — 72 sources; 28 Spine video entries",
+    "sourceDedup": "entry ID and YouTube ID 5T7YwFE3N_k checked unique; shared official index is verification only",
+    "evidence": "visual-samples; actual paused timestamps; segments empty; timingBasis none; land tag identifies explicit tutorial topic, no verified contact or timing claim",
+    "scope": "Only catalog.json, generated index.html and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "5b7bb599300f5706902ecb8323da93b78b8a98ca",
+    "pagesRun": 42040515819,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "兩張腿部樣本原畫布裁切頭與上身；完整結果單格不同製作時刻，不能拼成落地過程。",
+    "未連續觀看或確認完整接觸／下壓；不把章節標題當成已觀看證據。",
+    "Spine 版本、個別素材權利及製作地未知；僅採 Pose 設計／分階段應用推論，不直接套用約束或影片時間作動作長度。",
+    "未下載重傳媒體／截圖，未付費或上傳私有資料，未修改引擎／角色／快取，未補造漏掉時段。"
+  ],
+  "nextFocus": "回到原作者完成動作集，優先清楚可辨的落地接觸／下壓或表演姿勢；需要節奏分析時仍須實際連續觀看。"
+}
