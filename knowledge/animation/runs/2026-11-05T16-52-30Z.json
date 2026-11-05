@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T16:52:17.788Z",
+  "startedAt": "2026-11-05T16:52:30Z",
+  "completedAt": "2026-11-05T16:55:41.707Z",
+  "result": "updated",
+  "focus": [
+    "重訪既有官方完成角色演出",
+    "人形伸臂手勢、群體構圖與前景遮擋"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-return-monkey-island-showcase"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      26.332973,
+      39.499459
+    ]
+  },
+  "research": [
+    {
+      "query": "site:esotericsoftware.com Return to Monkey Island Spine Rex Crowle showcase",
+      "url": "https://en.esotericsoftware.com/spine-showcase",
+      "outcome": "重核官方案例內 Rex Crowle 的團隊製作說明，確認 Return to Monkey Island 使用 Spine；沒有由角色外觀推定工具或宣稱所有層皆為 Spine。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=LtngAFw91Uk",
+      "outcome": "重訪既有官方原片，核對 DevolverDigital（@DevolverDigital）、Return to Monkey Island | Now on PS5 and Xbox S/X、2022-11-09 原說明及 65.861 秒長度。新增 26.332973 秒欄杆後伸臂角色、39.499459 秒長桌後人物與觀眾的分層；13.166486 秒月夜船景未新增角色 Pose 證據，未採用。firstSeen 與舊樣本保留。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 73 sources",
+    "indexBuild": "passed — 73 sources; 29 Spine video entries",
+    "sourceDedup": "Revisited existing canonical YouTube ID LtngAFw91Uk; no duplicate entry; firstSeen preserved",
+    "evidence": "visual-samples; paused actual timestamps; segments empty; timingBasis none; no continuous gesture, gait or timing claim",
+    "scope": "Only existing catalog entry, generated index.html and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "17224091f1f6748230901e89259a8441f0b278c0",
+    "pagesRun": 42060221122,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "只看兩個新單格，沒有連續觀看指向、口型或群體反應，不能推導表演節奏。",
+    "欄杆、桌子與觀眾遮擋下身；沒有明確的腳底接觸或落地／走跑證據，不新增相關動作標籤。",
+    "Spine 版本、個別鏡頭動畫師、素材權利及製作地仍未確認，應用筆記與原作實作分開。",
+    "未下載重傳媒體／截圖，未付費或上傳私有資料，未修改引擎／角色／快取，未補造漏掉時段。"
+  ],
+  "nextFocus": "輪到清楚全身的待機／步行完成動作或次要運動，優先既有原作者短片補看；維持 Pose 證據與連續節奏的區別。"
+}
