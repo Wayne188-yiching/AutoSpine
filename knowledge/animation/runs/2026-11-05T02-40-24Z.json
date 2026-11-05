@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T02:40:03.754Z",
+  "startedAt": "2026-11-05T02:40:24Z",
+  "completedAt": "2026-11-05T02:44:45.473Z",
+  "result": "updated",
+  "focus": [
+    "既有原作者完成動作集補看",
+    "Walk／Run 同標籤的腿部聚攏與展開 Pose 對照"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-borovik-stone-age-action-set"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      1.2636,
+      11.8584
+    ]
+  },
+  "research": [
+    {
+      "url": "https://vimeo.com/125311239",
+      "outcome": "重新核對 Vyacheslav Borovik／borovik、Spine 作品標示與 walk cycle／run cycle／idle 描述。初次 0.866666 秒與既有 Walk 姿勢近似，未追加；再由可見進度條定位 1.2636 秒 Walk 和 11.8584 秒 Run，均為與既有展開肢體姿勢不同的腿部聚攏樣本。Run 初看時 hover 預覽遮住腿部，移開焦點後重新取未遮擋畫面才記錄。播放器本輪回報 24.319999 秒，更新為約 24.32 秒；與前輪 24.3 秒的小差異不作內容變更或循環長度的推論。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 63 sources",
+    "indexBuild": "passed — 19 Spine video entries",
+    "sourceDedup": "existing canonical Vimeo ID 125311239 updated in place; firstSeen preserved; near-duplicate pose not added",
+    "evidence": "visual-samples; two added timestamps; five total independent samples; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "previousPublication": {
+    "commit": "4f03173eb7ce0bd4034bb58981ec6022e03f84fe",
+    "pagesRun": 41950856035,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "沒有連續看過走跑；不命名接觸／經過階段，不以秒差推論循環長度或速度。",
+    "動作名稱有可見 Walk／Run 標籤，姿勢對照仍是單格而非已確認的一輪動作。",
+    "Spine 版本、rig、逐項美術權利及製作地區未知；未下載重傳媒體或截圖，未修改引擎／角色／快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "輪替原作者的跳躍／落地、表演或次要運動完成片段，避免繼續為同動作增加近似單格；只有真正看過動作過程才分析 timing。"
+}
