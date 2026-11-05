@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T15:52:16.762Z",
+  "startedAt": "2026-11-05T15:53:03Z",
+  "startTimeBasis": "First retained explicit UTC clock reading after initial instruction and catalogue reads; not assumed equal to trigger time.",
+  "completedAt": "2026-11-05T15:57:09.237Z",
+  "result": "updated",
+  "focus": [
+    "原作者完成角色動作集",
+    "多種生物大形、持樂器表演與多足輪廓"
+  ],
+  "addedIds": [
+    "spine-jesus-octavio-lopez-creature-reel"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      33.1242,
+      82.8105,
+      132.4968
+    ]
+  },
+  "research": [
+    {
+      "query": "Spine animation landing animation showreel vimeo animator",
+      "url": "https://en.esotericsoftware.com/forum/d/27687-check-out-my-latest-spine-2d-reel-showcasing-my-most-recent-work",
+      "outcome": "原作者 jesse.o.lopez 分享自己的 Spine 2D reel，實際頁面內嵌 Ri89uRAhMEU；本人後續回覆談及其 Spine rig/runtime 工作。此為原作者自述，不以回覆讚美推定全部製作技法。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=Ri89uRAhMEU",
+      "outcome": "核對 Jesus Lopez（@Ultimate81）、Jesus Octavio Lopez Spine 2D Reel 標題、作者自述與 2024-11-26 日期。正片 165.633 秒；實際採用 33.1242 秒角龍形生物、82.8105 秒持樂器鱷魚、132.4968 秒多足生物三個完整畫面單格。沒有以黑底單格推定落地或步態。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=Ri89uRAhMEU",
+      "issue": "文字擷取服務無法抓取此片；正常瀏覽器初始有廣告。",
+      "resolution": "改以正常公開原始頁檢視；使用可見略過按鈕後核對正片時長與標題並暫停抽查，沒有繞過限制或下載媒體。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 73 sources",
+    "indexBuild": "passed — 73 sources; 29 Spine video entries",
+    "sourceDedup": "entry ID and canonical YouTube video ID Ri89uRAhMEU checked unique",
+    "evidence": "visual-samples; actual paused seconds; segments empty; timingBasis none; no FPS, gait, land or timing inference",
+    "scope": "Only catalog.json, generated index.html and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "5475c7e3b810761448d387c15b6a1d19b7c3de9f",
+    "pagesRun": 42050267008,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "未連續觀看；三個不同角色單格不可拼成動作過程或支撐順序。",
+    "未取得明確地面接觸或下壓，沒有為補足落地數量強行標為 land。",
+    "Spine 版本、個別骨架／權重／約束、原始美術權利及製作地未知；只保留公開來源與原創筆記。",
+    "未下載重傳媒體／截圖，未付費或上傳私有資料，未修改引擎／角色／快取，未補造漏掉時段。"
+  ],
+  "nextFocus": "優先重訪已收錄的完成動作片段，補清楚的接觸／低身 Pose 或人形表演；沒有實際連續觀看時仍維持 visual-samples。"
+}

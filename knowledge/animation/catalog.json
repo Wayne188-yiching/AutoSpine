@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T14:57:44.859Z",
+  "updatedAt": "2026-11-05T15:56:17.291Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -4359,6 +4359,83 @@
         "兩張腿部樣本的頭與上身被原畫布裁切；最後全身樣本不是前兩張的同一輪動作，不拼接成落地順序。",
         "Spine 版本、原始專案骨架與權重、具體約束及製作地未確認；官方章節的 without IK 不等於已查證全部骨架結構，沒有將較新物理約束套用到 Spine 4.0。",
         "原始美術個別作者與各素材授權未核對；沒有下載專案、重傳圖像、付費調用或上傳私有資料。"
+      ]
+    },
+    {
+      "id": "spine-jesus-octavio-lopez-creature-reel",
+      "title": "Spine 完成角色動作集｜Jesus Octavio Lopez 生物輪廓與持樂器 Pose",
+      "work": "Jesus Octavio Lopez Spine 2D Reel",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "acting",
+        "facial"
+      ],
+      "actions": [
+        "creature",
+        "acting",
+        "expression"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=Ri89uRAhMEU",
+        "publisher": "Jesus Lopez（@Ultimate81）",
+        "creator": "Jesus Octavio Lopez（動畫作者，自述作品集）；各角色與原始美術的個別作者未確認",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "原作者 jesse.o.lopez 在 https://en.esotericsoftware.com/forum/d/27687-check-out-my-latest-spine-2d-reel-showcasing-my-most-recent-work 發表自己的 Spine 2D reel，內嵌 Ri89uRAhMEU；後續本人回覆亦說明其 Spine rig／runtime 工作。直接核對原 YouTube：Jesus Lopez（@Ultimate81）發布，標題 Jesus Octavio Lopez Spine 2D Reel，說明為自己的最新 Spine 2D 作品集，發布日期 2024-11-26。本項 official 指原作者發布，不宣稱是 Esoteric Software 自製或各遊戲權利人的官方影片。",
+        "durationSeconds": 165.633,
+        "aliases": [],
+        "rights": "作者公開展示作品集不等於再利用許可；各角色 IP、原始美術、音樂及客戶素材的個別授權未核對。僅保存公開連結與短篇原創觀察，不下載或重傳影片／截圖／角色素材。"
+      },
+      "firstSeen": "2026-11-05T15:56:17.291Z",
+      "lastVerified": "2026-11-05T15:56:17.291Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器正常進入原作者 YouTube，略過可見廣告後核對正片 165.633 秒並暫停；以播放器搜尋滑桿鍵盤跳轉，逐次讀取實際暫停秒數，完整播放器恢復至視窗內後逐張檢視。三個不同角色的分離單格，不把背景播放或跳轉當成連續觀看。",
+        "locator": "00:33.12 — 角龍形生物；01:22.81 — 持樂器鱷魚；02:12.50 — 橙色頭部多足生物。",
+        "samples": [
+          {
+            "seconds": 33.1242,
+            "note": "黑底上灰藍角龍形生物面朝右，紫色頭盾與白色尖角在背／頭上形成輪廓，大型深灰角沿右上伸出；身體低而橫長，前後肢在腹部下方有折曲與重疊，張口可見紅色內部。完整頭角與身體在播放器內。"
+          },
+          {
+            "seconds": 82.8105,
+            "note": "黃色鱷魚形角色全身站姿、雙腳分開，兩臂抬在胸口與口部前方托住朝左的短喇叭形樂器；大腹部向下延伸，尾巴抬向畫面右方，眼睛朝向持物一側。腳與尾尖都在畫面內，黑底沒有明確地面線。"
+          },
+          {
+            "seconds": 132.4968,
+            "note": "橙色恐龍形頭與長頸接在黑色多足軀體上，頭部朝右露齒，胸前兩隻短黑色肢體抬起；背部有黃綠斑點，下方多條黑灰腿以折角向外伸出、部分互相重疊，軀體與肢端都在畫面內。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "33.1242 秒：橫長低身的角龍形生物，頭盾／長角的向外大形與腹下收折肢體形成大小對比；單格只能提供輪廓與肢體配置，不能判定奔跑、跳躍或落地階段。",
+        "82.8105 秒：抬起的雙臂與樂器集中在口部前方，朝右抬起的尾巴平衡左側持物的大形；腹部、兩腳和口部持物都能在完整角色視圖檢查。",
+        "132.4968 秒：露齒頭部、長頸、背部大塊體和多條折角腿形成不同形狀群；腿間仍有黑底空隙，但部分腿重疊，不能從單格指定支撐順序。",
+        "三個樣本是不同角色展示，沒有顯示同一個完整動作循環；畫面中的完整角色呈現適合主要 Pose 與構圖對照。"
+      ],
+      "application": [
+        "Layout 先 Key 自有生物的頭胸方向、背部大塊體與四肢主要 Pose，以小尺寸剪影檢查頭角、腹部、尾巴和腿的分離；多足角色先設計可讀的腿組輪廓，再處理各腿細節。",
+        "對持樂器表演，Layout 先固定自有道具的口部接觸位置與雙手托持 Pose，檢查道具不遮住主要表情；Blocking 才安排頭胸、手臂與道具的連接，連續預覽確認握持。",
+        "Final 在全身主要 Pose 和 Blocking 通過後，再加尾部、頭盾或面部修形；多足支撐／交替腿的時序需另行實際觀看參考並自行驗證。本項是給 Spine 4.0 的應用推論，不是對原作品骨架實作的判定。"
+      ],
+      "limits": [
+        "沒有連續觀看動作，未核對 FPS、接觸幀、步態、spacing、循環長度或固定延遲；未將黑底姿勢補判為 jump／land／run。",
+        "三個不同角色單格不能串成動作順序；黑底未提供明確地面或接觸陰影，不能藉腳的畫面高度推定實際接地。",
+        "作者明示作品集使用 Spine，但未核對各層 FX、原始專案、骨架權重與約束；版本、製作地及各素材作者未知，不把較新版本功能直接套到 Spine 4.0。",
+        "作者動畫展示身份不代表擁有所有原始美術或角色 IP；未下載重傳媒體、付費調用模型或上傳私有資料。"
       ]
     }
   ]
