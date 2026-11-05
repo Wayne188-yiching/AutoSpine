@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T00:36:01.660Z",
+  "startedAt": "2026-11-05T00:36:18Z",
+  "completedAt": "2026-11-05T00:39:47.102Z",
+  "result": "updated",
+  "focus": [
+    "官方完成角色動作集與遊戲演出",
+    "持刀全身 Pose、多角色配置與 FX 覆蓋"
+  ],
+  "addedIds": [
+    "spine-has-been-heroes-character-showcase"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      29.569033,
+      39.269,
+      48.968933
+    ]
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/spine-showcase-all#frozenbyte",
+      "outcome": "實際核對 Frozenbyte／Has-Been Heroes 官方案例及 Joel Kinnunen 對 Spine 角色動畫的直接說明。頁面 #frozenbyte 的 video src 為 /showcase/frozenbyte/video01.mp4，案例整頁不是鏡像，不列成與其他官方案例重複的媒體 alias。"
+    },
+    {
+      "url": "https://en.esotericsoftware.com/showcase/frozenbyte/video01.mp4",
+      "outcome": "背景瀏覽器正常開啟官方 MP4，核對片長 64.666667 秒。暫停抽查 6.935696、16.635666、29.569033、39.269、48.968933 秒；片頭標誌與極小角色測試未採用，採用三張清楚角色／遊戲畫面。每次跳轉後另取穩定解碼畫面；右側動畫清單雖列出 run 等名稱，未確認選中項目，不把持刀分腿單格擴張成已觀察完整跑步。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 62 sources",
+    "indexBuild": "passed — 18 Spine video entries",
+    "sourceDedup": "new official frozenbyte MP4 URL; no existing matching media URL; shared case page kept in verification instead of duplicate alias",
+    "evidence": "visual-samples; three timestamps; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "previousPublication": {
+    "commit": "3427ff9ddd1d05b8f520d55cbe2acb093383ad67",
+    "pagesRun": 41935399234,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "本輪新增持物全身與多角色場景參考，沒有確認完整走跑／待機循環或動作節奏。",
+    "Spine 版本、rig、逐層 FX 實作、個別美術作者／授權及製作地區未知。",
+    "未下載重傳影片、原圖或瀏覽器截圖，未修改引擎／角色／快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "以明確標示 walk／run／idle 的原作者完成角色動作為優先；有動作名稱或清單仍須區分名稱證據與實際看過的動作過程。"
+}

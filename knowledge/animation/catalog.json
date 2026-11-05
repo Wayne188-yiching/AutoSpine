@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T23:38:16.965Z",
+  "updatedAt": "2026-11-05T00:39:20.942Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3510,6 +3510,81 @@
         "80.485566 與 88.517633 秒的煙火不能僅由亮度或外形判定生成方法；官方案例自述使用 Spine 處理特效，不等於每個可見效果都已逐層證實。",
         "Spine 版本、rig、權重、網格及遊戲 runtime 的具體實作未知；不把較新版本的物理功能直接套用到 Spine 4.0。",
         "製作地區與個別動畫／特效作者未逐一核對，region 保持 unknown；角色介紹版面的靜態大圖未作本輪收錄主體。"
+      ]
+    },
+    {
+      "id": "spine-has-been-heroes-character-showcase",
+      "title": "Spine 完成角色展示｜Has-Been Heroes 持物 Pose 與多角色層次",
+      "work": "Has-Been Heroes — Frozenbyte official Spine showcase video01",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "fx"
+      ],
+      "actions": [
+        "attack",
+        "creature",
+        "fx"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://en.esotericsoftware.com/showcase/frozenbyte/video01.mp4",
+        "publisher": "Esoteric Software（官方 showcase 網站託管）",
+        "creator": "Frozenbyte；案例署名 Joel Kinnunen（Senior Producer），個別角色美術及動畫師未確認",
+        "platform": "Esoteric Software 官方網站",
+        "official": true,
+        "verification": "實際讀取 https://en.esotericsoftware.com/spine-showcase-all 的 Frozenbyte／Has-Been Heroes 案例：Joel Kinnunen 明確說明使用 Spine 建立並製作多種英雄、敵人動畫，並連到該遊戲。頁面 #frozenbyte 的 video src 為 /showcase/frozenbyte/video01.mp4；以同一官方 MP4 在瀏覽器核對 64.666667 秒片長、角色展示及遊戲演出，非由 2D 外觀猜工具。案例頁是查證來源而不是影片鏡像，未與其他案例共用的整頁網址另算一筆媒體。",
+        "durationSeconds": 64.666667,
+        "aliases": [],
+        "rights": "官方網站公開展示不代表影片、角色美術、遊戲或 FX 素材取得重用授權；逐項素材權利與原動畫師未核對。只保留原始連結及短篇原創觀察，不下載重傳影片、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-05T00:39:20.942Z",
+      "lastVerified": "2026-11-05T00:39:20.942Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器核對官方案例和嵌入 video src，開啟同一官方 MP4 的原生播放器；暫停後鍵盤跳轉，每次另取穩定解碼畫面並讀實際時間。採用 29.569033、39.269、48.968933 秒三張畫面。沒有連續看過動作，播放經過時間不列為觀看證據。",
+        "locator": "00:29.57 多角色戰鬥配置；00:39.27 編輯器中完整持刀骷髏；00:48.97 舉手角色與白色亮帶。",
+        "samples": [
+          {
+            "seconds": 29.569033,
+            "note": "紫色洞窟場景中，三名持武器角色沿畫面上中下分開配置，各有金色圓環；上方兜帽人物持短刃、另一手靠腰，中間紅鬍鬚矮人肩後有大型帶刺武器，下方纏頭人物把彎刀放在身體前下方。最下方角色足部未完整可見。"
+          },
+          {
+            "seconds": 39.269,
+            "note": "Spine 編輯器棋盤格中完整骷髏角色，雙手把彎刀舉到頭左上方，雙腿前後分開且屈膝；頭、胸腔、骨盆與肢體有清楚輪廓，右側部件樹與動畫名稱、下方 Key 可見。未確認所選動畫名稱。"
+          },
+          {
+            "seconds": 48.968933,
+            "note": "中央虎形角色雙腳分開，一手向上舉，頭頂紫色手套形物有放射亮光；右方大鬍鬚人物、左上大型裝甲形角色部分可見，多條白色彎帶跨越前景並遮住畫面下方。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "29.569033 秒：不同角色的持物高度及武器方向各異，角色以垂直錯位與金色環狀亮部區分；大武器、頭部和鄰近人物之間仍有不同形狀。下方腳位不完整，不能拿該人物判斷接地。",
+        "39.269 秒：彎刀、雙臂和頭部構成上方集中形狀，分開的雙腿形成下方負空間；此全身單格可作持刀及分腿 Pose 參考，但不能僅因抬腳或動畫清單列出 run 就判定正在跑步。",
+        "48.968933 秒：中央舉手角色與頭頂紫色物件以亮光突出，白色彎帶橫跨多名角色前方，遮住大部分下緣；只能觀察亮帶覆蓋與主要 Pose 的可讀性，不能確定施法、道具取得或效果出現的順序。"
+      ],
+      "application": [
+        "Layout 先 Key 自有角色的骨盆、胸頭、持物手與武器端點；多人同場時先排定角色高度與前後層次，檢查大型武器是否遮住鄰近角色的主要 Pose。",
+        "Blocking 自行安排持刀、舉手、出力和返回等主要轉折，完整預覽腳部與重心；不要將這三張不同鏡頭拼成同一動作，也不要用動畫清單或密集 Key 取代自己的 Pose 設計。",
+        "Final 在主要 Pose 通過後才加入衣物、武器細節與亮帶 FX，回到實際遊戲尺寸檢查遮擋；這是對自有 Spine 4.0 專案的應用推論，不是原作 timing、約束或特效實作的確認。"
+      ],
+      "limits": [
+        "三個獨立靜態樣本，未連續觀看；不能分析步頻、跑步週期、攻擊速度、FX 壽命、spacing、幀率或延遲。",
+        "本輪未確認完整走跑／待機循環；39.269 秒動畫清單可見多個名稱，但未確認選中哪個，故不依名稱擴張動作分類。",
+        "Spine 版本、rig、mesh、權重及 FX 的具體生成方式未知；官方角色動畫案例不等於每一層亮帶都已逐項證明使用 Spine。",
+        "角色個別作者、素材重用權利與製作地區未逐一核對，region 保持 unknown；片頭標誌及極小角色測試畫面未作採用樣本。"
       ]
     }
   ]
