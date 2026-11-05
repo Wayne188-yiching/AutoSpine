@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T10:47:42.124Z",
+  "startedAt": "2026-11-05T10:47:56Z",
+  "completedAt": "2026-11-05T10:52:14.457Z",
+  "result": "updated",
+  "focus": [
+    "原作者清楚標示的短攻擊動作",
+    "完整刀身／腿腳可見的低身與較直立 Pose、地面 FX"
+  ],
+  "addedIds": [
+    "spine-twins-samurai-combo3"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      2.437705,
+      3.744786
+    ]
+  },
+  "research": [
+    {
+      "url": "https://tdgamestudio.com/portfolio/boss-animation",
+      "outcome": "正常瀏覽器實際核對 The Twins · Spine 2D Reels、Boss Samurai — Animation by me，及 Combo3 原始 Vimeo 751087036；為不同攻擊片，非既有 Idle／Combo1 的重複鏡像。"
+    },
+    {
+      "url": "https://vimeo.com/751087036",
+      "outcome": "正常原始頁確認 Combo3、Toan Dang／toan1874 和 5.845333 秒片長。進度條定位並暫停後，實際採用 2.437705 秒低身直刀及黑紅腳周圖形、3.744786 秒較直立斜刀姿勢。完整播放器中主要刀身與腿腳可見；0 秒與背景播放不列採用樣本。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://tdgamestudio.com/portfolio/boss-animation",
+      "issue": "網頁擷取工具回報 cache miss。",
+      "resolution": "改用正常瀏覽器原始公開頁，案例文字與內嵌影片均可存取；沒有繞過登入、付費或安全限制。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 69 sources",
+    "indexBuild": "passed — 69 sources; 25 Spine video entries",
+    "sourceDedup": "entry ID and canonical Vimeo ID 751087036 checked unique; distinct Combo3, not an alias of existing Idle or Combo1",
+    "evidence": "visual-samples; two actual paused timestamps; segments empty; timingBasis none; no continuous timing or FPS claims",
+    "scope": "Only catalog.json, generated index.html and this run record edited"
+  },
+  "previousPublication": {
+    "commit": "bb169715764a72d2dafbfa2dd6be2d03d1521df3",
+    "pagesRun": 42006185565,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "只看兩個單格，不確認預備／命中／收勢時點、刀速、幀率或與 Idle／Combo1 的無縫銜接。",
+    "黑紅 FX 的出現不證明碰撞、傷害或地面受力，Spine 及 FX 的具體實作和版本未核實。",
+    "逐項素材作者、授權範圍及製作地未知，未把工作室現址當成原片製作地。",
+    "未下載重傳媒體、原圖或截圖，未付費或上傳私有資料，未修改引擎、角色或快取，未補造漏掉時段。"
+  ],
+  "nextFocus": "輪替可清楚看見全身的原創走跑／跳躍或輔助實作教學，避免連續增加同一武士的近似動作樣本；若研究節奏，須真正連續看過動作。"
+}
