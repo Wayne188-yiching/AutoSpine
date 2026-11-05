@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T07:47:39.341Z",
+  "startedAt": "2026-11-05T07:47:54Z",
+  "completedAt": "2026-11-05T07:52:56.262Z",
+  "result": "updated",
+  "focus": [
+    "輪替完成角色表演與長頸生物主要 Pose",
+    "遊戲實機／編輯器對照，保留逐格與骨骼技法限制"
+  ],
+  "addedIds": [
+    "spine-bulb-boy-bulbware-showcase"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      26.156433,
+      28.804766,
+      39.398133
+    ]
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/spine-showcase-all",
+      "outcome": "官方 bulbware-games 案例連結 Bulb Boy、Bulbware，並刊載 Szymon & Artur 的 Spine 製作說明，特別提及許多動畫採逐格技法。讀取該案例可見 video src /showcase/bulbware/video01a.mp4。"
+    },
+    {
+      "url": "https://en.esotericsoftware.com/showcase/bulbware/video01a.mp4",
+      "outcome": "正常公開 MP4 媒體就緒後回報 52.966667 秒，暫停並用播放器左右鍵定位，核對實際秒數後採用 26.156433 秒室內長頸怪物、28.804766 秒相同造型 Spine 編輯器、39.398133 秒船上雙角色場景。10.266299 秒偏暗編輯器及 15.562959 秒局部畫面未採用，初始背景播放不作精確觀看證據。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 67 sources",
+    "indexBuild": "passed — 67 sources; 23 Spine video entries",
+    "sourceDedup": "entry ID and canonical MP4 URL checked unique; shared showcase page used only for verification, not another media alias",
+    "evidence": "visual-samples; actual paused timestamps; segments empty; timingBasis none; no continuous timing or FPS claims",
+    "scope": "Only catalog.json, generated index.html and this run record edited"
+  },
+  "previousPublication": {
+    "commit": "1664a3a97114dcf51ff9936d9342d11b56392db3",
+    "pagesRun": 41983542852,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "三個分離單格，不把長頸形狀或懸掛物當成已觀看的次要運動或固定延遲，不把船上姿勢當完整待機循環。",
+    "室內畫面偏暗，主要用於大形；船上構圖以頭部為主，沒有全身接觸分析。",
+    "官方明確提及許多逐格動畫，不從可見骨骼／密集 key 推定純骨骼插值或作者的製作階段順序。",
+    "Spine 版本、權重／約束、逐項素材作者及地區未知；未下載重傳媒體或截圖，未付費／上傳私有資料，未修改引擎、角色、快取，未補造漏掉時段。"
+  ],
+  "nextFocus": "輪替原作者清楚標示的待機／動作集，挑不同主要 Pose 而非相似單格；次要運動節奏仍需實際連續觀看才能分析。"
+}

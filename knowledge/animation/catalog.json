@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T06:53:35.250Z",
+  "updatedAt": "2026-11-05T07:52:17.503Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3900,6 +3900,83 @@
         "完成場景中身體常受樹幹和岩石遮擋；編輯器採用畫面只有頭部與局部前肢，不當作全身 locomotion 或腳部接觸證據。",
         "官方確認專案使用 Spine，且可見頭部網格／骨骼，但具體權重、rig、各層素材工具與 Spine 版本未知；不套用較新版本功能到 Spine 4.0。",
         "製作地區和逐項素材作者未核實，不由網站語言、商店地區或姓名推定，region 保持 unknown。"
+      ]
+    },
+    {
+      "id": "spine-bulb-boy-bulbware-showcase",
+      "title": "Spine 完成演出與製作拆解｜Bulb Boy 長頸怪物與船上角色 Pose",
+      "work": "Bulb Boy — Bulbware showcase",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "line-of-action",
+        "staging",
+        "facial",
+        "workflow"
+      ],
+      "actions": [
+        "creature",
+        "acting",
+        "expression"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://en.esotericsoftware.com/showcase/bulbware/video01a.mp4",
+        "publisher": "Esoteric Software（官方 Spine Showcase 主機）",
+        "creator": "Bulbware；官方案例署名 Szymon & Artur，個別動畫與美術分工未逐項核實",
+        "platform": "Esoteric Software 公開 MP4",
+        "official": true,
+        "verification": "官方案例 https://en.esotericsoftware.com/spine-showcase-all 的 bulbware-games 區塊連至 Bulb Boy、Bulbware，並刊載 Szymon & Artur 對使用 Spine 製作大量動畫、其中許多採逐格技法的說明。該案例 bulbware 播放器的可見 video src 為 /showcase/bulbware/video01a.mp4。實際影片有遊戲完成場景及 Spine 編輯器；Spine 分類依官方專案資訊與實際畫面，不由 2D 外觀推定。播放器回報 52.966667 秒，Spine 版本未知；不能把全部角色表演歸為純骨骼插值。",
+        "durationSeconds": 52.966667,
+        "aliases": [],
+        "rights": "官方公開展示，未提供本輪可確認的影片、角色或背景素材重用授權；各項權利與分工未核實。僅保存原始公開連結與短篇原創觀察，不下載重傳影片、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-05T07:52:17.503Z",
+      "lastVerified": "2026-11-05T07:52:17.503Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器核對官方案例及其可見 video src，正常開啟公開 MP4，待媒體就緒後暫停，再以播放器鍵盤左右跳轉。每次核對實際 currentTime、paused 和穩定畫面，採用 26.156433、28.804766、39.398133 秒。10.266299 秒偏暗編輯器及 15.562959 秒角色局部畫面未採用，最初背景播放不算觀看證據。沒有連續看過動作過程。",
+        "locator": "00:26.16 — 長頸怪物遊戲實機；00:28.80 — 同造型怪物 Spine 全身編輯畫面；00:39.40 — 明亮船上場景。三個分離單格。",
+        "samples": [
+          {
+            "seconds": 26.156433,
+            "note": "暗綠色室內完成場景，長頸怪物占中央至右側，頸向左上彎再向下勾，頭與嘴在軀幹左上方；腹部圓大、腿向下分開，嘴前有小型深色懸掛形狀。雖畫面暗，頭頸與背部輪廓可辨，腳部細節不足。"
+          },
+          {
+            "seconds": 28.804766,
+            "note": "Spine 編輯器中，同造型長頸怪物完整位於棋盤格工作區，頸向前上方再下彎，雙膝屈曲，身體、頸及腿上有多色骨骼線；右側是動畫清單及骨架樹，下方時間軸有多條 key 軌。不能只由 key 密度辨認製作順序。"
+          },
+          {
+            "seconds": 39.398133,
+            "note": "亮綠色戶外完成場景，下方小船內有圓頭角色與長頸戴帽、圓眼鏡角色；圓頭角色雙眼閉合，右側有釣竿伸向右上。上方樹枝與中央漂浮小生物形成上下層次，小船底部在畫面下緣，兩個角色主要頭部清楚可見。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "26.156433 秒：長頸由軀幹向上、向左再向下彎，頭與大腹部有可辨距離，與室內暗背景形成輪廓對照；不能由這張推論頸部擺動、附掛物延遲或實際腳部接觸。",
+        "28.804766 秒：同造型怪物在編輯器中可見屈膝全身姿勢與骨骼線，能和完成場景的大形對照；沒有檢視權重內容或原檔，不能確定每一處皮膚如何由骨骼或逐格圖像驅動。",
+        "39.398133 秒：船上兩個主要頭部並排，閉眼圓頭角色與戴帽長頸角色在形狀和高度上不同，釣竿朝右上與上方枝幹形成不同方向。此格支持構圖與靜態表情對照，不能宣稱已觀看完整待機或釣魚動作。"
+      ],
+      "application": [
+        "Layout 為自有長頸生物先 Key 頸部大弧形、頭胸間距和屈膝主要 Pose；做雙角色表演時，同步安排頭部高度、視線及道具方向，先用大形建立辨識度。",
+        "Blocking 另做自有角色的頸部轉折、腿部交換和表情變化，連續檢查重心、穿插與物件關係；本輪單格不提供原作的走路、待機或頸部回彈節奏，不能直接指定延遲數值。",
+        "Final 在主要 Pose 通過後再細修頸部、皮膚皺褶與道具細節，複查暗背景中的輪廓。若自有 Spine 4.0 專案需要結合骨骼與 attachment 圖像切換，應依自己的素材設計；官方提到逐格技法，不代表本輪已確認每個部位的混用方法。"
+      ],
+      "limits": [
+        "只有三個分離畫面，未連續觀看；不能分析呼吸循環、待機節奏、頸部次要運動、附掛物延遲、步頻、spacing 或實際幀率。",
+        "暗綠室內畫面可辨大形但腳部與細節不足；船上畫面主要供上半身表情和構圖，不作全身腳部接觸證據。",
+        "官方提及許多逐格動畫；可見骨骼和時間軸不證明整段為純骨骼插值，也不以密集 key 推論作者完成了何種 Layout／Blocking 流程。",
+        "Spine 版本、權重、約束、逐項素材作者及製作地區未知；不把檔名數字當版本，不將新版功能直接套到 Spine 4.0。"
       ]
     }
   ]
