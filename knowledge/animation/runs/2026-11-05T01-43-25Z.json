@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T01:43:02.730Z",
+  "startedAt": "2026-11-05T01:43:25Z",
+  "completedAt": "2026-11-05T01:46:51.165Z",
+  "result": "updated",
+  "focus": [
+    "原作者完成 Walk／Run／Idle 動作集",
+    "同角色的主要 Pose 與肢體幅度差異"
+  ],
+  "addedIds": [
+    "spine-borovik-stone-age-action-set"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      5.833366,
+      10.833333,
+      20.833333
+    ]
+  },
+  "research": [
+    {
+      "url": "https://vimeo.com/125311239",
+      "outcome": "針對原作者 walk／run 影片搜尋，找到 Vyacheslav Borovik 的 Stone Age Character Animation In Spine。正常背景瀏覽器核對 borovik 帳號、Spine 作品標示、walk cycle／run cycle／idle 描述及 24.3 秒片長。三張採用畫面分別直接顯示 Walk、Run、Idle 標籤；以可見播放器控制暫停、跳轉，捲回完整播放器後取穩定解碼畫面並讀取實際秒數。未連續觀看循環。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://vimeo.com/125311239",
+      "issue": "文字瀏覽工具直接開啟回傳 Cache miss。",
+      "resolution": "搜尋摘要與正常公開瀏覽器均可核對原作者頁面；已在正常播放器檢視三個實際畫面，未繞過限制。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 63 sources",
+    "indexBuild": "passed — 19 Spine video entries",
+    "sourceDedup": "new canonical Vimeo ID 125311239; no matching existing media URL or alias",
+    "evidence": "visual-samples; three independent labelled samples; no segments; timingBasis none",
+    "scope": "only catalog.json, generated index.html and this run record"
+  },
+  "previousPublication": {
+    "commit": "c4f03b10af1eca14c600050261519f96b29601b6",
+    "pagesRun": 41943036140,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "動作名稱有原作標籤支持，但沒有連續觀察走跑／待機循環；不推論步頻、速度比例、呼吸或衣物延遲。",
+    "Spine 版本、rig、逐項美術作者／權利與製作地區未知。",
+    "未下載重傳媒體或截圖，未修改引擎／角色／快取，未付費調用模型或上傳私有資料。"
+  ],
+  "nextFocus": "可重訪此動作集補同一標籤下的對照 Pose，或輪替原作者跳躍／落地；次要運動仍須真正看過連續過程才分析延遲。"
+}
