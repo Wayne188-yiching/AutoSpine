@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T02:44:15.554Z",
+  "updatedAt": "2026-11-05T03:50:43.582Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3671,6 +3671,79 @@
         "各段角色朝向及顯示方式可能不同；不能從單格比較推導 2.5D 或原作的實作技巧，約 24.32 秒片長也不能平均分成三個循環時長。",
         "Spine 版本、rig、mesh、權重、部位動畫方式與逐項素材授權未知；不把較新版本功能直接套用到 Spine 4.0。",
         "作者名稱、角色風格和作品語言不等於製作地；角色美術原作者及製作地區未核實，region 保持 unknown。"
+      ]
+    },
+    {
+      "id": "spine-carol-patton-birds-ipad-app",
+      "title": "Spine 遊戲實機與製作拆解｜Carol Patton Birds iPad App",
+      "work": "Birds iPad App Breakdown",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "workflow"
+      ],
+      "actions": [
+        "creature"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/154389436",
+        "publisher": "Carol Patton（Vimeo；原作者作品集內嵌播放器）",
+        "creator": "Carol Patton（作者作品集自述製作）；其他協作者及逐項素材作者未確認",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "原作者作品頁 https://www.carolpatton.com/projects/motiondesign 的 Birds iPad App 段落，明確自述使用 Unity、Spine、C# 製作此 iPad app，並內嵌 Carol Patton 發布的 Birds iPad App Breakdown（Vimeo 154389436，播放器標題與發布者可見）。分類依這個特定專案的作者說明，並非把同頁含 After Effects、Duik、Dragonframe 等工具的混合 demo reel 全部歸為 Spine。實際抽查到角色編輯器畫面及兩種 iPad 遊戲實機；不能確認每層畫面都由 Spine 製作。播放器回報片長 84.417663 秒；Spine 版本未知。",
+        "durationSeconds": 84.417663,
+        "aliases": [],
+        "rights": "原作者作品集及 Vimeo 公開播放；未找到本輪可確認的影片或角色素材重用授權。只保存原始連結和短篇原創觀察，不下載、重傳影片、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-05T03:50:43.582Z",
+      "lastVerified": "2026-11-05T03:50:43.582Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "在作者公開作品頁的正常內嵌 Vimeo 播放器，以可見 Progress Bar 的鍵盤操作跳轉並暫停；讀取實際 currentTime，待畫面穩定後抽查。採用 20、55、65 秒三個單格；5 秒是紙上設計、35 秒是現場人物、50 秒是另一遊戲畫面、60 秒與採用的滑板鳥姿勢近似、70 秒是介紹頁，未加入筆記。沒有連續看過動作過程，背景播放不作觀看證據。",
+        "locator": "00:20 — 戴耳機貓頭鷹編輯器；00:55 — 貓頭鷹節奏遊戲；01:05 — 滑板鳥遊戲。三個分離單格。",
+        "samples": [
+          {
+            "seconds": 20,
+            "note": "角色編輯器與時間軸可見，正面藍色貓頭鷹戴大耳機、雙眼張開、尖喙向下，兩片深色翅膀位於身體兩側；左側翅膀上可見編輯標記。小字與關鍵幀類型無法可靠辨識。"
+          },
+          {
+            "seconds": 55,
+            "note": "實際 iPad 螢幕中，正面藍色貓頭鷹戴耳機，兩片深色翅膀垂在身前兩側，雙眼張開；下方是大面積方格觸控區，手指在右下方，主要角色輪廓未被遮住。"
+          },
+          {
+            "seconds": 65,
+            "note": "iPad 滑板遊戲畫面，戴黑帽的藍色鳥朝右，深色翅膀在身後側，細腿屈曲、雙腳在藍色滑板上；滑板貼近下方黑色地面帶，右上另有圓形鳥圖案。此格沒有可確認的離地姿勢。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "20 秒：正面貓頭鷹的圓眼、尖喙與兩側深色翅膀形成可讀輪廓，畫面同時呈現角色與編輯時間軸；只能確認可見的製作介面，不能從小字辨認具體 rig 或 key 類型。",
+        "55 秒：同造型貓頭鷹出現在 iPad 節奏遊戲的方格操作區上方，主要角色和觸控區上下分開；這個單格支持遊戲小比例角色的構圖對照，不能證明翅膀擺動節拍。",
+        "65 秒：滑板鳥的軀幹、屈膝細腿和板面分成三層，鳥朝右的喙與帽子方向一致，腳與滑板的關係可見。此格靠近地面，不能把作者描述的避障玩法當成本輪已看過跳躍。"
+      ],
+      "application": [
+        "Layout 為自有鳥類角色先 Key 正面表演與側向滑板兩種主要姿勢，先檢查眼睛、喙、翅膀、膝與板面的剪影；搭配遊戲操作區安排角色位置，避免先用細碎擺動代替主要 Pose。",
+        "Blocking 自行補足自有滑板鳥的下壓、離地、空中與落地姿勢，連續預覽腳與板、板與地面的關係；本輪沒有連續動作與空中樣本，不能依原片秒差指定跳躍時長或落地節拍。",
+        "Final 在主要姿勢通過後再加翅膀、帽子或耳機的跟隨細節，於遊戲實際顯示比例複查輪廓。這是 Spine 4.0 的應用規劃，並非原作者約束、權重或新版物理功能的確認。"
+      ],
+      "limits": [
+        "只有 20、55、65 秒三個分離畫面；未連續觀看，不能分析節奏、速度、spacing、幀率、完整跳躍、碰撞或循環接縫。",
+        "原作者確認這個 app 使用 Spine，但 Unity 遊戲邏輯、iPad 實拍及可能的其他工具不可一併歸為 Spine 內製。編輯器文字很小，版本與具體實作未知。",
+        "同頁混合 demo reel 的其他作品採用不同工具；本條目僅收錄 Birds iPad App Breakdown，不以作者也用 Spine 推定整個作品集皆使用 Spine。",
+        "作者製作地區及其他協作者未核實；不從學校、語言、姓名或風格推定國別，region 保持 unknown。"
       ]
     }
   ]

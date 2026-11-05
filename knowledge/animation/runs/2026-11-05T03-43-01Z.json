@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T03:42:34.740Z",
+  "startedAt": "2026-11-05T03:43:01Z",
+  "completedAt": "2026-11-05T03:51:11.299Z",
+  "result": "updated",
+  "focus": [
+    "原作者 Spine 遊戲實機與製作畫面",
+    "鳥類主要 Pose、屈膝與滑板接地關係；跳躍仍待補看"
+  ],
+  "addedIds": [
+    "spine-carol-patton-birds-ipad-app"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      20,
+      55,
+      65
+    ]
+  },
+  "research": [
+    {
+      "url": "https://www.carolpatton.com/projects/motiondesign",
+      "outcome": "作者針對 Birds iPad App 明確自述 Unity、Spine、C#；正常嵌入原作者 Vimeo 154389436。混合作品集其他工具不一併分類 Spine。"
+    },
+    {
+      "url": "https://vimeo.com/154389436",
+      "outcome": "在作者公開頁正常內嵌播放器抽查 20、55、65 秒，保存原創姿勢與構圖筆記。5、35、50、60、70 秒也實際檢視但未採用，不將背景播放當連續觀看。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://vimeo.com/886243746",
+      "issue": "搜尋候選 Sofiia Nazarova — Skeleton - Jump animation - Spine2D 的正常頁面出現 Verify to continue 人機／連線安全檢查；未取得實際畫面。",
+      "resolution": "未解題或繞過，未收錄觀察，改查另一獨立作者公開作品。"
+    },
+    {
+      "url": "https://www.carolpatton.com/projects/motiondesign",
+      "issue": "內嵌播放器最初 readyState 0、緩衝，時間 0 畫面未採用；細部進度條座標操作被瀏覽器安全檢查拒絕。",
+      "resolution": "等待正常媒體就緒後使用可見 Progress Bar 鍵盤操作，readyState 4 且暫停、核對實際秒數後檢視穩定畫面。未強制座標操作、未下載媒體。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 64 sources",
+    "indexBuild": "passed — 64 sources; 20 Spine video entries",
+    "sourceDedup": "Vimeo 154389436 / canonical URL / entry ID checked unique; source page retained as verification, not a second video",
+    "evidence": "visual-samples; segments empty; timingBasis none; no continuous timing claims",
+    "scope": "Only catalog.json, generated index.html and this run record edited"
+  },
+  "previousPublication": {
+    "commit": "d4273d2def61b936e20725b78ee822173911568a",
+    "pagesRun": 41957219695,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "原作者確認專案採用 Spine，非每一層或所有作品都確認使用 Spine。",
+    "Spine 版本、具體 rig、權重及重用授權未知，製作地區未確認。",
+    "沒有取得跳躍的離地畫面或連續過程，不把玩法描述列為已觀看動作證據。",
+    "沒有補造先前未執行時段，不下載重傳影片、原圖或完整瀏覽器截圖。"
+  ],
+  "nextFocus": "優先另找可正常播放的原作者／官方完成跳躍或落地片段；若補看 Birds App，先取得離地與落地實際樣本，再考慮連續動作證據。"
+}
