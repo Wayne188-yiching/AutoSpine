@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T04:45:06.122Z",
+  "startedAt": "2026-11-05T04:45:18Z",
+  "completedAt": "2026-11-05T04:49:07.097Z",
+  "result": "updated",
+  "focus": [
+    "官方 Spine 完成平台遊戲影片",
+    "空中 Pose、平台邊緣支撐與 FX 分層"
+  ],
+  "addedIds": [
+    "spine-hitman-official-platformer-showcase"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      24.933333,
+      34.906666
+    ]
+  },
+  "research": [
+    {
+      "url": "https://esotericsoftware.com/spine-asset-packs",
+      "outcome": "官方 Hitman 專案說明明確確認 Spine 骨架和動畫，提供原始 YouTube 4XuNENgWPt4 影片及 Unity／physics 整合資訊；沒有把動作清單當成已看完。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=4XuNENgWPt4",
+      "outcome": "正常原始影片確認標題、官方發布者和 49.901 秒片長。實際檢視後採用 24.933333 秒空中角色／藍色效果／平台間隙，及 34.906666 秒平台邊緣主要 Pose。14.96 秒小比例編輯器、19.946666 秒中央字遮擋、29.92 秒黑場、39.893333 秒片尾文字未採用；初看 5.97833 秒、9.973333 秒也未加入。"
+    },
+    {
+      "url": "https://esotericsoftware.com/spine-asset-pack-license",
+      "outcome": "由官方頁授權連結讀取專用 Asset Pack License Agreement；只記原始授權入口及已知限制，未購買／下載素材，也不將影片公開播放視為重傳授權。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 65 sources",
+    "indexBuild": "passed — 65 sources; 21 Spine video entries",
+    "sourceDedup": "entry ID, canonical URL and YouTube ID 4XuNENgWPt4 checked unique; official asset page retained in verification, not counted as another video",
+    "evidence": "visual-samples; two actual paused timestamps; segments empty; timingBasis none; no continuous timing claims",
+    "scope": "Only catalog.json, generated index.html and this run record edited"
+  },
+  "previousPublication": {
+    "commit": "2913a7ad6657ee26b1f716e30f354cb70890d529",
+    "pagesRun": 41964182628,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "兩個分離單格，不把秒差視為同一完整跳躍，不判斷上升／下降或平衡週期。",
+    "官方確認 Spine 與 Unity controller／physics 整合，未確認特定藍色 FX 的工具或每層實作。",
+    "Spine 版本、個別動畫師、製作地區未知；不套用新版功能到 Spine 4.0。",
+    "未下載重傳影片、原圖或瀏覽器截圖；未付費調用模型或購買資產；未補造漏掉時段。"
+  ],
+  "nextFocus": "優先補看可清楚辨識的落地／下壓主要 Pose 或完整短跳躍過程；只在實際連續觀看後記 timing。"
+}

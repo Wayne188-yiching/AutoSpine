@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T03:50:43.582Z",
+  "updatedAt": "2026-11-05T04:48:36.837Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -3744,6 +3744,76 @@
         "原作者確認這個 app 使用 Spine，但 Unity 遊戲邏輯、iPad 實拍及可能的其他工具不可一併歸為 Spine 內製。編輯器文字很小，版本與具體實作未知。",
         "同頁混合 demo reel 的其他作品採用不同工具；本條目僅收錄 Birds iPad App Breakdown，不以作者也用 Spine 推定整個作品集皆使用 Spine。",
         "作者製作地區及其他協作者未核實；不從學校、語言、姓名或風格推定國別，region 保持 unknown。"
+      ]
+    },
+    {
+      "id": "spine-hitman-official-platformer-showcase",
+      "title": "Spine 官方完成動作｜Hitman 空中 Pose 與平台邊緣平衡",
+      "work": "Spine Asset Pack - Hitman",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "contact",
+        "fx"
+      ],
+      "actions": [
+        "jump",
+        "fx"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=4XuNENgWPt4",
+        "publisher": "Esoteric Software（官方 YouTube 頻道）",
+        "creator": "Esoteric Software 官方 Hitman 資產包；個別動畫師及美術作者未確認",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "官方頁 https://esotericsoftware.com/spine-asset-packs 的 Hitman 區塊內嵌此影片，正常 YouTube 頁標題為 Spine Asset Pack - Hitman、發布者 Esoteric Software。官方說明此包含 Spine 骨架和動畫，並以 Unity controller、玩家輸入與 Unity physics 整合；動作清單含 jump、fall、edge balance 等，Spine 分類由官方專案資訊確認。兩張採用畫面是實際平台遊戲演出；未把文字列出的全部動作視為已觀看。播放器回報長度 49.901 秒，原專案 Spine 版本未知。",
+        "durationSeconds": 49.901,
+        "aliases": [],
+        "rights": "影片為官方公開播放，未確認影片本身允許重製或重傳。官方資產包另有 Asset Pack License Agreement：https://esotericsoftware.com/spine-asset-pack-license；公開展示不等於取得素材包或可獨立再散布的授權。本輪未購買、下載或重傳資產、影片或截圖，僅保存連結與原創筆記。"
+      },
+      "firstSeen": "2026-11-05T04:48:36.837Z",
+      "lastVerified": "2026-11-05T04:48:36.837Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器由官方資產包頁核對原始 YouTube 連結，正常影片開啟後暫停；以播放器鍵盤跳轉並讀取實際 currentTime，確保影片完整位於視窗內，待穩定後檢視單格。採用 24.933333、34.906666 秒。14.96 秒是小比例編輯器；19.946666 秒角色被中央宣傳字覆蓋；29.92 秒黑場、39.893333 秒片尾文字，皆未採用。初看 5.97833 秒及 9.973333 秒也未納入。沒有連續看過跳躍、落地或平衡動作。",
+        "locator": "00:24.93 — 空中角色與藍色 FX、平台間隙；00:34.91 — 平台邊緣單腳支撐姿勢。兩個分離單格。",
+        "samples": [
+          {
+            "seconds": 24.933333,
+            "note": "灰色平台場景，白色角色在左下平台上方，腳與平台頂面之間有明確空隙，身體附近有向下延伸的亮藍色效果；雙臂與腿屈曲、角色整體斜置。上方另有方頭角色和另一座平台，右上是控制器支援宣傳字。"
+          },
+          {
+            "seconds": 34.906666,
+            "note": "白色角色位於左側平台右端，一腳在平台邊緣附近，另一膝抬起；頭胸偏在支撐腳右上方，一側手臂向平台內側伸出。右側顯示 AND MORE，未遮擋主要肢體。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "24.933333 秒：角色、下方平台與空隙同時可見，空中狀態的輪廓易於辨識；藍色效果在身體左側及下方形成另一層形狀。此單格不能分辨正在上升、下降或何時觸發效果。",
+        "34.906666 秒：平台邊緣與支撐腳位置相近，抬起的膝及伸向平台內側的手臂，使頭胸偏出邊緣的姿勢仍有可讀的肢體方向。這是靜態平衡 Pose 參考，不能由一格驗證實際重心或搖晃週期。"
+      ],
+      "application": [
+        "Layout 為自有平台角色先 Key 地面準備、空中、落地及平台邊緣主要 Pose，先檢查腳與平台、頭胸與支撐腳的相對位置；以剪影和明確空隙表達動作狀態，不先靠粒子遮蓋不清楚的 Pose。",
+        "Blocking 自行補足下壓、伸展、空中轉折及腳部接觸的中間姿勢，連續預覽自有跳躍和邊緣回穩過程。兩個分離樣本不是一個完整跳躍，不能用其秒差指定滯空或落地時長。",
+        "Final 在主要 Pose 通過後再安排跳躍 FX、邊緣微調與跟隨細節，逐一檢查角色可讀性；遊戲位移、碰撞和粒子可由 runtime 或引擎處理，不能將官方展示中的全部效果推定為 Spine 內建或 Spine 4.0 物理功能。"
+      ],
+      "limits": [
+        "只有兩個實際抽查畫面，未連續觀看；不能分析加速度、spacing、幀率、空中轉折、落地重量或平衡節奏。",
+        "官方文字列出 jump／fall／edge balance 等動畫，但本輪沒有逐項看完，未將動作清單當成觀看證據。",
+        "Spine 版本、個別動畫師、rig、mesh、權重及藍色效果的具體實作未確認；不把新版物理約束直接套用到 Spine 4.0。",
+        "製作地區未核實，不能由官方網站語言或發布者名稱推定；資產包授權與公開影片觀看權分開記錄。"
       ]
     }
   ]
