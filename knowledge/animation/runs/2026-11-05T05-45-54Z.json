@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T05:45:37.375Z",
+  "startedAt": "2026-11-05T05:45:54Z",
+  "completedAt": "2026-11-05T05:49:29.179Z",
+  "result": "updated",
+  "focus": [
+    "補看既有官方 Spine 平台遊戲影片",
+    "沒有 FX 遮擋的空中 Pose 與站立接觸；辨識疊化限制"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-hitman-official-platformer-showcase"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      26.458331,
+      27.45833
+    ]
+  },
+  "research": [
+    {
+      "url": "https://esotericsoftware.com/spine-asset-packs",
+      "outcome": "重新核對官方 Hitman 專案與 Spine／Unity 整合說明；原素材包動作清單不當成全部已觀看。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=4XuNENgWPt4",
+      "outcome": "正常原始頁確認官方發布者與 49.901 秒片長，暫停後由播放器快捷鍵定位。新增 26.458331 秒無大面積藍色 FX 的空中姿勢、27.45833 秒平台上直立姿勢。另看 26.65833、26.95833 秒為人物與平台重疊的疊化，未收錄為動作 Pose，並明確限制不能以兩張秒差分析落地。24.941666 秒與前輪空中姿勢近似，未重複加入。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=4XuNENgWPt4",
+      "issue": "首次開頁為廣告（20 秒長度），可見略過按鈕在點擊前已消失。",
+      "resolution": "未分析廣告；重新檢查頁面後確認已正常進入原影片、片長 49.901 秒，再暫停與定位。不將廣告或背景播放時間記為觀看證據。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 65 sources",
+    "indexBuild": "passed — 65 sources; 21 Spine video entries",
+    "sourceDedup": "existing canonical YouTube ID updated in place; firstSeen preserved; near-duplicate sample omitted",
+    "evidence": "visual-samples; two new actual paused timestamps; four independent samples total; no continuous clips; timingBasis none",
+    "scope": "Only catalog.json, generated index.html and this run record edited"
+  },
+  "previousPublication": {
+    "commit": "8ff9f379a4a1709b01a257328cffffd8de29dcc5",
+    "pagesRun": 41970165664,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "播放器批次逐格定位不是逐格觀看；未親看連續過程，不推定原作或專案幀率。",
+    "採用的空中與站立畫面之間有疊化，未取得同一完整跳躍的落地／下壓動作證據；actions 未新增 land。",
+    "Spine 版本、具體 rig／FX 技術、個別作者及製作地區仍未知。",
+    "未下載重傳影片、原圖或截圖，未修改引擎／角色／快取，未付費或上傳私有資料，未補造漏掉時段。"
+  ],
+  "nextFocus": "輪替原作者角色表演／次要運動的完成片段；如再補落地，選擇沒有剪接的清楚短動作，避免繼續堆積近似空中單格。"
+}
