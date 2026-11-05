@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T13:49:44.878Z",
+  "startedAt": "2026-11-05T13:49:58Z",
+  "completedAt": "2026-11-05T13:57:52.129Z",
+  "result": "updated",
+  "focus": [
+    "原作者公開動作集查證",
+    "多角色主要 Pose 與 FX 遮擋；落地證據仍待補足"
+  ],
+  "addedIds": [
+    "spine-rajesh-gupta-dragonsoul-showreel"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      5.967311,
+      15.973982
+    ]
+  },
+  "research": [
+    {
+      "url": "https://vimeo.com/1159718006",
+      "outcome": "Ivan Babev 原作者說明以 Spine 2D／After Effects 製作此 reel；實際抽查 5.9 秒為轉輪 UI、20.933333 秒為背景／雕像及火焰場景，沒有取得本輪所需清楚角色動作樣本，未新增條目或以 UI 充數。"
+    },
+    {
+      "url": "https://esotericsoftware.com/forum/d/23350-spine-animation",
+      "outcome": "Rajesh 發文署名 Rajesh Gupta，將 Vimeo 443728241 特定連結列為自己的 Spine animation cycles／Dragonsoul works；另列 Blender／Maya 作品未一併歸入 Spine。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=bK2vIZMo1Pg",
+      "outcome": "同一論壇另連此片，但正常頁標題 The COMPLETE Disney Heroes Collection、發布者 Ibosay。未查證其與 Rajesh 的關係，不以論壇連結就宣稱原作者頻道，未收錄觀察。"
+    },
+    {
+      "url": "https://vimeo.com/443728241",
+      "outcome": "原始 Vimeo 發布者 Rajesh Gupta，標題 showreel_Aug2020，20.778666 秒；與作者特定自述及畫面 DragonSoul 標示相符。採用 5.967311 秒室內多角色／光效和 15.973982 秒紅龍／群體／綠光骷髏圖形，10.970647 秒角色介紹卡未採用。"
+    }
+  ],
+  "accessIssues": [],
+  "validation": {
+    "catalog": "passed — 71 sources",
+    "indexBuild": "passed — 71 sources; 27 Spine video entries",
+    "sourceDedup": "entry ID and canonical Vimeo ID 443728241 checked unique; unverified publisher and UI-heavy candidates excluded",
+    "evidence": "visual-samples; actual paused timestamps; segments empty; timingBasis none; no continuous timing or FPS claims",
+    "scope": "Only catalog.json, generated index.html and this run record edited"
+  },
+  "previousPublication": {
+    "commit": "7a1ae22770b87150ee104786a8eae941bef973c4",
+    "pagesRun": 42031772275,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "沒有取得清楚落地或下壓，未以兩張群體場景補造 land 或 timing 證據。",
+    "光效與文字遮擋局部身體，只記大形與構圖，不分析所有人物的接地或武器路徑。",
+    "特定 Spine 歸屬以原作者自述及同名發布者查證，仍不代表所有 FX／素材皆由該作者或 Spine 製作。",
+    "Spine 版本、權重／約束、逐項權利及製作地未知；未下載重傳媒體／截圖，未付費或上傳私有資料，未修改引擎／角色／快取，未補造漏掉時段。"
+  ],
+  "nextFocus": "為落地／下壓優先選明確動作名稱的原作者短片或官方落地製作示範，不用重 FX 群體畫面代替；仍按實際觀看能力區分單格與連續節奏。"
+}

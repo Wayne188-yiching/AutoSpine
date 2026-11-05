@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T12:58:27.402Z",
+  "updatedAt": "2026-11-05T13:57:06.106Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -4215,6 +4215,75 @@
         "樣本來自不同造型和場景，不把跨鏡頭秒差或畫面 HUD 數字當成動作時長、速度或動畫幀號。",
         "圖形效果、金幣及障礙物的工具與碰撞機制未確認；可見空隙不證明遊戲碰撞盒或物理規則。",
         "Spine 版本、每個角色的 rig／mesh／權重、逐項美術作者與製作地區未知；不依姓名、網站語言或風格推定地區，不把較新版本功能直接套到 Spine 4.0。"
+      ]
+    },
+    {
+      "id": "spine-rajesh-gupta-dragonsoul-showreel",
+      "title": "Spine 角色動作集｜Rajesh Gupta 的 DragonSoul 多角色 Pose 與 FX",
+      "work": "showreel_Aug2020 — DragonSoul works",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "fx"
+      ],
+      "actions": [
+        "creature",
+        "fx"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/443728241",
+        "publisher": "Rajesh Gupta（Vimeo user28185618）",
+        "creator": "Rajesh Gupta（原作者論壇自述的動畫作品）；DragonSoul 角色美術與其他製作分工未逐項核實",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "作者在 https://esotericsoftware.com/forum/d/23350-spine-animation 以 Rajesh 發文並署名 Rajesh Gupta，將此 Vimeo 443728241 明確列在自己 Spine animation cycles 作品集連結中，括註 Dragonsoul works；同文另列 Blender／Maya 作品，未一併歸為 Spine。本輪正常原始 Vimeo 頁發布者確為 Rajesh Gupta，標題 showreel_Aug2020，實際畫面有 DragonSoul 標示。分類依原作者對此特定連結的說明，不僅憑 2D 外觀或一般工作經歷；不是 Esoteric Software 或遊戲權利人自製官方影片。片長 20.778666 秒，Spine 版本及每個角色／FX 的具體實作未知。",
+        "durationSeconds": 20.778666,
+        "aliases": [],
+        "rights": "原作者公開作品集未提供本輪可確認的影片、角色或素材重用授權；遊戲、插畫、動畫與可能委託權利未逐項核實。僅保存公開連結及短篇原創觀察，不下載重傳影片、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-05T13:57:06.106Z",
+      "lastVerified": "2026-11-05T13:57:06.106Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器核對作者原始論壇連結與 Vimeo 發布者；正常媒體就緒後使用 Play／Pause 建立穩定暫停，再用 Progress Bar 鍵盤定位，讀取實際 currentTime，捲回完整播放器後檢視。採用 5.967311、15.973982 秒兩個完成場景；10.970647 秒為角色介紹卡，未當動作樣本。未連續觀看，也未用片長作循環時長。",
+        "locator": "00:05.967 — 室內多角色與縱向光效；00:15.974 — 紅龍、近戰角色及綠色／骷髏 FX。兩個分離單格。",
+        "samples": [
+          {
+            "seconds": 5.967311,
+            "note": "木質室內完成遊戲場景，中央偏左藍色狼形角色屈身、長臂向下，中央人形角色較直立並被縱向綠藍光效包圍；左側有漂浮形狀及亮點連線，右側角色前方有藍白效果。主要角色腳部在控制列上方可見，但部分肢體受 FX 遮擋。"
+          },
+          {
+            "seconds": 15.973982,
+            "note": "廳堂場景中，左側紅色龍張嘴、雙翼向上展開，中央有金色盔甲持劍角色，右側灰色狼形角色前傾長臂向下；中央綠色亮光及深色碎片、上方白色骷髏圖形同時可見。下方大字覆蓋部分前景，不用來判斷全部角色腳位。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "5.967311 秒：屈身狼形與較直立人形角色並排，頭胸高度和長臂形狀不同；縱向光效及橫向亮點在主要角色周圍形成多層畫面，但不能從單格判定攻擊者、命中者或特效觸發順序。",
+        "15.973982 秒：紅龍雙翼、口部與右側狼形的長臂提供不同輪廓，持劍角色在中間；綠色亮區、碎片和骷髏圖形會遮住局部身體。此格支持群體構圖與 FX 遮擋檢查，不能確認完整攻擊、受擊或落地階段。"
+      ],
+      "application": [
+        "Layout 為自有多角色戰鬥先 Key 直立、屈身及展翼等主要 Pose，拉開頭胸高度、手臂／翅膀方向與角色間距，先在沒有 FX 的狀態檢查個別剪影和群體可讀性。",
+        "Blocking 為自己的角色建立攻擊、受擊或移動的轉折姿勢，連續預覽角色與特效的前後關係；此片兩張群體單格不能提供原作技能節拍、命中時點或同步規則。",
+        "Final 在主要 Pose 通過後再安排光柱、亮點與碎片，分別檢查臉、手腳和重要道具是否被遮住。這是自有 Spine 4.0 的應用推論，不是原作粒子系統、mesh、權重或新版物理的確認。"
+      ],
+      "limits": [
+        "只有兩個分離場景樣本，沒有連續觀看；不能分析 timing、spacing、幀率、循環、落地／下壓或次要運動延遲，本輪未補造 land 證據。",
+        "FX 與下方前景文字遮擋部分角色，不將群體場景當作每名角色完整全身、接地或武器路徑證據。",
+        "原作者將此特定影片列為 Spine 動畫作品；不代表每個畫面層或 FX 都由 Spine 製作，個別動畫歸屬與其他工具用途未知。",
+        "Spine 版本、rig、權重、逐項素材作者與製作地區未核實；不由作者曾工作地或客戶國別推定本片製作地，不把較新功能套到 Spine 4.0。"
       ]
     }
   ]
