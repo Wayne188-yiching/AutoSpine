@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-05T11:45:13.019Z",
+  "startedAt": "2026-11-05T11:45:45Z",
+  "completedAt": "2026-11-05T11:50:16.050Z",
+  "result": "updated",
+  "focus": [
+    "搭配原作者實際跑步製作示範",
+    "主要 Pose 與畫布內灰色姿勢參考的對照"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-soren-run-key-poses-tutorial"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      447.984253,
+      547.480316
+    ]
+  },
+  "research": [
+    {
+      "url": "https://www.youtube.com/watch?v=_3REunBvteU",
+      "outcome": "重新核對 Spine - Run animation tutorial、Søren Juul Øllgaard／@Nipsting、正片 995.021 秒。原說明先列跑步 Pose 建立，再列曲線與穿地修正；頁面章節供定位，並非已看完整流程。實際追加 447.984253 秒灰色跑步參考與直立角色、547.480316 秒完整分腿 Pose 與參考圖。795.968506 秒原畫布截斷頭部，和既有局部曲線樣本近似，未追加。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=_3REunBvteU",
+      "issue": "初始為廣告，廣告片長與正片不同；網頁擷取器僅回傳 YouTube 頁腳，未提供可用影片內容。",
+      "resolution": "在正常瀏覽器使用可見略過按鈕，確認正片 995.021 秒並暫停後才定位；廣告／背景播放不算觀看。原作者說明與章節由正常公開頁實際讀取，未採信頁腳作動畫證據。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 69 sources",
+    "indexBuild": "passed — 69 sources; 25 Spine video entries",
+    "sourceDedup": "existing YouTube ID _3REunBvteU updated in place; firstSeen preserved; clipped near-duplicate sample omitted",
+    "evidence": "visual-samples; two new paused timestamps; five independent samples total; segments empty; timingBasis none",
+    "scope": "Only catalog.json, generated index.html and this run record edited"
+  },
+  "previousPublication": {
+    "commit": "fc56618d4ef4058b4b8aa1d47cb909ad1a6d6c4c",
+    "pagesRun": 42014313341,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "章節順序與說明範圍不是連續觀看證據，未用來判定 timing、步頻、FPS 或完整製作步驟。",
+    "灰色參考圖只在實際影片畫面中檢視，未當獨立圖片新增、下載或重傳。",
+    "沒有看完整跑步循環，不能確認接地、loop 接縫或曲線品質；Spine 版本、原檔及素材授權未核實。",
+    "未付費調用模型、未上傳私有資料、未修改引擎／角色／快取，未補造漏掉時段。"
+  ],
+  "nextFocus": "回到不同原作者的完成跳躍／落地或短動作集，選全身清楚的主要 Pose；避免再次補相似分腿姿勢，連續節奏仍需真正觀看過程。"
+}
