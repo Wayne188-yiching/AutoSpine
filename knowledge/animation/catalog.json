@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T11:49:46.171Z",
+  "updatedAt": "2026-11-05T12:58:27.402Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -4140,6 +4140,81 @@
         "灰底與黑紅圖形不提供已確認的地面幾何或碰撞資料；即使腳與刀尖都可見，也不能從單格斷定接地重量或實際受力。",
         "Spine 分類由特定作品案例確認，FX 的製作工具及每層合成方式未核實，不將全部特效歸為 Spine 內建功能。",
         "原始 rig、mesh、權重、Spine 版本、逐項美術作者及作品製作地未知；目前工作室地址不代表此片製作地，不套用較新版本功能到 Spine 4.0。"
+      ]
+    },
+    {
+      "id": "spine-sweet-meat-oneeyeant-showcase",
+      "title": "Spine 遊戲實機｜Sweet Meat 多角色空中 Pose 與障礙構圖",
+      "work": "Sweet Meat — OneEyeAnt showcase",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "fx"
+      ],
+      "actions": [
+        "jump",
+        "creature",
+        "fx"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://en.esotericsoftware.com/showcase/oneeyeant/video01.mp4",
+        "publisher": "Esoteric Software（官方 Spine Showcase 主機）",
+        "creator": "OneEyeAnt；官方案例引用 Fede Puopolo（Game Designer & Animator），個別角色及美術分工未逐項核實",
+        "platform": "Esoteric Software 公開 MP4",
+        "official": true,
+        "verification": "官方頁 https://en.esotericsoftware.com/spine-showcase-all 的 one-eye-ant 區塊連至 OneEyeAnt 和 Sweet Meat，並刊載 Fede Puopolo 對使用 Spine 骨骼動畫、skins 及 mesh deformation 的說明。該區塊 oneeyeant 播放器可見 video src /showcase/oneeyeant/video01.mp4。實際影片為多套角色的橫向跑跳遊戲；Spine 分類依此特定專案的官方案例，不由 2D 外觀猜測。播放器回報 49.466667 秒；Spine 版本未知，未確認每個角色或所有效果的具體實作。",
+        "durationSeconds": 49.466667,
+        "aliases": [],
+        "rights": "官方公開展示，未提供本輪可確認的影片、角色或背景素材重用授權；各項權利及分工未逐項核實。只保存公開來源與短篇原創筆記，不下載重傳媒體、原圖或瀏覽器截圖。"
+      },
+      "firstSeen": "2026-11-05T12:58:27.402Z",
+      "lastVerified": "2026-11-05T12:58:27.402Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "背景瀏覽器核對官方案例和可見 video src，正常開啟公開 MP4，媒體就緒後暫停並以播放器左右鍵定位。每次核對實際 currentTime、paused 和穩定畫面，採用 10.210266、23.56623、40.879766 秒。18.124966 秒偏暗過場、25.050266 秒角色被障礙物遮擋、32.470366 秒選單、39.8904 秒疊化未作動作樣本；初始背景播放不算連續觀看。",
+        "locator": "00:10.21 — 盔甲造型空中角色；00:23.57 — 布偶造型空中角色與鋸齒障礙；00:40.88 — 黃色長形角色與鳥形／火焰圖形。三個分離單格。",
+        "samples": [
+          {
+            "seconds": 10.210266,
+            "note": "綠色草原實機畫面，白色盔甲、橙色腹部的角色在左側空中，軀幹斜置、雙腿屈起，腳與下方地面有清楚間隙；前方有金幣與廣告牌，角色後下方有白色小圖形。"
+          },
+          {
+            "seconds": 23.56623,
+            "note": "黑髮、紅色頭飾的布偶造型角色位於左側空中，雙膝屈曲、身體朝右，頭與手腳輪廓可辨；下方多個紫色樹樁帶鋸齒狀突出物，金幣在角色前下方排列，主體與障礙物有明確間距。"
+          },
+          {
+            "seconds": 40.879766,
+            "note": "雪地實機場景，戴深色帽和外套的黃色長形角色在左側空中，兩腿彎曲並前後分開；附近有白色鳥形物和橙色火焰形圖形，前方金幣分布在起伏冰雪平台與缺口上方。角色主要輪廓未被 HUD 遮住。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "10.210266 秒：屈腿全身形狀與下方地面之間留有空隙，頭身和前後肢體可辨；這只確認空中 Pose，不判斷起跳、最高點或正在下落。",
+        "23.56623 秒：大頭布偶的屈膝形狀、金幣和樹樁障礙形成不同高度的層次，角色沒有與鋸齒圖形重疊；不能由一格推定安全通過、碰撞範圍或跳躍軌跡。",
+        "40.879766 秒：細長黃色角色的帽子、兩腿及旁邊鳥形／火焰形圖形都有可見分離輪廓，前方地形有高低差和缺口；不同造型的空中單格不能當作同一跳躍的連續姿勢。"
+      ],
+      "application": [
+        "Layout 為自有跑跳角色先 Key 準備、屈腿空中、伸展與落地等主要 Pose，按大頭、盔甲或細長體型調整手腳負空間，同時檢查角色和障礙物在遊戲比例下能否分辨。",
+        "Blocking 自行補足起跳、空中轉折與接觸前後姿勢，連續檢查骨盆、膝腳和地形關係；本輪只有不同角色的空中單格，不能直接沿用秒數、金幣間距或平台位置作跳躍時長與碰撞規格。",
+        "Final 在主要 Pose 通過後再加帽子、髮束和圖形效果的細節；先確認 FX 不遮住頭手腳。官方提及 skins 和 mesh deformation，不代表已確認所有造型共用骨架，也不是原作權重、物理或 Spine 4.0 約束的證明。"
+      ],
+      "limits": [
+        "三個分離空中單格，未連續觀看；沒有取得清楚落地／下壓過程，不能分析滯空、落地重量、步頻、spacing、幀率或完整循環。",
+        "樣本來自不同造型和場景，不把跨鏡頭秒差或畫面 HUD 數字當成動作時長、速度或動畫幀號。",
+        "圖形效果、金幣及障礙物的工具與碰撞機制未確認；可見空隙不證明遊戲碰撞盒或物理規則。",
+        "Spine 版本、每個角色的 rig／mesh／權重、逐項美術作者與製作地區未知；不依姓名、網站語言或風格推定地區，不把較新版本功能直接套到 Spine 4.0。"
       ]
     }
   ]
