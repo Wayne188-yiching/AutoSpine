@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-06T03:57:01.403Z",
+  "startedAt": "2026-11-06T03:57:18Z",
+  "completedAt": "2026-11-06T04:01:32.398Z",
+  "result": "updated",
+  "focus": [
+    "原作者完成角色動作集",
+    "臉部轉向、獸形腿跑姿與髮尾造型對照"
+  ],
+  "addedIds": [
+    "spine-daniela-arienti-humanoid-fox"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 3,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      7.0282,
+      17.5705,
+      28.1128
+    ]
+  },
+  "research": [
+    {
+      "url": "https://en.esotericsoftware.com/forum/d/20845-animator-available",
+      "outcome": "工作室原貼文連結 SockMonkey Spine reel W6n_d6qJhr4；只用作候選來源自述，不把 monster 動作清單當成已看畫面。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=W6n_d6qJhr4",
+      "outcome": "正常公開頁顯示媒體無法播放，未採用縮圖／標題或建立動作觀察。"
+    },
+    {
+      "url": "https://sbadany.artstation.com/projects/lV5qAa",
+      "outcome": "作者 Daniela Arienti 明示 Spine 2D Pro，角色設計、rig 與動畫由本人製作，原頁嵌入 xqQb2RvO2wM。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=xqQb2RvO2wM",
+      "outcome": "原片由同名作者 @danielaarienti9511 發布，說明與作品頁相符，日期 2019-08-25，正片 35.16 秒。實際採用 7.0282 秒 Face rotation／骨骼線對照、17.5705 秒三種造型跑姿、28.1128 秒橙色角色站姿；不把全片描述替代連續觀看。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://www.youtube.com/watch?v=W6n_d6qJhr4",
+      "issue": "文字擷取 cache miss，正常隱藏瀏覽器頁面也顯示媒體無法播放。",
+      "resolution": "未繞過限制、下載或從元資料補造動作；改看另一原作者公開作品。"
+    },
+    {
+      "url": "https://www.youtube-nocookie.com/embed/xqQb2RvO2wM?feature=oembed&rel=0",
+      "issue": "文字擷取無法執行嵌入頁 JavaScript。",
+      "resolution": "由作者實際公開嵌入 ID 開啟正常 YouTube 原始頁，廣告結束後核對原片並暫停抽查。"
+    }
+  ],
+  "backgroundMode": "Only hidden IAB tabs created with visible:false; no user Chrome/Edge interaction or private tab inspection.",
+  "validation": {
+    "catalog": "passed — 76 sources",
+    "indexBuild": "passed — 76 sources; 32 Spine video entries",
+    "sourceDedup": "entry ID and canonical YouTube ID xqQb2RvO2wM checked unique; ArtStation project is verification only",
+    "evidence": "visual-samples; three actual paused seconds; segments empty; timingBasis none; face-turn tag explicitly limited to face demonstration",
+    "scope": "Only catalog.json, generated index.html and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "d8116954a1d2e5008a5462328bcba6817c84d9e4",
+    "pagesRun": 42154261962,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "三個單格不是同一連續動作；未指定接觸相位、速度、loop 或次要運動延遲。",
+    "角色造型與骨骼線不證明 skins、權重或約束結構；版本、製作地及再利用授權未知。",
+    "只有臉部轉向標示與 Pose，未宣稱完整身體轉身或已研讀全部跑走循環。",
+    "全程保持背景，未下載重傳來源影片／圖像／截圖，未付費或上傳私有資料，未修改引擎／角色／快取，未補造未執行時段。"
+  ],
+  "nextFocus": "回到原作者或工作室完成攻擊／受擊收勢，優先清楚全身姿勢；舊影片無法播放便換公開來源，不反覆嘗試繞過限制。"
+}

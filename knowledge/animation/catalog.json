@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T03:03:27.087Z",
+  "updatedAt": "2026-11-06T04:00:55.390Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -4605,6 +4605,81 @@
         "原片是作者自述測試題；不因描述提到 win 就宣稱本條目已看過勝利動作，也不把每一個 FX 層都認定為 Spine 製作。",
         "Spine 版本、骨架階層、mesh／權重／約束、製作地及素材授權未核對；不從骨骼線畫面推定較新物理功能可用於 Spine 4.0。",
         "腳底靠近控制條下緣，未以此圖判定精確接地或壓縮；右側線顯示只作可見形狀對照。"
+      ]
+    },
+    {
+      "id": "spine-daniela-arienti-humanoid-fox",
+      "title": "Spine 原創角色動作集｜Daniela Arienti 狐形角色臉部、跑姿與造型",
+      "work": "Spine 2D: humanoid fox animation",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging",
+        "facial"
+      ],
+      "actions": [
+        "turn",
+        "run",
+        "creature"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://www.youtube.com/watch?v=xqQb2RvO2wM",
+        "publisher": "Daniela Arienti（@danielaarienti9511）",
+        "creator": "Daniela Arienti；作者自述角色設計、rigging 與動畫皆由本人製作",
+        "platform": "YouTube",
+        "official": true,
+        "verification": "作者原始作品頁 https://sbadany.artstation.com/projects/lV5qAa 說明使用 Spine 2D Pro 製作，並明確自述角色設計、rig 與動畫由本人完成；該頁直接嵌入 xqQb2RvO2wM。正常 YouTube 原片由同名 Daniela Arienti（@danielaarienti9511）發布，說明與作品頁一致，發布日期 2019-08-25。本輪實際檢視原片三個單格，非僅以動作名稱或縮圖分類。",
+        "durationSeconds": 35.16,
+        "aliases": [],
+        "rights": "作者作品頁標示保留權利；自述原創設計不等於允許再利用其角色或動畫。僅保存公開連結與原創短篇觀察，不下載或重傳角色圖、影片、截圖或原始專案。"
+      },
+      "firstSeen": "2026-11-06T04:00:55.390Z",
+      "lastVerified": "2026-11-06T04:00:55.390Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "全程使用隱藏 IAB（visible:false），沒有操作使用者 Chrome／Edge。廣告結束後核對 35.16 秒正片、原作者與說明並暫停，以播放器搜尋滑桿和鍵盤跳轉；讀取實際秒數，恢復完整播放器邊界後逐張檢視 7.0282、17.5705、28.1128 秒。背景播放時間不算連續觀看。",
+        "locator": "00:07.0282 — 臉部轉向標示與骨骼線對照；00:17.5705 — 三種造型跑姿；00:28.1128 — 橙色造型站姿。",
+        "samples": [
+          {
+            "seconds": 7.0282,
+            "note": "灰底上左右並排同一藍髮、長耳狐形角色，頭部朝畫面左方偏轉，兩腿分開，尾巴在右側；右邊角色疊有多色骨骼線，下方可讀 Face rotation 標示。頭、雙腳與尾端均在畫面內。"
+          },
+          {
+            "seconds": 17.5705,
+            "note": "橙色、棕色、藍白三種造型並排，軀幹朝左前傾，雙肘彎曲在胸前附近，一腿向左下伸、另一腿向右後折；三者都露出腿部空隙與向右延伸的尾巴，髮型、尾巴及衣物外形不同。"
+          },
+          {
+            "seconds": 28.1128,
+            "note": "橙色捲髮長耳造型單獨顯示，頭轉向左，雙腳在下方灰線附近分開，兩手向身體兩側下方張開；尾巴朝右後伸、與右側手部靠近，完整角色及尾端位於畫面內。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "7.0282 秒：成品與骨骼線顯示並排，臉部方向和長耳外形可比較；Face rotation 是片內定位標示，只支持本樣本為臉部轉向展示，不等於已看過全身轉身。",
+        "17.5705 秒：三種外形共享相近的前傾、屈臂和分腿配置，髮型與尾巴大小使剪影不同；這能作造型對照，不能由單格確認共用同一骨架或 skin 實作。",
+        "28.1128 秒：張開的雙臂、腳間距與向右伸的尾巴都可在完整角色視圖檢查；尾巴與手靠近的位置提醒主要 Pose 仍需檢查負空間。"
+      ],
+      "application": [
+        "Layout 先 Key 自有獸形角色的頭胸方向、屈臂跑姿、主要分腿與站姿，檢查長耳和尾巴的外輪廓；不同髮尾造型應各自用縮小剪影檢查。",
+        "Blocking 再補左右腿接觸、經過和頭部朝向的銜接，連續預覽確認腳底與頭胸穩定；不把三張展示單格或相隔秒數當成完整跑步流程。",
+        "Final 在主要 Pose 通過後才整理耳、髮、尾巴的跟隨與表情。Spine 4.0 專案可用自有合法造型做成品／骨骼顯示對照；本項不提供原作未知約束、延遲或權重參數。"
+      ],
+      "limits": [
+        "三個分離單格，未連續觀看跑步／步行／臉部轉向，未核對 FPS、步頻、接觸幀、spacing、loop 接縫或播放倍率。",
+        "turn 標籤僅指片內明示的臉部轉向示範，未確認完整身體轉身；沒有依站姿或灰線直接判定腳底鎖定或重心相位。",
+        "作者明示 Spine 2D Pro，但具體版本、骨架／mesh／權重／約束與製作地未確認，region 保持 unknown；不將較新物理功能直接套到 Spine 4.0。",
+        "不同造型不等於已確認 skins 結構；單張骨骼線顯示也不能還原 rig。原創署名與再利用授權分開記錄。"
       ]
     }
   ]
