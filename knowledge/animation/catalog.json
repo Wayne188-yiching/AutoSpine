@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T02:00:53.238Z",
+  "updatedAt": "2026-11-06T03:03:27.087Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -4541,6 +4541,70 @@
         "只有兩張分離單格，未連續觀看循環、未確認 FPS／播放倍率、步頻、loop 接縫或支撐順序；2.133333 秒是媒體長度，不等於已驗證的動作週期。",
         "Spine 版本、骨架／網格／權重／約束、個別素材權利與製作地未知；不以工作室目前地址推定影片原作者或製作地。",
         "walk 分類由原片名稱及特定作品來源佐證；實際觀察只涵蓋列出的 Pose，沒有新增未看過的節奏或次要運動結論。"
+      ]
+    },
+    {
+      "id": "spine-kseniia-cat-girl-idle",
+      "title": "Spine 待機角色示範｜Kseniia Cat Girl 全身 Pose 與骨骼顯示對照",
+      "work": "2D Spine Character Idle Animation - Cat Girl",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging"
+      ],
+      "actions": [
+        "idle"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/1006296837",
+        "publisher": "Kseniia Tataryntseva（Vimeo／chromiechrm）",
+        "creator": "動畫：Kseniia Tataryntseva；原始美術：ELA Games studio（依原片署名）",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "原始 Vimeo 由 Kseniia Tataryntseva 發布，個人頁連至 chromiechrm。標題明示 Spine 待機動畫，作者說明這是 ELA Games 提供美術的 idle／win 測試題，並自述在 Spine 製作 setup；頁面日期 2024-09-05。實際正片並排成品與骨骼線顯示。Spine 分類有此特定作品的作者說明；official 指原動畫作者發布，未確認此測試題是否成為已上線遊戲素材或 ELA 官方發行影片。",
+        "durationSeconds": 3.711999,
+        "aliases": [],
+        "rights": "原片明確區分 ELA Games studio 的美術與 Kseniia 的動畫署名；沒有提供可確認的再利用授權。僅保存連結與短篇原創觀察，不下載或重傳影片、角色圖、截圖或測試題素材。"
+      },
+      "firstSeen": "2026-11-06T03:03:27.087Z",
+      "lastVerified": "2026-11-06T03:03:27.087Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "僅在隱藏背景瀏覽器（visible:false）檢視。主影片就緒後播放並立即暫停在實際 0.936041 秒；先前空白或播放器上緣裁切畫面未採用，捲回完整播放器並確認 88–508 像素邊界後才檢視。之後嘗試另一跳轉時觸發播放／推薦倒數，沒有採用新秒數或推薦影像；本項只有一個實際正片單格，未連續觀看。",
+        "locator": "00:00.936041 — 左成品、右骨骼線顯示，並排同一角色。",
+        "samples": [
+          {
+            "seconds": 0.936041,
+            "note": "左側全身灰膚貓形角色戴金色頭飾，金白服裝沿軀幹延伸；畫面左側手抬到肩高、掌上有粉紅火焰，右側手持近乎垂直的長杖，黑色尾巴向左外側捲曲，雙腿分開。右側同一構圖較暗，綠／黃等骨骼線沿軀幹、肢體與尾巴分布。頭飾、杖端及腳部均在原畫面內，控制條靠近腳底下緣。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "0.936041 秒：頭、抬掌火焰與杖頂在上半身形成三個分離形狀；長杖的垂直線與向左捲曲的尾巴在身體兩側提供不同方向的大形。",
+        "同一秒左側成品和右側骨骼線顯示可直接對照角色外形與可見線段位置；只能確認圖中顯示線段，不能讀出原始權重、父子關係或約束參數。",
+        "火焰、尾巴、髮束與服裝布片有可辨輪廓；單格未證明其中任何一項的擺動幅度、相位或延遲。"
+      ],
+      "application": [
+        "Layout 先 Key 自有待機角色的頭胸、骨盆、抬掌和持杖 Pose，以縮小剪影檢查掌上 FX、杖端與尾巴不遮住主要表情，再進入 Blocking。",
+        "Blocking 再設計自有角色的重心變化與返回姿勢，連續預覽檢查手杖握持及腳底穩定；不要把本片長度或單格姿態當成原作呼吸週期。",
+        "Final 在主要 Pose 通過後才整理尾巴、髮布和火焰層次。可在自有 Spine 4.0 專案並排成品與骨骼顯示檢查大形；此為應用推論，不直接沿用未知版本的約束實作。"
+      ],
+      "limits": [
+        "僅一個實際單格，status 為 visual-samples；未看過連續待機、win 或 loop 接縫，不分析節奏、FPS、插值、固定 delay 或動作週期。",
+        "原片是作者自述測試題；不因描述提到 win 就宣稱本條目已看過勝利動作，也不把每一個 FX 層都認定為 Spine 製作。",
+        "Spine 版本、骨架階層、mesh／權重／約束、製作地及素材授權未核對；不從骨骼線畫面推定較新物理功能可用於 Spine 4.0。",
+        "腳底靠近控制條下緣，未以此圖判定精確接地或壓縮；右側線顯示只作可見形狀對照。"
       ]
     }
   ]

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-06T02:59:30.554Z",
+  "startedAt": "2026-11-06T02:59:46Z",
+  "completedAt": "2026-11-06T03:04:01.554Z",
+  "result": "updated",
+  "focus": [
+    "原動畫作者的完成待機角色",
+    "抬掌 FX、持杖、尾巴與全身輪廓；成品／骨骼顯示對照"
+  ],
+  "addedIds": [
+    "spine-kseniia-cat-girl-idle"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 1,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      0.936041
+    ]
+  },
+  "research": [
+    {
+      "query": "Spine animation character idle tail reel original animator Vimeo",
+      "url": "https://vimeo.com/1006296837",
+      "outcome": "搜尋找到原作者公開待機片，描述明示 Spine setup，並區分 ELA Games 原美術與 Kseniia Tataryntseva 動畫。只選具完整角色演出的來源，不增加海報或一般 UI。"
+    },
+    {
+      "url": "https://vimeo.com/1006296837",
+      "outcome": "正常原始頁核對 Kseniia Tataryntseva／chromiechrm、原片標題、2024-09-05 日期及 3.711999 秒主片。實際在 0.936041 秒暫停並恢復完整播放器後，採用左側成品／右側骨骼線顯示單格。初始空白與裁切畫面，以及另一跳轉／推薦倒數均未採用；未看 win 動作或連續待機。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://vimeo.com/1006296837",
+      "issue": "初始截圖尚未顯示影片，後續視窗捲動曾裁切播放器上緣；另一跳轉後播放器開始播放並出現推薦倒數。",
+      "resolution": "待原片媒體就緒並恢復完整畫面後只保留已讀取實際秒數的一張暫停圖；沒有以空白、裁切、未固定秒數或推薦畫面新增觀察，也沒有繞過平台限制。"
+    }
+  ],
+  "backgroundMode": "Created only hidden IAB tab with visible:false; did not operate user Chrome/Edge or private tabs.",
+  "validation": {
+    "catalog": "passed — 75 sources",
+    "indexBuild": "passed — 75 sources; 31 Spine video entries",
+    "sourceDedup": "entry ID and canonical Vimeo ID 1006296837 checked unique",
+    "evidence": "visual-samples; exactly one adopted paused timestamp; segments empty; timingBasis none; no continuous motion, win or FPS claim",
+    "scope": "Only catalog.json, generated index.html and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "70addcac52585176081053725e13ae4046200d0f",
+    "pagesRun": 42147658837,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "只有一個完整可採用單格，不為達數量補造其他姿勢；骨骼線顯示不證明權重或約束參數。",
+    "來源明示測試題，不將作者的測試完成示範宣稱為遊戲已上線素材；版本、各素材授權與製作地仍未知。",
+    "未連續觀看待機、次要運動、勝利或 loop，媒體秒數不是動作週期或專案幀號。",
+    "全程保持背景，未下載重傳影片／圖像／截圖，未付費或上傳私有資料，未修改引擎／角色／快取，未補造未執行時段。"
+  ],
+  "nextFocus": "保持隱藏背景執行，輪到可辨全身轉身／攻擊收勢或原作者完成次要物件演出；只有單格時仍不推導節奏。"
+}
