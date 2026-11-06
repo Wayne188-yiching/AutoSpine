@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T01:04:32.966Z",
+  "updatedAt": "2026-11-06T02:00:53.238Z",
   "taxonomy": {
     "topics": {
       "spine": "Spine動態",
@@ -4474,6 +4474,73 @@
         "三個不同角色單格不能串成動作順序；黑底未提供明確地面或接觸陰影，不能藉腳的畫面高度推定實際接地。",
         "作者明示作品集使用 Spine，但未核對各層 FX、原始專案、骨架權重與約束；版本、製作地及各素材作者未知，不把較新版本功能直接套到 Spine 4.0。",
         "作者動畫展示身份不代表擁有所有原始美術或角色 IP；未下載重傳媒體、付費調用模型或上傳私有資料。"
+      ]
+    },
+    {
+      "id": "spine-twins-samurai-walk2",
+      "title": "Spine 完成步行動作｜The Twins Samurai 扛刀分腿與收腿 Pose",
+      "work": "Walk2 — Boss Samurai / The Twins",
+      "topic": "spine",
+      "region": "unknown",
+      "medium": "2d",
+      "stages": [
+        "layout",
+        "blocking",
+        "final"
+      ],
+      "techniques": [
+        "pose",
+        "silhouette",
+        "staging"
+      ],
+      "actions": [
+        "walk"
+      ],
+      "source": {
+        "kind": "video",
+        "url": "https://vimeo.com/751087202",
+        "publisher": "Toan Dang（Vimeo／toan1874）",
+        "creator": "Toan Dang（原片發布者）；TD Games 特定案例自述製作 Boss Samurai 動畫，角色美術及遊戲權利人未逐一核對",
+        "platform": "Vimeo",
+        "official": true,
+        "verification": "公開工作室案例 https://tdgamestudio.com/portfolio/boss-animation 明確把 The Twins 作品列為 Spine 2D Reels，並列 Boss Samurai 動畫由作者製作；實際讀取 m08 iframe 直接指向 751087202。原始 Vimeo 頁標題 Walk2、發布者 Toan Dang（連至 toan1874）、頁面日期 2022-09-19。Spine 分類依特定作品說明，非由 2D 外觀猜測；official 指原作者／作品集來源，不是 Esoteric Software 自製。",
+        "durationSeconds": 2.133333,
+        "aliases": [],
+        "rights": "公開影片與案例沒有提供本輪可確認的素材再利用授權；動畫、原始美術與遊戲各項權利未逐一核對。只保留原始連結與短篇原創觀察，不下載、打包或重傳影片／角色圖／截圖。"
+      },
+      "firstSeen": "2026-11-06T02:00:53.238Z",
+      "lastVerified": "2026-11-06T02:00:53.238Z",
+      "review": {
+        "status": "visual-samples",
+        "method": "使用已恢復可用的隱藏背景瀏覽器，visible:false，沒有操作使用者 Chrome／Edge。原始媒體就緒後短暫啟動並立即暫停，實際停在 0.928752 秒；關閉可略過的宣傳提示後檢視完整人物。再以可見進度條跳轉至實際 0.2133 秒，逐張核對。沒有連續觀看步行過程；背景播放時間不算證據。",
+        "locator": "00:00.2133 — 分腿；00:00.928752 — 收腿／腿部交疊。完整人物與刀端均在原片邊界內。",
+        "samples": [
+          {
+            "seconds": 0.2133,
+            "note": "灰底上的完整綠膚武士扛長刀，頭胸略前傾，雙腿向左右下方分開、兩腳之間有空隙；持刀手抬在頭側，彎曲金色刀刃向右伸出，柄端小飾物垂在左側，另一手靠近腰側。"
+          },
+          {
+            "seconds": 0.928752,
+            "note": "同一完整角色仍把長刀扛在肩上，雙腿比 0.2133 秒靠近，一腿屈起、腿部輪廓在軀幹下方交疊；長刀右端、頭頂髮束與雙腳均在畫面內，控制條沒有遮住腳部。"
+          }
+        ],
+        "segments": [],
+        "timingBasis": "none"
+      },
+      "observations": [
+        "0.2133 與 0.928752 秒：作者命名 Walk2 的短片中，實際可比較分腿與腿部靠近／交疊兩種大形；肩上的長刀維持橫向延伸，兩腿間的負空間明顯不同。",
+        "兩張均能同時看見完整頭胸、腳部與刀刃端點，適合把腳部 Pose 和持物輪廓放在同一次全身檢查中；不能據此指定接觸、抬腳或支撐相位。",
+        "柄端飾物、髮束與腰部布片有獨立輪廓，但靜態位置不證明其擺動、延遲或自動物理實作。"
+      ],
+      "application": [
+        "Layout 先 Key 自有角色的分腿與收腿等主要步行 Pose，同時固定扛刀手、肩部關係及刀刃端點，檢查腿間負空間，不以髮布擺動代替主要姿勢。",
+        "Blocking 再安排自有步行的左右接觸、腿部經過與重心銜接，連續預覽確認腳底與持刀穩定；本片兩張抽查不提供原作步頻或接觸時長。",
+        "Final 在主要 Pose 及步行銜接成立後才整理柄端飾物、髮束、布片跟隨；這是 Spine 4.0 自有骨架的應用推論，不從成品反推固定延遲或較新版物理約束。"
+      ],
+      "limits": [
+        "只有兩張分離單格，未連續觀看循環、未確認 FPS／播放倍率、步頻、loop 接縫或支撐順序；2.133333 秒是媒體長度，不等於已驗證的動作週期。",
+        "Spine 版本、骨架／網格／權重／約束、個別素材權利與製作地未知；不以工作室目前地址推定影片原作者或製作地。",
+        "walk 分類由原片名稱及特定作品來源佐證；實際觀察只涵蓋列出的 Pose，沒有新增未看過的節奏或次要運動結論。"
       ]
     }
   ]

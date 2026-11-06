@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-06T01:56:29.483Z",
+  "startedAt": "2026-11-06T01:56:47Z",
+  "completedAt": "2026-11-06T02:01:24.121Z",
+  "result": "updated",
+  "focus": [
+    "原作者完成步行動作",
+    "扛刀全身分腿與收腿主要 Pose"
+  ],
+  "addedIds": [
+    "spine-twins-samurai-walk2"
+  ],
+  "updatedIds": [],
+  "evidence": {
+    "newVideoSources": 1,
+    "revisitedVideoSources": 0,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      0.2133,
+      0.928752
+    ]
+  },
+  "research": [
+    {
+      "query": "\"751087202\" \"Walk2\"",
+      "outcome": "一般搜尋未索引此短片；未以搜尋結果有無判定影片內容，改由既有公開案例的直接嵌入來源核對。"
+    },
+    {
+      "url": "https://tdgamestudio.com/portfolio/boss-animation",
+      "outcome": "實際原案例再次確認 The Twins／Spine 2D Reels、Boss Samurai 作者說明，以及 m08 iframe 751087202。"
+    },
+    {
+      "url": "https://vimeo.com/751087202",
+      "outcome": "原片 Walk2，Toan Dang／toan1874，頁面日期 2022-09-19，媒體長度 2.133333 秒。採用 0.928752 秒腿部靠近交疊、0.2133 秒分腿兩個完整全身單格；沒有把短暫背景播放算成觀看循環。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://vimeo.com/751087202",
+      "issue": "暫停後出現可略過的登入／儲存宣傳提示，遮住影片。",
+      "resolution": "使用提示自身的拒絕按鈕關閉，沒有登入、繞過限制或以提示／縮圖當證據。Home 鍵沒有改變進度，核對狀態後改用可見進度條正常定位並讀實際秒數。"
+    }
+  ],
+  "backgroundMode": "Browser inventory confirmed hidden IAB available again; created only IAB tabs with visible:false. Did not claim, open, or operate user Chrome/Edge tabs.",
+  "validation": {
+    "catalog": "passed — 74 sources",
+    "indexBuild": "passed — 74 sources; 30 Spine video entries",
+    "sourceDedup": "entry ID and canonical Vimeo ID 751087202 checked unique; specific case page is verification only, not shared media alias",
+    "evidence": "visual-samples; actual paused timestamps; segments empty; timingBasis none; no gait phase, cycle length or secondary-motion timing claim",
+    "scope": "Only catalog.json, generated index.html and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "d8feda857c0463c92cb7842614c069f4381eaa43",
+    "pagesRun": 42141570051,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "兩張單格不能指定步行相位、實際接觸／抬腳或支撐順序，未新增節奏結論。",
+    "影片長度不等於已驗證的動作循環；未確認 Spine 版本、原始骨架、素材權利或製作地。",
+    "全程保持背景檢視，未下載重傳來源媒體／截圖、付費或上傳私有資料，未修改引擎／角色／快取，未補造未執行時段。"
+  ],
+  "nextFocus": "保持隱藏背景工具，優先補待機或次要物件的不同主要 Pose；無法背景實際觀看時只記錄受阻。"
+}
