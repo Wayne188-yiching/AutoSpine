@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-06T05:00:02.364Z",
+  "startedAt": "2026-11-06T05:00:20Z",
+  "completedAt": "2026-11-06T05:03:35.102Z",
+  "result": "updated",
+  "focus": [
+    "既有原作者完成動作集補看",
+    "雙短刃緊湊 Pose、長觸角與錐光構圖"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-sukru-bagci-character-showreel"
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      33.173333,
+      132.693333
+    ]
+  },
+  "research": [
+    {
+      "query": "\"Şükrü Bağcı\" \"Spine\" showreel",
+      "url": "https://en.esotericsoftware.com/forum/d/3837-spine-animation-showreel",
+      "outcome": "再核對原作者 sukrubagci 的 Spine showreel 自述與署名；不把他人讚美或消失技法的問答當成實作證據。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=AR5meY01HRE",
+      "outcome": "正常原始頁核對 @sukrubagci、animation_showreel 與 165.901 秒長度。採用 33.173333 秒雙短刃藍甲角色、132.693333 秒黃色觸角角色與錐光；66.346666 秒皇冠巨刃與舊樣本相近，未追加。firstSeen 及舊樣本保留。"
+    }
+  ],
+  "accessIssues": [],
+  "backgroundMode": "Created only hidden IAB tab with visible:false; no user Chrome/Edge interaction or private tab inspection.",
+  "validation": {
+    "catalog": "passed — 76 sources",
+    "indexBuild": "passed — 76 sources; 32 Spine video entries",
+    "sourceDedup": "Revisited canonical YouTube ID AR5meY01HRE; existing firstSeen preserved; no duplicate source",
+    "evidence": "visual-samples; two actual paused seconds; segments empty; timingBasis none; no attack phase, secondary-motion timing or FPS inference",
+    "scope": "Only existing catalog entry, generated index.html and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "0c79e3384cfa90a6ecb7e6d6a492351a7afcb138",
+    "pagesRun": 42160046153,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "新樣本未證實攻擊／受擊時序或完整收勢，不為補分類強行新增 attack 標籤。",
+    "兩個新增角色不是同一動作序列；光束、導線及觸角位置不證明碰撞、原作網格／約束或固定延遲。",
+    "版本、製作地與個別角色素材權利仍未知，Spine 4.0 的建議只屬自有演出應用。",
+    "全程保持背景，未下載重傳影片／圖像／截圖，未付費或上傳私有資料，未修改引擎／角色／快取，未補造未執行時段。"
+  ],
+  "nextFocus": "原作者有清楚命名的攻擊／受擊動作集或官方短片；若只能抽查，先補可分辨的主要姿勢，不把時間差當成動作速度。"
+}
