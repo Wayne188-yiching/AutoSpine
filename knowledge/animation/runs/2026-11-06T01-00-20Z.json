@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "mode": "scheduled-curation",
+  "automationId": "autospine",
+  "triggerAt": "2026-11-06T00:59:58.622Z",
+  "startedAt": "2026-11-06T01:00:20Z",
+  "completedAt": "2026-11-06T01:06:13.628Z",
+  "result": "updated",
+  "focus": [
+    "原作者完成動作來源查核",
+    "既有 Unruly Heroes 影片的 boss 主要 Pose 補看",
+    "依使用者要求固定為純背景執行"
+  ],
+  "addedIds": [],
+  "updatedIds": [
+    "spine-unruly-heroes-gameplay"
+  ],
+  "processUpdates": [
+    "CURATION.md: background tools only; no fallback to the user's Chrome/Edge; unavailable visual access must be logged without invented observations."
+  ],
+  "evidence": {
+    "newVideoSources": 0,
+    "revisitedVideoSources": 1,
+    "visualSamplesAdded": 2,
+    "continuousClipsReviewed": 0,
+    "adoptedSeconds": [
+      64.204139,
+      85.60552
+    ]
+  },
+  "research": [
+    {
+      "query": "site:tdgamestudio.com/portfolio/boss-animation The Twins Spine Walk",
+      "url": "https://tdgamestudio.com/portfolio/boss-animation",
+      "outcome": "原案例仍標 The Twins／Spine 2D Reels 並列 Boss Samurai 動畫由作者製作；實際讀取公開 iframe，m06 指向 Vimeo 751087058。"
+    },
+    {
+      "url": "https://vimeo.com/751087058",
+      "outcome": "正常頁標題 Combo4、發布者 Toan Dang，但媒體無法播放，沒有採用標題／縮圖作動作觀察，也未建立新條目。"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=3JAfFrvLShY",
+      "outcome": "重訪 Magic Design Studios 原始 Gameplay Trailer，核對 107.061 秒正片，暫停後採用 64.204139 秒大型魚形 boss 與小角色尺度對照、85.60552 秒圓身角色橫持長柄武器。21.40138 秒角色偏小且暗，未採用。firstSeen 和舊樣本保留。"
+    },
+    {
+      "query": "site:esotericsoftware.com/spine-showcase \"Unruly Heroes\" \"Mesh\"",
+      "url": "https://esotericsoftware.com/spine-showcase",
+      "outcome": "再查工作室的 Spine 使用說明；只作作品採用 Spine 的確認，不由新單格推定具體 mesh、smear 或約束。"
+    }
+  ],
+  "accessIssues": [
+    {
+      "url": "https://tdgamestudio.com/portfolio/boss-animation",
+      "issue": "先前的背景瀏覽器已不可用；Chrome 介面不支援 visibility:false。",
+      "resolution": "本輪一度以 Chrome 新建公開來源分頁完成檢視；收到使用者不要影響操作的要求後停止 UI 操作，並把禁止使用使用者 Chrome/Edge 替代的規則寫入 CURATION.md。後續背景視覺介面不可用時只記錄受阻。"
+    },
+    {
+      "url": "https://vimeo.com/751087058",
+      "issue": "正常公開頁顯示媒體無法播放。",
+      "resolution": "不繞過平台限制、不下載；改補看既有公開官方 YouTube 來源。"
+    }
+  ],
+  "validation": {
+    "catalog": "passed — 73 sources",
+    "indexBuild": "passed — 73 sources; 29 Spine video entries",
+    "sourceDedup": "Revisited canonical YouTube ID 3JAfFrvLShY; existing firstSeen preserved; no new source entry",
+    "evidence": "visual-samples; paused actual seconds; segments empty; timingBasis none; no new gait, landing or timing claim",
+    "scope": "Only existing catalog entry, generated index.html, CURATION.md and this run record edited",
+    "localHead": "9b1f7f6dded51df416dd8ab2bb72382ac19f479d",
+    "indexSha256": "a563684293541e275d1b79c2174d8bea7b27666afe467e408d230bdc96db4a90"
+  },
+  "previousPublication": {
+    "commit": "04fc831a65cec257a401ab0e65e0604cc02cb6c7",
+    "pagesRun": 42069554034,
+    "status": "completed",
+    "conclusion": "success",
+    "verifiedThisRun": true
+  },
+  "publication": {
+    "command": "node tools/publish-animation-knowledge.mjs",
+    "verification": "Executed after saving this record; successful tool reply and Git-local receipt establish verified remote commit."
+  },
+  "limits": [
+    "兩張新單格來自不同場景，未連續觀看，不提供固定節奏、落地／支撐順序或影片 FPS。",
+    "待機／步行仍待有背景視覺存取時再補，不以現有 boss 畫面替代循環證據。",
+    "Spine 版本、各角色權重與約束、個別鏡頭作者及製作地未知；應用規劃與原作實作分開。",
+    "未下載或重傳來源影片／截圖，未將私人分頁資訊寫入知識庫，未付費、修改引擎／角色／快取或補造未執行時段。"
+  ],
+  "nextFocus": "嚴格只在背景執行。若有不影響使用者的背景視覺工具，再補待機／步行完成動作；否則記錄來源存取受阻，不操作使用者瀏覽器。"
+}
