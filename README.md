@@ -28,6 +28,16 @@ AutoSpine 用來製作 Spine 角色的骨架與動畫。提供已拆圖、擺好
 
 處理時使用原檔的副本。沒有安裝 Spine 時，會提供 JSON，需用 Spine 的 Import Data 匯入。
 
+## 交給遊戲程式與交付檢查
+
+要直接進 Cocos 或 Unity 的檔案，交付時說明目標環境與類型（`--target=cocos`、`unity`、`unity-4.1`，`--kind=character`、`symbol-high`、`bigwin` 等）。AutoSpine 會：
+
+- 用該環境的 Spine 版本交付（Cocos 3.8.99、Unity 4.0.56、Unity 4.1.24）；
+- 在 root 下加一根 `Actor` 骨，畫面不變；
+- 依[交付規範](skills/autospine/references/delivery-conventions.md)檢查版本、命名、root 與 `Actor`、混合模式與 `_Add`、Point、遮罩數與點數、權重、語系文字與數字、骨頭數、三角面與 Draw call 上限、動畫第 0 幀、循環頭尾、報獎與 Loading 動畫命名，結果附在交付報告；有問題只列出，不擋交付。
+
+美術自己做的 `.spine` 或 JSON 也能單獨檢查（`check-delivery`，加 `--export` 一併檢查 `.skel`、`.atlas` 與貼圖頁）。三角面只算 Setup 姿勢，動畫高峰面數、遮罩內面數與實際 Draw call 仍需看 Spine 的 Metrics。詳見[使用說明](docs/USER_GUIDE.md#交給遊戲程式cocosunity)。
+
 ## 使用前請注意
 
 - 圖片部件需先拆好、擺好位置。
