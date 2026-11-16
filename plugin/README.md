@@ -2,6 +2,8 @@
 
 Rig and animate Spine 4.0 characters and props from an images-only Spine file. Give Claude or Codex the Spine file and a one-line brief ("make the idle a 2-second breath, hand resting on the forehead"); it builds bones, meshes, weights, constraints and motion, renders a review video and writes handover notes. With the artist's version it also compares the two.
 
+It delivers to Spine 3.8, 4.0, 4.1 or 4.2. For a game runtime (`--target=cocos`, `unity` or `unity-4.1`) it delivers with that runtime's editor version, adds an `Actor` bone under the root and checks the file against Spine game-delivery conventions: editor version, names, root and `Actor`, blend modes and `_Add`, points, clipping, weights, localised text and numbers, bone, triangle and draw-call limits, first keys, loop seams and win/loading animation names. `check-delivery` (MCP `autospine_check_delivery`) checks an artist's own `.spine` or JSON the same way, and with `--export` its `.skel`, `.atlas` and pages. The rules are in `skills/autospine/references/delivery-conventions.md`.
+
 ## Use it
 
 Install the plugin. In Claude Code:
@@ -16,7 +18,7 @@ For Cowork and Codex, see `docs/INSTALL.html` in the repository. Then ask in Cla
 用 autospine 把 D:\素材\角色\角色.spine 的 idle 做成 2 秒呼吸，輸出到 D:\輸出\角色
 ```
 
-You need Node.js 22.12 or later. Exporting `.spine` projects and importing results needs Spine 4.0.64; the review video needs ffmpeg.
+You need Node.js 22.12 or later. Exporting `.spine` projects and importing results needs Spine 4.0.64 (or the version you deliver to; the Spine launcher fetches it the first time); the review video needs ffmpeg.
 
 ## Contents
 
