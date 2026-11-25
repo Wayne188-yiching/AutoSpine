@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { cp, mkdtemp, readFile, readdir, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { AUTOSPINE_VERSION } from "@autospine/cli/version";
 import { chooseWorkspace, mcpTools } from "@autospine/mcp";
 import { fixtureWorkspace } from "./character-fixture.js";
@@ -286,4 +287,112 @@ describe("plugin package (Claude and Codex)", () => {
       stat(join(workspace, "example", "build", "fixture_character.json")),
     ).resolves.toBeTruthy();
   }, 120_000);
+});
+
+describe("plugin subagents (ADR-055)", () => {
+  const agentsDir = join(plugin, "agents");
+  const frontmatter = (text: string) => {
+    const match = /^---\n([\s\S]*?)\n---\n/.exec(text.replace(/\r\n/g, "\n"));
+    if (!match) throw new Error("no frontmatter");
+    return Object.fromEntries(
+      match[1]!.split("\n").map((line) => {
+        const at = line.indexOf(":");
+        return [line.slice(0, at).trim(), line.slice(at + 1).trim()];
+      }),
+    ) as Record<string, string>;
+  };
+  const expected: Record<string, string> = {
+    "autospine-intake": "haiku",
+    "autospine-reference-scout": "haiku",
+    "autospine-build-qa": "sonnet",
+    "autospine-visual-reviewer": "opus",
+    "autospine-codex-reviewer": "haiku",
+  };
+
+  it("define each agent with its model and tools, and the skill names them all", async () => {
+    const files = (await readdir(agentsDir)).filter((f) => f.endsWith(".md")).sort();
+    expect(files).toEqual(
+      Object.keys(expected)
+        .map((n) => `${n}.md`)
+        .sort(),
+    );
+    const skillText = await readFile(join(skill, "SKILL.md"), "utf8");
+    for (const file of files) {
+      const meta = frontmatter(await readFile(join(agentsDir, file), "utf8"));
+      const name = file.replace(/\.md$/, "");
+      expect(meta.name).toBe(name);
+      expect(meta.description!.length).toBeGreaterThan(40);
+      expect(meta.model).toBe(expected[name]);
+      const tools = meta.tools!.split(",").map((t) => t.trim());
+      expect(tools.length).toBeGreaterThan(0);
+      // Only the main session edits plans: build/QA and the reviewers report.
+      expect(tools.filter((t) => ["Edit", "Write", "NotebookEdit"].includes(t))).toEqual([]);
+      expect(skillText).toContain(`\`${name}\``);
+    }
+  });
+
+  it("find Codex and always run it read-only and unsaved", async () => {
+    const script = join(skill, "delegate", "codex-review.mjs");
+    const codex = (await import(pathToFileURL(script).href)) as {
+      findCodex: (o: Record<string, unknown>) => string | null;
+      parseArgs: (argv: string[], env?: Record<string, string>) => Record<string, unknown>;
+      codexArgs: (opts: Record<string, unknown>, file: string) => string[];
+    };
+    const files = new Set([
+      join("/set", "codex.exe"),
+      join("/path-b", "codex.exe"),
+      join("/la", "OpenAI", "Codex", "bin", "old", "codex.exe"),
+      join("/la", "OpenAI", "Codex", "bin", "new", "codex.exe"),
+    ]);
+    const base = {
+      platform: "win32",
+      exists: (f: string) => files.has(f),
+      listDirs: () => ["old", "new", "empty"],
+      mtime: (f: string) => (f.includes("new") ? 2 : 1),
+    };
+    const sep = process.platform === "win32" ? ";" : ":";
+    expect(codex.findCodex({ ...base, env: { AUTOSPINE_CODEX: join("/set", "codex.exe") } })).toBe(
+      resolve(join("/set", "codex.exe")),
+    );
+    expect(codex.findCodex({ ...base, env: { AUTOSPINE_CODEX: "/missing" } })).toBeNull();
+    expect(
+      codex.findCodex({ ...base, env: { PATH: `/path-a${sep}/path-b`, LOCALAPPDATA: "/la" } }),
+    ).toBe(join("/path-b", "codex.exe"));
+    expect(codex.findCodex({ ...base, env: { PATH: "", LOCALAPPDATA: "/la" } })).toBe(
+      join("/la", "OpenAI", "Codex", "bin", "new", "codex.exe"),
+    );
+    expect(
+      codex.findCodex({ ...base, platform: "linux", env: { PATH: "", LOCALAPPDATA: "/la" } }),
+    ).toBeNull();
+
+    const plain = codex.codexArgs(codex.parseArgs(["--cd=/p"], {}), "/tmp/last.md");
+    expect(plain.slice(0, 5)).toEqual([
+      "exec",
+      "--sandbox",
+      "read-only",
+      "--ephemeral",
+      "--skip-git-repo-check",
+    ]);
+    expect(plain).not.toContain("--model");
+    expect(plain.join(" ")).not.toContain("model_reasoning_effort");
+    expect(plain.at(-1)).toBe("-");
+    const full = codex.codexArgs(
+      codex.parseArgs(["--cd=/p", "--image=/a.png", "--image=/b.png"], {
+        AUTOSPINE_CODEX_MODEL: "m1",
+        AUTOSPINE_CODEX_EFFORT: "low",
+      }),
+      "/tmp/last.md",
+    );
+    expect(full.join(" ")).toContain(
+      "--model m1 --config model_reasoning_effort=low --image /a.png --image /b.png -",
+    );
+    expect(
+      codex.parseArgs(["--cd=/p", "--effort=high", "--model=m2"], { AUTOSPINE_CODEX_MODEL: "m1" }),
+    ).toMatchObject({ model: "m2", effort: "high" });
+    expect(() => codex.parseArgs(["--cd=/p", "--effort=max"], {})).toThrow(/--effort/);
+    expect(() => codex.parseArgs([], {})).toThrow(/--cd/);
+    expect(() => codex.parseArgs(["--cd=/p", "--sandbox=danger-full-access"], {})).toThrow(
+      /unknown/,
+    );
+  });
 });

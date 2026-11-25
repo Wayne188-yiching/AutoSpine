@@ -33583,7 +33583,7 @@ async function buildJobFile(jobPath) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.25";
+var AUTOSPINE_VERSION = "0.5.26";
 
 // packages/mcp/dist/api-schema.js
 function advertisedSchema(schema) {
