@@ -42149,7 +42149,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.25";
+var AUTOSPINE_VERSION = "0.5.26";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");

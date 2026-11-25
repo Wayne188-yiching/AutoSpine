@@ -28,6 +28,20 @@ Check the install once when it is new or failing: copy `<skill>/assets/example/`
 
 The references and the user guide write commands as `node <skill>/scripts/autospine.mjs`; MCP tool names are given beside them in [the plan runbook](references/character-plan.md).
 
+### Delegating steps (Claude Code)
+
+Where the host offers the plugin's subagents (ADR-055), hand them the steps whose output is long and keep the judgment in the main session: the brief, the plan, the Layout poses, what to change and what to tell the requester. Each subagent sees only its brief, so give it `<skill>` (this folder's absolute path), the project folder and the plan version, and nothing it should not be anchored on. The host lists them with the plugin's prefix, `autospine:autospine-build-qa` and so on.
+
+| Subagent                    | Model  | Use it for                                                                                                                                                                                                                                                    |
+| --------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `autospine-intake`          | haiku  | section 3: `init-project`, Spine export, image copy, `strip-images`                                                                                                                                                                                           |
+| `autospine-reference-scout` | haiku  | the reference library lookup before Layout (read-only)                                                                                                                                                                                                        |
+| `autospine-build-qa`        | sonnet | `lint-plan`, `build-character`, `compare-video`, `compare-reference`; it cannot edit plans, so a failed row comes back as a report                                                                                                                            |
+| `autospine-visual-reviewer` | opus   | the self-review at each stage; give it the files and the intent, not your verdict                                                                                                                                                                             |
+| `autospine-codex-reviewer`  | Codex  | a second opinion from OpenAI Codex, read-only, only when the requester asked for it or enabled it in their instructions: it sends the brief and the named files to OpenAI. `CODEX_UNAVAILABLE` means no Codex CLI; use `autospine-visual-reviewer` and say so |
+
+Do a step yourself when it is a command or two, when the subagents are not offered (Codex, Cowork without them), or when the next step needs its full output. A subagent's report is not proof: check the build record or the report file it names before you tell the requester a result. Separate characters in a batch are separate projects (ADR-031): run them as separate sessions, not subagents.
+
 ## 2. Take the brief
 
 Ask only for what is missing, in one message:
@@ -150,4 +164,4 @@ Read only what the current step needs:
 - [MCP tools](references/mcp-tools.md) — every `autospine_*` tool and its limits.
 - [Delivery conventions (中文)](references/delivery-conventions.md) — game-runtime versions, names, root and Actor, masks, limits per kind, export settings, item folders and loading/icon files (ADR-053, ADR-054).
 - [Spine application knowledge](references/spine-application-knowledge.md), [tutorial engineering notes](references/spine-tutorial-notes.md).
-- `references/adr/` — why each engine rule exists (ADR-017 plans, ADR-024 rest pose, ADR-031 one project per character, ADR-033 key poses, ADR-034 reference-video acceptance).
+- `references/adr/` — why each engine rule exists (ADR-017 plans, ADR-024 rest pose, ADR-031 one project per character, ADR-033 key poses, ADR-034 reference-video acceptance, ADR-055 subagents and the Codex reviewer).

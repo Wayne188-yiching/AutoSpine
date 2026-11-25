@@ -140,6 +140,12 @@ node packages/cli/dist/index.js check-delivery "D:\素材\Wild\Wild.spine" --tar
 
 規則、上限表與工具查不到、要人工確認的項目（遮罩內面數、動畫高峰面數、實際 draw call、貼圖容量、圖片本身）見 [交付規範](../skills/autospine/references/delivery-conventions.md)。
 
+## 分工與 Codex 第二意見（Claude Code）
+
+在 Claude Code 使用時，主對話負責需求、方案、關鍵姿勢與要怎麼改；匯出、查參考、建置比對與每個階段的檢查，會交給外掛內建的子代理，各自用合適的模型（[ADR-055](adr/ADR-055-plugin-subagents.md)）。建置子代理不能改方案，比對沒過只會回報，由你決定要不要改。
+
+想再多一個 OpenAI Codex 的意見時，直接說「也請 Codex 看一下」，或在自己的 CLAUDE.md／AGENTS.md 寫明要用。這會把需求和指定的檔案、畫面送到 OpenAI，所以預設不使用。Codex 只能讀、不能改檔。需要電腦上有 Codex（桌面版或 `codex` 指令）；可用環境變數 `AUTOSPINE_CODEX`（執行檔位置）、`AUTOSPINE_CODEX_MODEL`、`AUTOSPINE_CODEX_EFFORT` 指定執行檔、模型與投入程度，沒指定就用 Codex 自己的設定。
+
 ## 檔案保留與限制
 
 - 原檔使用副本處理，不會直接修改。
