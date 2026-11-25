@@ -70,12 +70,23 @@ export const DELIVERY_LIMITS_LARGE_BOARD = {
   feature: [60, 250, 150, 3, 512],
   "symbol-fx": [20, 30, 0, 1, 256],
 } as const satisfies Record<string, Limit>;
-export type DeliveryKind = keyof typeof DELIVERY_LIMITS | "loading" | "other";
+export type DeliveryKind = keyof typeof DELIVERY_LIMITS | "loading" | "icon" | "other";
 export const DELIVERY_KINDS = [
   ...Object.keys(DELIVERY_LIMITS),
   "loading",
+  "icon",
   "other",
 ] as DeliveryKind[];
+/** Kinds whose static images must have even sizes (a static symbol drawn centred). */
+export const SYMBOL_KINDS: readonly DeliveryKind[] = [
+  "symbol-low",
+  "symbol-mid",
+  "symbol-high",
+  "wild",
+  "scatter",
+  "feature",
+  "symbol-fx",
+];
 /** Win celebration tiers, each an `<tier>_Start` and `<tier>_End` animation. */
 export const WIN_TIERS = [
   "YouWin",
@@ -165,6 +176,24 @@ function attachments(doc: Json): [string, string, string, Json][] {
       for (const [name, a] of Object.entries(list as Record<string, Json>))
         out.push([String(skin.name), slot, name, a]);
   return out;
+}
+
+/**
+ * The image paths a skeleton's region and mesh attachments draw, relative to its images folder,
+ * without extension (`path`, else the attachment name; a sequence expands to its frames).
+ */
+export function attachmentImagePaths(doc: Json): string[] {
+  const used = new Set<string>();
+  for (const [, , name, a] of attachments(doc)) {
+    if (!["region", "mesh"].includes(String(a.type ?? "region"))) continue;
+    const path = String(a.path ?? name);
+    const seq = a.sequence as { count?: number; start?: number; digits?: number } | undefined;
+    if (!seq) used.add(path);
+    else
+      for (let i = seq.start ?? 1; i < (seq.start ?? 1) + (seq.count ?? 0); i++)
+        used.add(path + String(i).padStart(seq.digits ?? 0, "0"));
+  }
+  return [...used];
 }
 
 function triangles(a: Json): number {

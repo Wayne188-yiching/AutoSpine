@@ -281,6 +281,116 @@ fs.writeFileSync(a[a.indexOf("-o") + 1], JSON.stringify({ args: a, doc: JSON.par
     expect(ids(unity.rows, "error")).toEqual(["E1", "E2"]);
   });
 
+  /** A PNG or JPEG header of the given size (enough for the size reader). */
+  const png = (w: number, h: number) => {
+    const b = Buffer.alloc(33);
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(b);
+    b.writeUInt32BE(13, 8);
+    b.write("IHDR", 12, "latin1");
+    b.writeUInt32BE(w, 16);
+    b.writeUInt32BE(h, 20);
+    return b;
+  };
+  const jpeg = (w: number, h: number) => {
+    const app = Buffer.from([0xff, 0xe0, 0, 4, 0, 0]);
+    const sof = Buffer.alloc(11);
+    sof.writeUInt16BE(0xffc0, 0);
+    sof.writeUInt16BE(9, 2);
+    sof[4] = 8;
+    sof.writeUInt16BE(h, 5);
+    sof.writeUInt16BE(w, 7);
+    return Buffer.concat([Buffer.from([0xff, 0xd8]), app, sof]);
+  };
+  const tree = async (files: Record<string, Buffer | string>) => {
+    const dir = await mkdtemp(join(tmpdir(), "autospine-delivery-folder-"));
+    for (const [f, data] of Object.entries(files)) {
+      await mkdir(join(dir, f, ".."), { recursive: true });
+      if (f.endsWith("/")) await mkdir(join(dir, f), { recursive: true });
+      else await writeFile(join(dir, f), data);
+    }
+    return dir;
+  };
+
+  it("checks the item folder: folders, images and sizes (F1-F3)", async () => {
+    const dir = await tree({
+      "Wild.psb": "",
+      "Wild/Wild.spine": "",
+      "Wild/Previews/notes.txt": "",
+      "Wild/Images/Body.png": png(20, 20),
+      "Wild/Images/Glow.png": png(10, 10),
+      "Wild/Images/Old.png": png(10, 10),
+      "Wild/Images/_guide.png": png(10, 10),
+      "Wild/Images/Bad name.png": png(10, 10),
+      "Static/Wild.png": png(101, 100),
+      "Static/Wild_Even.png": png(100, 100),
+      "PSD/layers/Wing.png": png(47, 75),
+    });
+    const json = join(dir, "Wild.json");
+    await writeFile(json, JSON.stringify(clean()));
+    const r = await checkDeliveryFiles(json, "cocos", { kind: "wild", folder: dir });
+    const f = r.rows
+      .filter((x) => x.id.startsWith("F"))
+      .map((x) => `${x.level} ${x.id} ${x.message}`);
+    expect(f).toEqual([
+      "error F1 Wild/Previews: no .mp4 preview",
+      "error F1 Wild: no Export folder",
+      "warning F1 no .psd (the layered source of the parts)",
+      "error F1 Wild.psb: save as .psd, not .psb",
+      "error F2 image Wild/Images/Bad name.png: only letters, digits and _",
+      "warning F2 image Wild/Images/Bad name.png is drawn by no attachment; delete it",
+      "warning F2 image Wild/Images/Old.png is drawn by no attachment; delete it",
+      "error F3 Static/Wild.png is 101x100; static symbol sizes are even (the centre is size / 2)",
+    ]);
+    expect(r.folder).toBe(dir);
+    expect(r.exportDir).toBeUndefined();
+    // Without the folder only the skeleton is checked.
+    const plain = await checkDeliveryFiles(json, "cocos", { kind: "wild" });
+    expect(plain.rows.some((x) => x.id.startsWith("F"))).toBe(false);
+  });
+
+  it("checks loading and icon delivery names and sizes (F4-F5), and finds Export", async () => {
+    const loading = await tree({
+      "Game.psd": "",
+      "Loading/Loading.spine": "",
+      "Loading/Images/": "",
+      "Loading/Previews/Game_影片.mp4": "",
+      "Loading/Export/Game_Loading.skel": Buffer.from("\u0000\u00083.8.99\u0000rest"),
+      "Loading/Export/Game_Loading.atlas": "\nGame_Loading.png\nsize: 1024,1024\n",
+      "Loading/Export/Game_Loading.png": png(1023, 1024),
+      "Game_Loading_Bg.jpg": jpeg(840, 840),
+    });
+    const json = join(loading, "Loading.json");
+    await writeFile(json, JSON.stringify(clean()));
+    const l = await checkDeliveryFiles(json, "cocos", { kind: "loading", folder: loading });
+    expect(l.rows.filter((x) => /^F[345]$/.test(x.id))).toEqual([
+      { id: "F5", level: "error", message: "no <Game>_Loading_Logo.png (logo)" },
+    ]);
+    expect(l.exportDir).toBe(join(loading, "Loading", "Export"));
+    expect(l.rows.some((x) => x.id === "E1" && x.level === "error")).toBe(false);
+    expect(l.exportImageBytes).toBe(33);
+    await writeFile(join(loading, "Game_Loading_Bg.jpg"), jpeg(1680, 720));
+    const big = await checkDeliveryFiles(json, "cocos", { kind: "loading", folder: loading });
+    expect(big.rows.find((x) => x.id === "F4")?.message).toMatch(
+      /^Game_Loading_Bg.jpg is 1680x720/,
+    );
+
+    const icon = await tree({
+      "Icon.psd": "",
+      "Icon/Icon.spine": "",
+      "Icon/Images/": "",
+      "Icon/Previews/x.mp4": "",
+      "Icon/Export/Spine_Game.skel": Buffer.from("\u0000\u00083.8.99\u0000rest"),
+      "Icon_Game.png": png(200, 401),
+    });
+    const ij = join(icon, "Icon.json");
+    await writeFile(ij, JSON.stringify(clean()));
+    const i = await checkDeliveryFiles(ij, "cocos", { kind: "icon", folder: icon });
+    expect(i.rows.filter((x) => /^F[345]$/.test(x.id))).toEqual([
+      { id: "F4", level: "error", message: "Icon_Game.png is 200x401; the static icon is 200x400" },
+      { id: "F5", level: "error", message: "no 影片_<Game>.mp4 (preview)" },
+    ]);
+  });
+
   it("is a read-only MCP tool", async () => {
     expect(mcpTools.find((t) => t.name === "autospine_check_delivery")!.annotations).toMatchObject({
       readOnlyHint: true,
