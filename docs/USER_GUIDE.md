@@ -123,11 +123,20 @@ node packages/cli/dist/index.js reduce-keys "D:\素材\角色\角色.spine" "D:\
 - 在 root 下自動加一根 `Actor` 骨，所有骨頭都掛在它下面，畫面不變。
 - 依交付規範檢查名稱、root、混合模式與 `_Add`、遮罩、權重、語系文字、動畫第 0 幀、循環頭尾、骨頭數與三角面上限，結果附在交付報告裡；有問題只列出來，不會擋住交付。
 
-美術自己做好的檔案也能單獨檢查（`.spine` 需要本機有 Spine；`--export` 一併檢查匯出的 `.skel`、`.atlas`）：
+美術自己做好的檔案也能單獨檢查（`.spine` 需要本機有 Spine）：
 
 ```bash
-node packages/cli/dist/index.js check-delivery "D:\素材\Wild\Wild.spine" --target=cocos --kind=wild --export="D:\素材\Wild\Export"
+node packages/cli/dist/index.js check-delivery "D:\素材\Wild\Wild.spine" --target=cocos --kind=wild
 ```
+
+檢查 `.spine` 時也會一併檢查它所在的資料夾：
+
+- 有沒有 `.psd`（不能存成 PSB、不超過 2 GB），以及 `Images/`、`Previews/`（含 .mp4）、`Export/`；
+- `Images/` 裡的圖片檔名，以及沒有被用到的圖；
+- Symbol 靜態圖的尺寸是不是偶數；
+- Loading 頁（`--kind=loading`）、大廳 Icon（`--kind=icon`）的交付檔名與尺寸。
+
+旁邊的 `Export/` 會當成匯出資料夾，檢查 `.skel`、`.atlas` 與合圖頁。項目資料夾在 `.spine` 的上一層時，用 `--folder=<項目資料夾>` 指定；`--export=<資料夾>` 可以指定別的匯出資料夾；`--no-folder` 只檢查骨架。
 
 規則、上限表與工具查不到、要人工確認的項目（遮罩內面數、動畫高峰面數、實際 draw call、貼圖容量、圖片本身）見 [交付規範](../skills/autospine/references/delivery-conventions.md)。
 

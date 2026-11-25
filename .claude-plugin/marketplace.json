@@ -9,7 +9,7 @@
       "name": "autospine",
       "source": "./plugin",
       "description": "Rig and animate Spine 4.0 characters from an images-only Spine file, with a review video, handover notes, an optional artist comparison, delivery to Spine 3.8–4.2 and a Cocos/Unity game delivery check.",
-      "version": "0.5.24"
+      "version": "0.5.25"
     }
   ]
 }

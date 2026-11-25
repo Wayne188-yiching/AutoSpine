@@ -111,7 +111,7 @@ const characterUsage = `Character commands (ADR-017):
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
   autospine check-video-fit <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--ignore=slot,...]
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference] [--target=cocos|unity|unity-4.1] [--kind=type] [--large-board]
-  autospine check-delivery <skeleton.json|project.spine> --target=cocos|unity|unity-4.1 [--kind=type] [--large-board] [--export=dir] [--spine=exe]
+  autospine check-delivery <skeleton.json|project.spine> --target=cocos|unity|unity-4.1 [--kind=type] [--large-board] [--export=dir] [--folder=dir|--no-folder] [--spine=exe]
   autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
 /** --target, --kind and --large-board of deliver and check-delivery (ADR-053). */
 function deliveryFlags(
@@ -379,11 +379,16 @@ async function characterCommand(args: string[]): Promise<boolean> {
     }
     case "check-delivery": {
       if (p.length !== 2) throw new Error(characterUsage);
-      known("target", "kind", "large-board", "export", "spine");
+      known("target", "kind", "large-board", "export", "spine", "folder", "no-folder");
+      if (flags.has("folder") && flags.has("no-folder"))
+        throw new Error(`--folder and --no-folder exclude each other
+${characterUsage}`);
       const check = await checkDeliveryFiles(p[1]!, deliveryFlags(flags, true).target!, {
         ...deliveryFlags(flags, true),
         ...(flags.get("export") ? { exportDir: flags.get("export")! } : {}),
         ...(flags.get("spine") ? { spine: flags.get("spine")! } : {}),
+        ...(flags.get("folder") ? { folder: flags.get("folder")! } : {}),
+        ...(flags.has("no-folder") ? { folder: false as const } : {}),
       });
       const c = check.counts,
         l = check.limits;
@@ -397,6 +402,10 @@ async function characterCommand(args: string[]): Promise<boolean> {
           `  - triangles inside the mask: ${l.maskTriangles} at most; read them in Spine's Metrics view`,
         );
       console.log(`  - peak triangles while animating and real draw calls: Spine's Metrics view`);
+      if (check.exportImageBytes !== undefined)
+        console.log(
+          `  - export images: ${(check.exportImageBytes / 1024 / 1024).toFixed(2)} MB as files; the texture budget counts the runtime format (e.g. WEBP quality 90)`,
+        );
       console.log(check.pass ? "MEETS THE DELIVERY CONVENTIONS" : "NOT PASSED");
       if (!check.pass) process.exitCode = 2;
       return true;

@@ -1,6 +1,6 @@
 {
   "name": "autospine",
-  "version": "0.5.24",
+  "version": "0.5.25",
   "description": "Rig and animate Spine 4.0 characters from an images-only Spine file: bones, meshes, weights, constraints, motion, a review video and handover notes, with an optional comparison against the artist's version. Delivers to Spine 3.8, 4.0, 4.1 or 4.2, and checks a Spine file against Cocos/Unity game delivery conventions (editor version, names, root and Actor, blends, clipping, weights, bone and triangle limits). The engine is bundled; it needs Node.js 22.12 or later.",
   "author": { "name": "IGS RD8" },
   "repository": "https://github.com/Wayne188-yiching/AutoSpine",

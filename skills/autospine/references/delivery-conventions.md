@@ -5,10 +5,12 @@
 標 **自動** 的規則由 `check-delivery` 檢查（`deliver --target` 交付時也會跑一次，只報告不擋交付），規則代號就是報告裡的代號。其餘要看 Spine 介面、圖片或影片，列進交接說明請需求者確認。
 
 ```text
-node <skill>/scripts/autospine.mjs check-delivery <skeleton.json|project.spine> --target=cocos|unity|unity-4.1 [--kind=<類型>] [--large-board] [--export=<匯出資料夾>]
+node <skill>/scripts/autospine.mjs check-delivery <skeleton.json|project.spine> --target=cocos|unity|unity-4.1 [--kind=<類型>] [--large-board] [--export=<匯出資料夾>] [--folder=<項目資料夾>|--no-folder]
 ```
 
-MCP：`autospine_check_delivery`（只讀工作區內的 JSON；`.spine` 與匯出資料夾用 CLI）。結束碼 2 表示有錯誤。
+MCP：`autospine_check_delivery`（只讀工作區內的 JSON；`.spine`、匯出資料夾與項目資料夾用 CLI）。結束碼 2 表示有錯誤。
+
+輸入是 `.spine` 時，預設也檢查它所在的資料夾（F1–F5，ADR-054），並把旁邊的 `Export/` 當成匯出資料夾檢查 E1–E3；JSON 要加 `--folder` 才檢查資料夾，`--no-folder` 只查骨架。類型除了下面上限表的那些，還有 `loading`、`icon`、`other`。
 
 ## 執行環境
 
@@ -24,7 +26,8 @@ MCP：`autospine_check_delivery`（只讀工作區內的 JSON；`.spine` 與匯�
 ## 檔案與資料夾
 
 - 一個項目一個 `.spine`。要一起演出、共用貼圖、前中後層、高度互動或前導動畫的才放同一檔；換色用 Skin，不分檔。
-- 資料夾：`.psd`（不存成 PSB、不超過 2 GB）、`.spine`、`Images/`（刪掉沒用到的圖）、`Previews/`（.mp4）、`Export/`。
+- **F1 自動**：資料夾有 `.psd`（不存成 PSB、不超過 2 GB；沒有 `.psd` 只提醒），每個 `.spine` 旁邊有 `Images/`、`Previews/`（裡面有 .mp4）、`Export/`。
+- **F2 自動**：`Images/` 的圖檔名只用該環境可用的字元；沒有附件用到的圖要刪（只提醒）。`_` 開頭的參考圖不算；同一個 `Images/` 給好幾個 `.spine` 用時，不檢查沒用到的圖。
 - 貼圖來源是 `./Images`，依 Skeleton 分子資料夾。
 - Spine 檔名 = 第一層 Skeleton 名稱。
 
@@ -151,11 +154,25 @@ MCP：`autospine_check_delivery`（只讀工作區內的 JSON；`.spine` 與匯�
 ## Symbol 靜態圖（用 Spine 匯出 PNG）
 
 - 找出全部 Symbol 的最大尺寸；匯出 PNG 勾裁剪，中心點 = 尺寸 ÷ 2（負值）。
-- 尺寸必須是偶數，否則進引擎會偏一像素。
+- **F3 自動**（Symbol 類型：`symbol-*`、`wild`、`scatter`、`feature`）：尺寸必須是偶數，否則進引擎會偏一像素。檢查資料夾裡 `Images/`、名稱含 `psd` 的資料夾（圖層輸出）與合圖頁以外的每張 PNG、JPG。
 - 縮小後失真時，縮放設 200，再到 Photoshop 縮 50 %。
+
+## Loading 頁與大廳 Icon 的交付檔
+
+- **F4、F5 自動**（`loading`）：
+  - Spine 匯出 `<遊戲名>_Loading`（二進位，不含 Logo、背景、UI、系統字，1:1）。
+  - 背景 `<遊戲名>_Loading_Bg.jpg`：頁面規則寫 840×840；橫版／直版範本是 1680×720 縮半的 840×360（或 360×840）。兩種都接受，引擎放大 2 倍。專案用哪一種請需求者確認。
+  - Logo `<遊戲名>_Loading_Logo.png`（1:1）、預覽影片 `<遊戲名>_影片.mp4`（動畫錄 2 次）。
+- **F4、F5 自動**（`icon`）：
+  - 靜態圖 `Icon_<遊戲名>.png`，200×400，用 Spine 第一幀輸出，不含 Logo、外框、底色、白字。
+  - Spine `Spine_<遊戲名>`：二進位、預乘 Alpha、可用遮罩，PNG 合圖約 300–500 KB。
+  - 影片 `影片_<遊戲名>.mp4`：2 秒循環，錄動畫 1 次加靜止 1 秒。
+
+檢查完會列出 `Export/` 內圖檔合計的大小，只當參考：容量要用執行環境的格式算。
 
 ## 檢查不到的
 
 - 遮罩內三角面、動畫高峰的三角面、實際 draw call：Spine 的 Metrics。
 - 貼圖容量：PNG 原檔大小不等於 WEBP 品質 90 的容量。
 - 圖片內容（透明邊、黑底、斜圖、失真）、Setup 是否和 2D 圖一致、動態風格：看圖與影片。
+- PSD 圖層結構、預覽影片的錄法與秒數：打開檔案看。

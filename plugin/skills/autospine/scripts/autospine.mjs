@@ -1127,10 +1127,10 @@ var require_parser_async = __commonJS({
           this._inflate.pipe(this._filter);
         } else {
           let rowSize = (this._bitmapInfo.width * this._bitmapInfo.bpp * this._bitmapInfo.depth + 7 >> 3) + 1;
-          let imageSize = rowSize * this._bitmapInfo.height;
-          let chunkSize = Math.max(imageSize, zlib.Z_MIN_CHUNK);
+          let imageSize2 = rowSize * this._bitmapInfo.height;
+          let chunkSize = Math.max(imageSize2, zlib.Z_MIN_CHUNK);
           this._inflate = zlib.createInflate({ chunkSize });
-          let leftToInflate = imageSize;
+          let leftToInflate = imageSize2;
           let emitError = this.emit.bind(this, "error");
           this._inflate.on("error", function(err) {
             if (!leftToInflate) {
@@ -1906,10 +1906,10 @@ var require_parser_sync = __commonJS({
         inflatedData = zlib.inflateSync(inflateData);
       } else {
         let rowSize = (metaData.width * metaData.bpp * metaData.depth + 7 >> 3) + 1;
-        let imageSize = rowSize * metaData.height;
+        let imageSize2 = rowSize * metaData.height;
         inflatedData = inflateSync(inflateData, {
-          chunkSize: imageSize,
-          maxLength: imageSize
+          chunkSize: imageSize2,
+          maxLength: imageSize2
         });
       }
       inflateData = null;
@@ -19335,7 +19335,7 @@ var require_dist = __commonJS({
 
 // packages/cli/dist/index.js
 import { readFile as readFile7, writeFile as writeFile5 } from "node:fs/promises";
-import { basename as basename5, dirname as dirname5, extname as extname4, resolve as resolve6 } from "node:path";
+import { basename as basename6, dirname as dirname6, extname as extname4, resolve as resolve6 } from "node:path";
 
 // packages/cli/dist/build.js
 import { lstat, mkdir, mkdtemp, readFile as readFile2, rename, stat, writeFile } from "node:fs/promises";
@@ -33596,7 +33596,17 @@ var DELIVERY_LIMITS_LARGE_BOARD = {
 var DELIVERY_KINDS = [
   ...Object.keys(DELIVERY_LIMITS),
   "loading",
+  "icon",
   "other"
+];
+var SYMBOL_KINDS = [
+  "symbol-low",
+  "symbol-mid",
+  "symbol-high",
+  "wild",
+  "scatter",
+  "feature",
+  "symbol-fx"
 ];
 var WIN_TIERS = [
   "YouWin",
@@ -33639,6 +33649,19 @@ function attachments(doc) {
       for (const [name, a] of Object.entries(list))
         out.push([String(skin.name), slot, name, a]);
   return out;
+}
+function attachmentImagePaths(doc) {
+  const used = /* @__PURE__ */ new Set();
+  for (const [, , name, a] of attachments(doc)) {
+    if (!["region", "mesh"].includes(String(a.type ?? "region"))) continue;
+    const path = String(a.path ?? name);
+    const seq = a.sequence;
+    if (!seq) used.add(path);
+    else
+      for (let i = seq.start ?? 1; i < (seq.start ?? 1) + (seq.count ?? 0); i++)
+        used.add(path + String(i).padStart(seq.digits ?? 0, "0"));
+  }
+  return [...used];
 }
 function triangles(a) {
   const type = a.type ?? "region";
@@ -37188,7 +37211,7 @@ function fitAffine(src, dst) {
   const t = [nx - (A[0] * mx + A[1] * my), ny - (A[2] * mx + A[3] * my)];
   return { A, t };
 }
-function stripToImagesOnly(artist, imageSize, options = {}) {
+function stripToImagesOnly(artist, imageSize2, options = {}) {
   const sk = loadSkeleton(artist);
   const raw = sk.raw;
   const skeleton = raw.skeleton ?? {};
@@ -37253,7 +37276,7 @@ function stripToImagesOnly(artist, imageSize, options = {}) {
           continue;
         }
         const path = a.path ?? a.name ?? attName;
-        const found = imageSize(path), stored = typeof a.width === "number" && typeof a.height === "number" ? [a.width, a.height] : void 0;
+        const found = imageSize2(path), stored = typeof a.width === "number" && typeof a.height === "number" ? [a.width, a.height] : void 0;
         if (!found && !stored) {
           dropped.push(`${skinName}/${slotName}/${attName}:missing-image`);
           continue;
@@ -42126,7 +42149,7 @@ function comparePlayback(a, b, options = {}) {
 }
 
 // packages/cli/dist/version.js
-var AUTOSPINE_VERSION = "0.5.24";
+var AUTOSPINE_VERSION = "0.5.25";
 
 // packages/cli/dist/character.js
 var sha256 = (data) => createHash2("sha256").update(data).digest("hex");
@@ -44807,10 +44830,138 @@ function reportMarkdown(summary, runs) {
 }
 
 // packages/cli/dist/delivery.js
-import { mkdtemp as mkdtemp2, readFile as readFile6, readdir as readdir4, rm as rm3 } from "node:fs/promises";
+import { mkdtemp as mkdtemp2, readFile as readFile6, readdir as readdir4, rm as rm3, stat as stat3 } from "node:fs/promises";
 import { open } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { extname as extname3, join as join4, relative as relative4, resolve as resolve5 } from "node:path";
+import { basename as basename5, dirname as dirname5, extname as extname3, join as join4, relative as relative4, resolve as resolve5, sep as sep2 } from "node:path";
+async function imageSize(file) {
+  const handle = await open(file, "r");
+  try {
+    const head = Buffer.alloc(24);
+    await handle.read(head, 0, 24, 0);
+    if (head.readUInt32BE(0) === 2303741511)
+      return [head.readUInt32BE(16), head.readUInt32BE(20)];
+    if (head[0] !== 255 || head[1] !== 216)
+      return null;
+    let pos = 2;
+    const seg = Buffer.alloc(9);
+    for (; ; ) {
+      const { bytesRead } = await handle.read(seg, 0, 9, pos);
+      if (bytesRead < 4 || seg[0] !== 255)
+        return null;
+      const marker = seg[1];
+      if (marker >= 192 && marker <= 207 && ![196, 200, 204].includes(marker))
+        return bytesRead < 9 ? null : [seg.readUInt16BE(7), seg.readUInt16BE(5)];
+      pos += 2 + seg.readUInt16BE(2);
+    }
+  } finally {
+    await handle.close();
+  }
+}
+var IMAGE = /\.(png|jpe?g)$/i;
+var PREVIEW = /\.mp4$/i;
+var DELIVERY_NAMES = {
+  loading: [
+    [/_Loading\.skel(\.bytes)?$/i, "<Game>_Loading.skel (binary export)"],
+    [/_Loading_Bg\.jpe?g$/i, "<Game>_Loading_Bg.jpg (background)"],
+    [/_Loading_Logo\.png$/i, "<Game>_Loading_Logo.png (logo)"],
+    [/_影片\.mp4$/i, "<Game>_\u5F71\u7247.mp4 (preview)"]
+  ],
+  icon: [
+    [/^Icon_.+\.png$/, "Icon_<Game>.png (static image)"],
+    [/^Spine_.+\.skel(\.bytes)?$/, "Spine_<Game>.skel (binary export)"],
+    [/^影片_.+\.mp4$/, "\u5F71\u7247_<Game>.mp4 (preview)"]
+  ]
+};
+async function checkFolder(folder, skeletonDir, doc, target, kind) {
+  const spec = DELIVERY_TARGETS[target];
+  const rows = [];
+  const error = (id, message) => rows.push({ id, level: "error", message });
+  const warn = (id, message) => rows.push({ id, level: "warning", message });
+  const files = (await readdir4(folder, { recursive: true, withFileTypes: true })).filter((e) => e.isFile()).map((e) => join4(e.parentPath, e.name)).sort();
+  const rel = (f) => relative4(folder, f).split(sep2).join("/") || ".";
+  const parts = (f) => rel(f).toLowerCase().split("/");
+  const child = async (dir2, name) => {
+    for (const e of await readdir4(dir2, { withFileTypes: true }))
+      if (e.isDirectory() && e.name.toLowerCase() === name.toLowerCase())
+        return join4(dir2, e.name);
+    return void 0;
+  };
+  const projects = files.filter((f) => extname3(f).toLowerCase() === ".spine");
+  if (!projects.length)
+    warn("F1", "no .spine project in the folder (deliver the editor file)");
+  for (const dir2 of new Set(projects.map(dirname5)))
+    for (const need of ["Images", "Previews", "Export"]) {
+      const found = await child(dir2, need);
+      if (!found)
+        error("F1", `${rel(dir2)}: no ${need} folder`);
+      else if (need === "Previews" && !(await readdir4(found)).some((n) => PREVIEW.test(n)))
+        error("F1", `${rel(found)}: no .mp4 preview`);
+    }
+  if (!files.some((f) => extname3(f).toLowerCase() === ".psd"))
+    warn("F1", "no .psd (the layered source of the parts)");
+  for (const f of files) {
+    const ext = extname3(f).toLowerCase();
+    if (ext === ".psb")
+      error("F1", `${rel(f)}: save as .psd, not .psb`);
+    if (ext === ".psd" && (await stat3(f)).size > 2 * 1024 ** 3)
+      error("F1", `${rel(f)} is over 2 GB`);
+  }
+  const dir = skeletonDir ?? (projects.length === 1 ? dirname5(projects[0]) : folder);
+  const images = await child(dir, "Images");
+  if (images) {
+    const used = attachmentImagePaths(doc).map((p) => p.toLowerCase());
+    const shared = projects.filter((p) => dirname5(p) === dir).length > 1;
+    if (shared)
+      warn("F2", `${rel(images)} serves several .spine projects; unused images are not checked`);
+    for (const f of files.filter((f2) => IMAGE.test(f2) && !relative4(images, f2).startsWith(".."))) {
+      const stem = relative4(images, f).split(sep2).join("/").replace(/\.[^.]+$/, "");
+      if (stem.split("/").some((part) => part.startsWith("_")))
+        continue;
+      if (!stem.split("/").every((part) => spec.names.test(part)))
+        error("F2", `image ${rel(f)}: only letters, digits and _${target === "cocos" ? "" : " or -"}`);
+      const s2 = stem.toLowerCase();
+      const drawn = used.some((u) => s2 === u || s2.endsWith(`/${u}`) || u.endsWith(`/${s2}`));
+      if (!shared && !drawn)
+        warn("F2", `image ${rel(f)} is drawn by no attachment; delete it`);
+    }
+  }
+  const pages = /* @__PURE__ */ new Set();
+  for (const f of files.filter((f2) => /\.atlas(\.txt)?$/i.test(f2)))
+    for (const p of atlasPages(await readFile6(f, "utf8")))
+      pages.add(p.file.toLowerCase());
+  for (const f of files.filter((f2) => IMAGE.test(f2))) {
+    const name = basename5(f);
+    const where = parts(f).slice(0, -1);
+    if (where.includes("images") || where.some((p) => p.includes("psd")))
+      continue;
+    if (pages.has(name.toLowerCase()))
+      continue;
+    const size = await imageSize(f);
+    if (!size)
+      continue;
+    const [w, h] = size;
+    if (SYMBOL_KINDS.includes(kind) && (w % 2 || h % 2))
+      error("F3", `${rel(f)} is ${w}x${h}; static symbol sizes are even (the centre is size / 2)`);
+    if (kind === "loading" && /_Loading_Bg\.jpe?g$/i.test(name)) {
+      const ok = ["840x840", "840x360", "360x840"].includes(`${w}x${h}`);
+      if (!ok)
+        error("F4", `${rel(f)} is ${w}x${h}; the background is 840x840 (the page rule) or 840x360 / 360x840 (the landscape / portrait template), shown at 2x`);
+    }
+    if (kind === "icon" && /^Icon_.+\.png$/.test(name) && !(w === 200 && h === 400))
+      error("F4", `${rel(f)} is ${w}x${h}; the static icon is 200x400`);
+  }
+  const names = files.map((f) => basename5(f));
+  for (const [pattern, what] of DELIVERY_NAMES[kind] ?? [])
+    if (!names.some((n) => pattern.test(n)))
+      error("F5", `no ${what}`);
+  const exportDir = await child(dir, "Export");
+  let exportImageBytes = 0;
+  for (const f of files)
+    if (IMAGE.test(f) && parts(f).includes("export"))
+      exportImageBytes += (await stat3(f)).size;
+  return { rows, ...exportDir ? { exportDir } : {}, exportImageBytes };
+}
 function atlasPages(text) {
   const pages = [];
   for (const line of text.split(/\r?\n/)) {
@@ -44948,16 +45099,29 @@ async function checkDeliveryFiles(input, target, opts = {}) {
     ...opts.largeBoard ? { largeBoard: true } : {},
     ...version !== void 0 ? { version } : {}
   });
-  if (opts.exportDir) {
-    const rows = await checkExport(resolve5(opts.exportDir), target, check.kind);
+  const isProject = extname3(input).toLowerCase() === ".spine";
+  const folder = opts.folder === false ? void 0 : opts.folder ? resolve5(opts.folder) : isProject ? dirname5(resolve5(input)) : void 0;
+  const add = (rows) => {
     check.rows.push(...rows);
     check.errors += rows.filter((r) => r.level === "error").length;
     check.warnings += rows.filter((r) => r.level === "warning").length;
     check.pass = check.errors === 0;
+  };
+  let exportDir = opts.exportDir ? resolve5(opts.exportDir) : void 0;
+  let exportImageBytes;
+  if (folder) {
+    const found = await checkFolder(folder, isProject ? dirname5(resolve5(input)) : void 0, doc, target, check.kind);
+    add(found.rows);
+    exportDir ??= found.exportDir;
+    exportImageBytes = found.exportImageBytes;
   }
+  if (exportDir)
+    add(await checkExport(exportDir, target, check.kind));
   return {
     input: resolve5(input),
-    ...opts.exportDir ? { exportDir: resolve5(opts.exportDir) } : {},
+    ...folder ? { folder } : {},
+    ...exportDir ? { exportDir } : {},
+    ...exportImageBytes !== void 0 ? { exportImageBytes } : {},
     ...check
   };
 }
@@ -45008,7 +45172,7 @@ var characterUsage = `Character commands (ADR-017):
   autospine fit-video <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--rounds=3] [--every=1] [--ignore=slot,...] [--no-zero] [--no-track] [--no-lag] [--font=file]
   autospine check-video-fit <plan.json> <build-dir> <new-dir> [--animation=name] [--video=file] [--start=s] [--ignore=slot,...]
   autospine deliver <plan.json> <build-dir> <delivery-dir> [<artist.json>] [--name=file] [--images=dir] [--spine=exe] [--spine-version=4.0.64] [--replace] [--force] [--no-video] [--no-reference] [--target=cocos|unity|unity-4.1] [--kind=type] [--large-board]
-  autospine check-delivery <skeleton.json|project.spine> --target=cocos|unity|unity-4.1 [--kind=type] [--large-board] [--export=dir] [--spine=exe]
+  autospine check-delivery <skeleton.json|project.spine> --target=cocos|unity|unity-4.1 [--kind=type] [--large-board] [--export=dir] [--folder=dir|--no-folder] [--spine=exe]
   autospine reduce-keys <input.json|input.spine> <new-output-dir> [--mode=both|fidelity|posable] [--fidelity-max=px] [--fidelity-rms=px] [--posable-max=px] [--posable-rms=px] [--fps=n] [--animations=a,b] [--kinds=bone,deform,slot,ik,transform,path] [--skip=name,...] [--lock=[animation::]timeline[@seconds],...] [--loops=a,b] [--baseline=original.json|.spine] [--color-tolerance=0..1] [--local-share=0..1] [--substeps=n] [--max-insertions=n] [--no-protect-events] [--spine=exe] [--spine-version=4.0.64] [--no-spine] [--images=dir] [--no-video] [--height=px] [--font=file]`;
 function deliveryFlags(flags, required) {
   const target = flags.get("target") || void 0;
@@ -45245,11 +45409,16 @@ ${characterUsage}`);
     case "check-delivery": {
       if (p.length !== 2)
         throw new Error(characterUsage);
-      known2("target", "kind", "large-board", "export", "spine");
+      known2("target", "kind", "large-board", "export", "spine", "folder", "no-folder");
+      if (flags.has("folder") && flags.has("no-folder"))
+        throw new Error(`--folder and --no-folder exclude each other
+${characterUsage}`);
       const check = await checkDeliveryFiles(p[1], deliveryFlags(flags, true).target, {
         ...deliveryFlags(flags, true),
         ...flags.get("export") ? { exportDir: flags.get("export") } : {},
-        ...flags.get("spine") ? { spine: flags.get("spine") } : {}
+        ...flags.get("spine") ? { spine: flags.get("spine") } : {},
+        ...flags.get("folder") ? { folder: flags.get("folder") } : {},
+        ...flags.has("no-folder") ? { folder: false } : {}
       });
       const c = check.counts, l = check.limits;
       console.log(`${check.target}, ${check.kind}: ${c.bones}${l ? `/${l.bones}` : ""} bones, ${c.setupTriangles}${l ? `/${l.setupTriangles}` : ""} setup triangles (${c.allTriangles} in all attachments), about ${c.drawCalls}${l ? `/${l.drawCalls}` : ""} draw calls, ${c.clipping} clipping`);
@@ -45258,6 +45427,8 @@ ${characterUsage}`);
       if (l?.maskTriangles)
         console.log(`  - triangles inside the mask: ${l.maskTriangles} at most; read them in Spine's Metrics view`);
       console.log(`  - peak triangles while animating and real draw calls: Spine's Metrics view`);
+      if (check.exportImageBytes !== void 0)
+        console.log(`  - export images: ${(check.exportImageBytes / 1024 / 1024).toFixed(2)} MB as files; the texture budget counts the runtime format (e.g. WEBP quality 90)`);
       console.log(check.pass ? "MEETS THE DELIVERY CONVENTIONS" : "NOT PASSED");
       if (!check.pass)
         process.exitCode = 2;
@@ -45403,7 +45574,7 @@ async function main() {
     if (manifestPath && resolve6(manifestPath) === resolve6(destination))
       throw new Error("Output path must not overwrite the input manifest");
     const manifest = manifestPath ? JSON.parse(await readFile7(manifestPath, "utf8")) : void 0;
-    const name = basename5(resolve6(source));
+    const name = basename6(resolve6(source));
     const asset = await parsePngParts(source, { id: name, name, manifest });
     await writeFile5(destination, `${JSON.stringify(asset, null, 2)}
 `, {
@@ -45413,11 +45584,11 @@ async function main() {
     return;
   }
   if (command === "parse-psd" && !manifestPath && !extra) {
-    const name = basename5(source, extname4(source));
+    const name = basename6(source, extname4(source));
     const asset = parsePsd(await readFile7(source), {
       id: name,
       name,
-      sourcePath: basename5(source)
+      sourcePath: basename6(source)
     });
     await writeFile5(destination, `${JSON.stringify(asset, null, 2)}
 `, {
@@ -45427,18 +45598,18 @@ async function main() {
     return;
   }
   if (command === "mesh-png" && !extra) {
-    const name = basename5(source, extname4(source));
+    const name = basename6(source, extname4(source));
     const header = await readFile7(source);
     if (header.length < 24)
       throw new Error("Input PNG header is incomplete");
-    const asset = await parsePngParts(dirname5(source), {
+    const asset = await parsePngParts(dirname6(source), {
       id: name,
       name,
-      sourcePath: basename5(source),
+      sourcePath: basename6(source),
       manifest: {
         width: header.readUInt32BE(16),
         height: header.readUInt32BE(20),
-        parts: [{ id: name, name, file: basename5(source), x: 0, y: 0, drawOrder: 0 }]
+        parts: [{ id: name, name, file: basename6(source), x: 0, y: 0, drawOrder: 0 }]
       }
     });
     await writeMesh(asset.parts[0], destination, manifestPath, meshOptions);

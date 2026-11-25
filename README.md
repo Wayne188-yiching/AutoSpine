@@ -36,7 +36,7 @@ AutoSpine 用來製作 Spine 角色的骨架與動畫。提供已拆圖、擺好
 - 在 root 下加一根 `Actor` 骨，畫面不變；
 - 依[交付規範](skills/autospine/references/delivery-conventions.md)檢查版本、命名、root 與 `Actor`、混合模式與 `_Add`、Point、遮罩數與點數、權重、語系文字與數字、骨頭數、三角面與 Draw call 上限、動畫第 0 幀、循環頭尾、報獎與 Loading 動畫命名，結果附在交付報告；有問題只列出，不擋交付。
 
-美術自己做的 `.spine` 或 JSON 也能單獨檢查（`check-delivery`，加 `--export` 一併檢查 `.skel`、`.atlas` 與貼圖頁）。三角面只算 Setup 姿勢，動畫高峰面數、遮罩內面數與實際 Draw call 仍需看 Spine 的 Metrics。詳見[使用說明](docs/USER_GUIDE.md#交給遊戲程式cocosunity)。
+美術自己做的 `.spine` 或 JSON 也能單獨檢查（`check-delivery`）：除了骨架，也會檢查項目資料夾（`.psd`、`Images/`、`Previews/`、`Export/`、沒用到的圖、Symbol 偶數尺寸、Loading 與大廳 Icon 的檔名和尺寸），以及 `Export/` 裡的 `.skel`、`.atlas` 與合圖頁。三角面只算 Setup 姿勢，動畫高峰面數、遮罩內面數與實際 Draw call 仍需看 Spine 的 Metrics。詳見[使用說明](docs/USER_GUIDE.md#交給遊戲程式cocosunity)。
 
 ## 使用前請注意
 
